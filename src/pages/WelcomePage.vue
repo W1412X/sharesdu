@@ -2,9 +2,10 @@
     <div class="top-bar">
         <span class="logo-text logo-margin">ShareSdu</span>
         <div class="top-btn-div">
-            <v-btn @click="this.setContactState(true)" :color="themeColor" variant="text" class="title-bold">联系我们</v-btn>
+            <v-btn @click="this.setContactState(true)" :color="themeColor" variant="text"
+                class="title-bold">联系我们</v-btn>
             <v-btn to="/document/api" :color="themeColor" variant="text" class="title-bold">开发文档</v-btn>
-            <v-btn  :color="themeColor" variant="text" class="title-bold">APP</v-btn>
+            <v-btn :color="themeColor" variant="text" class="title-bold">APP</v-btn>
         </div>
     </div>
     <div class="logo-line"></div>
@@ -38,7 +39,8 @@
                     的平台
                 </div>
                 <div class="column-btn-div">
-                    <v-btn to="/document/intro" prepend-icon="mdi-file-document" color="primary" class="intro-btn">查看网站介绍</v-btn>
+                    <v-btn to="/document/intro" prepend-icon="mdi-file-document" color="primary"
+                        class="intro-btn">查看网站介绍</v-btn>
                     <v-btn to="/login" prepend-icon="mdi-login-variant" color="secondary"
                         class="intro-btn">注册用户账号</v-btn>
                 </div>
@@ -48,6 +50,18 @@
                 <img class="img" src="/qq_img/group_qr.png" />
                 <img class="img" src="/wechat/wechat_qr.jpg" />
             </div>
+        </div>
+    </div>
+    <div
+        style="width: 100%;display: flex;justify-content: center;margin-top: 10px;flex-direction: row;align-items: center;margin-bottom: 10px;">
+        <div
+            style="display: flex;flex-direction: row;font-size: 13px;font-weight: 600;justify-content: center;margin-right: 10px;">
+            <a href="https://beian.miit.gov.cn/" style="color: #8a8a8a;" target="_blank">鲁ICP备2024118409号-1</a>
+        </div>
+        <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
+            <img style="vertical-align:middle;width: 20px;height: 20px;margin-right: 5px;" src="../../public/police.png">
+            <a style="font-size:13px;font-weight: bold;"
+                href="//www.beian.gov.cn/portal/registerSystemInfo?recordcode=37028202001173">鲁公网安备37028202001173号</a>
         </div>
     </div>
 </template>
@@ -98,11 +112,12 @@ export default {
 <style scoped>
 /** desktop */
 @media screen and (min-width: 600px) {
-    .top-btn-div{
+    .top-btn-div {
         display: flex;
         flex-direction: row-reverse;
         width: 60%;
     }
+
     .full-center {
         width: 100%;
         display: grid;
@@ -148,12 +163,14 @@ export default {
         flex-direction: column;
         justify-self: center;
     }
-    .column-div{
+
+    .column-div {
         width: 100%;
         height: 100%;
         display: grid;
         justify-content: center;
     }
+
     .intro-btn {
         margin: 5px;
     }
@@ -169,13 +186,15 @@ export default {
         width: 200px;
         margin: 10px;
     }
-    .top-bar{
+
+    .top-bar {
         width: 100%;
         height: fit-content;
         display: flex;
         flex-direction: row;
     }
-    .logo-margin{
+
+    .logo-margin {
         margin: 5px;
         width: 40%;
     }
@@ -189,17 +208,20 @@ export default {
         display: grid;
         justify-content: center;
     }
-    .top-bar{
+
+    .top-bar {
         width: 100%;
         height: fit-content;
         display: flex;
         flex-direction: row;
     }
-    .top-btn-div{
+
+    .top-btn-div {
         display: flex;
         flex-direction: row-reverse;
         width: 60vw;
     }
+
     .dialog-card-container {
         display: flex;
         justify-content: center;
@@ -239,12 +261,14 @@ export default {
         flex-direction: column;
         justify-self: center;
     }
+
     .column-btn-div {
         width: fit-content;
         display: flex;
         flex-direction: column;
         justify-self: center;
     }
+
     .intro-btn {
         margin: 5px;
     }
@@ -256,10 +280,12 @@ export default {
         display: grid;
         justify-content: center;
     }
-    .logo-margin{
+
+    .logo-margin {
         margin: 5px;
         width: 40vw;
     }
+
     .img {
         height: 200px;
         width: 200px;
