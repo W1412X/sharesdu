@@ -73,7 +73,6 @@ import { getCurrentInstance } from 'vue';
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import SensitiveTextField from './SensitiveTextField.vue';
 import { createCourse, getCourseDetail,editCourse } from '@/axios/course';
-import { getErrorMsg } from '@/axios/statusCodeMessages';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 
 export default {
@@ -142,13 +141,7 @@ export default {
                  */
                 this.close();
                 this.alert({color:'success',state:true,title:'发布成功',content:response.message});
-            }else if(response.status==-1){
-                /**
-                 * unknow/network error
-                 */
-                this.alert(getErrorMsg());
-            }
-            else{
+            }else{
                 /**
                  * failed because other reasons 
                  */

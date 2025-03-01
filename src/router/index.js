@@ -2,6 +2,7 @@
  * define routes
  * pages are imported dynamically  
  */
+import { getCookie, setCookie } from '@/utils/cookie';
 import { createRouter, createWebHashHistory } from 'vue-router';
 const routes = [
   {
@@ -92,6 +93,14 @@ const router = createRouter({
 });
 router.beforeEach((to, from, next) => {
   //test
+  setCookie("userId","0000000");
+  setCookie(("userName","W1412x王向"));
+  setCookie(("email","202200130208@sdu.edu.cn"));
+  setCookie("sessionCookie","JIDAISD6DWDO931AD");
+  console.log(getCookie("userId"));
+  console.log(getCookie("userName"));
+  console.log(getCookie("email"));
+  console.log(getCookie("sessionCookie"));
   next();
   /**
    * page need login

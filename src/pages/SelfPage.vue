@@ -111,15 +111,15 @@
       </div>
       <!-- account part  -->
       <div v-if="choose === 'account'">
-        <user-message-editor-card></user-message-editor-card>
+        <user-message-editor-card @set_loading="setLoading" @alert="alert"></user-message-editor-card>
       </div>
       <!-- setting part -->
       <div v-if="choose === 'setting'">
         <div class="column-list">
-          <v-btn to="/document/to_know" prepend-icon="mdi-bulletin-board" color="grey" variant="outlined" text="入站须知"></v-btn>
-          <v-btn to="/document/about_us" prepend-icon="mdi-information-variant" color="grey" variant="outlined" text="关于我们"></v-btn>
+          <v-btn to="/document/to_know" target="_blank" prepend-icon="mdi-bulletin-board" color="grey" variant="outlined" text="入站须知"></v-btn>
+          <v-btn to="/document/privacy" target="_blank" prepend-icon="mdi-lock-outline" color="grey" variant="outlined" text="隐私政策"></v-btn>
+          <v-btn to="/document/about_us" target="_blank" prepend-icon="mdi-information-variant" color="grey" variant="outlined" text="关于我们"></v-btn>
           <v-btn prepend-icon="mdi-account-cancel" color="grey" variant="outlined" text="黑名单"></v-btn>
-          <v-btn prepend-icon="mdi-delete-outline" color="grey" variant="outlined" text="注销账号"></v-btn>
         </div>
       </div>
     </div>
@@ -183,6 +183,12 @@ export default {
     },
     follow(name,index){
       this.followStateList[index]=!this.followStateList[index];
+    },
+    setLoading(msg){
+      this.$emit('set_loading',msg);
+    },
+    alert(msg){
+      this.$emit("alert",msg);
     }
   },
   mounted() {

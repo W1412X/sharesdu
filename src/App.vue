@@ -6,13 +6,13 @@
       <v-btn rounded="0" variant="text" color="#ffffff" icon="mdi-menu"></v-btn>
     </div>
     -->
-    <loading-view :init-data="loadMsg">
+    <loading-view :init-data="loadMsg" class="z-index-loading absolute-position">
     </loading-view>
-    <v-snackbar :timeout="3000" :color="alertMsg.color" v-model="alertMsg.state">
+    <v-snackbar class="z-index-msg absolute-position" :timeout="3000" :color="alertMsg.color" v-model="alertMsg.state">
       <div v-if="alertMsg.title" class="title">{{ alertMsg.title }}</div>
       <p v-if="alertMsg.content" class="text-medium">{{ alertMsg.content }}</p>
     </v-snackbar>
-    <router-view class="router-view" @alert="alert" @set_loading="set_loading"/>
+    <router-view class="router-view" @alert="alert" @set_loading="setLoading"/>
   </v-app>
 </template>
 <script>
@@ -55,7 +55,7 @@ export default {
     alert(msg) {
       this.alertMsg = msg;
     },
-    set_loading(msg){
+    setLoading(msg){
       this.loadMsg=msg;
     }
   },
@@ -98,6 +98,9 @@ export default {
   .router-view {
     width: 100vw;
     max-width: 100vw;
+  }
+  .absolute-position{
+    position: absolute;
   }
 }
 </style>

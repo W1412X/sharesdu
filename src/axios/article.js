@@ -8,6 +8,7 @@
  * 同时在控制台输出错误信息  
  */
 import axiosInstance from "./axios.js";
+import { getNetworkErrorResponse } from "./statusCodeMessages.js";
 
 // 创建文章函数
 export const createArticle = async (data) => {
@@ -19,7 +20,7 @@ export const createArticle = async (data) => {
         return response.data;
     } catch (error) {
         console.error('Error creating article:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -33,7 +34,7 @@ export const editArticle = async (data) => {
         return response.data;
     } catch (error) {
         console.error('Error editing article:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -48,7 +49,7 @@ export const deleteArticle = async (data) => {
         return response.data;
     } catch (error) {
         console.error('Error deleting article:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -61,7 +62,7 @@ export const getArticleDetail = async (id) => {
         return response.data;
     } catch (error) {
         console.error('Error getting article detail:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -74,7 +75,7 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
         return response.data;
     } catch (error) {
         console.error('Error getting post list by article ID:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -87,7 +88,7 @@ export const getArticleList = async (pageIndex = 1, pageSize = 20) => {
         return response.data;
     } catch (error) {
         console.error('Error getting article list:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 

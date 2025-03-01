@@ -65,10 +65,10 @@
                         :density="inputType" variant="solo-filled" label="校园邮箱(@sdu.edu.cn)"></sensitive-text-field>
                     <div class="text-small agreement-text-container">
                         注册即代表您已阅读并同意
-                        <router-link to="/document/to_know">
+                        <router-link to="/document/to_know" target="_blank">
                             <strong style="color: #0074e8; text-decoration: underline;">入站须知</strong>
                         </router-link>与
-                        <router-link to="/document/privacy">
+                        <router-link to="/document/privacy"  target="_blank">
                             <strong style="color: #0074e8; text-decoration: underline;">隐私政策</strong>
                         </router-link>
                     </div>
@@ -112,10 +112,10 @@
                         variant="solo-filled" label="输入邀请码"></sensitive-text-field>
                     <div class="text-small agreement-text-container">
                         注册即代表您已阅读并同意
-                        <router-link to="/document/to_know">
+                        <router-link to="/document/to_know" target="_blank">
                             <strong style="color: #0074e8; text-decoration: underline;">入站须知</strong>
                         </router-link>与
-                        <router-link to="/document/privacy">
+                        <router-link to="/document/privacy" target="_blank">
                             <strong style="color: #0074e8; text-decoration: underline;">隐私政策</strong>
                         </router-link>
                     </div>
@@ -147,7 +147,6 @@ import { rules } from '@/utils/rules';
 import { validateEmail, validatePassWord, validateUserName } from '@/utils/rules';
 import { /*getRegisterEmailCode*/ loginWithPassword, /*loginWithEmail, register*/ } from '@/axios/account';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
-import { getErrorMsg } from '@/axios/statusCodeMessages';
 import { setCookie } from '@/utils/cookie';
 import { csLoginByUserName } from '@/axios/api_convert/account';
 export default {
@@ -257,9 +256,7 @@ export default {
             this.$emit('set_loading',getLoadMsg('正在登陆...',-1));
             console.log(this.loadMsg);
             const response=await loginWithPassword(csLoginByUserName(this.loginByUsernameData));
-            if(response.status==-1){
-                this.alert(getErrorMsg());
-            }else if(response.status==200){
+            if(response.status==200){
                 this.alert({
                     color: 'success',
                     title: '登陆成功',
@@ -269,8 +266,8 @@ export default {
                 /**
                  * save the user message
                  */
-                setCookie('userName',response.userName);
-                setCookie('userId',response.userId);
+                setCookie('userName',response.user_name);
+                setCookie('userId',response.user_id);
                 setCookie('email',response.email);
                 /**
                  * to the index page

@@ -5,6 +5,7 @@
  * every function return a json with status code and message
  */
 import axiosInstance from "./axios";
+import { getNetworkErrorResponse } from "./statusCodeMessages";
 /**
  * Create a new course
  * @param {Object} courseData - The data of the course to be created
@@ -18,7 +19,7 @@ export const createCourse = async (courseData) => {
         return response.data;
     } catch (error) {
         console.error('Error creating course:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 /**
@@ -34,7 +35,7 @@ export const editCourse = async (courseData) => {
         return response.data;
     } catch (error) {
         console.error('Error editing course:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -51,7 +52,7 @@ export const deleteCourse = async (courseId) => {
         return response.data;
     } catch (error) {
         console.error('Error deleting course:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -68,7 +69,7 @@ export const rateCourse = async (ratingData) => {
         return response.data;
     } catch (error) {
         console.error('Error rating course:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -85,7 +86,7 @@ export const editCourseRating = async (updateData) => {
         return response.data;
     } catch (error) {
         console.error('Error editing course rating:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -102,7 +103,7 @@ export const getUserCourseEvaluation = async (evaluationData) => {
         return response.data;
     } catch (error) {
         console.error('Error fetching user evaluation:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -119,7 +120,7 @@ export const getCourseDetail = async (courseId) => {
         return response.data;
     } catch (error) {
         console.error('Error fetching course detail:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -136,7 +137,7 @@ export const getCoursePostList = async (postListData) => {
         return response.data;
     } catch (error) {
         console.error('Error fetching course post list:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -153,7 +154,7 @@ export const getCourseList = async (paginationData) => {
         return response.data;
     } catch (error) {
         console.error('Error fetching course list:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 

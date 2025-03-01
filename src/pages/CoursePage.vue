@@ -119,7 +119,6 @@ import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
 import { getCourseDetail,getUserCourseEvaluation,editCourseRating,rateCourse } from '@/axios/course';
 import { computed,ref } from 'vue';
-import { getErrorMsg } from '@/axios/statusCodeMessages';
 import { getLoadMsg } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
 export default {
@@ -202,9 +201,6 @@ export default {
          * get course detail
          */
         this.course=await getCourseDetail(this.course.course_id);
-        if(this.course.status!=200){
-            this.alert(getErrorMsg());
-        }
         /**
          * try get self comment
          * get the user id and course id

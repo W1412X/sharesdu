@@ -5,6 +5,7 @@
  * every function return a json with status code and message
  */
 import axiosInstance from "./axios.js";
+import { getNetworkErrorResponse } from "./statusCodeMessages.js";
 /**
  * 
  * @param {block user id} toUserId 
@@ -18,7 +19,7 @@ export const blockUser = async (toUserId) => {
         return response.data;
     } catch (error) {
         console.error('Error blocking user:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 /**
@@ -34,7 +35,7 @@ export const unblockUser = async (toUserId) => {
         return response.data;
     } catch (error) {
         console.error('Error unblocking user:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };
 
@@ -51,6 +52,6 @@ export const getBlockList = async (userId) => {
         return response.data;
     } catch (error) {
         console.error('Error getting block list:', error);
-        return { status: -1 };
+        return getNetworkErrorResponse();
     }
 };

@@ -5,13 +5,13 @@
  * every function return a json with status code and message
  */
 import axiosInstance from "./axios.js";
-
+import { getNetworkErrorResponse } from "./statusCodeMessages.js";
 /**
  * registe by Email
  * @param {*} data 
  * @returns 
  */
-export const register = async (data) => {
+export const registerByEmail = async (data) => {
   try {
     console.log('Request Type: POST');
     console.log('Request URL: /index/register');
@@ -20,7 +20,7 @@ export const register = async (data) => {
     return response.data;
   } catch (error) {
     console.error('Error registering:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -37,7 +37,7 @@ export const getRegisterEmailCode = async (email) => {
     return response.data;
   } catch (error) {
     console.error('Error getting register email code:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -55,7 +55,7 @@ export const loginWithPassword = async (data) => {
     return response.data;
   } catch (error) {
     console.error('Error logging in with password:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -72,7 +72,7 @@ export const getLoginEmailCode = async (email) => {
     return response.data;
   } catch (error) {
     console.error('Error getting login email code:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -90,7 +90,7 @@ export const loginWithEmail = async (data) => {
     return response.data;
   } catch (error) {
     console.error('Error logging in with email:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -106,7 +106,7 @@ export const logout = async () => {
     return response.data;
   } catch (error) {
     console.error('Error logging out:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -124,7 +124,7 @@ export const deleteAccount = async (data) => {
     return response.data;
   } catch (error) {
     console.error('Error deleting account:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -141,7 +141,7 @@ export const getDeleteAccountEmailCode = async (email) => {
     return response.data;
   } catch (error) {
     console.error('Error getting delete account email code:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -159,7 +159,7 @@ export const resetPassword = async (data) => {
     return response.data;
   } catch (error) {
     console.error('Error resetting password:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };
 
@@ -176,6 +176,6 @@ export const getResetPasswordEmailCode = async (email) => {
     return response.data;
   } catch (error) {
     console.error('Error getting reset password email code:', error);
-    return { status: -1 };
+    return getNetworkErrorResponse();
   }
 };

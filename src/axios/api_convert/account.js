@@ -65,7 +65,6 @@ export function csResetPassword(data){
     return {
         email:data.email,
         email_code:data.emailCode,
-        pass_word:data.password,
-        new_pass_word:data.passwdNew,
+        new_pass_word:data.passwd,
     }
 }

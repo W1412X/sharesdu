@@ -80,3 +80,16 @@
 .dialog{
     z-index: 9999;
 }
+
+/**
+ * prioprity of z-index
+ * 1. dialog
+ * 2. loading
+ * 3. msg
+ */
+.z-index-loading{
+    z-index: 9998;
+}
+.z-index-msg{
+    z-index: 9999;
+}

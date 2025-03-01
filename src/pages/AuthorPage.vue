@@ -74,7 +74,6 @@ import { globalProperties } from '@/main';
 import {blockUser,unblockUser} from '@/axios/block';
 import {getCancelLoadMsg, getLoadMsg} from '@/utils/other.js';
 import { getCookie } from '@/utils/cookie';
-import { getErrorMsg } from '@/axios/statusCodeMessages';
 export default{
     name:'AuthorPage',
     setup(){
@@ -168,8 +167,6 @@ export default{
                         content: response.message,
                     });
                     this.blockState=!this.blockState;
-                }else if(response.status==-1){
-                    this.alert(getErrorMsg());
                 }else{
                     /**
                      * not set yet  

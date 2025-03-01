@@ -36,9 +36,8 @@
     </v-card>
 </template>
 <script>
-import { getRegisterEmailCode,getDeleteAccountEmailCode,getLoginEmailCode,getResetPasswordEmailCode, register } from '@/axios/account';
+import { getRegisterEmailCode,getDeleteAccountEmailCode,getLoginEmailCode,getResetPasswordEmailCode, registerByEmail } from '@/axios/account';
 import { loginWithEmail,deleteAccount,resetPassword } from '@/axios/account';
-import { getErrorMsg } from '@/axios/statusCodeMessages';
 import { globalProperties } from '@/main';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { setCookie, clearAllCookies } from '@/utils/cookie';
@@ -72,13 +71,24 @@ export default {
     },
     methods: {
         async examine() {//examine the email here 
+            //check if the examine code valid 
+            if(!this.data.emailCode||this.data.emailCode.length!=6){
+                this.alert({
+                    state:true,
+                    color:'error',
+                    title:'请输入正确格式验证码',
+                    content:'验证码格式错误'
+                })
+                return;
+            }
             this.setLoading({state:true,progress:-1,text:'正在验证...'});
             var formToSubmit=this.data;
+            console.log(formToSubmit);
             var response=null;
             switch(this.data.type){
                 case 'register':
                     console.log('register');
-                    response=await register(csRegisterByEmail(formToSubmit));
+                    response=await registerByEmail(csRegisterByEmail(formToSubmit));
                     break;
                 case 'login':
                     console.log('login');
@@ -87,7 +97,7 @@ export default {
                 case 'delete_account':
                     response=await deleteAccount(csDeleteAccount(formToSubmit));
                     break;
-                case 'reset_password':
+                case 'reset_passwd':
                     response=await resetPassword(csResetPassword(formToSubmit));
                     break;
                 default:
@@ -102,8 +112,8 @@ export default {
                         /**
                          * save the user message
                          */
-                        setCookie('user_name',response.user_name);
-                        setCookie('user_id',response.user_id);
+                        setCookie('userName',response.user_name);
+                        setCookie('userId',response.user_id);
                         setCookie('email',response.email);
                         this.$router.push({ name: 'IndexPage' });
                         break;
@@ -114,13 +124,13 @@ export default {
                         clearAllCookies();
                         this.$router.push({name:"WelcomePage"});
                         break;
-                    case 'reset_password':
+                    case 'reset_passwd':
+                        this.$emit("submit",{type:"reset_passwd",state:"success"});
+                        this.$emit("close");
                         break;
                     default:
                         break;
                 }
-            }else if(response.status==-1){
-                this.alert(getErrorMsg());
             }else{
                 this.alert({
                     color:'error',
@@ -143,7 +153,7 @@ export default {
                 case 'delete_account':
                     response=await getDeleteAccountEmailCode(this.data.email);
                     break;
-                case 'reset_password':
+                case 'reset_passwd':
                     response=await getResetPasswordEmailCode(this.data.email);
                     break;
                 default:
@@ -155,13 +165,6 @@ export default {
                     color:'success',
                     title:'发送成功',
                     content:'验证码已发送至您的邮箱，请及时查看'
-                })
-            }else if(response.status==-1){
-                this.alert({
-                    state:true,
-                    color:'warning',
-                    title:'发送失败',
-                    content:'请检查您的网络连接'
                 })
             }else{
                 this.alert({
