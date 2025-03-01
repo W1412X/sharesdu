@@ -36,4 +36,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Bugs unsolved  
 - when use the rich text editor(wangeditor) in **firefox** and enter Chinese,some times the input content can not be show in the editor but appear when click enter subsequently.
-  - [wangeditor's issure](https://github.com/wangeditor-next/wangEditor-next/issues/535)  
+  - [wangeditor's issue](https://github.com/wangeditor-next/wangEditor-next/issues/535)  
