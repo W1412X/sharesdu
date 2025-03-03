@@ -22,7 +22,10 @@
             </div>
             <div class="row-div text-small-bold">
                 <div class="msg-margin msg-text">
-                    收藏量: {{ author.star }}
+                    荣誉等级: {{ author.reputationLevel }}
+                </div>
+                <div class="msg-margin msg-text">
+                    注册年份: {{ author.registrationYear }}
                 </div>
             </div>
             <!-- some bug here(wait for solving), use deviceType to solve the differences between desktop and mobile -->
@@ -74,6 +77,8 @@ import { globalProperties } from '@/main';
 import {blockUser,unblockUser} from '@/axios/block';
 import {getCancelLoadMsg, getLoadMsg} from '@/utils/other.js';
 import { getCookie } from '@/utils/cookie';
+import { getAuthorInfo } from '@/axios/account';
+import { scAuthorInfo } from '@/axios/api_convert/account';
 export default{
     name:'AuthorPage',
     setup(){
@@ -187,21 +192,46 @@ export default{
     },
     async mounted(){
         /**
-         * check the user id
-         * must contain the id params
-         * what's more,also need to ensure the id params is not as same as the user's  
+         * if the user is the author,then go to self page instead  
          */
-        if(this.$route.params.id!=null&&this.$route.params.id!=this.userId){
-            window.alert('请勿非法访问');
+        if(this.$route.params.id==getCookie("userId")){
+            this.$router.push({name:'SelfPage',params:{id:getCookie("userId")}})
+            return;
         }
         /**
+         * already ensure the id is not the author's id  
          * get the author message
-         * not set yet
          */
+        const response=await getAuthorInfo(this.$route.params.id);
+        if(response.status==200){
+            const tmp=scAuthorInfo(response.info);
+            if(tmp.blockStatus){
+                //if the user is blocked  
+                this.alert({
+                    color:"warning",
+                    title:"用户已被屏蔽",
+                    content:"用户已被屏蔽，无法查看该用户信息",
+                    state:true
+                })
+                this.$router.push({name:'ErrorPage',params:{
+                    reason:"访问的用户状态异常"
+                }});
+                return;
+            }else{
+                /**
+                 * set the got data
+                 */
+                this.author=tmp;
+            }
+        }else{
+            /**
+             * error
+             * to error page and show the alert
+             */
+            this.alert({color:"error",title:"加载失败",content:response.message,state:true})
+            this.$router.push({name:'ErrorPage',params:{reason:"无法找到此用户"}});
+        }
     },
-    created(){
-
-    }
 }
 </script>
 <style scoped>

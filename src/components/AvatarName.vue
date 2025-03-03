@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-    <div class="avatar-name">
+    <div class="avatar-name" @click="toAuthorPage">
         <div class="avatar">
             <img :src="initData.avatar" alt="">
         </div>
@@ -25,7 +25,7 @@ export default {
     methods: {
         toAuthorPage(){
             this.$router.push({
-                name: 'author',
+                name: 'AuthorPage',
                 params: {
                     name: this.initData.name
                 }

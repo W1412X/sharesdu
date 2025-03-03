@@ -6,7 +6,6 @@
     </div>
 </template>
 <script>
-import { useRoute } from 'vue-router';
 export default {
     name: 'ErrorPage',
     setup() {
@@ -21,10 +20,9 @@ export default {
     methods: {
     },
     mounted() {
-        const route = useRoute();
-        if ('reason' in route.params) {
-            console.log(route.params);
-            this.reason = route.params['reason'];
+        console.log(this.$route.params)
+        if ('reason' in this.$route.params) {
+            this.reason = this.$route.params.reason;
         }
     }
 }

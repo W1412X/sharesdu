@@ -126,13 +126,15 @@
   </div>
 </template>
 <script>
+import { getAuthorInfo } from '@/axios/account';
+import { scSelfInfo } from '@/axios/api_convert/account';
 import ArticleItem from '@/components/ArticleItem.vue';
 import AvatarName from '@/components/AvatarName.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
 import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
-import { articleItemLong, courseItemLong, messageData, postItemLong, userData } from '@/utils/data';
+import { getCookie } from '@/utils/cookie';
 import { ref } from 'vue'
 export default {
   name: 'SelfPage',
@@ -191,23 +193,50 @@ export default {
       this.$emit("alert",msg);
     }
   },
-  mounted() {
+  async mounted() {
     /**
-     * test
+     * check if the user is self
      */
-    this.user = userData;
-    for (let i = 0; i < 10; i++) {
-      this.selfArticleList.push(articleItemLong);
-      this.selfPostList.push(postItemLong);
-      this.selfCourseList.push(courseItemLong);
-      this.starArticleList.push(articleItemLong);
-      this.starPostList.push(postItemLong);
-      this.starCourseList.push(courseItemLong);
-      this.followList.push(userData);
-      this.followStateList.push(true);
-      this.messageList.push(messageData);
+    if (this.$route.params.id != getCookie("userId")) {
+      this.$router.push({ name: 'AuthorPage', params: { id: this.$route.params.id } })
+      return;
     }
+    /**
+     * get the user message
+     */
+    const response=await getAuthorInfo(this.$route.params.id);
+    if(response.status==200){
+            const tmp=scSelfInfo(response.info);
+            if(tmp.blockStatus){
+                //if the user is blocked  
+                this.alert({
+                    color:"warning",
+                    title:"您已被封禁",
+                    content:"您的账户已被封禁，请联系管理员",
+                    state:true
+                })
+                this.$router.push({name:'ErrorPage',params:{
+                    reason:"账户已被封禁至 "+String(tmp.blockEndTime)
+                }});
+                return;
+            }else{
+              /**
+               * set the got data
+               */
+              this.user=tmp;
+            }
+        }else{
+            /**
+             * error
+             * to error page and show the alert
+             */
+            this.alert({color:"error",title:"加载失败",content:response.message,state:true})
+            this.$router.push({name:'ErrorPage',params:{reason:"无法找到此用户"}});
+        }
   }
+  /**
+   * 
+   */
 }
 </script>
 <style scoped>

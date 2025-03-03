@@ -179,3 +179,20 @@ export const getResetPasswordEmailCode = async (email) => {
     return getNetworkErrorResponse();
   }
 };
+
+/**
+ * 
+ * @param {*} userId 
+ * @returns 
+ */
+export const getAuthorInfo=async(userId)=>{
+  try{
+    console.log('Request Type: GET');
+    console.log('Request URL: /homepage?user_id='+userId);
+    const response=await axiosInstance.get(`/homepage?user_id=${userId}`);
+    return response.data;
+  }catch(error){
+    console.error('Error getting author info:',error);
+    return getNetworkErrorResponse();
+  }
+}

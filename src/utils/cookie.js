@@ -7,6 +7,25 @@
  *  
  * themeColor
  */
+
+/**
+ * 
+ * @param {name of message to obtain} name 
+ * @returns 
+ */
+export function getCookie(name) {
+  const nameEQ = `${name}=`;
+  const cookies = document.cookie.split('; ');
+  for (let i = 0; i < cookies.length; i++) {
+    let cookie = cookies[i];
+    if(cookie.startsWith(nameEQ)){
+      return cookie.substring(nameEQ.length);
+    }
+  }
+  return null;
+}
+
+
 /**
  * 
  * @param {cookie name} name 
@@ -20,35 +39,16 @@ export function setCookie(name, value, hour) {
   }
   const date = new Date();
   date.setTime(date.getTime() + (hour * 60 * 60 * 1000));
-  expires = `; expires=${date.toUTCString()}`;
-  document.cookie = `${name}=${value || ''}${expires}; path=/`;
+  expires = `expires=${date.toUTCString()}`;
+  document.cookie = `${name}=${value || ''}; ${expires}; path=/; `;
+
 }
 /**
  * 
  * @param {name of message to delete} name 
  */
 export function clearCookie(name) {
-  setCookie(name, null, -1);
-}
-
-/**
- * 
- * @param {name of message to obtain} name 
- * @returns 
- */
-export function getCookie(name) {
-  const nameEQ = `${name}=`;
-  const cookies = document.cookie.split(';');
-  for (let i = 0; i < cookies.length; i++) {
-    let cookie = cookies[i];
-    while (cookie.charAt(0) === ' ') {
-      cookie = cookie.substring(1, cookie.length);
-    }
-    if (cookie.indexOf(nameEQ) === 0) {
-      return cookie.substring(nameEQ.length, cookie.length);
-    }
-  }
-  return null;
+  setCookie(name, "", -1);
 }
 
 /**

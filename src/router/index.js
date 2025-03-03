@@ -2,7 +2,7 @@
  * define routes
  * pages are imported dynamically  
  */
-import { getCookie, setCookie } from '@/utils/cookie';
+import { setCookie } from '@/utils/cookie';
 import { createRouter, createWebHashHistory } from 'vue-router';
 const routes = [
   {
@@ -57,13 +57,13 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path:'/self/:name',
+    path:'/self/:id',
     name:'SelfPage',
     component: (()=>import('@/pages/SelfPage.vue')),
     meta: { requiresAuth: true },
   },
   {
-    path:'/author/:name',
+    path:'/author/:id',
     name:'AuthorPage',
     component: (()=>import('@/pages/AuthorPage.vue')),
     meta: { requiresAuth: true },
@@ -92,19 +92,11 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from, next) => {
-  //test
-  setCookie("userId","0000000");
-  setCookie(("userName","W1412x王向"));
-  setCookie(("email","202200130208@sdu.edu.cn"));
-  setCookie("sessionCookie","JIDAISD6DWDO931AD");
-  console.log(getCookie("userId"));
-  console.log(getCookie("userName"));
-  console.log(getCookie("email"));
-  console.log(getCookie("sessionCookie"));
-  next();
-  /**
-   * page need login
-   */
+  //test 
+  setCookie("userId","000000");
+  setCookie("userName","test");
+  setCookie("email","20220013208@sdu.edu.cn");
+  //check the prioprity
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // eslint-disable-next-line
     if(true){//if store the user's message
