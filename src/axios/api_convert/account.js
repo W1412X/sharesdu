@@ -81,7 +81,6 @@ export function scAuthorInfo(data){
         info:{
             id:data.user_id,
             name:data.user_name,
-            email:data.email,
             profileUrl:data.profile_url,
             reputationLevel:data.reputation_level,
             master:data.master,

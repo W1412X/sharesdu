@@ -15,7 +15,7 @@
                     <v-btn prepend-icon="mdi-block-helper" @click="block" variant="text" :rounded="false" :color="blockState?'grey':'black'" class="load-btn">
                         {{ blockState ? '已拉黑' : '拉黑' }}
                     </v-btn>
-                    <v-btn prepend-icon="mdi-send-outline" variant="text" :rounded="false" :color="themeColor" class="load-btn">
+                    <v-btn :to="'/chat/'+String(this.author.id)" prepend-icon="mdi-send-outline" variant="text" :rounded="false" :color="themeColor" class="load-btn">
                         私信
                     </v-btn>
                 </v-card>
@@ -79,6 +79,7 @@ import {getCancelLoadMsg, getLoadMsg} from '@/utils/other.js';
 import { getCookie } from '@/utils/cookie';
 import { getAuthorInfo } from '@/axios/account';
 import { scAuthorInfo } from '@/axios/api_convert/account';
+import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 export default{
     name:'AuthorPage',
     setup(){
@@ -122,15 +123,6 @@ export default{
     methods:{
         async follow(){
             /**
-             * not set yet
-             */
-            this.alert({
-                color:'warning',
-                title:'功能尚未开放',
-                content:'关注功能并未开放，敬请期待！',
-                state:true
-            })
-            /**
              * follow state
              */
             const currentTime=new Date().getTime();
@@ -158,7 +150,7 @@ export default{
                 /**
                  * set block state
                  */
-                var response=null;
+                var response=getNetworkErrorResponse();
                 if(this.blockState){//already block  
                     response=await unblockUser(this.author.id);
                 }else{
@@ -173,9 +165,12 @@ export default{
                     });
                     this.blockState=!this.blockState;
                 }else{
-                    /**
-                     * not set yet  
-                     */
+                    this.alert({
+                        color: 'error',
+                        title: '设置失败',
+                        state: true,
+                        content: response.message,
+                    });
                 }
             }else{
                 window.alert('请勿频繁点击');
@@ -229,7 +224,7 @@ export default{
              * to error page and show the alert
              */
             this.alert({color:"error",title:"加载失败",content:response.message,state:true})
-            this.$router.push({name:'ErrorPage',params:{reason:"无法找到此用户"}});
+            //this.$router.push({name:'ErrorPage',params:{reason:"无法找到此用户"}});
         }
     },
 }

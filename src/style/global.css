@@ -93,3 +93,8 @@
 .z-index-msg{
     z-index: 9999;
 }
+
+.row-reverse{
+    display: flex;
+    flex-direction: row-reverse;
+}
