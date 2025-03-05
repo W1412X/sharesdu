@@ -24,7 +24,7 @@ export function validatePassWord(str) {
  * email rules
  */
 export function validateEmail(str) {
-    const regex = /^[A-Za-z0-9._%+-]+@sdu\.edu\.cn$/;
+    const regex = /^[A-Za-z0-9._%+-]+@mail.sdu\.edu\.cn$/;
 
     if (regex.test(str)) {
         return true;

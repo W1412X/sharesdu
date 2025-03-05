@@ -6,17 +6,16 @@ import { addDictFromString, copy, getHeadString, setDictString } from "@/utils/o
  */
 export function csCreateArticle(data) {
     var head=setDictString('editor',data.editor);
-    head=setDictString('detail',data.detail,head);
-    head=setDictString('imgLink',data.imgLink,head);
     const result={
         article_title:data.title,
         content:head+data.content,
-        tags:tags,
-        author_id:getCookie('userId'),
+        tags:tags,//divide by ,  
         article_type:data.type,
         origin_link:data.originLink,
+        resource_link:data.resourceLink,
+        cover_link:data.coverLink,
+        article_summary:data.detail,
     }
-    console.log(result);
     return result;
 }
 export function scCreateArticle(data){
@@ -32,27 +31,16 @@ export function scCreateArticle(data){
  */
 export function csEditArticle(data){
     var head=setDictString('editor',data.editor);
-    head=setDictString('detail',data.detail,head);
-    head=setDictString('imgLink',data.imgLink,head);
     const result={
+        article_id:data.id,
         article_title:data.title,
         content:head+data.content,
         tags:tags,
-        author_id:getCookie('userId'),
         article_type:data.type,
         origin_link:data.originLink,
     }
     console.log(result);
     return result;
-}
-
-/**
- * delete article
- */
-export function csDeleteArticle(data){
-    return {
-        article_id:data.id,
-    }
 }
 
 /**

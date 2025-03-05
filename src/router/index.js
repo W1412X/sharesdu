@@ -2,7 +2,7 @@
  * define routes
  * pages are imported dynamically  
  */
-import { setCookie } from '@/utils/cookie';
+import { getCookie } from '@/utils/cookie';
 import { createRouter, createWebHashHistory } from 'vue-router';
 const routes = [
   {
@@ -92,24 +92,34 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from, next) => {
-  //test 
-  setCookie("userId","000000");
-  setCookie("userName","test");
-  setCookie("email","20220013208@sdu.edu.cn");
-  //check the prioprity
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    // eslint-disable-next-line
-    if(true){//if store the user's message
+    /**
+     * if the access token exsits -> continue 
+     * else try get new one by the refresh token
+     * if refresh token not exsits -> to login page and alert  
+     */
+    if(getCookie("accessToken")){//if store the user's message
       console.log(to.path);
       if(to.path=="/login"){
-        router.push('/index');
+        router.push({name:"IndexPage"});
         return;
       }
       next();
-    }else{//visit set content need login 
-      window.alert('访问站内内容需要登陆');
-      router.push('/login');
+    }else if(getCookie("refreshToken")){ 
+      //tmp 
+      router.push({name:"LoginPage"});
+    }else{
+      router.push({name:"LoginPage"});
     }
+  }else if(to.path=="/login"){
+    /**
+     * if login,then to IndexPage
+     */
+    if(getCookie("accessToken")){
+      router.push({name:"IndexPage"});
+      return;
+    }
+    next();
   }else{//page public
     next();
   }

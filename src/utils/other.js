@@ -65,3 +65,22 @@ export function addDictFromString(string,dict=null){
 export function getHeadString(string){
     return string.split('|end|')[0]+'|end|';
 }
+
+export function dealAxiosError(error){
+    if (error.response) {
+        console.error('Error logging in with password:', error.response.status, error.response.data);
+        return error.response.data;
+      } else if (error.request) {
+        console.error('No response received from server:', error.request);
+        return {
+          status:-1,
+          message:"服务器无响应，请联系管理员"
+        }
+      } else {
+        console.error('Error during login attempt:', error.message);
+        return {
+          status:-1,
+          message:"未知错误，请联系管理员"
+        }
+      }
+}

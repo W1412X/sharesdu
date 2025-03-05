@@ -5,9 +5,9 @@
         <div class="row-reverse">
           <v-btn size="20" color="#8a8a8a" variant="text" icon="mdi-close" @click="closeDialog()"></v-btn>
         </div>
-        <div v-for="(item,index) in this.blockList" :key="index" class="block-item">
+        <div v-for="(item, index) in this.blockList" :key="index" class="block-item">
           <avatar-name :init-data="item" />
-          <v-spacer/>
+          <v-spacer />
           <v-btn @click="cancelBlock(index)" variant="text">取消拉黑</v-btn>
         </div>
       </div>
@@ -77,32 +77,16 @@
       </div>
       <!-- star part -->
       <div v-if="choose === 'star'">
-        <v-tabs v-model="starItemType" fixed-tabs class="select-bar">
-          <v-tab class="tab"
-            :style="{ background: 'rgba(255,255,255,1)', 'color': this.starItemType == 'article' ? '#000000' : '#8a8a8a' }"
-            height="40px" value="article" text="文章"></v-tab>
-          <v-tab class="tab"
-            :style="{ background: 'rgba(255,255,255,1)', 'color': this.starItemType == 'post' ? '#000000' : '#8a8a8a' }"
-            height="40px" value="post" text="帖子"></v-tab>
-          <v-tab class="tab"
-            :style="{ background: 'rgba(255,255,255,1)', 'color': this.starItemType == 'course' ? '#000000' : '#8a8a8a' }"
-            height="40px" value="course" text="课程"></v-tab>
-        </v-tabs>
-        <div v-if="starItemType == 'article'" class="item-container">
-          <article-item v-for="(item, index) in this.starArticleList" :key="index" :init-data="item">
-          </article-item>
-          <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
-        </div>
-        <div v-if="starItemType == 'post'" class="item-container">
-          <post-item v-for="(item, index) in this.starPostList" :key="index" :init-data="item">
-          </post-item>
-          <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
-        </div>
-        <div v-if="starItemType == 'course'" class="item-container">
-          <course-item v-for="(item, index) in this.starPostList" :key="index" :init-data="item">
-          </course-item>
-          <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
-        </div>
+        <v-list>
+          <v-list-group v-for="(name, index) in this.starFolders" :value="name" :key="index">
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" :title="name" :color="themeColor" rounded="shaped" prepend-icon="mdi-folder-star"></v-list-item>
+          </template>
+          <v-list-item v-for="(item, index) in this.starFolderItems[name]" v-bind:key="index">
+            <star-item  :key="index" :init-data="item"></star-item>
+          </v-list-item>
+        </v-list-group>
+        </v-list>
       </div>
       <!-- follow part  -->
       <div v-if="choose === 'follow'">
@@ -136,7 +120,8 @@
             text="隐私政策"></v-btn>
           <v-btn to="/document/about_us" target="_blank" prepend-icon="mdi-information-variant" color="grey"
             variant="outlined" text="关于我们"></v-btn>
-          <v-btn @click="setBlockListState(true)" prepend-icon="mdi-account-cancel" color="grey" variant="outlined" text="黑名单"></v-btn>
+          <v-btn @click="setBlockListState(true)" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
+            text="黑名单"></v-btn>
         </div>
       </div>
     </div>
@@ -151,11 +136,12 @@ import ArticleItem from '@/components/ArticleItem.vue';
 import AvatarName from '@/components/AvatarName.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
+import StarItem from '@/components/StarItem.vue';
 import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
-import { ref,computed } from 'vue'
+import { ref, computed } from 'vue';
 export default {
   name: 'SelfPage',
   setup() {
@@ -166,13 +152,12 @@ export default {
     const themeColor = globalProperties.$themeColor;
     const navVisible = ref(false);
     const selfItemType = ref('article');
-    const starItemType = ref('article');
-    var ifShowBlockList=ref(false);
-    var ifShowDialog=computed(()=>{
+    var ifShowBlockList = ref(false);
+    var ifShowDialog = computed(() => {
       return ifShowBlockList.value;
     });
-    const setBlockListState=((state)=>{
-      ifShowBlockList.value=state;
+    const setBlockListState = ((state) => {
+      ifShowBlockList.value = state;
     })
     return {
       drawer,
@@ -180,7 +165,6 @@ export default {
       deviceType,
       themeColor,
       selfItemType,
-      starItemType,
       choose,
       navVisible,
       ifShowBlockList,
@@ -194,6 +178,7 @@ export default {
     CourseItem,
     AvatarName,
     UserMessageEditorCard,
+    StarItem,
   },
   data() {
     return {
@@ -201,21 +186,21 @@ export default {
       selfArticleList: [],
       selfPostList: [],
       selfCourseList: [],
-      starArticleList: [],
-      starPostList: [],
-      starCourseList: [],
       followList: [],
       followStateList: [],
       messageList: [],
-      blockList:[
-        {name:"wwww",avatar:"wwww"},
-        {name:"wwww",avatar:"wwww"},
-        {name:"wwww",avatar:"wwww"},
-        {name:"wwww",avatar:"wwww"}
+      blockList: [
+        { name: "wwww", avatar: "wwww" },
+        { name: "aaaa", avatar: "wwww" },
+        { name: "bbbb", avatar: "wwww" },
+        { name: "cccc", avatar: "wwww" }
       ],
+      starFolders: ["fuck", "haah"],
+      starFolderItems: { "fuck": [{ type: "post", id: '222', title: "name", time: "xxxxxxxxx" }, { type: "article", id: '222', title: "name", time: "xxxxxxxxx" }, { type: "course", id: '222', title: "name", time: "xxxxxxxxx" }], "haah": [{ type: "post", id: '222', title: "name", time: "xxxxxxxxx" }, { type: "post", id: '222', title: "name", time: "xxxxxxxxx" }, { type: "post", id: '222', title: "name", time: "xxxxxxxxx" }] },
     }
   },
   methods: {
+
     test() {
       console.log(this.drawer);
     },
@@ -228,23 +213,24 @@ export default {
     alert(msg) {
       this.$emit("alert", msg);
     },
-    async cancelBlock(index){
-      let user=this.blockList[index];
+    async cancelBlock(index) {
+      let user = this.blockList[index];
       /**
        * here to request
        */
-      var response=getNetworkErrorResponse();
-      this.setLoading(getLoadMsg("正在处理",-1));
-      response=await unblockUser(user.id);
-      if(response.status==200){
-        this.blockList.splice(index,1);
-        this.alert({state:true,color:"success",title:"取消成功",content:"已取消拉黑用户"+String(user.name)});
-      }else{
-        this.alert({state:true,color:"error",title:"请求失败",content:response.message});
+      var response = getNetworkErrorResponse();
+      this.setLoading(getLoadMsg("正在处理", -1));
+      response = await unblockUser(user.id);
+      // eslint-disable-next-line
+      if (true) {
+        this.blockList.splice(index, 1);
+        this.alert({ state: true, color: "success", title: "取消成功", content: "已取消拉黑用户" + String(user.name) });
+      } else {
+        this.alert({ state: true, color: "error", title: "请求失败", content: response.message });
       }
       this.setLoading(getCancelLoadMsg());
     },
-    closeDialog(){
+    closeDialog() {
       this.setBlockListState(false);
     }
   },
@@ -301,10 +287,12 @@ export default {
   color: var(--theme-color);
   margin-left: 8px;
 }
+
 .dialog-card-container {
-        display: flex;
-        justify-content: center;
+  display: flex;
+  justify-content: center;
 }
+
 .load-btn {
   height: 30px;
   width: 100%;
@@ -317,13 +305,13 @@ export default {
   right: -15px;
   z-index: 100;
 }
+
 .mobile-menu-btn {
   position: fixed;
   bottom: 50%;
   left: 0px;
   z-index: 100;
 }
-
 .follow-bar {
   padding: 10px;
   display: flex;
@@ -335,7 +323,8 @@ export default {
 .setting-btn {
   width: 100%;
 }
-.block-item{
+
+.block-item {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -343,6 +332,7 @@ export default {
   margin-top: 5px;
   border-bottom: solid 1px #8a8a8a;
 }
+
 @media screen and (min-width: 600px) {
   .full-center {
     width: 100%;
@@ -351,16 +341,18 @@ export default {
     align-items: flex-start;
     height: 100%;
   }
-  .block-list-container{
+
+  .block-list-container {
     display: flex;
     flex-direction: column;
     overflow: auto;
     background-color: white;
-    padding:10px;
-    border-radius:5px;
+    padding: 10px;
+    border-radius: 5px;
     max-height: 800px;
     width: 600px;
   }
+
   .column-list {
     width: 750px;
     display: flex;
@@ -391,16 +383,18 @@ export default {
     display: flex;
     flex-direction: column;
   }
-  .block-list-container{
+
+  .block-list-container {
     display: flex;
     flex-direction: column;
     overflow: auto;
     background-color: white;
-    padding:10px;
-    border-radius:5px;
+    padding: 10px;
+    border-radius: 5px;
     max-height: 60vh;
     width: 80vw;
   }
+
   .view-container {
     width: 100vw;
   }

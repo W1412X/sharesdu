@@ -4,7 +4,7 @@
  * returns the original response message
  * every function return a json with status code and message
  */
-import axiosInstance from "./axios.js";
+import { getAxios } from "./axios.js";
 import { getNetworkErrorResponse } from "./statusCodeMessages.js";
 /**
  * 
@@ -14,8 +14,8 @@ import { getNetworkErrorResponse } from "./statusCodeMessages.js";
 export const blockUser = async (toUserId) => {
     try {
         console.log('Request Type: POST');
-        console.log('Request URL: /index/block');
-        const response = await axiosInstance.post('/index/block', { to_user_id: toUserId });
+        console.log('Request URL: /block');
+        const response = await getAxios().post('/block', { to_user_id: toUserId });
         return response.data;
     } catch (error) {
         console.error('Error blocking user:', error);
@@ -30,8 +30,8 @@ export const blockUser = async (toUserId) => {
 export const unblockUser = async (toUserId) => {
     try {
         console.log('Request Type: POST');
-        console.log('Request URL: /index/unblock');
-        const response = await axiosInstance.post('/index/unblock', { to_user_id: toUserId });
+        console.log('Request URL: /unblock');
+        const response = await getAxios().post('/unblock', { to_user_id: toUserId });
         return response.data;
     } catch (error) {
         console.error('Error unblocking user:', error);
@@ -47,8 +47,8 @@ export const unblockUser = async (toUserId) => {
 export const getBlockList = async (userId) => {
     try {
         console.log('Request Type: GET');
-        console.log('Request URL: /index/blocklist');
-        const response = await axiosInstance.get('/index/blocklist', { params: { user_id: userId } });
+        console.log('Request URL: /blocklist');
+        const response = await getAxios().get('/blocklist', { params: { user_id: userId } });
         return response.data;
     } catch (error) {
         console.error('Error getting block list:', error);

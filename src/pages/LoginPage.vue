@@ -62,7 +62,7 @@
                             :density="inputType" variant="solo-filled" label="专业"></sensitive-text-field>
                     </div>
                     <sensitive-text-field v-model="registerByEmailData.email" class="input" :rules="[loginRules.email]"
-                        :density="inputType" variant="solo-filled" label="校园邮箱(@sdu.edu.cn)"></sensitive-text-field>
+                        :density="inputType" variant="solo-filled" label="校园邮箱(@mail.sdu.edu.cn)"></sensitive-text-field>
                     <div class="text-small agreement-text-container">
                         注册即代表您已阅读并同意
                         <router-link to="/document/to_know" target="_blank">
@@ -269,11 +269,13 @@ export default {
                 setCookie('userName',response.user_name);
                 setCookie('userId',response.user_id);
                 setCookie('email',response.email);
+                setCookie('accessToken',response.access,1);
+                setCookie('refreshToken',response.refresh,7*24);
                 /**
                  * to the index page
                  */
                 this.$router.push({
-                    name: 'index',
+                    name: 'IndexPage',
                 })
             }else{
                 this.alert({

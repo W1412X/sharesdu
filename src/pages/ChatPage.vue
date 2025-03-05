@@ -28,8 +28,8 @@ export default{
         /**
          * get the user id
          */
-        const selfId=getCookie('user_id');
-        const selfName=getCookie('user_name');
+        const selfId=getCookie('userId');
+        const selfName=getCookie('userName');
         const themeColor=globalProperties.$themeColor;
         return{
             selfId,
@@ -109,7 +109,7 @@ export default{
         /**
          * get the receiver name and avatar  
          */
-
+        
         /**
          * get the chat info
          */   

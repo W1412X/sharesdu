@@ -7,7 +7,7 @@
     </v-dialog>
     <div class="full-screen">
         <div class="top-bar">
-            <v-btn to="/self/wx" icon="mdi-account-circle-outline" variant="text" color="#ffffff" size="40"></v-btn>
+            <v-btn :to="'/self/'+userId" target="_" icon="mdi-account-circle-outline" variant="text" color="#ffffff" size="40"></v-btn>
             <v-spacer></v-spacer>
             <v-text-field v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
                 variant="outlined" color="#ffffff">
@@ -73,6 +73,7 @@ import CourseEditor from '@/components/CourseEditor.vue';
 import ArticleItem from '@/components/ArticleItem.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
+import { getCookie } from '@/utils/cookie';
 export default {
     name: 'IndexPage',
     components: {
@@ -114,6 +115,7 @@ export default {
         const setNoticeState = (state) => {
             ifShowNotice.value = state;
         }
+        const userId=getCookie('userId');
         /**
          * control the item type
          * range: article,post,course
@@ -127,7 +129,8 @@ export default {
             ifShowNotice,
             setPostEditorState,
             setCourseEditorState,
-            setNoticeState
+            setNoticeState,
+            userId,
         }
     },
     data() {

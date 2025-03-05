@@ -1,9 +1,14 @@
+import { getCookie } from '@/utils/cookie';
 import axios from 'axios';
 //import { getCookie } from '@/utils/cookie';
-const axiosInstance = axios.create({
-    baseURL: 'https://api.com',//api基地址
-    withCredentials: true //跨域请求时发送cookies
-});
+export function getAxios(){
+    return axios.create({
+                baseURL: 'https://api.sharesdu.com/index/api',
+                headers: {
+                    'Authorization': 'Bearer '+getCookie("accessToken"),
+                },
+            });
+}
 //添加请求头的参数
 /*
 axiosInstance.interceptors.request.use(config => {
@@ -17,4 +22,3 @@ axiosInstance.interceptors.request.use(config => {
 }, error => {
     return Promise.reject(error);
 });*/
-export default axiosInstance;

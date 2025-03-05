@@ -115,6 +115,8 @@ export default {
                         setCookie('userName',response.user_name);
                         setCookie('userId',response.user_id);
                         setCookie('email',response.email);
+                        setCookie('accessToken',response.access,1);
+                        setCookie('refreshToken',response.refresh,7*24);
                         this.$router.push({ name: 'IndexPage' });
                         break;
                     case 'delete_account':
@@ -135,6 +137,7 @@ export default {
                 this.alert({
                     color:'error',
                     state:true,
+                    title:'验证失败',
                     content:response.message,
                 })
             }
@@ -170,14 +173,12 @@ export default {
                 this.alert({
                     state:true,
                     color:'error',
-                    title:null,
+                    title:"验证码发送失败",
                     content:response.message,
                 })
             }
             this.setLoading(getCancelLoadMsg())
-            console.log(response)
-            //show the status code   
-            //this.alert(getStatusMessage('captcha',response.status));  
+            
         },
         cancelExamine() {
             //close the examine code
