@@ -1,3 +1,5 @@
+import { getAccessToken } from "@/axios/token";
+import { clearAllCookies, getCookie, setCookie } from "./cookie";
 export function copy(json){
     return JSON.parse(JSON.stringify(json));
 }
@@ -65,12 +67,81 @@ export function addDictFromString(string,dict=null){
 export function getHeadString(string){
     return string.split('|end|')[0]+'|end|';
 }
-
-export function dealAxiosError(error){
+/**
+ * this function provide an error handler
+ * and for the accessToken expired,try to get the new one 
+ * if we can fetch by the new access token, the status is 1412   
+ * @param {*} error 
+ * @returns 
+ */
+export async function dealAxiosError(error){
+    /**
+     * got response  
+     */
     if (error.response) {
-        console.error('Error logging in with password:', error.response.status, error.response.data);
-        return error.response.data;
-      } else if (error.request) {
+        /**
+         * here check if the error is caused by the token
+         */
+        if(error.response.status==1000||error.response.status==1001){
+            /**
+             * check if the refresh token is exsits
+             * if exsits -> try to get the new access token and reload  
+             * if not -> to login page and alert
+             */
+            const refreshToken=getCookie("refreshToken");
+            if(refreshToken){
+                try{
+                    const response=await getAccessToken(refreshToken);
+                    const status=response.data.status;
+                    if(status==200){
+                        setCookie("accessToken",response.data.accesss);
+                        return {
+                            status:1412,
+                            message:"已更新access token，重新请求"
+                        }
+                    }else{
+                        /**
+                         * failed to refresh the token
+                         * despite other situations,to login page
+                         */
+                        window.alert("令牌已过期，请重新登录");
+                        clearAllCookies();
+                        window.open("/#/login");
+                        return {
+                            status: "-1",
+                            message:"重新登陆"
+                        }
+                    }
+                }catch(error){
+                    clearAllCookies();
+                    return {
+                        status: "-1",
+                        message:"重新登陆"
+                    }
+                }
+            }else{
+                /**
+                 * if the refresh key not exists too
+                 * then delete all the user message
+                 * and redirect to login page
+                 */
+                clearAllCookies();
+                window.open("/#/login");
+                return {
+                    status: "-1",
+                    message:"重新登陆"
+                }
+            }
+        }
+        /**
+         * not token error
+         */
+        return error.response.data
+      }else if (error.request) {
+        /**
+         * no response
+         * return the error message  
+         */
         console.error('No response received from server:', error.request);
         return {
           status:-1,

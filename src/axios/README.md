@@ -1,2 +1,6 @@
-## 按照后端提供的API文档的结构来编写函数  
-### 因为是重复性的工作，所以大部分函数由AI完成  
+## API PART  
+### API DOC
+[API introduction](https://github.com/zzysssigm/SDUshare)  
+
+### Some Tips  
+- dealAxiosError function is used to deal with the error of axios.

@@ -7,7 +7,7 @@
  * 在请求函数中将异常转换为状态码-1(表明为网络问题/未知错误)
  * 同时在控制台输出错误信息  
  */
-import {getAxios} from "./axios.js";
+import {getaxiosInstance} from "./axios.js";
 import { getNetworkErrorResponse } from "./statusCodeMessages.js";
 
 // 创建文章函数
@@ -16,7 +16,7 @@ export const createArticle = async (data) => {
         console.log('Request Type: POST');
         console.log('Request URL: /article/create');
         console.log('Request Data:', data);
-        const response = await getAxios().post('/article/create', data);
+        const response = await getaxiosInstance.post('/article/create', data);
         return response.data;
     } catch (error) {
         console.error('Error creating article:', error);
@@ -30,7 +30,7 @@ export const editArticle = async (data) => {
         console.log('Request Type: POST');
         console.log('Request URL: /article/edit');
         console.log('Request Data:', data);
-        const response = await getAxios().post('/article/edit', data);
+        const response = await getaxiosInstance.post('/article/edit', data);
         return response.data;
     } catch (error) {
         console.error('Error editing article:', error);
@@ -45,7 +45,7 @@ export const deleteArticle = async (data) => {
         console.log('Request Type: POST');
         console.log('Request URL: /article/delete');
         console.log('Request Data:', data);
-        const response = await getAxios().post('/article/delete', data);
+        const response = await getaxiosInstance.post('/article/delete', data);
         return response.data;
     } catch (error) {
         console.error('Error deleting article:', error);
@@ -58,7 +58,7 @@ export const getArticleDetail = async (id) => {
     try {
         console.log('Request Type: GET');
         console.log('Request URL: /article/detail?id=' + id);
-        const response = await getAxios().get('/article/detail', { params: { id } });
+        const response = await getaxiosInstance.get('/article/detail', { params: { id } });
         return response.data;
     } catch (error) {
         console.error('Error getting article detail:', error);
@@ -71,7 +71,7 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
     try {
         console.log('Request Type: GET');
         console.log('Request URL: /article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize);
-        const response = await getAxios().get('/article/post_list', { params: { id, page_index: pageIndex, page_size: pageSize } });
+        const response = await getaxiosInstance.get('/article/post_list', { params: { id, page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
         console.error('Error getting post list by article ID:', error);
@@ -84,7 +84,7 @@ export const getArticleList = async (pageIndex = 1, pageSize = 20) => {
     try {
         console.log('Request Type: GET');
         console.log('Request URL: /article/list?page_index=' + pageIndex + '&page_size=' + pageSize);
-        const response = await getAxios().get('/article/list', { params: { page_index: pageIndex, page_size: pageSize } });
+        const response = await getaxiosInstance.get('/article/list', { params: { page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
         console.error('Error getting article list:', error);

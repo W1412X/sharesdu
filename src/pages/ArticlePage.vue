@@ -187,7 +187,13 @@ export default {
         },
         closeDialog(){
             this.setPostEditorState(false);
-        }
+        },
+        alert(msg){
+            this.$emit("alert",msg);
+        },
+        setLoading(msg){
+            this.$emit("set_loading",msg);
+        },
     },
     mounted() {
         /**

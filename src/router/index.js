@@ -54,7 +54,7 @@ const routes = [
     path:'/editor',
     name:'EditorPage',
     component: (()=>import('@/pages/EditorPage.vue')),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path:'/self/:id',
@@ -91,35 +91,36 @@ const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
   routes,
 });
+/**
+ * it seems like that it's unneccessary to check the token here  
+ * when request is made,the token will be checked in @/utils/others/dealAxiosError
+ * so we just check if the cookie exsits here  
+ */
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     /**
-     * if the access token exsits -> continue 
-     * else try get new one by the refresh token
-     * if refresh token not exsits -> to login page and alert  
+     * we just judge if refreshToken here
+     * and about the accessToken obtain deal in the api  
      */
-    if(getCookie("accessToken")){//if store the user's message
-      console.log(to.path);
-      if(to.path=="/login"){
-        router.push({name:"IndexPage"});
-        return;
-      }
+    if(getCookie("refreshToken")){
       next();
-    }else if(getCookie("refreshToken")){ 
-      //tmp 
-      router.push({name:"LoginPage"});
     }else{
+      window.alert("令牌已过期，请重新登录");
       router.push({name:"LoginPage"});
     }
   }else if(to.path=="/login"){
     /**
      * if login,then to IndexPage
      */
-    if(getCookie("accessToken")){
+    console.log("login");
+    if(getCookie("refreshToken")){
+      window.alert("您已经登录");
       router.push({name:"IndexPage"});
       return;
+    }else{
+      //to login page  
+      next();
     }
-    next();
   }else{//page public
     next();
   }

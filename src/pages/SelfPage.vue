@@ -221,8 +221,7 @@ export default {
       var response = getNetworkErrorResponse();
       this.setLoading(getLoadMsg("正在处理", -1));
       response = await unblockUser(user.id);
-      // eslint-disable-next-line
-      if (true) {
+      if (response.status == 200) {
         this.blockList.splice(index, 1);
         this.alert({ state: true, color: "success", title: "取消成功", content: "已取消拉黑用户" + String(user.name) });
       } else {

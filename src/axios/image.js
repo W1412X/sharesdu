@@ -1,7 +1,7 @@
 /**
  * this document provide all the image relevent request  
  */
-import {getAxios} from "./axios.js";
+import {getaxiosInstance} from "./axios.js";
 import { getNetworkErrorResponse } from "./statusCodeMessages";
 
 /**
@@ -17,7 +17,7 @@ export const uploadProfileImage = async (image) => {
         console.log('Request Type: POST');
         console.log('Request URL: /image/profile');
 
-        const response = await getAxios().post('/image/profile', formData);
+        const response = await getaxiosInstance().post('/image/profile', formData);
 
         return response.data;
     } catch (error) {
@@ -39,7 +39,7 @@ export const uploadArticleImage = async (image) => {
         console.log('Request Type: POST');
         console.log('Request URL: /image/article');
 
-        const response = await getAxios().post('/image/article', formData);
+        const response = await getaxiosInstance().post('/image/article', formData);
 
         return response.data;
     } catch (error) {

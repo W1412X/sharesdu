@@ -115,7 +115,6 @@ export default {
                         setCookie('userName',response.user_name);
                         setCookie('userId',response.user_id);
                         setCookie('email',response.email);
-                        setCookie('accessToken',response.access,1);
                         setCookie('refreshToken',response.refresh,7*24);
                         this.$router.push({ name: 'IndexPage' });
                         break;

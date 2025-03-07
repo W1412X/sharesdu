@@ -24,7 +24,7 @@
                 :init-data="mdData"
                 v-if="editorType=='md'"
             ></md-editor>
-            <editor-bar></editor-bar>
+            <editor-bar ref="editorBarRef" @set_loading="setLoading" @alert="alert"></editor-bar>
             <v-btn class="submit-btn" :color="themeColor" variant="outlined">发布文章</v-btn>
         </v-card>
     </div>
@@ -90,7 +90,13 @@ export default {
             /**
              * get the bar data and post  
              */
-            
+            console.log(this.$refs.editorBarRef.$data);
+        },
+        alert(msg){
+            this.$emit('alert',msg);
+        },
+        setLoading(msg){
+            this.$emit('set_loading',msg);
         }
     },
     async mounted() {
@@ -99,13 +105,7 @@ export default {
          * if yes, get the data and set the data,which means editing 
          * else do nothing
          */
-        if(this.$route.params.id!=null){
-            //this.data=await getArticleDetail(this.$route.params.id);
-            this.htmlData.content=this.data.content;
-            this.mdData.content=this.data.content;
-        }else{
-            //eslint-disable-next-line no-console
-        }
+        console.log("ss")
     }
 }
 </script>

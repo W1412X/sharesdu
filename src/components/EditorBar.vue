@@ -79,7 +79,7 @@
                                 原创
                             </v-btn>
                             <v-btn variant="tonal" :color="data.type == '转载' ? themeColor : '#8a8a8a'"
-                                :style="{ 'margin': '5px', 'width': '20px', 'height': '25px' }" @click="type.type = '转载'">
+                                :style="{ 'margin': '5px', 'width': '20px', 'height': '25px' }" @click="data.type = '转载'">
                                 转载
                             </v-btn>
 
@@ -113,6 +113,7 @@ import SensitiveTextArea from './SensitiveTextArea.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
 import SensitiveTextField from './SensitiveTextField.vue';
+import { getLoadMsg } from '@/utils/other';
 export default {
     name: 'EditorBar',
     props: {
@@ -174,15 +175,13 @@ export default {
             /**
              * select image, upload the image in editor page
              * tmporarily disable select image due to server resource limit */  
-            this.alert({ state: true, title: "此功能暂未开放", content: "服务器资源限制，暂不支持上传文章封面图片，敬请期待！", color: 'warning' });
+            this.setLoading(getLoadMsg('上传封面中...',-1));
+
         },
         handleFileChange(event) {
             /**
              * only select file, upload the file in editor page
              */
-            this.alert({ state: true, title: "此功能暂未开放", content: "服务器资源限制，暂不支持上传附加资源，您可以在山大云盘或者其他平台上传相关资源，在文章中附加相关链接，敬请期待！", color: 'warning' });
-            this.file = null;
-            return;
             // temporarily disable uploading resources
             // eslint-disable-next-line
             const selectedFile = event.target.files[0]
@@ -211,7 +210,8 @@ export default {
               
             const fileForm = new FormData();
             fileForm.append('file', this.file)
-            this.file = selectedFile
+            this.file = selectedFile;
+            
         },
         addTag() {
             if(this.data.tags==null){
@@ -226,8 +226,15 @@ export default {
             /**
              * tag can only contain chinese and english
              */
-            const validTagPattern = /^[a-zA-Z\u4e00-\u9fa5]+$/; // 允许的字符范围
+             const validTagPattern = /^[a-zA-Z0-9\u4e00-\u9fa5]+$/;
             if (!validTagPattern.test(this.inputingTag)) {
+                const msg={
+                    state:true,
+                    title:"标签只能包含中文、英文以及数字",
+                    content:"",
+                    color:"warning"
+                }
+                this.alert(msg);
                 return;
             }
             /**
@@ -290,6 +297,9 @@ export default {
         },
         alert(msg) {
             this.$emit('alert', msg);
+        },
+        setLoading(msg) {
+            this.$emit('set_loading', msg);
         },
     },
     created(){

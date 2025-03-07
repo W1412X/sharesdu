@@ -5,7 +5,7 @@
  * every function return a json with status code and message
  */
 import { dealAxiosError } from "@/utils/other.js";
-import {getAxios} from "./axios.js";
+import {getaxiosInstance} from "./axios.js";
 /**
  * registe by Email
  * @param {*} data 
@@ -16,11 +16,16 @@ export const registerByEmail = async (data) => {
     console.log('Request Type: POST');
     console.log('Request URL: /register');
     console.log('Request Data:', data);
-    const response = await getAxios().post('/register', data);
+    const response = await getaxiosInstance().post('/register', data);
     return response.data;
   } catch (error) {
     console.error('Error registering:', error);
-    return dealAxiosError(error);
+    let dealResult=await dealAxiosError(error);
+    //which means the error caused by the token and have refreshed it
+    if(dealResult.status==1412){
+      return await registerByEmail(data);
+    }
+    return dealResult;
   }
 };
 
@@ -33,11 +38,15 @@ export const getRegisterEmailCode = async (email) => {
   try {
     console.log('Request Type: GET');
     console.log('Request URL: /register?send_code=1&email=' + email);
-    const response = await getAxios().get(`/register?send_code=1&email=${email}`);
+    const response = await getaxiosInstance().get(`/register?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
     console.error('Error getting register email code:', error);
-    return dealAxiosError(error);
+    let dealResult=await dealAxiosError(error);
+    if(dealResult.status==1412){
+      return await getRegisterEmailCode(email);
+    }
+    return dealResult;
   }
 };
 
@@ -51,10 +60,15 @@ export const loginWithPassword = async (data) => {
     console.log('Request Type: POST');
     console.log('Request URL: /login_passwd');
     console.log('Request Data:', data);
-    const response = await getAxios().post('/login_passwd', data);
+    const response = await getaxiosInstance().post('/login_passwd', data);
     return response.data;
   } catch (error) {
-    return dealAxiosError(error);
+    console.log('Error logging in:',error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await loginWithPassword(data);
+    }
+    return dealResult;
   }
 };
 
@@ -67,11 +81,15 @@ export const getLoginEmailCode = async (email) => {
   try {
     console.log('Request Type: GET');
     console.log('Request URL: /login_email?send_code=1&email=' + email);
-    const response = await getAxios().get(`/login_email?send_code=1&email=${email}`);
+    const response = await getaxiosInstance().get(`/login_email?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
     console.error('Error getting login email code:', error);
-    return dealAxiosError(error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await getLoginEmailCode(email);
+    }
+    return dealResult;
   }
 };
 
@@ -85,11 +103,15 @@ export const loginWithEmail = async (data) => {
     console.log('Request Type: POST');
     console.log('Request URL: /login_email');
     console.log('Request Data:', data);
-    const response = await getAxios().post('/login_email', data);
+    const response = await getaxiosInstance().post('/login_email', data);
     return response.data;
   } catch (error) {
     console.error('Error logging in with email:', error);
-    return dealAxiosError(error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await loginWithEmail(data);
+    }
+    return dealResult;
   }
 };
 
@@ -101,11 +123,15 @@ export const logout = async () => {
   try {
     console.log('Request Type: POST');
     console.log('Request URL: /logout');
-    const response = await getAxios().post('/logout');
+    const response = await getaxiosInstance().post('/logout');
     return response.data;
   } catch (error) {
     console.error('Error logging out:', error);
-    return dealAxiosError(error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await logout();
+    }
+    return dealResult;
   }
 };
 
@@ -119,11 +145,15 @@ export const deleteAccount = async (data) => {
     console.log('Request Type: POST');
     console.log('Request URL: /delete_account');
     console.log('Request Data:', data);
-    const response = await getAxios().post('/delete_account', data);
+    const response = await getaxiosInstance().post('/delete_account', data);
     return response.data;
   } catch (error) {
     console.error('Error deleting account:', error);
-    return dealAxiosError(error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await deleteAccount(data);
+    }
+    return dealResult;
   }
 };
 
@@ -136,11 +166,15 @@ export const getDeleteAccountEmailCode = async (email) => {
   try {
     console.log('Request Type: GET');
     console.log('Request URL: /delete_account?send_code=1&email=' + email);
-    const response = await getAxios().get(`/delete_account?send_code=1&email=${email}`);
+    const response = await getaxiosInstance().get(`/delete_account?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
     console.error('Error getting delete account email code:', error);
-    return dealAxiosError(error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await getDeleteAccountEmailCode(email);
+    }
+    return dealResult;
   }
 };
 
@@ -154,11 +188,15 @@ export const resetPassword = async (data) => {
     console.log('Request Type: POST');
     console.log('Request URL: /reset_password');
     console.log('Request Data:', data);
-    const response = await getAxios().post('/reset_password', data);
+    const response = await getaxiosInstance().post('/reset_password', data);
     return response.data;
   } catch (error) {
     console.error('Error resetting password:', error);
-    return dealAxiosError(error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await resetPassword(data);
+    }
+    return dealResult;
   }
 };
 
@@ -171,11 +209,15 @@ export const getResetPasswordEmailCode = async (email) => {
   try {
     console.log('Request Type: GET');
     console.log('Request URL: /reset_password?send_code=1&email=' + email);
-    const response = await getAxios().get(`/reset_password?send_code=1&email=${email}`);
+    const response = await getaxiosInstance().get(`/reset_password?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
     console.error('Error getting reset password email code:', error);
-    return dealAxiosError(error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await getResetPasswordEmailCode(email);
+    }
+    return dealResult;
   }
 };
 
@@ -188,10 +230,14 @@ export const getAuthorInfo=async(userId)=>{
   try{
     console.log('Request Type: GET');
     console.log('Request URL: /homepage?user_id='+userId);
-    const response=await getAxios().get(`/homepage?user_id=${userId}`);
+    const response=await getaxiosInstance().get(`/homepage?user_id=${userId}`);
     return response.data;
   }catch(error){
     console.error('Error getting author info:',error);
-    return dealAxiosError(error);
+    let dealResult = await dealAxiosError(error);
+    if(dealResult.code==1412){
+      return await getAuthorInfo(userId);
+    }
+    return dealResult;
   }
 }

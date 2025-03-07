@@ -153,6 +153,7 @@ export default{
                 var response=getNetworkErrorResponse();
                 if(this.blockState){//already block  
                     response=await unblockUser(this.author.id);
+                    
                 }else{
                     response=await blockUser(this.author.id);
                 }
