@@ -1,7 +1,7 @@
 /**
  * 
- * @param {File objects} file 
- * @param {The size of the target compressed image} size 
+ * @param {File} file 
+ * @param {int} size 
  * @returns 
  */
 export const compressImage = async (file, size) => {

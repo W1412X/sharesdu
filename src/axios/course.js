@@ -14,9 +14,9 @@ import { getaxiosInstance } from "./axios";
 export const createCourse = async (data) => {
     try {
         console.log('Request Type: POST');
-        console.log('Request URL: /index/api/course/create');
+        console.log('Request URL: /course/create');
         console.log('Request Data:', data);
-        const response = await getaxiosInstance().post('/index/api/course/create', data);
+        const response = await getaxiosInstance().post('/course/create', data);
         return response.data;
     } catch (error) {
         console.error('Error creating course:', error);
@@ -36,9 +36,9 @@ export const createCourse = async (data) => {
 export const editCourse = async (data) => {
     try {
         console.log('Request Type: POST');
-        console.log('Request URL: /index/api/course/edit');
+        console.log('Request URL: /course/edit');
         console.log('Request Data:', data);
-        const response = await getaxiosInstance().post('/index/api/course/edit', data);
+        const response = await getaxiosInstance().post('/course/edit', data);
         return response.data;
     } catch (error) {
         console.error('Error editing course:', error);
@@ -59,9 +59,9 @@ export const deleteCourse = async (courseId) => {
     try {
         const data = { course_id: courseId };
         console.log('Request Type: POST');
-        console.log('Request URL: /index/api/course/delete');
+        console.log('Request URL: /course/delete');
         console.log('Request Data:', data);
-        const response = await getaxiosInstance().post('/index/api/course/delete', data);
+        const response = await getaxiosInstance().post('/course/delete', data);
         return response.data;
     } catch (error) {
         console.error('Error deleting course:', error);
@@ -81,9 +81,9 @@ export const deleteCourse = async (courseId) => {
 export const rateCourse = async (data) => {
     try {
         console.log('Request Type: POST');
-        console.log('Request URL: /index/api/course/rate');
+        console.log('Request URL: /course/rate');
         console.log('Request Data:', data);
-        const response = await getaxiosInstance().post('/index/api/course/rate', data);
+        const response = await getaxiosInstance().post('/course/rate', data);
         return response.data;
     } catch (error) {
         console.error('Error rating course:', error);
@@ -104,9 +104,9 @@ export const rateCourse = async (data) => {
 export const editCourseRating = async (data) => {
     try {
         console.log('Request Type: POST');
-        console.log('Request URL: /index/api/course/edit_rating');
+        console.log('Request URL: /course/edit_rating');
         console.log('Request Data:', data);
-        const response = await getaxiosInstance().post('/index/api/course/edit_rating', data);
+        const response = await getaxiosInstance().post('/course/edit_rating', data);
         return response.data;
     } catch (error) {
         console.error('Error editing course rating:', error);
@@ -127,9 +127,9 @@ export const editCourseRating = async (data) => {
 export const getUserCourseEvaluation = async (data) => {
     try {
         console.log('Request Type: POST');
-        console.log('Request URL: /index/api/course/user_evaluation');
+        console.log('Request URL: /course/user_evaluation');
         console.log('Request Data:', data);
-        const response = await getaxiosInstance().post('/index/api/course/user_evaluation', data);
+        const response = await getaxiosInstance().post('/course/user_evaluation', data);
         return response.data;
     } catch (error) {
         console.error('Error getting user course evaluation:', error);
@@ -150,9 +150,9 @@ export const getUserCourseEvaluation = async (data) => {
 export const getCourseDetail = async (courseId) => {
     try {
         console.log('Request Type: GET');
-        console.log('Request URL: /index/api/course/detail');
+        console.log('Request URL: /course/detail');
         console.log('Request Params:', { course_id: courseId });
-        const response = await getaxiosInstance().get('/index/api/course/detail', { params: { course_id: courseId } });
+        const response = await getaxiosInstance().get('/course/detail', { params: { course_id: courseId } });
         return response.data;
     } catch (error) {
         console.error('Error getting course detail:', error);
@@ -164,5 +164,26 @@ export const getCourseDetail = async (courseId) => {
     }
 };
 
-
-
+/**
+ * get course evaluation list
+ * @param {int} courseId 
+ * @param {int} pageIndex 
+ * @param {int} pageSize 
+ * @returns 
+ */
+export const getCourseEvaluationList = async (courseId,pageIndex,pageSize=20) => {
+    try {
+        console.log('Request Type: GET');
+        console.log('Request URL: /course/score_list');
+        console.log('Request Params:', { course_id: courseId,page_index:pageIndex,page_size:pageSize });
+    const response = await getaxiosInstance().get('/course/score_list', { params: { course_id: courseId,page_index:pageIndex,page_size:pageSize } });
+        return response.data;
+    } catch (error) {
+        console.error('Error getting course evaluate list:', error);
+        let dealResult = await dealAxiosError(error);
+        if (dealResult.status == 1412) {
+            return await getCourseEvaluationList(courseId);
+        }
+        return dealResult;
+    }
+};

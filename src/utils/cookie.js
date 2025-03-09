@@ -9,8 +9,8 @@
  */
 
 /**
- * 
- * @param {name of message to obtain} name 
+ * get the given name's value
+ * @param {String} name 
  * @returns 
  */
 export function getCookie(name) {
@@ -28,9 +28,9 @@ export function getCookie(name) {
 
 /**
  * 
- * @param {cookie name} name 
- * @param {cookie value} value 
- * @param {expiration hour} hour 
+ * @param {String} name 
+ * @param {String} value 
+ * @param {int} hour 
  */
 export function setCookie(name, value, hour) {
   let expires = '';
@@ -45,14 +45,14 @@ export function setCookie(name, value, hour) {
 }
 /**
  * 
- * @param {name of message to delete} name 
+ * @param {String} name 
  */
 export function clearCookie(name) {
   setCookie(name, "", -1);
 }
 
 /**
- * delete all cookie
+ * clear all cookies
  */
 export function clearAllCookies() {
   const cookies = document.cookie.split(';');

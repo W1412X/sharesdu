@@ -3,7 +3,7 @@
         <div class="dialog-card-container">
             <v-card v-if="ifShowCommentEditor" class="comment-editor-card">
                 <div class="title-bold">评价此课程</div>
-                <v-rating :model-value="selfComment.score" size="small" density="compact" style="margin: 0px; padding: 0px"
+                <v-rating v-model="selfComment.score" size="medium" density="compact" style="margin: 0px; padding: 0px"
                     color="#9c0c13" :disabled="false"></v-rating>
                 <sensitive-text-area style="margin-top: 10px;" label="添加对此课程的评价(老师，课程难度，作业，意义)" variant="outlined" v-model="selfComment.comment"></sensitive-text-area>
                 <div class="dialog-bottom-bar">
@@ -23,12 +23,14 @@
                     <v-spacer></v-spacer>
                     <v-icon class="icon-right-5px comment-icon-div" icon="mdi-comment" size="20" color="grey"></v-icon>
                     <div class="text-medium top-bar-text">
-                        {{ course.comment }}
+                        {{ course.commentNum }}
                     </div>
+                    <!--
                     <v-icon class="icon-right-5px" icon="mdi-star" size="22" color="grey"></v-icon>
                     <div class="text-medium top-bar-text">
                         {{ course.star }}
                     </div>
+                    -->
                 </div>
                 <div class="msg-container">
                     <div class="row-div">
@@ -39,7 +41,10 @@
                             授课教师:{{ course.teacher }}
                         </div>
                         <div class="msg-item">
-                            教学方式:{{ course.attend }}
+                            教学方式:{{ course.attendMethod }}
+                        </div>
+                        <div class="msg-item">
+                            学分:{{ course.credits }}
                         </div>
                     </div>
                     <div class="row-div">
@@ -50,7 +55,7 @@
                             开设学院:{{ course.college }}
                         </div>
                         <div class="msg-item">
-                            考核方式:{{ course.examine }}
+                            考核方式:{{ course.examineMethod }}
                         </div>
                     </div>
                 </div>
@@ -79,23 +84,23 @@
                 </div>
                 <v-card class="self-comment-container-card" elevation="0">
                     <div class="row-div">
-                        <v-rating :model-value="selfComment.score" density="compact" :color="selfComment.user_id===null?'#8a8a8a':themeColor" :disabled="true"></v-rating>
+                        <v-rating v-model="selfComment.score" density="compact" :color="selfComment.score===null?'#8a8a8a':themeColor" :disabled="true"></v-rating>
                         <v-spacer />
-                        <div v-if="selfComment.user_id===null" class="title-bold text1">
+                        <div v-if="oriSelfComment.score===null" class="title-bold text1">
                             暂未评价此课程
                         </div>
-                        <div v-if="selfComment.user_id!==null" class="title-bold text1">
+                        <div v-if="oriSelfComment.score!==null" class="title-bold text1">
                             我的评论
                         </div>
                     </div>
-                    <div v-if="selfComment.user_id!==null" class="text-medium self-comment-text">
+                    <div v-if="oriSelfComment.score!==null" class="text-medium self-comment-text">
                         {{ selfComment.comment }}
                     </div>
                     <v-btn @click="setCommentEditorState(true)" class="add-comment-btn" variant="tonal" :color="themeColor">
-                        <div v-if="selfComment.user_id===null" class="title-medium-bold">
+                        <div v-if="oriSelfComment.score===null" class="title-medium-bold">
                             评价此课程
                         </div>
-                        <div v-if="selfComment.user_id!==null" class="title-medium-bold">
+                        <div v-if="oriSelfComment.score!==null" class="title-medium-bold">
                             修改我的评价
                         </div>
                     </v-btn>
@@ -108,6 +113,7 @@
                         :key="index"    
                     ></course-comment>
                 </div>
+                <v-btn class="load-more-btn" variant="tonal" @click="getCourseCommentList()">加载更多</v-btn>
             </div>
         </div>
     </div>
@@ -117,10 +123,11 @@ import CourseComment from '@/components/CourseComment.vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
-import { getCourseDetail,getUserCourseEvaluation,editCourseRating,rateCourse } from '@/axios/course';
+import { getCourseDetail,getUserCourseEvaluation,editCourseRating,rateCourse, getCourseEvaluationList } from '@/axios/course';
 import { computed,ref } from 'vue';
-import { getLoadMsg } from '@/utils/other';
+import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
+import { scCourseDetail, scCourseSelfComment } from '@/axios/api_convert/course';
 export default {
     name: 'CoursePage',
     components: {
@@ -154,34 +161,86 @@ export default {
     data() {
         return {
             course: {
-                course_id: null,
-                course_name: null,
-                course_type: null,
+                id: null,
+                name: null,
+                type: null,
                 campus: null,
                 college: null,
-                course_teacher: null,
-                assessment_method: null,//examine method
-                course_method: null,//attend class method
+                teacher: null,
+                credits:null,
+                examineMethod: null,//examine method
+                attendMethod: null,//attend class method
                 score: null,
                 scores: null,//array from 1 to 5 []
-                all_people: null,
+                commentNum: null,
                 star: null,//wait to do
+                publishTime:null,
+                relative_articles:null,//list
             },
             selfComment: {
-                user_id: null,
-                course_id: null,
+                score:null,
+                comment: null,
+            },
+            oriSelfComment:{
                 score:null,
                 comment: null,
             },
             courseComments: [],
+            commentPageNum:1,
 
         }
     },
     methods: {
-        submitComment(){
-            /**
-             * submit commit
-             */
+        async submitComment(){
+            if(this.selfComment.score==0||this.selfComment.score==null){
+                this.alert({
+                    state:true,
+                    color:'warning',
+                    title:'评分失败',
+                    content:'请选择您的评分',
+                })
+                return;
+            }
+            if(this.selfComment.comment==null||this.selfComment.comment.length<5){
+                this.alert({
+                    state:true,
+                    color:'warning',
+                    title:'评分失败',
+                    content:'评论不可以少于5个字符',
+                })
+                return;
+            }
+            this.setLoading(getLoadMsg("正在提交您的评分...",-1));
+            let response=null;
+            if(this.selfComment.score!==null){
+                //self evaluated  
+                response=await editCourseRating({
+                    course_id:this.course.id,
+                    score:this.selfComment.score,
+                    comment:this.selfComment.comment
+                })
+                this.setLoading(getCancelLoadMsg());
+            }else{
+                //unevaluated  
+                response=await rateCourse({
+                    course_id:this.course.id,
+                    score:this.selfComment.score,
+                    comment:this.selfComment.comment,
+                })
+                this.setLoading(getCancelLoadMsg());
+            }
+            if(response.status==200){
+                this.oriSelfComment=copy(this.selfComment);
+                this.alert({
+                    state:true,
+                    color:'success',
+                    title:'提交成功',
+                    content:response.message,
+                })
+            }else{
+                this.selfComment=copy(this.oriSelfComment);
+                this.alert(getNormalErrorAlert(response.message));
+            }
             this.setCommentEditorState(false);
         },
         alert(msg){
@@ -190,31 +249,65 @@ export default {
         setLoading(msg){
             this.$emit('set_loading',msg);
         },
+        async getSelfComment(){
+            this.setLoading(getLoadMsg("正在加载您的评分...", -1));
+            let response=await getUserCourseEvaluation({
+                user_id:getCookie("userId"),
+                course_id:this.course.id,
+            })
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200){
+                this.selfComment=scCourseSelfComment(response);
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
+        },
+        async getCourseCommentList(){
+            this.setLoading(getLoadMsg("正在获取评分列表...",-1));
+            let response=await getCourseEvaluationList(
+                this.course.id,
+                this.commentPageNum,
+            )
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200){
+                /**
+                 * add the comment in to the list and add the page  
+                 */
+                 for(let ind=0;ind<response.score_list.length;ind++){
+                     this.commentList.push(response.score_list[ind]);
+                 }
+                 this.commentPageNum++;
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
+        }
     },
     async mounted() {
         /**
          * get the course id from the url
          */
-        this.course.course_id = this.$route.params.id;
+        this.course.id = this.$route.params.id;
         this.setLoading(getLoadMsg('正在获取课程信息...',-1))
         /**
          * get course detail
          */
-        this.course=await getCourseDetail(this.course.course_id);
+        let response=await getCourseDetail(this.course.id);
+        this.setLoading(getCancelLoadMsg());
+        if(response.status==200){
+            response=scCourseDetail(response);
+            this.course=response.detail;
+        }else{
+            this.alert(getNormalErrorAlert(response.message));
+            //this.$router.push({name:"ErrorPage",reason:"课程信息获取失败"})
+            return;
+        }
         /**
-         * try get self comment
-         * get the user id and course id
-         * and the get the user's comment
+         * get the self comment  
          */
-        var user_id=getCookie('user_id');
-        this.selfComment=await getUserCourseEvaluation({user_id:user_id,course_id:this.course.course_id});
-        /**
-         * get course comments
-         */
-        
-        /**
-         * get 
-         */
+        await this.getSelfComment();
+        await this.getCourseCommentList();
+        this.oriSelfComment=copy(this.selfComment);
+        console.log(this.oriSelfComment);
 
     },
 }
@@ -261,7 +354,9 @@ export default {
     display: flex;
     flex-direction: column;
 }
-
+.load-more-btn{
+    width: 100%;
+}
 .dialog-card-container {
     display: flex;
     justify-content: center;

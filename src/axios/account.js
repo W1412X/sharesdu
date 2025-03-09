@@ -8,7 +8,7 @@ import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
 /**
  * registe by Email
- * @param {*} data 
+ * @param {JSON} data 
  * @returns 
  */
 export const registerByEmail = async (data) => {
@@ -31,7 +31,7 @@ export const registerByEmail = async (data) => {
 
 /**
  * get the email exmaine code 
- * @param {*} email 
+ * @param {String} email 
  * @returns 
  */
 export const getRegisterEmailCode = async (email) => {
@@ -52,7 +52,7 @@ export const getRegisterEmailCode = async (email) => {
 
 /**
  * login with username 
- * @param {*} data 
+ * @param {JSON} data 
  * @returns 
  */
 export const loginWithPassword = async (data) => {
@@ -74,7 +74,7 @@ export const loginWithPassword = async (data) => {
 
 /**
  * get login email code 
- * @param {*} email 
+ * @param {String} email 
  * @returns 
  */
 export const getLoginEmailCode = async (email) => {
@@ -95,7 +95,7 @@ export const getLoginEmailCode = async (email) => {
 
 /**
  * login with email 
- * @param {*} data 
+ * @param {JSON} data 
  * @returns 
  */
 export const loginWithEmail = async (data) => {
@@ -137,7 +137,7 @@ export const logout = async () => {
 
 /**
  * delete account
- * @param {*} data 
+ * @param {JSON} data 
  * @returns 
  */
 export const deleteAccount = async (data) => {
@@ -159,7 +159,7 @@ export const deleteAccount = async (data) => {
 
 /**
  * get email code to delete account 
- * @param {*} email 
+ * @param {String} email 
  * @returns 
  */
 export const getDeleteAccountEmailCode = async (email) => {
@@ -180,7 +180,7 @@ export const getDeleteAccountEmailCode = async (email) => {
 
 /**
  * reset passwd 
- * @param {*} data 
+ * @param {JSON} data 
  * @returns 
  */
 export const resetPassword = async (data) => {
@@ -202,7 +202,7 @@ export const resetPassword = async (data) => {
 
 /**
  * get the email code to reset passwd
- * @param {*} email 
+ * @param {String} email 
  * @returns 
  */
 export const getResetPasswordEmailCode = async (email) => {
@@ -223,7 +223,7 @@ export const getResetPasswordEmailCode = async (email) => {
 
 /**
  * 
- * @param {*} userId 
+ * @param {String} userId 
  * @returns 
  */
 export const getAuthorInfo=async(userId)=>{

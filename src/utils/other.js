@@ -1,10 +1,18 @@
 import { getAccessToken } from "@/axios/token";
 import { clearAllCookies, getCookie, setCookie } from "./cookie";
+/**
+ * a deep copy function for json object
+ * @param {json} json 
+ * @returns 
+ */
 export function copy(json){
     return JSON.parse(JSON.stringify(json));
 }
 /**
  * a method to change the loading view
+ * @param {String} text load message
+ * @param {int} progress always -1 if there's no progress requirement 
+ * @returns 
  */
 export function getLoadMsg(text,progress){
     return{
@@ -27,9 +35,9 @@ export function getCancelLoadMsg(){
 /**
  * add key-value to string
  * key and value must be string type  
- * @param {key} key  
- * @param {value} value  
- * @param {the original string} string
+ * @param {String} key  
+ * @param {String} value  
+ * @param {String} string
  * @returns the new string
  */
 export function setDictString(key,value,string=null){
@@ -43,8 +51,8 @@ export function setDictString(key,value,string=null){
 }
 /**
  * 
- * @param {the origin string} string 
- * @param {the dict which the key-value in the string need to add to} dict 
+ * @param {String} string 
+ * @param {Json} dict 
  * @returns a dict
  */
 export function addDictFromString(string,dict=null){
@@ -62,7 +70,7 @@ export function addDictFromString(string,dict=null){
 }
 /**
  * get the string before |end| (include |end|)
- * @param {string} string 
+ * @param {String} string 
  */
 export function getHeadString(string){
     return string.split('|end|')[0]+'|end|';
@@ -154,4 +162,18 @@ export async function dealAxiosError(error){
           message:"未知错误，请联系管理员"
         }
       }
+}
+
+/**
+ * 
+ * @param {String} content - which always the response.message 
+ * @returns 
+ */
+export function getNormalErrorAlert(content){
+    return {
+        state:true,
+        color:'error',
+        title:'请求错误',
+        content:content
+    }
 }

@@ -5,7 +5,7 @@
 import { getaxiosInstance } from "./axios";
 /**
  * get the access token through the refresh token  
- * @param {*} refreshToken 
+ * @param {String} refreshToken 
  * @returns 
  */
 export const getAccessToken=async (refreshToken)=>{
