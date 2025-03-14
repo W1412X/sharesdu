@@ -180,7 +180,7 @@ export default {
             /**
              * upload cover image
              */
-            if(!this.$refs.editorBarRef.$data.data.coverLink){
+            if(!this.$refs.editorBarRef.$data.data.coverLink||this.$refs.editorBarRef.$data.tmpCoverImage){
                 let coverImage=this.$refs.editorBarRef.$data.tmpCoverImage;
                 console.log(coverImage);
                 this.setLoading(getLoadMsg("封面图片上传中..."));
