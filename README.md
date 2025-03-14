@@ -34,8 +34,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - other function wait to publish  
   - ... ...  
 
-### Back End
-[SDUshare](https://github.com/zzysssigm/SDUshare)
 
 ### Bugs unsolved  
 - when use the rich text editor(wangeditor) in **firefox** and enter Chinese,some times the input content can not be show in the editor but appear when click enter subsequently.

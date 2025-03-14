@@ -14,7 +14,7 @@ export function copy(json){
  * @param {int} progress always -1 if there's no progress requirement 
  * @returns 
  */
-export function getLoadMsg(text,progress){
+export function getLoadMsg(text,progress=-1){
     return{
         state:true,
         text:text,
@@ -31,66 +31,45 @@ export function getCancelLoadMsg(){
         progress:-1
     }
 }
-
 /**
- * add key-value to string
- * key and value must be string type  
- * @param {String} key  
- * @param {String} value  
- * @param {String} string
- * @returns the new string
+ * get the editor type from the content got from the server
+ * @param {String} content 
  */
-export function setDictString(key,value,string=null){
-    var insertString=key+'|'+value;
-    var result=string;
-    if(result==null||result==''){
-        string='|END|';
+export function extractEditorType(content){
+    let editor=content.substring(0,4);
+    if(editor=="html"){
+        return "html";
+    }else{
+        return "md";
     }
-    result=insertString+result;
-    return result;
 }
 /**
- * 
- * @param {String} string 
- * @param {Json} dict 
- * @returns a dict
- */
-export function addDictFromString(string,dict=null){
-    var result=copy(dict);
-    if(result==null){
-        result={};
-    }
-    var tmp1=string.split('|end|')[0]
-    var kv_list=tmp1.split('|DIVIDE');
-    for(let i=0;i<kv_list.length;i++){
-        var kv=kv_list[i].split('|');
-        result[kv[0]]=kv[1];
-    }
-    return result;
-}
-/**
- * get the string before |end| (include |end|)
- * @param {String} string 
- */
-export function getHeadString(string){
-    return string.split('|end|')[0]+'|end|';
-}
-/**
- * this function provide an error handler
- * and for the accessToken expired,try to get the new one 
- * if we can fetch by the new access token, the status is 1412   
- * @param {*} error 
+ * add the editor type to the content and return the dealed content 
+ * @param {String} content 
+ * @param {String} editorType 
  * @returns 
  */
+export function addEditorType(content,editorType){
+    return editorType+content;
+}
+export function getContentWithoutEditorType(content){
+    let editorType=extractEditorType(content);
+    if(editorType=="html"){
+        return content.substring(4);
+    }else{
+        return content.substring(2);
+    }
+}
 export async function dealAxiosError(error){
     /**
      * got response  
      */
-    if (error.response) {
+    console.log(error.response.data);
+    if (error.response.data) {
         /**
          * here check if the error is caused by the token
          */
-        if(error.response.status==1000||error.response.status==1001){
+        if(error.response.data.status==1000||error.response.data.status==1001){
             /**
              * check if the refresh token is exsits
              * if exsits -> try to get the new access token and reload  
@@ -99,32 +78,27 @@ export async function dealAxiosError(error){
             const refreshToken=getCookie("refreshToken");
             if(refreshToken){
                 try{
+                    console.log("try to get the token");
                     const response=await getAccessToken(refreshToken);
-                    const status=response.data.status;
-                    if(status==200){
-                        setCookie("accessToken",response.data.accesss);
+                    if(response.status==999){
+                        setCookie("accessToken",response.access,1);
                         return {
                             status:1412,
                             message:"已更新access token，重新请求"
                         }
                     }else{
-                        /**
-                         * failed to refresh the token
-                         * despite other situations,to login page
-                         */
-                        window.alert("令牌已过期，请重新登录");
                         clearAllCookies();
-                        window.open("/#/login");
                         return {
-                            status: "-1",
-                            message:"重新登陆"
+                            status:-1,
+                            message:"获取access失败，请重新登陆",
                         }
                     }
                 }catch(error){
+                    console.log(error);
                     clearAllCookies();
                     return {
-                        status: "-1",
-                        message:"重新登陆"
+                        status: -1,
+                        message:"重新登陆，令牌无效"
                     }
                 }
             }else{
@@ -136,7 +110,7 @@ export async function dealAxiosError(error){
                 clearAllCookies();
                 window.open("/#/login");
                 return {
-                    status: "-1",
+                    status: -1,
                     message:"重新登陆"
                 }
             }
@@ -144,7 +118,7 @@ export async function dealAxiosError(error){
         /**
          * not token error
          */
-        return error.response.data
+        return error.response.data;
       }else if (error.request) {
         /**
          * no response
@@ -175,5 +149,79 @@ export function getNormalErrorAlert(content){
         color:'error',
         title:'请求错误',
         content:content
+    }
+}
+
+export function base64Encode(str){
+    return window.btoa(str);
+}
+
+export function base64Decode(str){
+    return window.atob(str);
+}
+/**
+ * open the new web  
+ * @param {String} url 
+ */
+export function openNewWeb(url){
+    window.open(url,"_blank");
+}
+/**
+ * convert a string array to string
+ * @param {Array} arr 
+ * @param {String} split 
+ * @returns 
+ */
+export function arrToString(arr,split=","){
+    let result="";
+    for(let i=0;i<arr.length;i++){
+        if(i==0){
+            result+=arr[0];
+        }else{
+            result+=split+arr[i];
+        }
+    }
+    return result;
+}
+/**
+ * convert a string array to 
+ */
+export function stringToArr(str,split=","){
+    return str.split(split);
+}
+/**
+ * design for image dict  
+ * @param {json} dict a dictionary blob-url
+ * @param {String} content a string which represent the content
+ */
+export function replaceImageBlob(dict,content){
+    const keys=JSON.parse(JSON.stringify(Object.keys(dict)));
+    for(let i=0;i<keys.length;i++){
+        content=content.replace(keys[i],dict[keys[i]]);
+    }
+    return content;
+}
+export function getNormalSuccessAlert(title){
+    return {
+        state: true,
+        color: 'success',
+        title: title,
+        content: '',
+    }
+}
+export function getNormalInfoAlert(title){
+    return {
+        state: true,
+        color: 'info',
+        title: title,
+        content: '',
+    }
+}
+export function getNormalWarnAlert(title){
+    return {
+        state: true,
+        color: 'wanning',
+        title: title,
+        content: '',
     }
 }

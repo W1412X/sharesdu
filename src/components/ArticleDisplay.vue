@@ -7,13 +7,19 @@
             @onCreated="handleCreated"
             class="displayer">
         </Editor>
-        <v-md-preview v-if="data.type==='md'" :text="data.content"></v-md-preview>
+        <div v-if="data.type==='md'" class="md-container">
+            <MdPreview v-if="data.type==='md'" :id="mdId" :modelValue="data.content" />
+        </div>
     </div>
 </template>
+<script setup>
+import { MdPreview } from 'md-editor-v3';
+import 'md-editor-v3/lib/preview.css';
+const mdId = 'preview-only';
+</script>
 <script>
-import '@wangeditor/editor/dist/css/style.css' // import css
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
-import { Editor } from '@wangeditor/editor-for-vue'
+
 //import { Boot } from '@wangeditor/editor'
 //import formulaModule from '@wangeditor/plugin-formula'
 export default {
@@ -29,7 +35,7 @@ export default {
             }
         }
     },
-    components: { Editor },
+    components: {  },
     setup() {
         //Boot.registerModule(formulaModule);
         // editor instance shallowRef
@@ -74,6 +80,9 @@ export default {
         width: 100%;
         overflow-y: scroll;
     }
+    .md-container{
+        padding:10px;
+    }
 }
 
 @media screen and (max-width: 600px) {
@@ -83,6 +92,9 @@ export default {
     .displayer{
         width: 100%;
         overflow-y: scroll;
+    }
+    .md-container{
+        padding:5px;
     }
 }
 </style>

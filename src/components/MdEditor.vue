@@ -1,9 +1,14 @@
 <template>
     <div style="border: 1px solid #ccc">
-        <v-md-editor class="editor" :disabled-menus="[]" @upload-image="handleUploadImage"
-            v-model="data.content"></v-md-editor>
+        <MdEditor v-model="data.content" @onUploadImg="handleUploadImage"/>
     </div>
 </template>
+<script setup>
+import { uploadArticleImage } from '@/axios/image';
+import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
+import { MdEditor } from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
+</script>
 <script>
 export default {
     name: 'MdEditor',
@@ -12,18 +17,7 @@ export default {
             type:Object,
             default: () => {
                 return {
-                    content:`# 一级标题
-## 二级标题
-### 三级标题
-#### 四级标题
-- 列表
-+ 列表
-1. 列表
-![](https://www.baidu.com/img/bd_logo1.png)
-$$
-sum_{i=1}^{n}i^2=n(n+1)(2n+1)/6
-$$
-                    `,
+                    content:'',
                 }
             }
         }
@@ -31,24 +25,71 @@ $$
     setup() {
     },
     data() {
+        /**
+         * used to the map the local url to the server url
+         */
+        var imageDict={};
         return {
             data:null,
+            imageDict,
         }
     },
     methods: {
-        handleUploadImage(event, insertImage, files) {
-            // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-            console.log(files)
-            // 此处只做示例
-            insertImage({
-                url:
-                'https://tse4-mm.cn.bing.net/th/id/OIP-C.V_eRvXb8ynCpQ4lsAr65mgHaD6?w=312&h=180&c=7&r=0&o=5&dpr=1.2&pid=1.7',
-                desc: '在这里编辑图片描述',
-                width: 'auto',
-                height: 'auto',
-            });
-            this.alert({ state: true, color: 'success', title: '上传成功', content: '图片上传成功，现在您可以调整图片大小以及添加图片描述' })
+        setLoading(msg){
+            this.$emit('set_loading',msg);
         },
+        alert(msg){
+            this.$emit('alert',msg);
+        },
+        handleUploadImage(files, callback) {
+            const image = files[0];
+            const tmpUrl=URL.createObjectURL(image);
+            callback([tmpUrl]);
+            //add the tmp Url to the dict 
+            this.imageDict[tmpUrl]=image;
+        },
+        //call by the editor
+        async doUpload(){
+            let uploadState=true;
+            let oriLocalUrls=JSON.parse(JSON.stringify(Object.keys(this.imageDict)));
+            let validLocalUrls=[];
+            for(let i=0;i<oriLocalUrls.length;i++){
+                if(oriLocalUrls[i] in this.data.content){
+                    validLocalUrls.push(oriLocalUrls[i]);
+                }
+            }
+            console.log(validLocalUrls);
+            this.setLoading(getLoadMsg("正在上传图片 0/"+String(validLocalUrls.length)));
+            for(let i=0;i<validLocalUrls.length;i++){
+                this.setLoading(getLoadMsg("正在上传图片 "+(i+1)+"/"+String(validLocalUrls.length)));
+                let response=await uploadArticleImage(this.imageDict[validLocalUrls[i]]);
+                if(response.status==200||response.status==201){
+                    this.data.content=this.data.content.replaceAll(validLocalUrls[i],response.image_url);
+                }else{
+                    uploadState=false;
+                }
+            }
+            this.setLoading(getCancelLoadMsg());
+            if(uploadState){
+                try{
+                    //clear the img  
+                    for(let i=0;i<oriLocalUrls.length;i++){
+                        URL.revokeObjectURL(oriLocalUrls[i]);
+                    }
+                }catch(e){
+                    console.log(e);
+                }
+                return {
+                    status:200,
+                    message:"所有图片上传成功"
+                }
+            }else{
+                return {
+                    status:-1,
+                    message:"图片上传失败"
+                }
+            }
+        }
     },
     created() {
         this.data=this.initData;

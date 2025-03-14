@@ -1,4 +1,3 @@
-import { getCookie } from "@/utils/cookie";
 import { addDictFromString, copy, getHeadString, setDictString } from "@/utils/other";
 
 /**
@@ -9,7 +8,7 @@ export function csCreateArticle(data) {
     const result={
         article_title:data.title,
         content:head+data.content,
-        tags:tags,//divide by ,  
+        tags:data.tags,//divide by ,  
         article_type:data.type,
         origin_link:data.originLink,
         resource_link:data.resourceLink,

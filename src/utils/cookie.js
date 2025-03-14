@@ -8,6 +8,8 @@
  * themeColor
  */
 
+import { base64Decode, base64Encode } from "./other";
+
 /**
  * get the given name's value
  * @param {String} name 
@@ -19,7 +21,7 @@ export function getCookie(name) {
   for (let i = 0; i < cookies.length; i++) {
     let cookie = cookies[i];
     if(cookie.startsWith(nameEQ)){
-      return cookie.substring(nameEQ.length);
+      return base64Decode(cookie.substring(nameEQ.length));
     }
   }
   return null;
@@ -37,6 +39,7 @@ export function setCookie(name, value, hour) {
   if (!hour) {
     hour=0.5;
   }
+  value=base64Encode(value);
   const date = new Date();
   date.setTime(date.getTime() + (hour * 60 * 60 * 1000));
   expires = `expires=${date.toUTCString()}`;

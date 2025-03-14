@@ -112,9 +112,9 @@ export default {
                         /**
                          * save the user message
                          */
-                        setCookie('userName',response.user_name);
-                        setCookie('userId',response.user_id);
-                        setCookie('email',response.email);
+                        setCookie('userName',response.user_name,7*24);
+                        setCookie('userId',response.user_id,7*24);
+                        setCookie('email',response.email,7*24);
                         setCookie('refreshToken',response.refresh,7*24);
                         this.$router.push({ name: 'IndexPage' });
                         break;

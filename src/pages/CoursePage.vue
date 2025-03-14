@@ -8,7 +8,7 @@
                 <sensitive-text-area style="margin-top: 10px;" label="添加对此课程的评价(老师，课程难度，作业，意义)" variant="outlined" v-model="selfComment.comment"></sensitive-text-area>
                 <div class="dialog-bottom-bar">
                     <v-btn @click="submitComment" class="dialog-bottom-bar-btn" variant="text" >提交</v-btn>
-                    <v-btn @click="setCommentEditorState(false)" variant="text" class="dialog-bottom-bar-btn" >取消</v-btn>
+                    <v-btn @click="closeEditor" variant="text" class="dialog-bottom-bar-btn" >取消</v-btn>
                 </div>
             </v-card>
         </div>
@@ -191,6 +191,10 @@ export default {
         }
     },
     methods: {
+        closeEditor(){
+            this.selfComment=copy(this.oriSelfComment);
+            this.setCommentEditorState(false);
+        },
         async submitComment(){
             if(this.selfComment.score==0||this.selfComment.score==null){
                 this.alert({

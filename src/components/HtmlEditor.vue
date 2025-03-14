@@ -13,6 +13,8 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { Boot } from '@wangeditor/editor'
 import formulaModule from '@wangeditor/plugin-formula'
 import { DomEditor } from '@wangeditor/editor'
+import { uploadArticleImage } from '@/axios/image';
+import { getCancelLoadMsg, getLoadMsg } from '@/utils/other'
 export default defineComponent({
     name: 'HtmlEditor',
     props: {
@@ -26,7 +28,7 @@ export default defineComponent({
         }
     },
     components: { Editor, Toolbar },
-    setup(props, { emit }) {
+    setup() {
         const store = inject('store');
         if (!store.state.ifRegisterEditor) {
             Boot.registerModule(formulaModule);
@@ -49,16 +51,12 @@ export default defineComponent({
         const handleCreated = (editor) => {
             editorRef.value = editor; // record the editor instance
         };
-
+        var imageDict={};
         const customUpload = (file, insertFn) => {
-            // file 即选中的文件
-            // 自己实现上传，并得到图片 url alt href
-            // 最后插入图片
-            console.log(file);
-            const imgUrl = 'https://tse4-mm.cn.bing.net/th/id/OIP-C.V_eRvXb8ynCpQ4lsAr65mgHaD6?w=312&h=180&c=7&r=0&o=5&dpr=1.2&pid=1.7';
-            insertFn(imgUrl);
-            // 使用 emit 发射事件
-            emit('alert', { state: true, color: 'info', title: '测试提示', content: '' });
+            const image = file;
+            const tmpUrl=URL.createObjectURL(image);
+            insertFn(tmpUrl);
+            imageDict[tmpUrl]=image;
         };
 
         const editorConfig = {
@@ -94,9 +92,13 @@ export default defineComponent({
             toolbarConfig,
             handleCreated,
             editorConfig,
+            imageDict,
         };
     },
     data() {
+        /**
+         * used to the map the local url to the server url
+         */
         return {
             data:null,
         }
@@ -107,6 +109,53 @@ export default defineComponent({
             const curToolBarConfig = toolbar.getConfig();
             console.log(curToolBarConfig);
         },
+        setLoading(msg){
+            this.$emit('set_loading',msg);
+        },
+        alert(msg){
+            this.$emit('alert',msg);
+        },
+        async doUpload(){
+            let uploadState=true;
+            let oriLocalUrls=JSON.parse(JSON.stringify(Object.keys(this.imageDict)));
+            let validLocalUrls=[];
+            for(let i=0;i<oriLocalUrls.length;i++){
+                if(oriLocalUrls[i] in this.data.content){
+                    validLocalUrls.push(oriLocalUrls[i]);
+                }
+            }
+            console.log(validLocalUrls);
+            this.setLoading(getLoadMsg("正在上传图片 0/"+String(validLocalUrls.length)));
+            for(let i=0;i<validLocalUrls.length;i++){
+                this.setLoading(getLoadMsg("正在上传图片 "+(i+1)+"/"+String(validLocalUrls.length)));
+                let response=await uploadArticleImage(this.imageDict[validLocalUrls[i]]);
+                if(response.status==200||response.status==201){
+                    this.data.content=this.data.content.replaceAll(validLocalUrls[i],response.image_url);
+                }else{
+                    uploadState=false;
+                }
+            }
+            this.setLoading(getCancelLoadMsg());
+            if(uploadState){
+                try{
+                    //clear the img  
+                    for(let i=0;i<oriLocalUrls.length;i++){
+                        URL.revokeObjectURL(oriLocalUrls[i]);
+                    }
+                }catch(e){
+                    console.log(e);
+                }
+                return {
+                    status:200,
+                    message:"所有图片上传成功"
+                }
+            }else{
+                return {
+                    status:-1,
+                    message:"图片上传失败"
+                }
+            }
+        }
     },
     created() {
         this.data=this.initData;

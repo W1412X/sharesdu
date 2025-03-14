@@ -28,7 +28,7 @@
                         +
                     </v-btn>
                     <!--delete btn-->
-                    <v-btn v-for="(tag, index) in tagsArray" :key="index" :color="themeColor" :text="tag" variant="tonal"
+                    <v-btn v-for="(tag, index) in this.data.tags" :key="index" :color="themeColor" :text="tag" variant="tonal"
                         class="tag-btn">{{ tag }}
                         <v-spacer></v-spacer>
                         <v-btn @click="deleteTag(tag)" size="15" variant="tonal" class="delete-tag-btn">
@@ -45,7 +45,7 @@
                         class="before-icon"></v-icon>
                 </div>
                 <div>
-                    <v-img @click="selectImage()" :width="160" aspect-ratio="1.2" cover :src="data.imgLink"></v-img>
+                    <v-img @click="selectImage()" :width="160" aspect-ratio="1.2" cover :src="data.coverLink"></v-img>
                 </div>
             </div>
             <div class="row-div">
@@ -57,7 +57,7 @@
                 </div>
                 <div>
                     <sensitive-text-area class="detail-input" label="添加不多于200字的简介" variant="outlined"
-                        v-model="data.detail"></sensitive-text-area>
+                        v-model="data.summary"></sensitive-text-area>
                 </div>
             </div>
             <div class="row-div">
@@ -85,7 +85,7 @@
 
                         </div>
                     </div>
-                    <sensitive-text-area density="compact" v-if="data.type == '转载'" v-model="quoteUrl" label="转载文章url"
+                    <sensitive-text-area density="compact" v-if="data.type == '转载'" v-model="data.originLink" label="转载文章url"
                         row-height="10" rows="1" variant="outlined" auto-grow></sensitive-text-area>
                 </div>
             </div>
@@ -113,7 +113,8 @@ import SensitiveTextArea from './SensitiveTextArea.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
 import SensitiveTextField from './SensitiveTextField.vue';
-import { getLoadMsg } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
+import { uploadArticleImage } from '@/axios/image';
 export default {
     name: 'EditorBar',
     props: {
@@ -121,11 +122,12 @@ export default {
             type: Object,
             default: function () {
                 return {
-                    tags: null,
-                    imgLink: 'https://cdn.vuetifyjs.com/images/parallax/material.jpg',
-                    detail: '这是描述',
-                    type: '转载',
-                    originLink: 'http://quote.html',
+                    summary: "",
+                    type: "",
+                    tags: [],//[]/""
+                    originLink: "",
+                    coverLink:"",
+                    sourceUrl:"",
                 }
             },
         },
@@ -153,30 +155,29 @@ export default {
         SensitiveTextField,
     },
     data() {
-        const data=this.initData;
-        if(data.tags==null){
-            data.tags="";
-        }
-        const tagsArray=computed(()=>{
-            if(this.data.tags==""){
-                return [];
-            }
-            return this.data.tags.split(',');
-        })
+        var data=this.initData;
         const file=null;
         return{
             data,
-            tagsArray,
-            file
+            file,
+            tmpCoverImage:null,
         }
     },
     methods: {
-        selectImage() {
-            /**
-             * select image, upload the image in editor page
-             * tmporarily disable select image due to server resource limit */  
-            this.setLoading(getLoadMsg('上传封面中...',-1));
-
+        async selectImage() {
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/jpeg, image/png, image/gif';
+            input.onchange = async (event) => {
+                if(!this.data.coverLink){
+                    //release it
+                    URL.revokeObjectURL(this.data.coverLink);
+                }
+                let image = event.target.files[0];
+                this.data.coverLink = URL.createObjectURL(image);
+                this.tmpCoverImage=image;
+            };
+            input.click();
         },
         handleFileChange(event) {
             /**
@@ -206,16 +207,11 @@ export default {
                 this.file = null
                 return
             }
-            this.file = selectedFile
-              
-            const fileForm = new FormData();
-            fileForm.append('file', this.file)
             this.file = selectedFile;
-            
         },
         addTag() {
-            if(this.data.tags==null){
-                this.data.tags="";
+            if(!this.data.tags){
+                this.data.tags=[];
             }
             /**
              * if tag is empty
@@ -240,7 +236,7 @@ export default {
             /**
              * can not add repeated tag
              */
-            if (this.data.tags.split(',').includes(this.inputingTag)) {
+            if (this.data.tags.includes(this.inputingTag)) {
                 const msg = {
                     state: true,
                     title: '不可以添加重复的标签',
@@ -253,7 +249,7 @@ export default {
             /**
              * some sensitive tags can not be added
              */
-            if (this.data.tags.split(',').includes('测试标签')) {
+            if (this.data.tags.includes('测试标签')) {
                 const msg = {
                     state: true,
                     title: '请删除测试标签之后添加标签',
@@ -263,34 +259,29 @@ export default {
                 this.alert(msg);
                 return;
             }
-            //max 5 tags
-            if (this.data.tags.split(',').length >= 5) {
+            //max 10 tags
+            if (this.data.tags.length >= 10) {
                 const msg = {
                     state: true,
-                    title: '最多可添加 5 个标签',
+                    title: '最多可添加 10 个标签',
                     content: '',
                     color: 'warning'
                 };
                 this.alert(msg);
                 return;
             }
-
-            //add tag 
-            if(this.data.tags==null||this.data.tags==''){
-                this.data.tags=this.inputingTag;
-            }else{
-                this.data.tags += ',' + this.inputingTag;
-            }
+            console.log(this.data.tags);
+            this.data.tags.push(this.inputingTag);
             this.inputingTag = '';
             this.ifShowTagInput = false;
         },
 
         deleteTag(text) {
-            var tmp="";
-            var arr=this.data.tags.split(',');
+            var tmp=[];
+            var arr=this.data.tags;
             for (let i=0;i<arr.length;i++) {
                 if(arr[i]!=text){
-                    tmp+=arr[i];
+                    tmp.push(arr[i]);
                 }
             }
             this.data.tags=tmp;
@@ -301,9 +292,42 @@ export default {
         setLoading(msg) {
             this.$emit('set_loading', msg);
         },
+        //called by the parent
+        async doUpload(){
+            /**
+             * upload operation do here
+             */
+            let uploadState=true;
+             this.setLoading(getLoadMsg("正在上传封面...", -1));
+             //upload cover
+             if (this.tmpCoverImage) {
+                let response=await uploadArticleImage(this.tmpCoverImage);
+                if(response.status==200||response.status==201){
+                    this.data.coverLink=response.image_url;
+                }else{
+                    uploadState=false;
+                }
+            }
+            //upload resource
+            if(this.file){
+                //to do  
+                this.setLoading(getLoadMsg("正在上传资源文件...", -1));
+                this.alert(getNormalErrorAlert("资源上传暂未实现"));
+            }
+            this.setLoading(getCancelLoadMsg());
+            if(uploadState){
+                return{
+                    status:200,
+                    message:"上传成功",
+                }
+            }else{
+                return{
+                    status:-1,
+                    message:"上传失败",
+                }
+            }
+        }
     },
-    created(){
-    }
 }
 </script>
 <style scoped>

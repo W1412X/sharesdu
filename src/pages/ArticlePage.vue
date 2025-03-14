@@ -1,5 +1,4 @@
 <template>
-    <LoadingView :initial-data="loadingMsg"></LoadingView>
     <v-dialog v-model="ifShowDialog" class="full-screen dialog">
         <div class="dialog-card-container">
             <post-editor v-if="ifShowPostEditor" @close="closeDialog"></post-editor>
@@ -16,38 +15,45 @@
                     </div>
                     <v-spacer></v-spacer>
                     <div class="title-right-type">
-                        {{ article.type }}
+                        <span v-if="article.type === '原创'">原创</span>
+                        <span v-if="article.type === '转载'" @click="toOriginLink">转载</span>
                     </div>
                 </div>
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium grey-font">
-                        作者: {{ article.author }}
+                        <avatar-name :init-data="{avatar:article.authorName,name:article.authorProfileUrl}">
+                        </avatar-name>
                     </div>
                     <v-spacer></v-spacer>
                     <div class="full-column-center text-small grey-font">
-                        <div class="row-div">
+                        <div class="row-div-reverse">
                             <div class="row-right-20px">
-                                <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-star"
-                                    size="18"></v-icon>
+                                <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-star" size="18"></v-icon>
                                 <div class="column-center">
-                                    {{ article.star }}
+                                    {{ article.starCount }}
                                 </div>
                             </div>
                             <div class="row-right-20px">
-                                <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment"
-                                    size="16"></v-icon>
+                                <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment" size="16"></v-icon>
                                 <div class="column-center">
-                                    {{ article.comment }}
+                                    {{ article.replyCount }}
                                 </div>
                             </div>
                             <div class="row-right-20px">
-                                <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock"
-                                    size="17"></v-icon>
+                                <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-eye" size="17"></v-icon>
                                 <div class="column-center">
-                                    {{ article.time }}
+                                    {{ article.viewCount }}
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="row-div">
+                    <div class="row-right-20px" style="margin: 2px;">
+                        <div class="column-center text-small grey-font">
+                            {{ article.publishTime }}
+                        </div> 
+                        <v-icon class="icon-left-5px" color="#8a8a8a" icon="mdi-clock-outline" size="17"></v-icon>
                     </div>
                 </div>
                 <div class="top-bar-msg-div">
@@ -56,11 +62,11 @@
                     </div>
                     <tag-button v-for="(tag, index) in article.tags" :data="tag" :key="index"></tag-button>
                 </div>
-                <div class="source-bar-container">
-                    <source-bar :init-data="article.source"></source-bar>
+                <div v-if="this.article.sourceUrl" class="source-bar-container">
+                    <source-bar :init-data="article.sourceUrl"></source-bar>
                 </div>
             </div>
-            <article-display class="margin-bottom-40px" :init-data="article"></article-display>
+            <article-display class="margin-bottom-40px" :init-data="{type:this.editorType,content:this.article.content}"></article-display>
             <div class="bottom-bar">
                 <div class="column-center user-name text-medium">
                     {{ userName }}
@@ -82,25 +88,22 @@
             </div>
         </div>
     </div>
-    <v-overlay v-model="ifShowComment" class="posts-dialog">  
+    <v-overlay v-model="ifShowComment" class="posts-dialog">
         <div class="posts-container">
-                <div class="column-div">
-                    <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
-                        发表帖子
-                    </v-btn>
-                    <post-item 
-                        v-for="(item,index) in postItems"
-                        :init-data="item"
-                        :key="index">
-                    </post-item>
-                </div>
+            <div class="column-div">
+                <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
+                    发表帖子
+                </v-btn>
+                <post-item v-for="(item,index) in postItems" :init-data="item" :key="index">
+                </post-item>
+                <v-btn v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
+        </div>
     </v-overlay>
 </template>
 <script>
 import TagButton from '@/components/TagButton.vue';
 import { globalProperties } from '@/main.js';
-import { articleShort,postItemLong } from '@/utils/data'
 import SourceBar from '@/components/SourceBar.vue';
 import ArticleDisplay from '@/components/ArticleDisplay.vue';
 import { getCookie } from '@/utils/cookie';
@@ -109,6 +112,9 @@ import AlertButton from '@/components/AlertButton.vue';
 import { computed, ref } from 'vue';
 import PostItem from '@/components/PostItem.vue';
 import PostEditor from '@/components/PostEditor.vue';
+import AvatarName from '@/components/AvatarName.vue';
+import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, openNewWeb } from '@/utils/other';
+import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 export default {
     name: 'ArticlePage',
     components: {
@@ -119,6 +125,7 @@ export default {
         AlertButton,
         PostItem,
         PostEditor,
+        AvatarName,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -131,9 +138,6 @@ export default {
          * get user msg
          */
         var userName = getCookie('userName');
-        if (userName == null) {
-            userName = "游客";
-        }
         /**
          * posts list visibility control here
          */
@@ -162,28 +166,64 @@ export default {
     data() {
         return {
             article: {
-                id: null,
-                title: null,
-                detail: null,
-                star: null,
-                comment: null,
-                author: null,
-                editor: null,//the ditor type used(md or html)
-                type: null,//origin/reprint
-                content: null,
-                time: null,
-                tags: null,
-                source: {
-                    name: null,
-                    link: null
-                }
+                id: "",
+                title: "",
+                content:"",
+                summary: "",
+                coverLink:"",
+                originLink:"",
+                tags:"",
+                type:"",
+                authorName:"",
+                authorProfileUrl:"",
+                likeCount:"",
+                starCount:"",
+                viewCount:"",
+                replyCount:"",
+                hotScore:"",
+                sourceUrl:"",
+                publishTime:"",
+                ifLike:"",
+                ifStar:"",
             },
+            editorType:"html",
             postItems:[],
+            postPageNum:1,
+            ifGotPost:false,
         }
     },
     methods: {
         comment(){
             this.setCommentState(true);
+            if(!this.ifGotPost){
+                //get the post items
+                this.loadMorePost();
+            }
+        },
+        async loadMorePost(){
+            this.setLoading(getLoadMsg("正在加载帖子..."));
+            let response=await getPostListByArticleId(this.article.id,this.postPageNum);
+            if(response.status==200){
+                this.postPageNum++;
+                for(let i=0;i<response.post_list.length;i++){
+                    this.postItems.push({
+                        id:response.post_list[i].post_id,
+                        title:response.post_list[i].post_title,
+                        content:response.post_list[i].post_content,
+                        author:response.post_list[i].poster_name,
+                        authorProfileUrl:response.post_list[i].poster_profile_url,
+                        viewCount:response.post_list[i].view_count,
+                        likeCount:response.post_list[i].like_count,
+                        replyCount:response.post_list[i].reply_count,
+                        tags:response.post_list[i].tags,
+                        publishTime:response.post_list[i].publish_time,
+                        if_like:response.post_list[i].if_like,
+                    });
+                }
+            }else{
+                this.alert(getNormalErrorAlert(response.data.message));
+            }
+            this.setLoading(getCancelLoadMsg());
         },
         closeDialog(){
             this.setPostEditorState(false);
@@ -194,31 +234,40 @@ export default {
         setLoading(msg){
             this.$emit("set_loading",msg);
         },
+        toOriginLink(){
+            openNewWeb(this.article.originLink);
+        }
     },
-    mounted() {
+    async mounted() {
         /**
          * get the route params and fetch data
          */
-        this.article = articleShort;
-        /**
-         * the tags format is divided by ,
-         * so convert it into list here
-         */
-        try{
-            this.article.tags = this.article.tags.split(",");
-        }catch(e){
-            /**
-             * do nothing
-             */
-            console.log(this.article.tags);
+        this.setLoading(getLoadMsg("正在加载文章信息..."));
+        if(this.$route.params.id){
+            let response=await getArticleDetail(this.$route.params.id);
+            this.article.id=response.article_detail.article_id;
+            this.article.title=response.article_detail.article_title;
+            this.article.summary=response.article_detail.article_summary;
+            this.article.type=response.article_detail.article_type;
+            this.article.tags=response.article_detail.article_tags;
+            this.article.originLink=response.article_detail.article_origin_link;
+            this.article.coverLink=response.article_detail.article_cover_link;
+            this.article.content=getContentWithoutEditorType(response.article_detail.article_content);
+            this.editorType=extractEditorType(response.article_detail.article_content);
+            this.article.likeCount=response.article_detail.like_count;
+            this.article.replyCount=response.article_detail.reply_count;
+            this.article.viewCount=response.article_detail.view_count;
+            this.article.starCount=response.article_detail.star_count;
+            this.article.authorName=response.article_detail.author_name;
+            this.article.authorProfileUrl=response.article_detail.author_profile_url;
+            this.article.sourceUrl=response.article_detail.source_url;
+            this.article.publishTime=response.article_detail.publish_time;
+            this.article.ifLike=response.article_detail.if_like;
+            this.article.ifStar=response.article_detail.if_star;
+        }else{
+            this.$router.push({name:"ErrorPage",params:{reason:"缺少参数"}})
         }
-        /**
-         * test the posts
-         */
-        for(let i=0;i<15;i++){
-            console.log(postItemLong);
-            this.postItems.push(postItemLong)
-        }
+        this.setLoading(getCancelLoadMsg());
     },
 }
 </script>
@@ -244,6 +293,7 @@ export default {
     position: fixed;
     bottom: 0;
     height: 40px;
+    z-index:99;
     border: #8a8a8a 1px solid;
     background-color: #ffffff;
 }
@@ -259,11 +309,21 @@ export default {
     margin-right: 20px;
     align-items: center;
 }
-
+.load-btn{
+    width: 100%;
+}
 .icon-right-5px {
     margin-right: 5px;
 }
-
+.icon-left-5px {
+    margin-left: 5px;
+}
+.row-div-reverse{
+    overflow-x: scroll;
+    max-width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+}
 .dialog-card-container {
         display: flex;
         justify-content: center;
@@ -274,6 +334,7 @@ export default {
     display: flex;
     flex-direction: row;
     padding-bottom: 5px;
+    align-items: center;
     overflow-x: scroll;
 }
 
@@ -308,7 +369,6 @@ export default {
 }
 
 .grey-font {
-    min-width: 200px;
     white-space: nowrap;
     word-break: break-all;
     overflow: hidden;

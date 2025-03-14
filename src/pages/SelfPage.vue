@@ -234,6 +234,11 @@ export default {
     }
   },
   async mounted() {
+    //if no id,to the user page
+    if(!this.$route.params.id){
+      this.$router.push({ name: 'SelfPage', params: { id: getCookie("userId") } })
+      return;
+    }
     /**
      * check if the user is self
      */

@@ -51,13 +51,13 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
-    path:'/editor',
+    path:'/editor/:id?',
     name:'EditorPage',
     component: (()=>import('@/pages/EditorPage.vue')),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
-    path:'/self/:id',
+    path:'/self/:id?',//if no id, to the user
     name:'SelfPage',
     component: (()=>import('@/pages/SelfPage.vue')),
     meta: { requiresAuth: true },

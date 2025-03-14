@@ -8,7 +8,7 @@
             <sensitive-text-area v-model="data.content" variant="outlined" rows="3" label="编辑帖子详述"></sensitive-text-area>
             <div class="text-tiny">如果帖子涉及到一些其他的网页，可以在此处添加链接(在文章/课程下发表的帖子会自动添加相关链接)</div>
             <sensitive-text-field class="title-input"  v-model="data.link" label="添加帖子关联链接"
-                :disabled="!this.linkEditable"
+                :disabled="type!=='post'"
                 density="compact" rows="1" variant="outlined"></sensitive-text-field>
             <div class="bottom-btn-div">
                 <v-btn variant="text" class="btn" density="compact">发布</v-btn>
@@ -18,7 +18,6 @@
     </v-card>
 </template>
 <script>
-import { ref } from 'vue';
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import SensitiveTextField from './SensitiveTextField.vue';
 export default {
@@ -28,26 +27,19 @@ export default {
             type: Object,
             default: () => {
                 return {
-                    id:null,
-                    title: null,
-                    content:null,
-                    link:null,
+                    id:'',
+                    title: '',
+                    content:'',
+                    link:'',
                 }
             }
+        },
+        type:{
+            type:String,
+            default:'post',//post,article,course
         }
     },
     setup() {
-        /**
-         * try to get the post's relative_link 
-         * if exsits, set the relative_link editor to static
-         */
-        var linkEditable=ref(true);
-        if(this.initData!=null&&this.initData.link!=null){
-            linkEditable.value=false;
-        }
-        return{
-            linkEditable,
-        }
     },
     components: {
         SensitiveTextField,
