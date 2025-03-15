@@ -85,7 +85,6 @@ export default defineComponent({
                 },
             }
         };
-
         return {
             editorRef,
             mode: 'default', // 或 'simple'

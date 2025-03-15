@@ -63,6 +63,9 @@ export default {
         const editorBtnText=computed(()=>{
             return editorType.value=='html'?'使用Markdown':'使用富文本';
         })
+        const htmlEditorRef=ref(null);
+        const mdEditorRef=ref(null);
+        const editorBarRef=ref(null);
         const apiUrl=globalProperties.$apiUrl;
         const ifShowEditFinishCard=ref(false);
         const ifShowDialog=computed(()=>{
@@ -80,6 +83,9 @@ export default {
             ifShowDialog,
             ifShowEditFinishCard,
             apiUrl,
+            editorBarRef,
+            mdEditorRef,
+            htmlEditorRef
         }
     },
     components:{
@@ -117,134 +123,143 @@ export default {
             if(this.editorType === 'html'){
                 this.editorType = 'md';
                 //save the html content
-                this.htmlData.content=this.$refs.htmlEditorRef.$data.data.content;
+                this.htmlData.content=this.htmlEditorRef.$data.data.content;
             }else{
                 this.editorType = 'html';
                 //save the md content
-                this.mdData.content=this.$refs.mdEditorRef.$data.data.content;
+                this.mdData.content=this.mdEditorRef.$data.data.content;
             }
         },
         async submit(){
-            /**
-             * upload article image
-             */
-            let imageDict=null;
-            if(this.editorType=="html"){
-                imageDict=this.$refs.htmlEditorRef.$data.imageDict;
-            }else if(this.editorType=="md"){
-                imageDict=this.$refs.mdEditorRef.$data.imageDict;
-            }
-            console.log(imageDict);
-            let uploadState=true;
-            let oriLocalUrls=JSON.parse(JSON.stringify(Object.keys(imageDict)));
-            let validLocalUrls=[];
-            for(let i=0;i<oriLocalUrls.length;i++){
-                if(this.editorType=="html"&&this.$refs.htmlEditorRef.$data.data.content.includes(oriLocalUrls[i])){
-                    validLocalUrls.push(oriLocalUrls[i]);
+            try{
+                /**
+                 * upload article image
+                 */
+                let imageDict=null;
+                if(this.editorType=="html"){
+                    imageDict=this.htmlEditorRef.imageDict;
+                }else if(this.editorType=="md"){
+                    imageDict=this.mdEditorRef.$data.imageDict;
                 }
-                if(this.editorType=="md"&&this.$refs.mdEditorRef.$data.data.content.includes(oriLocalUrls[i])){
-                    validLocalUrls.push(oriLocalUrls[i]);
+                console.log(imageDict);
+                let uploadState=true;
+                let oriLocalUrls=JSON.parse(JSON.stringify(Object.keys(imageDict)));
+                let validLocalUrls=[];
+                for(let i=0;i<oriLocalUrls.length;i++){
+                    if(this.editorType=="html"&&this.htmlEditorRef.$data.data.content.includes(oriLocalUrls[i])){
+                        validLocalUrls.push(oriLocalUrls[i]);
+                    }
+                    if(this.editorType=="md"&&this.mdEditorRef.$data.data.content.includes(oriLocalUrls[i])){
+                        validLocalUrls.push(oriLocalUrls[i]);
+                    }
                 }
-            }
-            console.log(validLocalUrls);
-            this.setLoading(getLoadMsg("正在上传图片 0/"+String(validLocalUrls.length)));
-            for(let i=0;i<validLocalUrls.length;i++){
-                this.setLoading(getLoadMsg("正在上传图片 "+(i+1)+"/"+String(validLocalUrls.length)));
-                let response=await uploadArticleImage(imageDict[validLocalUrls[i]]);
-                console.log(imageDict[validLocalUrls[i]]);
-                if(response.status==200||response.status==201){
-                    if(this.editorType=="md"){
-                        this.$refs.mdEditorRef.$data.data.content=this.$refs.mdEditorRef.$data.data.content.replaceAll(validLocalUrls[i],this.apiUrl+response.data.image_url);
+                console.log(validLocalUrls);
+                this.setLoading(getLoadMsg("正在上传图片 0/"+String(validLocalUrls.length)));
+                for(let i=0;i<validLocalUrls.length;i++){
+                    this.setLoading(getLoadMsg("正在上传图片 "+(i+1)+"/"+String(validLocalUrls.length)));
+                    let response=await uploadArticleImage(imageDict[validLocalUrls[i]]);
+                    console.log(imageDict[validLocalUrls[i]]);
+                    if(response.status==200||response.status==201){
+                        if(this.editorType=="md"){
+                            this.mdEditorRef.$data.data.content=this.mdEditorRef.$data.data.content.replaceAll(validLocalUrls[i],this.apiUrl+response.data.image_url);
+                        }else{
+                            this.htmlEditorRef.$data.data.content=this.htmlEditorRef.$data.data.content.replaceAll(validLocalUrls[i],this.apiUrl+response.data.image_url);
+                        }
                     }else{
-                        this.$refs.htmlEditorRef.$data.data.content=this.$refs.htmlEditorRef.$data.data.content.replaceAll(validLocalUrls[i],this.apiUrl+response.data.image_url);
+                        uploadState=false;
+                        break;
+                    }
+                }
+                this.setLoading(getCancelLoadMsg());
+                if(uploadState){
+                    try{
+                        //clear the img  
+                        for(let i=0;i<oriLocalUrls.length;i++){
+                            URL.revokeObjectURL(oriLocalUrls[i]);
+                        }
+                    }catch(e){
+                        console.log(e);
                     }
                 }else{
-                    uploadState=false;
-                    break;
-                }
-            }
-            this.setLoading(getCancelLoadMsg());
-            if(uploadState){
-                try{
-                    //clear the img  
-                    for(let i=0;i<oriLocalUrls.length;i++){
-                        URL.revokeObjectURL(oriLocalUrls[i]);
-                    }
-                }catch(e){
-                    console.log(e);
-                }
-            }else{
-                this.alert(getNormalErrorAlert("文章图片上传失败"));
-                return;
-            }
-            /**
-             * upload cover image
-             */
-            if(!this.$refs.editorBarRef.$data.data.coverLink||this.$refs.editorBarRef.$data.tmpCoverImage){
-                let coverImage=this.$refs.editorBarRef.$data.tmpCoverImage;
-                console.log(coverImage);
-                this.setLoading(getLoadMsg("封面图片上传中..."));
-                let response=await uploadArticleImage(coverImage);
-                this.setLoading(getCancelLoadMsg());
-                if(response.status!=200&&response.status!=201){
-                    this.alert(getNormalErrorAlert("封面图片上传失败"));
+                    this.alert(getNormalErrorAlert("文章图片上传失败"));
                     return;
                 }
-                this.$refs.editorBarRef.$data.data.coverLink=this.apiUrl+response.data.image_url;
-            }
-            /**
-             * wait to do,upload file
-             */
-            /**
-             * get the bar data and post  
-             */
-             this.setLoading(getLoadMsg("正在创建文章..."));
-            let form={};
-            form.article_title=this.editorData.title;
-            if(this.editorType=='md'){
-                form.content=addEditorType(this.mdData.content,"md");
-            }else{
-                form.content=addEditorType(this.htmlData.content,"html");
-            }
-            form.tags=arrToString(this.$refs.editorBarRef.$data.data.tags);
-            form.article_summary=this.$refs.editorBarRef.$data.data.summary;
-            form.article_type=this.$refs.editorBarRef.$data.data.type=="原创"?"original":"repost";
-            form.origin_link=this.$refs.editorBarRef.$data.data.originLink;
-            form.cover_link=this.$refs.editorBarRef.$data.data.coverLink;
-            form.source_url=this.$refs.editorBarRef.$data.data.sourceUrl;
-            //try to get the route id 
-            if(this.$route.params.id){
-                //edit mode  
-                form.article_id=this.$route.params.id;
-                let response=await editArticle(form);
-                if(response.status==200){
-                    this.alert({
-                        state:true,
-                        color:'success',
-                        title:'创建成功',
-                        content:response.message,
-                    })
-                    this.setEditFinishCardState(true);
-                }else{
-                    this.alert(getNormalErrorAlert(response.message));
+                /**
+                 * upload cover image
+                 * if not choose , then don't upload
+                 */
+                if(this.editorBarRef.$data.tmpCoverImage){
+                    let coverImage=this.editorBarRef.$data.tmpCoverImage;
+                    console.log(coverImage);
+                    this.setLoading(getLoadMsg("封面图片上传中..."));
+                    let response=await uploadArticleImage(coverImage);
+                    this.setLoading(getCancelLoadMsg());
+                    if(response.status!=200&&response.status!=201){
+                        this.alert(getNormalErrorAlert("封面图片上传失败"));
+                        return;
+                    }
+                    this.editorBarRef.$data.data.coverLink=this.apiUrl+response.data.image_url;
+                    //clear resource  
+                    URL.revokeObjectURL(this.editorBarRef.$data.data.coverLink);
                 }
-            }else{
-                //create mode
-                let response=await createArticle(form);
-                if(response.status==200){
-                    this.articleId=response.article_id;
-                    this.alert({
-                        state:true,
-                        color:'success',
-                        title:'创建成功',
-                        content:response.message,
-                    })
-                    this.setEditFinishCardState(true);
+                /**
+                 * wait to do,upload file
+                 */
+                /**
+                 * get the bar data and post  
+                 */
+                this.setLoading(getLoadMsg("正在创建文章..."));
+                let form={};
+                form.article_title=this.editorData.title;
+                if(this.editorType=='md'){
+                    form.content=addEditorType(this.mdData.content,"md");
                 }else{
-                    this.alert(getNormalErrorAlert(response.message));
+                    form.content=addEditorType(this.htmlData.content,"html");
                 }
+                form.tags=arrToString(this.editorBarRef.$data.data.tags);
+                form.article_summary=this.editorBarRef.$data.data.summary;
+                form.article_type=this.editorBarRef.$data.data.type=="原创"?"original":"repost";
+                form.origin_link=this.editorBarRef.$data.data.originLink;
+                form.cover_link=this.editorBarRef.$data.data.coverLink;
+                form.source_url=this.editorBarRef.$data.data.sourceUrl;
+                //try to get the route id 
+                if(this.$route.params.id){
+                    //edit mode  
+                    form.article_id=this.$route.params.id;
+                    let response=await editArticle(form);
+                    if(response.status==200){
+                        this.alert({
+                            state:true,
+                            color:'success',
+                            title:'创建成功',
+                            content:response.message,
+                        })
+                        this.setEditFinishCardState(true);
+                    }else{
+                        this.alert(getNormalErrorAlert(response.message));
+                    }
+                }else{
+                    //create mode
+                    let response=await createArticle(form);
+                    if(response.status==200){
+                        this.articleId=response.article_id;
+                        this.alert({
+                            state:true,
+                            color:'success',
+                            title:'创建成功',
+                            content:response.message,
+                        })
+                        this.setEditFinishCardState(true);
+                    }else{
+                        this.alert(getNormalErrorAlert(response.message));
+                    }
+                }
+                this.setLoading(getCancelLoadMsg());
+            }catch(e){
+                this.setLoading(getCancelLoadMsg());
+                this.alert(getNormalErrorAlert("未知错误，请查看控制台"));
+                console.log(e);
             }
-            this.setLoading(getCancelLoadMsg());
         },
         alert(msg){
             this.$emit('alert',msg);
