@@ -16,6 +16,7 @@ import '@mdi/font/css/materialdesignicons.css';
  */
 import './style/global.css';
 import { getDeviceType } from './utils/device';
+import { adjustAlpha } from './utils/other';
 const vuetify = createVuetify({
   components,
   directives,
@@ -114,7 +115,7 @@ app.config.globalProperties.$courseTypes=[
   '选修课',
 ]
 app.config.globalProperties.$teachMethods=[
-'线上', '线下', '混合', '其他'
+'线上', '线下', '混合'
 ]
 app.config.globalProperties.$examineMethods=[
 '考试', '论文', '项目展示', '其他']
@@ -134,10 +135,13 @@ app.config.globalProperties.$deviceType=deviceType;
  */
 var tmp=getCookie("themeColor");
 var themeColor="#9c0c13";
+var themeColorTransparent=adjustAlpha(themeColor);
 document.documentElement.style.setProperty('--theme-color', themeColor);
+document.documentElement.style.setProperty('--theme-color-transparent', themeColorTransparent);
 if(tmp!=null){
   themeColor=tmp;
   document.documentElement.style.setProperty('--theme-color', tmp);
+  document.documentElement.style.setProperty('--theme-color-transparent', adjustAlpha(tmp));
 }
 console.log("themeColor:"+themeColor);
 /**

@@ -3,15 +3,26 @@
         <div class="row-div">
             <div class="name-container">
                 <div class="name title">
-                    {{ data.course_name }}
+                    {{ data.name }}
                 </div>
                 <div class="row-div">
                     <div class="text-medium msg">
-                        校区:{{ data.campus }}
+                        课程类型:{{ data.type }}
+                    </div>
+                    <div class="text-medium msg">
+                            开设学院:{{ data.college }}
+                    </div>
                 </div>
-                <div class="text-medium msg">
-                        学院:{{ data.college }}
+                <div class="row-div">
+                    <div class="text-medium msg">
+                        上课方式:{{ data.attendMethod }}
+                    </div>
+                    <div class="text-medium msg">
+                        考核方式:{{ data.examineMethod }}
+                    </div>
                 </div>
+                <div class="text-small time">
+                    <span>{{ this.data.publishTime }}</span>
                 </div>
             </div>
             <div class="score-container">
@@ -19,7 +30,7 @@
                     {{ data.score }}
                 </div>
                 <div class="text-small score-num">
-                    {{ data.all_people }}个评价
+                    {{ data.evaluateNum }}个评价
                 </div>
             </div>
         </div>
@@ -42,12 +53,20 @@ export default {
                     /**
                      * some keys not displayed
                      */
-                    course_id: null,
-                    course_name: null,
-                    score: null,
-                    all_people:null,
+                    id: null,
+                    name: null,
+                    type: null,
                     campus:null,
                     college:null,
+                    credit:null,
+                    teacher:null,
+                    attendMethod:null,
+                    examineMethod:null,
+                    score:null,
+                    evaluateNum:null,
+                    scoreSum:null,
+                    publishTime:null,
+                    relativeArticles:null,
                 }
             }
         }
@@ -73,17 +92,22 @@ export default {
             /**
              * open a new tab and go
              */
-            if(this.data.course_id==null){//no id param
-                this.$router.push({
-                    name:'ErrorPage'
-                })
-            }
-            this.$router.push({ name: 'CoursePage', params: { id: this.data.course_id } });
+            window.open("#/course/"+this.data.id,"_blank");
         }
     }
 }
 </script>
 <style scoped>
+.time{
+    color: #8a8a8a;
+    align-items: center;
+    margin-top: 2px;
+    display: flex;
+    height: 100%;
+    width: fit-content;
+    flex-direction: row-reverse;
+    overflow-x: auto;
+}
 @media screen and (min-width: 600px) {
     .card{
         width: 750px;
@@ -94,6 +118,7 @@ export default {
         display: flex;
         height: 100%;
         flex-direction: row;
+        overflow-x: auto;
     }
     .name-container{
         display: flex;
@@ -113,6 +138,7 @@ export default {
     .score-container{
         margin-left: 50px;
         width: 250px;
+        padding: 10px;
         display: grid;
     }
     .score{
@@ -137,22 +163,24 @@ export default {
     .card{
         width: 100vw;
         padding:1vw;
+        padding: 5px;
         margin-top: 2px;
     }
     .row-div{
         display: flex;
         height: 100%;
+        overflow-x: auto;
         flex-direction: row;
     }
     .name-container{
         display: flex;
         flex-direction: column;
         justify-content: center;
-        width: 60vw;
+        width: 80vw;
         height: 100%;
     }
     .name{
-        width: 60vw;
+        width: 70vw;
         min-height: 27px;
         white-space:nowrap; 
         overflow:hidden;
@@ -160,7 +188,8 @@ export default {
     }
     .score-container{
         margin-left: 3vw;
-        width: 35vw;
+        width: 30vw;
+        padding: 10px;
         display: grid;
     }
     .score{
@@ -175,7 +204,7 @@ export default {
     .msg{
         color:grey;
         margin-right:2vw;
-        width: 25vw;
+        width: 35vw;
         white-space: nowrap;; 
         overflow:hidden;
         text-overflow:ellipsis;

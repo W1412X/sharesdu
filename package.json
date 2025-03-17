@@ -29,6 +29,7 @@
     "lodash": "^4.17.21",
     "marked": "^13.0.2",
     "md-editor-v3": "^5.4.1",
+    "segmentit": "^2.0.3",
     "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.2.13",
     "vue-router": "^4.4.0",

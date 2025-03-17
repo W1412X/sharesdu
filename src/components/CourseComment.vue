@@ -2,8 +2,9 @@
     <div class="container">
         <div class="row-div">
             <avatar-name :initData="{
-                name:data.author,
-                avatar:data.avatar
+                name:data.authorName,
+                avatar:data.authorProfileUrl,
+                id:data.authorId
             }"></avatar-name>
         </div>
         <div style="display: flex; align-items: center">
@@ -34,7 +35,9 @@ export default {
             default: function () {
                 return {
                     id: null,
-                    author: null,
+                    authorName: null,
+                    authorProfileUrl:null,
+                    authorId:null,
                     score: null,
                     comment: null,
                     time: null,

@@ -288,3 +288,28 @@ export function extractTime(str) {
         return "time ungot";
     }
 }
+/**
+ * 
+ * @param {String} hexColor 
+ * @param {Float} alpha 
+ * @returns 
+ */
+export function adjustAlpha(hexColor, alpha = 0.1) {
+    hexColor = hexColor.replace('#', '');
+    if (hexColor.length === 8) {
+        let r = hexColor.slice(0, 2);
+        let g = hexColor.slice(2, 4);
+        let b = hexColor.slice(4, 6);
+        // eslint-disable-next-line
+        let a = hexColor.slice(6);
+        let newAlpha = Math.round(alpha * 255);
+        let newAlphaHex = newAlpha.toString(16).padStart(2, '0');
+        return `#${r}${g}${b}${newAlphaHex}`;
+    } else if (hexColor.length === 6) {
+        let newAlpha = Math.round(alpha * 255);
+        let newAlphaHex = newAlpha.toString(16).padStart(2, '0');
+        return `#${hexColor}${newAlphaHex}`;
+    } else {
+        throw new Error('Invalid hex color format');
+    }
+}

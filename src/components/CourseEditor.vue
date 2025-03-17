@@ -5,7 +5,7 @@
             <sensitive-text-field v-model="data.name" class="title-input" label="课程名称" variant="outlined" density="compact"></sensitive-text-field>
             <div class="item-div">
                 <sensitive-text-area
-                    v-model="data.course_teacher"
+                    v-model="data.teacher"
                     label="授课教师"
                     variant="outlined"
                     density="compact"
@@ -15,15 +15,24 @@
                     class="item"
                 ></sensitive-text-area>
                 <v-select
-                    v-model="data.course_type"
+                    v-model="data.type"
                     variant="outlined"
                     density="compact"
                     class="item"
                     :items="types"
-                    multiple
                     chips
                     label="课程类型"
                 ></v-select>
+                <sensitive-text-area
+                    v-model="data.credit"
+                    label="课程学分(整数/小数)"
+                    variant="outlined"
+                    density="compact"
+                    rows="1"
+                    max-rows="1"
+                    max-width="300px"
+                    class="item"
+                ></sensitive-text-area>
             </div>
             <div class="item-div">
                 <v-select
@@ -45,7 +54,7 @@
             </div>
             <div class="item-div">
                 <v-select
-                    v-model="data.assessment_method"
+                    v-model="data.examineMethod"
                     variant="outlined"
                     density="compact"
                     class="item"
@@ -53,7 +62,7 @@
                     label="考核方式"
                 ></v-select>
                 <v-select
-                    v-model="data.course_method"
+                    v-model="data.attendMethod"
                     variant="outlined"
                     density="compact"
                     class="item"
@@ -72,8 +81,8 @@
 import { getCurrentInstance } from 'vue';
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import SensitiveTextField from './SensitiveTextField.vue';
-import { createCourse, getCourseDetail,editCourse } from '@/axios/course';
-import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
+import { createCourse/*, getCourseDetail,editCourse*/ } from '@/axios/course';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 
 export default {
     name: 'CourseEditor',
@@ -82,14 +91,15 @@ export default {
             type: Object,
             default: () => {
                 return {
-                    course_id: null,
-                    course_name: null,
-                    course_teacher: null,
-                    course_type: null,//course type
+                    id: null,
+                    name: null,
+                    teacher: null,
+                    type: null,//course type
                     college: null,
                     campus: null,
-                    assessment_method:null,
-                    course_method:null,//method to take course  
+                    examineMethod:null,
+                    attendMethod:null,//method to take course  
+                    credit:null,
                 }
             }
         }
@@ -123,31 +133,54 @@ export default {
             this.$emit('close')
         },
         async submit() {
-            /**
-             * submit the course
-             * if id is null,then create the course
-             * else edit
-             */
-            this.setLoading(getLoadMsg('正在提交...',-1));
-            var response=null;
-            if(this.data.id==null){
-                response=await createCourse(this.data);
-            }else{
-                response=await editCourse(this.data);
+            this.setLoading(getLoadMsg('正在创建课程...',-1));
+            let type=null;
+            switch(this.data.type){
+                case "必修课":
+                    type='compulsory';
+                    break;
+                case "选修课":
+                    type='elective';
+                    break;
+                case "限选课":
+                    type='restricted_elective';
+                    break;
+                default:
+                    type='other';
+                    break;
             }
-            if(response.status==200){
-                /**
-                 * success,close and alert
-                 */
-                this.close();
-                this.alert({color:'success',state:true,title:'发布成功',content:response.message});
-            }else{
-                /**
-                 * failed because other reasons 
-                 */
-                this.alert({color:'error',state:true,title:null,content:response.message})
+            let attendMethod=null;
+            switch (this.data.attendMethod) {
+                case "线下":
+                    attendMethod='offline';
+                    break;
+                case "线上":
+                    attendMethod='online';
+                    break;
+                case "混合":
+                    attendMethod='hybrid';
+                    break;
+                default:
+                    attendMethod='other';
+                    break;
             }
+            let response=await createCourse({
+                course_name:this.data.name,
+                course_type:type,
+                college:this.data.college,
+                campus:this.data.campus,
+                course_teacher:this.data.teacher,
+                course_method:attendMethod,
+                assessment_method:this.data.examineMethod,
+                credits:this.data.credit,
+            })
             this.setLoading(getCancelLoadMsg());
+            if(response.status==200||response.status==201){
+                this.alert(getNormalSuccessAlert("课程创建成功"));
+                this.close();
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
         },
         alert(msg){
             this.$emit('alert',msg);
@@ -157,15 +190,6 @@ export default {
         },
     },
     async mounted(){
-        /**
-         * if id is not null,then get the data from the server
-         * else do nothing
-         */
-        if(this.data.course_id!=null){
-            this.data=await getCourseDetail(this.data.course_id);
-        }else{
-            //eslint-disable-next-line no-console
-        }
     }
 }
 </script>

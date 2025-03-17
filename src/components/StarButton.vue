@@ -2,7 +2,7 @@
 <template>
     <v-dialog v-model="ifShowDialog" style="display: flex;flex-direction: row;align-items: center;justify-content: center;width: 100%;height: 100%;">
         <div v-if="ifShowStarCard" style="width: 100%;height:100%;justify-content: center;display: flex">
-            <star-card @set_loading="setLoading" @alert="alert" @close="starOk" :type="'add'" :msg="{type:type,id:id}"/>
+            <star-card @set_loading="setLoading" @close="setStarCardState(false)" @alert="alert" @star_ok="starOk" :type="'add'" :msg="{type:type,id:id}"/>
         </div>
     </v-dialog>
     <v-btn @click="handleClick" elevation="0" icon :style="{

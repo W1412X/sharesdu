@@ -18,13 +18,14 @@
 
     <v-card class="card" elevation="1">
         <div class="row-reverse-div">
-        <v-btn v-if="type === 'add'" size="20" style="margin-bottom: 10px;" color="#8a8a8a" variant="text" icon="mdi-close" @click="closeDialog()"></v-btn>
+        <v-btn v-if="type === 'add'" size="20" style="margin-bottom: 10px;" color="#8a8a8a" variant="text" icon="mdi-close" @click="close"></v-btn>
                 </div>
         <v-btn style="width: 100%;" @click="setFolderEditorState(true)" prepend-icon="mdi-plus" :color="themeColor"
         variant="tonal">新建收藏夹</v-btn>
         <div class="column-div-scroll">
             <v-expansion-panels>
                 <v-expansion-panel expand-icon="mdi-folder-star" v-for="(folder, index) in folders" :key="index"
+                    class="with-border"
                     :text="folder.description" :title="folder.name">
                     <div class="row-reverse-div">
                         <v-btn v-if="type === 'add'" @click="add(folder.id)" :color="themeColor" icon="mdi-star-plus" class="btn"
@@ -57,7 +58,7 @@
 <script>
 import { globalProperties } from '@/main';
 import StarItem from './StarItem.vue';
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
 import { createStarFolder, getStarFolders, getStarList, starContent } from '@/axios/star';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from './SensitiveTextArea.vue';
@@ -121,6 +122,7 @@ export default {
                     id: response.folder_id,
                     starNum: 0,
                     createTime: new Date().toLocaleString(),
+                    items:[]
                 })
                 this.newFolder.name = "";
                 this.newFolder.description = "";
@@ -130,17 +132,46 @@ export default {
             }
         },
         async load(folderId) {
+            for(let i=0;i<this.folders.length;i++){
+                if(this.folders[i].id==folderId){
+                    if(this.folders[i].items.length!=0){
+                        this.alert(getNormalInfoAlert("文件夹已加载"))
+                        return;
+                    }
+                }
+            }
             this.setLoading(getLoadMsg("正在加载收藏夹列表..."));
             let response = await getStarList(folderId);
             this.setLoading(getCancelLoadMsg());
             if (response.status == 200 || response.status == 201) {
-                for(let i=0;i<this.folders.length;i++){
+                try{
+                    for(let i=0;i<this.folders.length;i++){
                     if(this.folders[i].id==folderId){
                         for(let u=0;u<response.star_list.length;u++){
-                            this.folders[i].items.push(response.star_list[u]);
+                            let type=null;
+                            switch(response.star_list[u].content_type){
+                                case 0:
+                                    type="article";
+                                    break;
+                                case 1:
+                                    type="course";
+                                    break;
+                                case 2:
+                                    type="post";
+                                    break;
+                            }
+                            this.folders[i].items.push({
+                                id:response.star_list[u].content_id,
+                                title:response.star_list[u].content_name,
+                                type:type,
+                                time:response.star_list[u].created_at,
+                            });
                         }
                         break;
                     }
+                }
+                }catch (e) {
+                    console.log(e);
                 }
                 this.alert(getNormalSuccessAlert("成功加载收藏"));
             } else {
@@ -168,7 +199,7 @@ export default {
             this.setLoading(getCancelLoadMsg());
             if (response.status == 200 || response.status == 201) {
                 this.alert(getNormalSuccessAlert("收藏成功"));
-                this.$emit('close');
+                this.$emit('star_ok');
             } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
@@ -181,6 +212,9 @@ export default {
         },
         closeDialog() {
             this.setFolderEditorState(false);
+        },
+        close(){
+            this.$emit('close');
         }
     },
     async mounted() {
@@ -195,6 +229,7 @@ export default {
                     description: response.folders[i].description,
                     starNum: response.folders[i].star_count,
                     createTime: extractTime(response.folders[i].created_at),
+                    items:[]
                 })
             }
             this.alert(getNormalSuccessAlert('加载成功'));
@@ -223,6 +258,10 @@ export default {
     padding: 5px;
     width: 100%;
 }
+.with-border{
+    border-radius: 5px;
+    border: 1px solid var(--theme-color);
+}
 .row-div{
     display: flex;
     flex-direction: row;
@@ -232,11 +271,6 @@ export default {
 .column-div {
     display: flex;
     flex-direction: column;
-}
-.column-div-scroll {
-    display: flex;
-    flex-direction: column;
-    overflow-y: scroll;
 }
 .icon-left-10px{
     margin-left: 10px;
@@ -254,13 +288,25 @@ export default {
         max-height: 800px;
         padding: 10px;
     }
+    .column-div-scroll {
+        display: flex;
+        flex-direction: column;
+        max-height: 750px;
+        overflow: auto;
+    }
 }
 
 @media screen and (max-width: 600px) {
     .card {
         width: 100vw;
-        max-height: 60vh;
+        max-height: 80vh;
         padding: 10px;
+    }
+    .column-div-scroll {
+        display: flex;
+        flex-direction: column;
+        max-height: 70vh;
+        overflow: auto;
     }
 }
 </style>

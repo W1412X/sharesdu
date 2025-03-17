@@ -1,10 +1,10 @@
 <!--star button-->
 <template>
-    <v-card @click="click()" class="card" elevation="1">
+    <v-card @click="click()" class="card" elevation="1" variant="tonal" :color="themeColor">
         <div class="div-2">
-            <v-icon :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;" color="grey"/>
-            <div class="div-1 ">
-                <div class="title-container title-bold">
+            <v-icon :color="themeColor" :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;"/>
+            <div class="div-1">
+                <div class="title-container title">
                     {{ data.title }}
                 </div>
                 <div class="time-container text-small">
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { globalProperties } from '@/main';
+
 export default {
     props: {
         initData: {
@@ -28,6 +30,12 @@ export default {
                     time: null,
                 }
             }
+        }
+    },
+    setup(){
+        const themeColor=globalProperties.$themeColor;
+        return {
+            themeColor,
         }
     },
     data() {
@@ -53,6 +61,7 @@ export default {
             }
         },
         getIcon(type) {
+            console.log(type)
             switch (type) {
                 case 'article':
                     return 'mdi-file-document-outline';
@@ -68,6 +77,7 @@ export default {
 </script>
 <style scoped>
     .title-container{
+        color: #000;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

@@ -5,7 +5,13 @@
             <div class="title-bold">
                 添加标签
             </div>
-            <SensitiveTextField style="margin-top: 10px;" v-model="inputingTag" variant="outlined" density="compact" label="输入标签"/>
+            <v-autocomplete
+                v-model="inputingTag"
+                label="输入标签"
+                :items="this.recommendTags"
+                density="compact"
+                variant="outlined"
+            ></v-autocomplete>
             <div class="dialog-bottom-btn-bar">
                 <v-btn @click="addTag" variant="text">添加</v-btn>
                 <v-btn @click="setTagInputState(false)" variant="text">取消</v-btn>
@@ -112,9 +118,9 @@
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
-import SensitiveTextField from './SensitiveTextField.vue';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
 import { uploadArticleImage } from '@/axios/image';
+import { extractTags } from '@/utils/keyword';
 export default {
     name: 'EditorBar',
     props: {
@@ -131,6 +137,10 @@ export default {
                 }
             },
         },
+        title:{
+            type: String,
+            default: "",
+        }
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -152,15 +162,19 @@ export default {
     },
     components: {
         SensitiveTextArea,
-        SensitiveTextField,
     },
     data() {
         var data=this.initData;
         const file=null;
+        const recommendTags=computed(()=>{
+            console.log(this.title);
+            return extractTags(this.title);
+        })
         return{
             data,
             file,
             tmpCoverImage:null,
+            recommendTags,
         }
     },
     methods: {
@@ -399,7 +413,7 @@ export default {
     margin-left: 10px;
 }
 .dialog-card{
-    padding: 10px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
 }

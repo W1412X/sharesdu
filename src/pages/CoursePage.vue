@@ -21,10 +21,7 @@
                         {{ course.name }}
                     </div>
                     <v-spacer></v-spacer>
-                    <v-icon class="icon-right-5px comment-icon-div" icon="mdi-comment" size="20" color="grey"></v-icon>
-                    <div class="text-medium top-bar-text">
-                        {{ course.commentNum }}
-                    </div>
+                    <star-button :id="this.course.id" :type="'course'" @alert="alert" @set_loading="setLoading" :state="this.course.ifStar"></star-button>
                     <!--
                     <v-icon class="icon-right-5px" icon="mdi-star" size="22" color="grey"></v-icon>
                     <div class="text-medium top-bar-text">
@@ -44,7 +41,7 @@
                             教学方式:{{ course.attendMethod }}
                         </div>
                         <div class="msg-item">
-                            学分:{{ course.credits }}
+                            学分:{{ course.credit }}
                         </div>
                     </div>
                     <div class="row-div">
@@ -58,6 +55,14 @@
                             考核方式:{{ course.examineMethod }}
                         </div>
                     </div>
+                    <div class="time-container">
+                        <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="18"></v-icon>
+                        <div class="text-small">
+                            {{ course.publishTime }}
+                        </div>
+                        <v-spacer></v-spacer>
+                        <span class="history-text text-small" @click="showHistory">查看历史版本</span>
+                    </div>
                 </div>
                 <div class="visualize-score-card">
                     <div class="bar-left-container">
@@ -67,15 +72,15 @@
                         </div>
                         <v-rating :size="bigScoreBarSize" :model-value="course.avgScore" :color="themeColor"
                             :disabled="true" half-increments></v-rating>
-                        <div class="score-num-text">{{ course.comment }} 个评分</div>
+                        <div class="score-num-text">{{ course.evaluateNum }} 个评分</div>
                     </div>
                     <v-list style="width: 400px" bg-color="transparent" class="d-flex flex-column-reverse"
                         density="compact">
-                        <v-list-item v-for="(score, i) in course.scores" :key="i">
+                        <v-list-item v-for="(score, i) in course.scoreDistribution" :key="i">
                             <div class="linear-bar-container">
-                                <v-icon size="20" icon="mdi-star" color="rgba(156,12,19,0.5)"></v-icon>
+                                <v-icon size="20" icon="mdi-star" :color="themeColor"></v-icon>
                                 <span class="text-medium before-linear-bar-text">{{ i + 1 }}</span>
-                                <v-progress-linear :max="100" :model-value="100 * score / course.comment"
+                                <v-progress-linear :max="100" :model-value="100 * score / course.evaluateNum"
                                     class="linear-bar margin-left-5px" :color="themeColor" :height="barHeight">
                                 </v-progress-linear>
                             </div>
@@ -86,21 +91,21 @@
                     <div class="row-div">
                         <v-rating v-model="selfComment.score" density="compact" :color="selfComment.score===null?'#8a8a8a':themeColor" :disabled="true"></v-rating>
                         <v-spacer />
-                        <div v-if="oriSelfComment.score===null" class="title-bold text1">
+                        <div v-if="this.ifRated===false" class="title-bold text1">
                             暂未评价此课程
                         </div>
-                        <div v-if="oriSelfComment.score!==null" class="title-bold text1">
+                        <div v-if="this.ifRated===true" class="title-bold text1" :color="themeColor">
                             我的评论
                         </div>
                     </div>
-                    <div v-if="oriSelfComment.score!==null" class="text-medium self-comment-text">
+                    <div v-if="this.ifRated===true" class="text-medium self-comment-text">
                         {{ selfComment.comment }}
                     </div>
                     <v-btn @click="setCommentEditorState(true)" class="add-comment-btn" variant="tonal" :color="themeColor">
-                        <div v-if="oriSelfComment.score===null" class="title-medium-bold">
+                        <div v-if="this.ifRated===false" class="title-medium-bold">
                             评价此课程
                         </div>
-                        <div v-if="oriSelfComment.score!==null" class="title-medium-bold">
+                        <div v-if="this.ifRated===true" class="title-medium-bold">
                             修改我的评价
                         </div>
                     </v-btn>
@@ -108,7 +113,7 @@
             </v-card>
             <div class="comments-container">
                 <div class="comment-column">
-                    <course-comment v-for="(item,index) in courseComments" 
+                    <course-comment v-for="(item,index) in commentList" 
                         :init-data="item"
                         :key="index"    
                     ></course-comment>
@@ -123,16 +128,17 @@ import CourseComment from '@/components/CourseComment.vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
-import { getCourseDetail,getUserCourseEvaluation,editCourseRating,rateCourse, getCourseEvaluationList } from '@/axios/course';
+import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList } from '@/axios/course';
 import { computed,ref } from 'vue';
-import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
+import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getProfileUrl } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
-import { scCourseDetail, scCourseSelfComment } from '@/axios/api_convert/course';
+import StarButton from '@/components/StarButton.vue';
 export default {
     name: 'CoursePage',
     components: {
         CourseComment,
         SensitiveTextArea,
+        StarButton,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -167,7 +173,7 @@ export default {
                 campus: null,
                 college: null,
                 teacher: null,
-                credits:null,
+                credit:null,
                 examineMethod: null,//examine method
                 attendMethod: null,//attend class method
                 score: null,
@@ -185,9 +191,9 @@ export default {
                 score:null,
                 comment: null,
             },
-            courseComments: [],
+            commentList: [],
             commentPageNum:1,
-
+            ifRated:false,
         }
     },
     methods: {
@@ -216,9 +222,9 @@ export default {
             }
             this.setLoading(getLoadMsg("正在提交您的评分...",-1));
             let response=null;
-            if(this.selfComment.score!==null){
+            if(this.ifRated){
                 //self evaluated  
-                response=await editCourseRating({
+                response=await editRating({
                     course_id:this.course.id,
                     score:this.selfComment.score,
                     comment:this.selfComment.comment
@@ -233,14 +239,10 @@ export default {
                 })
                 this.setLoading(getCancelLoadMsg());
             }
-            if(response.status==200){
+            if(response.status==200||response.status==201){
                 this.oriSelfComment=copy(this.selfComment);
-                this.alert({
-                    state:true,
-                    color:'success',
-                    title:'提交成功',
-                    content:response.message,
-                })
+                this.alert(getNormalSuccessAlert("提交成功"));
+                this.ifRated=true;
             }else{
                 this.selfComment=copy(this.oriSelfComment);
                 this.alert(getNormalErrorAlert(response.message));
@@ -255,68 +257,107 @@ export default {
         },
         async getSelfComment(){
             this.setLoading(getLoadMsg("正在加载您的评分...", -1));
-            let response=await getUserCourseEvaluation({
-                user_id:getCookie("userId"),
-                course_id:this.course.id,
-            })
+            let response=await getUserCourseEvaluation(getCookie("userId"),this.course.id)
             this.setLoading(getCancelLoadMsg());
             if(response.status==200){
-                this.selfComment=scCourseSelfComment(response);
+                this.selfComment={
+                    score:response.score,
+                    comment:response.comment,
+                }
+                this.oriSelfComment=copy(this.selfComment);
+                this.alert(getNormalSuccessAlert("成功获取您的评分"));
+                this.ifRated=true;
             }else{
-                this.alert(getNormalErrorAlert(response.message));
+                //do nothing
             }
         },
         async getCourseCommentList(){
             this.setLoading(getLoadMsg("正在获取评分列表...",-1));
-            let response=await getCourseEvaluationList(
-                this.course.id,
-                this.commentPageNum,
-            )
+            let response=await getCourseScoreList(this.course.id,this.commentPageNum);
             this.setLoading(getCancelLoadMsg());
             if(response.status==200){
                 /**
                  * add the comment in to the list and add the page  
                  */
                  for(let ind=0;ind<response.score_list.length;ind++){
-                     this.commentList.push(response.score_list[ind]);
+                    if(response.score_list[ind].scorer_id!=getCookie("userId")){
+                        this.commentList.push({
+                            id:response.score_list[ind].review_id,
+                            authorId:response.score_list[ind].scorer_id,
+                            authorName:response.score_list[ind].scorer_name,
+                            authorProfileUrl:getProfileUrl(response.score_list[ind].scorer_id),
+                            score:response.score_list[ind].score,
+                            comment:response.score_list[ind].comment,
+                            time:response.score_list[ind].publish_time,
+                        });
+                    }
                  }
                  this.commentPageNum++;
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
+        },
+        async showHistory(){
+
         }
     },
     async mounted() {
         /**
          * get the course id from the url
          */
-        this.course.id = this.$route.params.id;
-        this.setLoading(getLoadMsg('正在获取课程信息...',-1))
         /**
          * get course detail
          */
+        this.course.id = this.$route.params.id;
+        this.setLoading(getLoadMsg('正在获取课程信息...',-1))
         let response=await getCourseDetail(this.course.id);
         this.setLoading(getCancelLoadMsg());
         if(response.status==200){
-            response=scCourseDetail(response);
-            this.course=response.detail;
+            let avgScore=0;
+            if(response.course_detail.all_people!=0){
+                avgScore=response.course_detail.all_score/response.course_detail.all_people;
+            }
+            this.course={
+                id:response.course_detail.course_id,
+                name:response.course_detail.course_name,
+                type:response.course_detail.course_type,
+                credit:response.course_detail.credits,
+                teacher:response.course_detail.course_teacher	,
+                attendMethod:response.course_detail.course_method,
+                examineMethod:response.course_detail.assessment_method,
+                publishTime:response.course_detail.publish_time,
+                campus:response.course_detail.campus,
+                college:response.course_detail.college,
+                evaluateNum:response.course_detail.all_people,
+                avgScore:avgScore,
+                scoreDistribution:response.course_detail.score_distribution,
+            }
+            console.log(this.course);
+            this.alert(getNormalSuccessAlert("获取课程信息成功"));
         }else{
             this.alert(getNormalErrorAlert(response.message));
             //this.$router.push({name:"ErrorPage",reason:"课程信息获取失败"})
             return;
         }
-        /**
-         * get the self comment  
-         */
         await this.getSelfComment();
         await this.getCourseCommentList();
-        this.oriSelfComment=copy(this.selfComment);
-        console.log(this.oriSelfComment);
-
     },
 }
 </script>
 <style scoped>
+.time-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+    color: #8a8a8a;
+}
+.history-text{
+    color: #8a8a8a;
+    text-decoration: underline;
+    margin-left: 10px;
+    margin-right: 10px;
+}
 .before-linear-bar-text {
     color: grey;
     font-size: 14px;
@@ -378,7 +419,7 @@ export default {
 .text1 {
     margin-top: 5px;
     margin-right: 5px;
-    color: grey;
+    color: var(--theme-color);
 }
 
 .top-bar-text{
@@ -419,7 +460,7 @@ export default {
 
     .visualize-score-card {
         margin-top: 20px;
-        background-color: rgba(156, 12, 19, 0.1);
+        background-color: var(--theme-color-transparent);
         border-radius: 10px;
         width: 770px;
         display: flex;
@@ -433,7 +474,7 @@ export default {
 
     .actual-score-text {
         font-size: 36px;
-        color: black;
+        color: var(--theme-color);
     }
 
     .score-num-text {
@@ -524,7 +565,7 @@ export default {
         width: 98vw;
         display: flex;
         flex-direction: row;
-        background-color: rgba(156, 12, 19, 0.1);
+        background-color: var(--theme-color-transparent);
         border-radius: 10px;
     }
 
@@ -535,7 +576,7 @@ export default {
 
     .actual-score-text {
         font-size: 28px;
-        color: black;
+        color: var(--theme-color);
     }
 
     .score-num-text {

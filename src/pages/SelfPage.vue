@@ -16,7 +16,7 @@
   </v-dialog>
   <div class="full-center">
     <v-navigation-drawer v-if="deviceType === 'desktop'" v-model="drawer" :rail="rail" permanent @click="rail = false">
-      <v-list-item class="name" :prepend-avatar="user.avatar" :title="user.name" nav>
+      <v-list-item class="name" :prepend-avatar="user.profileUrl" :title="user.name" nav>
       </v-list-item>
       <v-divider></v-divider>
       <v-btn v-if="!rail" size="30" class="menu-btn" :icon="'mdi-chevron-left'" @click.stop="rail = !rail"></v-btn>
@@ -78,7 +78,7 @@
       </div>
       <!-- star part -->
       <div v-if="choose === 'star'">
-        <star-card @alert="alert" @set_loading="setLoading" :type="'show'"></star-card>
+          <star-card @alert="alert" @set_loading="setLoading" :type="'show'"></star-card>
       </div>
       <!-- follow part  -->
       <div v-if="choose === 'follow'">
@@ -230,6 +230,12 @@ export default {
     }
   },
   async mounted() {
+    this.user={
+      id: getCookie("userId"),
+      name: getCookie("userName"),
+      profileUrl: getCookie("userProfileUrl"),
+      email: getCookie("userEmail"),
+    }
     //if no id,to the user page
     if(!this.$route.params.id){
       this.$router.push({ name: 'SelfPage', params: { id: getCookie("userId") } })

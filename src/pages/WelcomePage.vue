@@ -60,7 +60,7 @@
         </div>
         <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
             <img style="vertical-align:middle;width: 20px;height: 20px;margin-right: 5px;" src="../../public/police.png">
-            <a style="font-size:13px;font-weight: bold;"
+            <a style="font-size:13px;font-weight: bold;color: #8a8a8a;"
                 href="//www.beian.gov.cn/portal/registerSystemInfo?recordcode=37028202001173">鲁公网安备37028202001173号</a>
         </div>
     </div>
@@ -212,7 +212,6 @@ export default {
 @media screen and (max-width: 600px) {
     .full-center {
         width: 100vw;
-        height: 100vh;
         display: grid;
         justify-content: center;
     }

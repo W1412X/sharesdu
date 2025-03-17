@@ -40,7 +40,7 @@
                 @set_loading="setLoading"
                 v-if="editorType=='md'"
             ></md-editor>
-            <editor-bar ref="editorBarRef" :init-data="editorBarData" @set_loading="setLoading" @alert="alert"></editor-bar>
+            <editor-bar ref="editorBarRef" :title="editorData.title" :init-data="editorBarData" @set_loading="setLoading" @alert="alert"></editor-bar>
             <v-btn @click="submit" class="submit-btn" :color="themeColor" variant="outlined">发布文章</v-btn>
         </v-card>
     </div>

@@ -7,7 +7,7 @@
     </v-dialog>
     <div class="full-screen">
         <div class="top-bar">
-            <avatar-name :init-data="{avatar:userProfileUrl,name:userName}" :color="'#ffffff'"></avatar-name>
+            <avatar-name :init-data="{avatar:userProfileUrl,name:userName,id:userId}" :color="'#ffffff'"></avatar-name>
             <v-spacer></v-spacer>
             <v-text-field v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
                 variant="outlined" color="#ffffff">
@@ -77,6 +77,7 @@ import { getCookie } from '@/utils/cookie';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getProfileUrl } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/axios/article';
 import AvatarName from '@/components/AvatarName.vue';
+import { getCourseList } from '@/axios/course';
 export default {
     name: 'IndexPage',
     components: {
@@ -215,7 +216,33 @@ export default {
                     this.alert(getNormalErrorAlert(response.message));
                 }
             }else if(itemType=='course'){
-                //to do  
+                this.setLoading(getLoadMsg("正在获取..."));
+                let response=await getCourseList(this.coursePageNum);
+                this.setLoading(getCancelLoadMsg());
+                if(response.status==200){
+                    for(let ind=0;ind<response.course_list.length;ind++){
+                        this.courseList.push({
+                            id:response.course_list[ind].course_id,
+                            name:response.course_list[ind].course_name,
+                            type:response.course_list[ind].course_type,
+                            college:response.course_list[ind].college,
+                            credit:response.course_list[ind].credits,
+                            campus:response.course_list[ind].campus,
+                            teacher:response.course_list[ind].teacher,
+                            attendMethod:response.course_list[ind].course_method,
+                            examineMethod:response.course_list[ind].assessment_method,
+                            score:response.course_list[ind].score,
+                            scoreSum:response.course_list[ind].all_score,
+                            evaluateNum:response.course_list[ind].all_people,
+                            publishTime:response.course_list[ind].publish_time,
+                            
+                        });
+                    }
+                    this.alert(getNormalSuccessAlert("加载成功"));
+                    this.coursePageNum++;
+                }else{
+                    this.alert(getNormalErrorAlert(response.message));
+                }
             }else if(itemType=='post'){
                 //get the article 20 template  
                 this.setLoading(getLoadMsg("正在获取..."));
