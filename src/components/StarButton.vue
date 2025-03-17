@@ -1,30 +1,60 @@
 <!--star button-->
 <template>
+    <v-dialog v-model="ifShowDialog" style="display: flex;flex-direction: row;align-items: center;justify-content: center;width: 100%;height: 100%;">
+        <div v-if="ifShowStarCard" style="width: 100%;height:100%;justify-content: center;display: flex">
+            <star-card @set_loading="setLoading" @alert="alert" @close="starOk" :type="'add'" :msg="{type:type,id:id}"/>
+        </div>
+    </v-dialog>
     <v-btn @click="handleClick" elevation="0" icon :style="{
-        'max-width': '25px',
-        'max-height': '25px',
+        'max-width': size+'px',
+        'max-height': size+'px',
         'border-radius': '100%',
         'background-color':'rgba(0,0,0,0)'
     }">
-        <v-icon type="mdi" size="25" :color="color" :icon="star"></v-icon>
+        <v-icon type="mdi" :size="size" :color="color" :icon="star"></v-icon>
     </v-btn>
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import StarCard from './StarCard.vue';
+import { unstarContent } from '@/axios/star';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalWarnAlert } from '@/utils/other';
 
 export default {
     props: {
-        data:{
-            type:Object,
-            default: () => {
-                return {
-                    state: false,
-                    type: null,//article,course,post
-                    id: null,
-                }
-        
-            }
+        state: {
+            type: Boolean,
+            default: false,
+        },
+        type: {
+            type: String,
+            default: null,
+        },
+        id: {
+            type: String,
+            default: '00000000',
+        },
+        size: {
+            type: String,
+            default: '25',
+        },
+    },
+    components:{
+        StarCard,
+    },
+    setup(){
+        const ifShowStarCard=ref(false);
+        const ifShowDialog=computed(()=>{
+            return ifShowStarCard.value;
+        })
+        const setStarCardState=(state)=>{
+            ifShowStarCard.value=state;
+        }
+        return {
+            ifShowDialog,
+            ifShowStarCard,
+            setStarCardState,
         }
     },
     data() {
@@ -35,13 +65,38 @@ export default {
             isClickable: true, //to judge  if clickable
         };
     },
-    components: {
-    },
     methods: {
-        handleClick() {
+        async handleClick() {
             if (!this.isClickable) return; //if not clickable return
             this.isClickable = false; //set clickable to false
-            this.ifClicked = !this.ifClicked;
+            if(this.ifClicked){
+                let type=-1;
+                switch(this.type){
+                    case 'article':
+                        type=1;
+                        break;
+                    case 'course':
+                        type=0;
+                        break;
+                    case 'post':
+                        type=2;
+                        break;
+                    default:
+                        type=-1;
+                        break;
+                }
+                this.setLoading(getLoadMsg("正在取消收藏..."));
+                let response=await unstarContent(type,this.id);
+                this.setLoading(getCancelLoadMsg());
+                if(response.status==200){
+                    this.alert(getNormalWarnAlert('取消收藏成功'));
+                    this.ifClicked=false;
+                }else{
+                    this.alert(getNormalErrorAlert(response.message));
+                }
+            }else{
+                this.setStarCardState(true);
+            }
             //out type and id
             console.log('type', this.type);
             console.log('id', this.id);
@@ -49,6 +104,16 @@ export default {
             setTimeout(() => {
                 this.isClickable = true;
             }, 2000);
+        },
+        setLoading(msg){
+            this.$emit('set_loading',msg);
+        },
+        alert(msg){
+            this.$emit('alert',msg);
+        },
+        starOk(){
+            this.setStarCardState(false);
+            this.ifClicked=true;
         }
     }
 }

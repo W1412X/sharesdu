@@ -134,8 +134,10 @@ app.config.globalProperties.$deviceType=deviceType;
  */
 var tmp=getCookie("themeColor");
 var themeColor="#9c0c13";
+document.documentElement.style.setProperty('--theme-color', themeColor);
 if(tmp!=null){
   themeColor=tmp;
+  document.documentElement.style.setProperty('--theme-color', tmp);
 }
 console.log("themeColor:"+themeColor);
 /**

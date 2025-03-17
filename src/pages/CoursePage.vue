@@ -4,7 +4,7 @@
             <v-card v-if="ifShowCommentEditor" class="comment-editor-card">
                 <div class="title-bold">评价此课程</div>
                 <v-rating v-model="selfComment.score" size="medium" density="compact" style="margin: 0px; padding: 0px"
-                    color="#9c0c13" :disabled="false"></v-rating>
+                    :color="themeColor" :disabled="false"></v-rating>
                 <sensitive-text-area style="margin-top: 10px;" label="添加对此课程的评价(老师，课程难度，作业，意义)" variant="outlined" v-model="selfComment.comment"></sensitive-text-area>
                 <div class="dialog-bottom-bar">
                     <v-btn @click="submitComment" class="dialog-bottom-bar-btn" variant="text" >提交</v-btn>
@@ -65,7 +65,7 @@
                             {{ course.avgScore }}
                             <span class="base-score-text">/5</span>
                         </div>
-                        <v-rating :size="bigScoreBarSize" :model-value="course.avgScore" color="#9c0c13"
+                        <v-rating :size="bigScoreBarSize" :model-value="course.avgScore" :color="themeColor"
                             :disabled="true" half-increments></v-rating>
                         <div class="score-num-text">{{ course.comment }} 个评分</div>
                     </div>
@@ -76,7 +76,7 @@
                                 <v-icon size="20" icon="mdi-star" color="rgba(156,12,19,0.5)"></v-icon>
                                 <span class="text-medium before-linear-bar-text">{{ i + 1 }}</span>
                                 <v-progress-linear :max="100" :model-value="100 * score / course.comment"
-                                    class="linear-bar margin-left-5px" color="#9c0c13" :height="barHeight">
+                                    class="linear-bar margin-left-5px" :color="themeColor" :height="barHeight">
                                 </v-progress-linear>
                             </div>
                         </v-list-item>

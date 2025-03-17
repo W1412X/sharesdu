@@ -11,6 +11,7 @@
           <v-btn @click="cancelBlock(index)" variant="text">取消拉黑</v-btn>
         </div>
       </div>
+      <color-selector-card v-if="ifShowColorSelectorCard" @set_color="closeDialog()"></color-selector-card>
     </div>
   </v-dialog>
   <div class="full-center">
@@ -77,16 +78,7 @@
       </div>
       <!-- star part -->
       <div v-if="choose === 'star'">
-        <v-list>
-          <v-list-group v-for="(name, index) in this.starFolders" :value="name" :key="index">
-          <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" :title="name" :color="themeColor" rounded="shaped" prepend-icon="mdi-folder-star"></v-list-item>
-          </template>
-          <v-list-item v-for="(item, index) in this.starFolderItems[name]" v-bind:key="index">
-            <star-item  :key="index" :init-data="item"></star-item>
-          </v-list-item>
-        </v-list-group>
-        </v-list>
+        <star-card @alert="alert" @set_loading="setLoading" :type="'show'"></star-card>
       </div>
       <!-- follow part  -->
       <div v-if="choose === 'follow'">
@@ -122,6 +114,8 @@
             variant="outlined" text="关于我们"></v-btn>
           <v-btn @click="setBlockListState(true)" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
             text="黑名单"></v-btn>
+            <v-btn @click="setColorSelectorCardState(true)" prepend-icon="mdi-account-box" color="grey" variant="outlined"
+            text="个性化主题"></v-btn>
         </div>
       </div>
     </div>
@@ -134,13 +128,14 @@ import { unblockUser } from '@/axios/block';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 import ArticleItem from '@/components/ArticleItem.vue';
 import AvatarName from '@/components/AvatarName.vue';
+import ColorSelectorCard from '@/components/ColorSelectorCard.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
-import StarItem from '@/components/StarItem.vue';
+import StarCard from '@/components/StarCard.vue';
 import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
 import { ref, computed } from 'vue';
 export default {
   name: 'SelfPage',
@@ -153,11 +148,15 @@ export default {
     const navVisible = ref(false);
     const selfItemType = ref('article');
     var ifShowBlockList = ref(false);
+    var ifShowColorSelectorCard=ref(false);
     var ifShowDialog = computed(() => {
-      return ifShowBlockList.value;
+      return ifShowBlockList.value || ifShowColorSelectorCard.value;
     });
     const setBlockListState = ((state) => {
       ifShowBlockList.value = state;
+    })
+    const setColorSelectorCardState = ((state) => {
+      ifShowColorSelectorCard.value = state;
     })
     return {
       drawer,
@@ -170,6 +169,8 @@ export default {
       ifShowBlockList,
       ifShowDialog,
       setBlockListState,
+      ifShowColorSelectorCard,
+      setColorSelectorCardState,
     }
   },
   components: {
@@ -178,7 +179,8 @@ export default {
     CourseItem,
     AvatarName,
     UserMessageEditorCard,
-    StarItem,
+    StarCard,
+    ColorSelectorCard,
   },
   data() {
     return {
@@ -189,14 +191,7 @@ export default {
       followList: [],
       followStateList: [],
       messageList: [],
-      blockList: [
-        { name: "wwww", avatar: "wwww" },
-        { name: "aaaa", avatar: "wwww" },
-        { name: "bbbb", avatar: "wwww" },
-        { name: "cccc", avatar: "wwww" }
-      ],
-      starFolders: ["fuck", "haah"],
-      starFolderItems: { "fuck": [{ type: "post", id: '222', title: "name", time: "xxxxxxxxx" }, { type: "article", id: '222', title: "name", time: "xxxxxxxxx" }, { type: "course", id: '222', title: "name", time: "xxxxxxxxx" }], "haah": [{ type: "post", id: '222', title: "name", time: "xxxxxxxxx" }, { type: "post", id: '222', title: "name", time: "xxxxxxxxx" }, { type: "post", id: '222', title: "name", time: "xxxxxxxxx" }] },
+      blockList: [],
     }
   },
   methods: {
@@ -231,6 +226,7 @@ export default {
     },
     closeDialog() {
       this.setBlockListState(false);
+      this.setColorSelectorCardState(false);
     }
   },
   async mounted() {
@@ -277,7 +273,7 @@ export default {
        * error
        * to error page and show the alert
        */
-      this.alert({ color: "error", title: "加载失败", content: response.message, state: true })
+      this.alert(getNormalErrorAlert(response.message));
       //this.$router.push({ name: 'ErrorPage', params: { reason: "无法找到此用户" } });
     }
   }

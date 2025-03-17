@@ -11,8 +11,8 @@
     <div class="full-center">
         <v-card class="card">
             <v-tabs v-model="nowTab" bg-color="indigo-darken-2" fixed-tabs>
-                <v-tab :style="{ background: '#9c0c13', 'font-size': '18px' }" value="login" text="登陆"></v-tab>
-                <v-tab :style="{ background: '#9c0c13', 'font-size': '18px' }" value="register" text="注册"></v-tab>
+                <v-tab :style="{ background: themeColor, 'font-size': '18px' }" value="login" text="登陆"></v-tab>
+                <v-tab :style="{ background: themeColor, 'font-size': '18px' }" value="register" text="注册"></v-tab>
             </v-tabs>
             <v-tabs-window v-model="nowTab">
                 <!-- login by userName -->
@@ -157,6 +157,7 @@ export default {
         const ifShowDialog = computed(() => {
             return ifShowEmailExamineCard.value;
         })
+        const apiUrl=globalProperties.$apiUrl;
         const campusList = globalProperties.$campus;
         const collegeList = globalProperties.$colleges;
         const setEmailExamineCardState = (state) => {
@@ -175,6 +176,7 @@ export default {
             inputType,
             campusList,
             collegeList,
+            apiUrl,
         }
     },
     components: {
@@ -270,6 +272,7 @@ export default {
                 setCookie('userId',response.user_id,7*24);
                 setCookie('email',response.email,7*24);
                 setCookie('refreshToken',response.refresh,7*24);
+                setCookie('userProfileUrl',this.apiUrl+"/image/user?user_id="+response.user_id,7*24);
                 /**
                  * to the index page
                  */

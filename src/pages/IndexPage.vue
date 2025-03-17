@@ -7,7 +7,7 @@
     </v-dialog>
     <div class="full-screen">
         <div class="top-bar">
-            <v-btn :to="'/self/'+userId" target="_" icon="mdi-account-circle-outline" variant="text" color="#ffffff" size="40"></v-btn>
+            <avatar-name :init-data="{avatar:userProfileUrl,name:userName}" :color="'#ffffff'"></avatar-name>
             <v-spacer></v-spacer>
             <v-text-field v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
                 variant="outlined" color="#ffffff">
@@ -40,27 +40,27 @@
         <div class="row-center">
             <div v-if="itemType == 'article'" class="item-container">
                 <article-item
-                    v-for="(item,index) in this.articleItems"
+                    v-for="(item,index) in this.articleList"
                     :key="index"
                     :init-data="item">
                 </article-item>
-                <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
             <div v-if="itemType == 'post'" class="item-container">
                 <post-item
-                    v-for="(item,index) in this.postItems"
+                    v-for="(item,index) in this.postList"
                     :key="index"
                     :init-data="item">
                 </post-item>
-                <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
             <div v-if="itemType == 'course'" class="item-container">
                 <course-item
-                    v-for="(item,index) in this.courseItems"
+                    v-for="(item,index) in this.courseList"
                     :key="index"
                     :init-data="item">
                 </course-item>
-                <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMore('course')" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
         </div>
     </div>
@@ -74,6 +74,9 @@ import ArticleItem from '@/components/ArticleItem.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
 import { getCookie } from '@/utils/cookie';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getProfileUrl } from '@/utils/other';
+import { getArticleList, getPostListByArticleId } from '@/axios/article';
+import AvatarName from '@/components/AvatarName.vue';
 export default {
     name: 'IndexPage',
     components: {
@@ -81,7 +84,8 @@ export default {
         CourseEditor,
         ArticleItem,
         CourseItem,
-        PostItem
+        PostItem,
+        AvatarName
     },
     setup() {
         /**
@@ -97,6 +101,8 @@ export default {
          * get device type
          */
         const deviceType = globalProperties.$deviceType;
+        const userName = getCookie('userName');
+        const userProfileUrl = getCookie('userProfileUrl');
         /**
          * dialog
          */
@@ -131,14 +137,46 @@ export default {
             setCourseEditorState,
             setNoticeState,
             userId,
+            userName,
+            userProfileUrl,
+        }
+    },
+    watch:{
+        itemType: {
+            handler(newVal,oldVal) {
+                console.log(oldVal);
+                switch(newVal){
+                    case 'article':
+                        if(this.articleList.length==0){
+                            this.loadMore('article');
+                        }
+                        break;
+                    case 'post':
+                        if(this.postList.length==0){
+                            this.loadMore('post');
+                        }
+                        break;
+                    case 'course':
+                        if(this.courseList.length==0){
+                            this.loadMore('course');
+                        }
+                        break;
+                    default:
+                        this.alert(getNormalErrorAlert('未知错误(页面切换)'));
+                }
+            },
+            immediate: true
         }
     },
     data() {
         const itemType = 'article';
         return {
-            articleItems:[],
-            courseItems:[],
-            postItems:[],
+            articleList:[],
+            courseList:[],
+            postList:[],
+            articlePageNum:1,
+            postPageNum:1,
+            coursePageNum:1,
             itemType,
         }
     },
@@ -148,17 +186,63 @@ export default {
             this.setNoticeState(false);
             this.setPostEditorState(false);
         },
-        loadMore(){
-            /**
-             * load more item
-             */
-            if(this.itemType==='article'){
-                // eslint-disable-next-line
-                
-            }else if(this.itemType==='course'){
-                // eslint-disable-next-line
-            }else if(this.itemType==='post'){
-                // eslint-disable-next-line
+        async loadMore(itemType){
+            if(itemType=='article'){
+                this.setLoading(getLoadMsg("正在获取..."));
+                let response=await getArticleList('time',null,this.articlePageNum);
+                this.setLoading(getCancelLoadMsg());
+                if(response.status==200){
+                    for(let ind=0;ind<response.article_list.length;ind++){
+                        this.articleList.push({
+                            id:response.article_list[ind].article_id,
+                            title:response.article_list[ind].article_title,
+                            summary:response.article_list[ind].article_summary,
+                            starNum:response.article_list[ind].star_count,
+                            viewNum:response.article_list[ind].view_count,
+                            likeNum:response.article_list[ind].like_count,
+                            publishTime:response.article_list[ind].publish_time,
+                            tags:response.article_list[ind].article_tags,
+                            authorName:response.article_list[ind].author_name,
+                            authorProfileUrl:response.article_list[ind].author_profile_url,
+                            coverLink:response.article_list[ind].cover_link,
+                            type:response.article_list[ind].article_type,
+                            hotScore:response.article_list[ind].hot_score
+                        });
+                    }
+                    this.articlePageNum++;
+                    this.alert(getNormalSuccessAlert(response.message));
+                }else{
+                    this.alert(getNormalErrorAlert(response.message));
+                }
+            }else if(itemType=='course'){
+                //to do  
+            }else if(itemType=='post'){
+                //get the article 20 template  
+                this.setLoading(getLoadMsg("正在获取..."));
+                let response=await getPostListByArticleId(20,this.postPageNum);
+                this.setLoading(getCancelLoadMsg());
+                if(response.status==200){
+                    for(let i=0;i<response.post_list.length;i++){
+                        this.postList.push({
+                            id:response.post_list[i].post_id,
+                            title:response.post_list[i].post_title,
+                            content:response.post_list[i].post_content,
+                            authorId:response.post_list[i].poster_id,
+                            authorName:response.post_list[i].poster_name,
+                            authorProfileUrl:getProfileUrl(response.post_list[i].poster_id),
+                            viewNum:response.post_list[i].view_count,
+                            likeNum:response.post_list[i].like_count,
+                            replyNum:response.post_list[i].reply_count,
+                            publishTime:response.post_list[i].publish_time,
+                            ifLike:response.post_list[i].if_like,
+                            ifStar:response.post_list[i].if_star
+                        });
+                    }
+                    this.postPageNum++;
+                    this.alert(getNormalSuccessAlert(response.message));
+                }else{
+                    this.alert(getNormalErrorAlert(response.message));
+                }
             }
         },
         alert(msg){
@@ -169,12 +253,7 @@ export default {
         },
     },
     mounted() {
-        this.$emit('alert',{
-            state:true,
-            color:'success',
-            title:'TEST',
-            content:'this is a test'
-        })
+        //load set in the watch  
     }
 }
 </script>

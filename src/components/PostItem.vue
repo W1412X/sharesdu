@@ -2,25 +2,31 @@
     <v-card @click="click()" class="card" elevation="1">
         <div class="row-div">
             <div class="text-small bottom-bar avatar-name-column-center">
-                <avatar-name :initData="{name:data.author,avatar:data.avatar}"></avatar-name>
+                <avatar-name :initData="{name:data.authorName,avatar:data.authorProfileUrl}"></avatar-name>
                 <v-spacer></v-spacer>
                 <div class="bottom-item">
-                    <v-icon icon="mdi-star" size="20"></v-icon>
-                    {{ data.star }}
+                    <v-icon icon="mdi-heart" size="19"></v-icon>
+                    <div>{{ data.likeNum }}</div>
+                </div>
+                <div class="bottom-item">
+                    <v-icon icon="mdi-eye" size="20"></v-icon>
+                    <div>{{ data.viewNum }}</div>
                 </div>
                 <div class="bottom-item">
                     <v-icon icon="mdi-comment" size="18" style="margin-top: 2px;"></v-icon>
-                    {{ data.comment }}
+                    <div>{{ data.replyNum }}</div>
                 </div>
             </div>
             <div class="title title-container">{{ data.title }}</div>
-            <div class="text-small detail-container">{{ data.detail }}</div>
+            <div class="text-small detail-container">{{ data.content }}</div>
         </div>
     </v-card>
 </template>
 <script>
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/AvatarName.vue';
+import { computed } from 'vue';
+import { getLinkInPost, getPostWithoutLink } from '@/utils/other';
 export default {
     name: 'PostItem',
     components: {
@@ -33,11 +39,11 @@ export default {
                 return {
                     id: null,
                     title: null,
-                    detail: null,
-                    star: null,
-                    comment: null,
-                    link: null,
-                    author: null,
+                    content: null,
+                    viewNum: null,
+                    replyNum: null,
+                    authorName: null,
+                    authorProfileUrl:null,
                 }
             }
         }
@@ -53,7 +59,12 @@ export default {
         }
     },
     data() {
-        const data = this.initData;
+        var data = computed(()=>{
+            let tmp=this.initData;
+            tmp.link=getLinkInPost(this.initData.content);
+            tmp.content=getPostWithoutLink(this.initData.content);
+            return tmp;
+        });
         return {
             data,
         }
@@ -64,10 +75,16 @@ export default {
              * to post page
              */
             if(this.data.id==null){//no id param
-                this.data.id=0;
+                this.$router.push({
+                    name:'ErrorPage',
+                    params:{
+                        reason:"未指定资源！"
+                    }
+                })
+                return;
             }
-            this.$router.push({ name: 'PostPage', params: { id: this.data.id } });
-        }
+            window.open("#/post/"+this.data.id,"_blank");
+        },
     }
 }
 </script>
@@ -98,12 +115,15 @@ export default {
     }
     .detail-container {
         max-width: 730px;
-        height: 65px;
         white-space: normal;
         word-break: break-all;
         overflow: hidden;
         color: #8a8a8a;
         line-height: 1.2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        text-overflow: ellipsis;
     }
     .bottom-bar {
         width: 740px;
@@ -116,6 +136,7 @@ export default {
         color: var(--theme-color);
     }
     .bottom-item {
+        align-items: center;
         display: flex;
         flex-direction: row;
         margin-right: 20px;
@@ -144,15 +165,20 @@ export default {
     .detail-container {
         color: #8a8a8a;
         padding-top: 2px;
-        height: 50px;
         white-space: normal;
         word-break: break-all;
         overflow: hidden;
+        color: #8a8a8a;
         line-height: 1.2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        text-overflow: ellipsis;
     }
     .bottom-bar {
         display: flex;
         flex-direction: row;
+        align-items: center;
         color: #8a8a8a;
         margin-left: 5px;
         margin-top: 8px;
@@ -163,6 +189,7 @@ export default {
     .bottom-item {
         display: flex;
         flex-direction: row;
+        align-items: center;
         margin-right: 10px;
     }
 }

@@ -1,30 +1,31 @@
 <template>
     <div class="container">
         <div
-            class="name text-small"
+            class="name text-medium"
         >
-            <avatar-name :initData="{avatar:data.avatar,name:data.author}"></avatar-name>
+            <avatar-name :initData="{avatar:data.authorProfileUrl,name:data.authorName}"></avatar-name>
         </div>
         <div
             class="comment text-medium"
         >
-            {{ data.comment }}
+            {{ data.content }}
         </div>
         <div
             class="bottom-bar"
         >
             <div class="time text-small">
-                {{ this.data.time }}
+                <v-icon size="18" icon="mdi-clock-outline" style="margin-right: 5px;"></v-icon>
+                <span>{{ this.data.publishTime }}</span>
             </div>
             <v-spacer></v-spacer>
             <div class="bottom-btn-container">
-                <like-button></like-button>
+                <like-button :size="'20'"></like-button>
             </div>
             <div class="like-num text-small">
-                {{ this.data.like }}
+                {{ this.data.likeNum }}
             </div>
-            <div class="bottom-btn-container">
-                <alert-button></alert-button>
+            <div style="margin-right: 10px;">
+                <alert-button :size="'20'" :id="this.data.id" :type="'reply'"></alert-button>
             </div>
         </div>
         <div class="bottom-line"></div>
@@ -42,10 +43,11 @@ export default {
             default: () => {
                 return {
                     id: null,
-                    author: null,
-                    time: null,
-                    like: null,
-                    comment: null,
+                    authorName: null,
+                    publishTime: null,
+                    likeNum: null,
+                    content: null,
+                    authorProfileUrl:null,
                 }
             }
         }
@@ -69,6 +71,8 @@ export default {
 .bottom-bar{
     display: flex;
     flex-direction: row;
+    align-items: center;
+    margin-top: 5px;
 }
 .bottom-line{
     margin-top: 5px;
@@ -82,10 +86,12 @@ export default {
 .like-num{
     display: flex;
     align-items: center;
-    height: 27.5px;
+    height: 100%;
     margin-left: 3px;
     margin-right: 15px;
+    margin-top: 2px;
     max-width: 100px;
+    align-items: center;
     color: grey;
     white-space:nowrap; 
     overflow:hidden;
@@ -103,10 +109,15 @@ export default {
     .name{
         width: 100%;
         display: flex;
+        margin-bottom: 5px;
     }
     .time{
+        flex-direction: row;
+        display: flex;
         color: grey;
-        width: 40%;
+        width: fit-content;
+        margin-right: 5px;
+        align-items: center;
     }
 }
 
@@ -122,11 +133,16 @@ export default {
     .name{
         width: 100%;
         display: flex;
+        margin-bottom: 5px;
     }
     .time{
+        flex-direction: row;
+        display: flex;
         margin-top: 5px;
         color: grey;
-        width: 40%;
+        width: fit-content;
+        margin-right: 5px;
+        align-items: center;
     }
 }
 </style>

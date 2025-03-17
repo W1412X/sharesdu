@@ -1,10 +1,8 @@
 <!--  -->
 <template>
     <div class="avatar-name" @click="toAuthorPage">
-        <div class="avatar">
-            <img :src="initData.avatar" alt="">
-        </div>
-        <div class="name">
+        <v-avatar :size="size" :image="initData.avatar"></v-avatar>
+        <div class="name" :style="{color:color}">
             {{initData.name}}
         </div>
     </div>
@@ -16,10 +14,19 @@ export default {
             type: Object,
             default: function () {
                 return {
+                    id:null,
                     avatar: null,
                     name: null,
                 }
             }
+        },
+        size:{
+            type: String,
+            default: '30'
+        },
+        color:{
+            type: String,
+            default: '#000'
         }
     },
     methods: {
@@ -27,7 +34,7 @@ export default {
             this.$router.push({
                 name: 'AuthorPage',
                 params: {
-                    name: this.initData.name
+                    id: this.initData.id
                 }
             })
         }
@@ -39,16 +46,6 @@ export default {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-.avatar{
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    overflow: hidden;
-    img{
-        width: 100%;
-        height: 100%;
-    }
 }
 .name{
     font-size: 16px;

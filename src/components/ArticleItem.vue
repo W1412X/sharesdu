@@ -1,23 +1,28 @@
 <template>
     <v-card class="card" @click="click()">
         <div class="column-div">
-            <v-img v-if="deviceType === 'desktop'" :width="imgSize" class="img" :lazy-src="lazyImgUrl" :src="data.link"
+            <v-img v-if="deviceType === 'desktop'" :width="imgSize" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
                 cover aspect-ratio="4/3"></v-img>
-            <div class="row-div">
+            <div class="row-div padding-left-5">
                 <div class="title title-container">{{ data.title }}</div>
-                <div class="text-small detail-container">{{ data.detail }}</div>
+                <div class="text-small summary-container">{{ data.summary }}</div>
+                <v-spacer></v-spacer>
                 <div class="text-small bottom-bar">
                     <div class="bottom-item">
-                        @{{ data.author }}
+                    @{{ data.authorName }}
                     </div>
                     <v-spacer></v-spacer>
                     <div class="bottom-item">
                         <v-icon icon="mdi-star" size="20"></v-icon>
-                        {{ data.star }}
+                        {{ data.starNum }}
                     </div>
                     <div class="bottom-item">
-                        <v-icon icon="mdi-comment" size="18" style="margin-top: 2px;"></v-icon>
-                        {{ data.comment }}
+                        <v-icon icon="mdi-fire" size="20"></v-icon>
+                        {{ data.hotScore }}
+                    </div>
+                    <div class="bottom-item">
+                        <v-icon icon="mdi-eye" size="18" style="margin-top: 2px;"></v-icon>
+                        {{ data.viewNum }}
                     </div>
                 </div>
             </div>
@@ -37,10 +42,19 @@ export default {
                 return {
                     id: null,
                     title: null,
-                    detail: null,
-                    star: null,
+                    summary: null,
+                    starNum: null,
+                    viewNum: null,
+                    likeNum: null,
+                    articleTags:null,
+                    publishTime: null,
+                    hotScore:null,
                     comment: null,
-                    author: null,
+                    authorName: null,
+                    authorProfileUrl:null,
+                    coverLink:null,
+                    type:null,
+
                 }
             }
         }
@@ -64,15 +78,18 @@ export default {
             /**
              * open a new tab and go
              */
-            if(this.data.id==null){//no id param
-                this.data.id=0;
+            if(!this.data.id){//no id param
+                window.open("#/error/无法找到此资源","_blank");
             }
-            this.$router.push({ name: 'ArticlePage', params: { id: this.data.id } });
+            window.open("#/article/"+this.data.id,"_blank");
         }
     }
 }
 </script>
 <style scoped>
+.padding-left-5 {
+    padding: 5px;
+}
 @media screen and (min-width: 600px) {
     .card {
         padding: 5px;
@@ -105,14 +122,17 @@ export default {
         text-overflow: ellipsis;
     }
 
-    .detail-container {
+    .summary-container {
         max-width: 590px;
-        height: 65px;
         white-space: normal;
         word-break: break-all;
         overflow: hidden;
-        line-height: 1.2;
         color: #8a8a8a;
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        text-overflow: ellipsis;
     }
 
     .bottom-bar {
@@ -120,7 +140,7 @@ export default {
         display: flex;
         flex-direction: row;
         color: #8a8a8a;
-        margin-left: 5px;
+        align-items: center;
         margin-top: 12px;
     }
 
@@ -158,22 +178,25 @@ export default {
         text-overflow: ellipsis;
     }
 
-    .detail-container {
+    .summary-container {
         color: #8a8a8a;
-        height: 55px;
         padding-top: 5px;
         white-space: normal;
         word-break: break-all;
         overflow: hidden;
+        color: #8a8a8a;
         line-height: 1.2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        text-overflow: ellipsis;
     }
 
     .bottom-bar {
         display: flex;
         flex-direction: row;
         color: #8a8a8a;
-        margin-left: 5px;
-        margin-top: 12px;
+        align-items: center;
     }
 
     .bottom-item {

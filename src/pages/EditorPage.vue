@@ -3,6 +3,7 @@
         <div class="dialog-card-container">
             <v-card v-if="ifShowEditFinishCard" class="edit-finish-card">
                 <div class="title-bold row-center">编辑成功</div>
+                <div class="text-medium row-center">您的文章已上传，正在审核中...</div>
                 <div class="row-center">
                     <v-btn @click="toPage('SelfPage')" variant="outlined" :color="themeColor" class="dialog-bottom-bar-btn" >返回主页</v-btn>
                     <v-btn @click="toPage('ArticlePage',{id:this.articleId})" class="dialog-bottom-bar-btn" :color="themeColor" variant="outlined" >查看文章</v-btn>
@@ -20,9 +21,9 @@
                 label="编辑文章标题"
                 rows="1"
                 v-model="editorData.title"
-                :error="editorData.title.length>20"
-                :error-messages="editorData.title.length>20?'标题长度不能超过20个字符':''"
-                :counter="20"
+                :error="editorData.title.length>50"
+                :error-messages="editorData.title.length>50?'标题长度不能超过50个字符':''"
+                :counter="50"
                 :counter-value="editorData.title.length"
             ></sensitive-text-field>
             <html-editor 

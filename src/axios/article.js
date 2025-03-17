@@ -106,11 +106,11 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
 };
 
 // 获取文章列表函数
-export const getArticleList = async (pageIndex = 1, pageSize = 20) => {
+export const getArticleList = async (sort='time',tags=null,pageIndex = 1, pageSize = 20) => {
     try {
         console.log('Request Type: GET');
         console.log('Request URL: /article/list?page_index=' + pageIndex + '&page_size=' + pageSize);
-        const response = await getaxiosInstance().get('/article/list', { params: { page_index: pageIndex, page_size: pageSize } });
+        const response = await getaxiosInstance().get('/article/list', { params: { page_index: pageIndex, page_size: pageSize,tags:tags,sort:sort } });
         return response.data;
     } catch (error) {
         console.error('Error getting article list:', error);

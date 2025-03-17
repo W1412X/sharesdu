@@ -55,12 +55,13 @@ export function clearCookie(name) {
 }
 
 /**
- * clear all cookies
+ * clear loginState cookies
  */
-export function clearAllCookies() {
-  const cookies = document.cookie.split(';');
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].split('=')[0].trim();
-    setCookie(cookie, '', -1); 
-  }
+export function clearTokenCookies() {
+  setCookie("accessToken", "", -1);
+  setCookie("refreshToken", "", -1);
+  setCookie("userId", "", -1);
+  setCookie("userName", "", -1);
+  setCookie("email", "", -1);
+  setCookie("userProfileUrl","",-1);
 }

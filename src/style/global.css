@@ -44,13 +44,6 @@
     font-size: 12px;
 }
 /**
- * theme color
- */
-:root{
-    --theme-color: #9c0c13;
-}
-
-/**
  * card container
  */
 
@@ -97,4 +90,11 @@
 .row-reverse{
     display: flex;
     flex-direction: row-reverse;
+}
+.link-btn-container{
+    width: 100%;
+}
+.link-btn{
+    width: 100%;
+    margin-top: 10px;
 }

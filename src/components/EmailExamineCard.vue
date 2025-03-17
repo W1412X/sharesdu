@@ -1,6 +1,6 @@
 <!-- use the old one -->
 <template>
-    <LoadingView :initData="loadingData"></LoadingView>
+    
     <v-card class="card">
             <div class="close-btn-container">
                 <v-btn size="25" variant="text" 
@@ -39,8 +39,8 @@
 import { getRegisterEmailCode,getDeleteAccountEmailCode,getLoginEmailCode,getResetPasswordEmailCode, registerByEmail } from '@/axios/account';
 import { loginWithEmail,deleteAccount,resetPassword } from '@/axios/account';
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
-import { setCookie, clearAllCookies } from '@/utils/cookie';
+import { getCancelLoadMsg, getLoadMsg, getNormalInfoAlert } from '@/utils/other';
+import { setCookie, clearTokenCookies } from '@/utils/cookie';
 import { csDeleteAccount, csLoginByEmail, csRegisterByEmail, csResetPassword } from '@/axios/api_convert/account';
 export default {
     props: {
@@ -59,8 +59,10 @@ export default {
     },
     setup(){
         const themeColor=globalProperties.$themeColor;
+        const apiUrl=globalProperties.$apiUrl;
         return {
             themeColor,
+            apiUrl,
         }
     },
     data(){
@@ -106,6 +108,7 @@ export default {
             if(response.status==200){
                 switch(this.data.type){
                     case 'register':  
+                        this.alert(getNormalInfoAlert("登陆之后，在个人主页可以修改个人信息"))
                         window.location.reload();
                         break;
                     case 'login':
@@ -116,13 +119,14 @@ export default {
                         setCookie('userId',response.user_id,7*24);
                         setCookie('email',response.email,7*24);
                         setCookie('refreshToken',response.refresh,7*24);
+                        setCookie('userProfileUrl',this.apiUrl+"/image/user?user_id="+response.user_id,7*24);
                         this.$router.push({ name: 'IndexPage' });
                         break;
                     case 'delete_account':
                         /**
                          * delete the user message
                          */
-                        clearAllCookies();
+                        clearTokenCookies();
                         this.$router.push({name:"WelcomePage"});
                         break;
                     case 'reset_passwd':
@@ -176,8 +180,7 @@ export default {
                     content:response.message,
                 })
             }
-            this.setLoading(getCancelLoadMsg())
-            
+            this.setLoading(getCancelLoadMsg());
         },
         cancelExamine() {
             //close the examine code

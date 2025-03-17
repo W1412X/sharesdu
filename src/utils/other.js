@@ -1,5 +1,6 @@
 import { getAccessToken } from "@/axios/token";
-import { clearAllCookies, getCookie, setCookie } from "./cookie";
+import { clearTokenCookies, getCookie, setCookie } from "./cookie";
+import { globalProperties } from "@/main";
 /**
  * a deep copy function for json object
  * @param {json} json 
@@ -81,13 +82,14 @@ export async function dealAxiosError(error){
                     console.log("try to get the token");
                     const response=await getAccessToken(refreshToken);
                     if(response.status==999){
-                        setCookie("accessToken",response.access,1);
+                        setCookie("accessToken",response.access,5);
                         return {
                             status:1412,
                             message:"已更新access token，重新请求"
                         }
                     }else{
-                        clearAllCookies();
+                        clearTokenCookies();
+                        window.open("/#/login");
                         return {
                             status:-1,
                             message:"获取access失败，请重新登陆",
@@ -95,7 +97,8 @@ export async function dealAxiosError(error){
                     }
                 }catch(error){
                     console.log(error);
-                    clearAllCookies();
+                    clearTokenCookies();
+                    window.open("/#/login");
                     return {
                         status: -1,
                         message:"重新登陆，令牌无效"
@@ -107,7 +110,7 @@ export async function dealAxiosError(error){
                  * then delete all the user message
                  * and redirect to login page
                  */
-                clearAllCookies();
+                clearTokenCookies();
                 window.open("/#/login");
                 return {
                     status: -1,
@@ -223,5 +226,65 @@ export function getNormalWarnAlert(title){
         color: 'wanning',
         title: title,
         content: '',
+    }
+}
+/**
+ * get the link in the post
+ * @param {String} content 
+ * @returns 
+ */
+export function getLinkInPost(content){
+    let begin=content.split("\n")[0];
+    if(begin.startsWith("#/")){
+        return begin;
+    }else{
+        return null;
+    }
+}
+/**
+ * add the link to the post
+ * @param {String} content 
+ * @param {String} type 
+ * @param {String} id 
+ * @returns 
+ */
+export function addLinkToPost(content,type,id){
+    let link="#/"+type+"/"+id;
+    return link+"\n"+content;
+}
+/**
+ * get the content in the post
+ * @param {String} content 
+ * @returns 
+ */
+export function getPostWithoutLink(content){
+    if(content.startsWith("#/")){
+        return content.substring(content.indexOf("\n")+1);
+    }else{
+        return content;
+    }
+}
+/**
+ * get user profile url
+ * @param {String} userId 
+ * @returns 
+ */
+export function getProfileUrl(userId){
+    return globalProperties.$apiUrl+"/image/user?user_id="+userId;
+}
+/**
+ * 
+ * @param {String} str 
+ * @returns 
+ */
+export function extractTime(str) {
+    const regex = /.*(\d{4})-(\d{2})-(\d{2}).*(\d{2}):(\d{2}):(\d{2}).*/;
+    const match = str.match(regex);
+
+    if (match && match.length === 7) {
+        const formattedTime = `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}:${match[6]}`;
+        return formattedTime;
+    } else {
+        return "time ungot";
     }
 }

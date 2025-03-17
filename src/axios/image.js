@@ -1,9 +1,9 @@
 /**
  * this document provide all the image relevent request  
  */
+import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
-import { getNetworkErrorResponse } from "./statusCodeMessages";
-
+import { compressImage } from "@/utils/image.js";
 /**
  * Upload user profile image
  * @param {File} image - The image file to upload
@@ -11,18 +11,29 @@ import { getNetworkErrorResponse } from "./statusCodeMessages";
  */
 export const uploadProfileImage = async (image) => {
     try {
-        const formData = new FormData();
-        formData.append('image', image);
-
+        try{
+            image=await compressImage(image,'profile');
+        }catch(error){
+            console.error('Error compressing image:', error);
+            return {
+                status: -1,
+                message: '图片过大无法压缩，请压缩后重试 '
+            };
+        }
+        const data = new FormData();
+        data.append('image', image);
+        console.log('Request Data:', data);
         console.log('Request Type: POST');
         console.log('Request URL: /image/profile');
-
-        const response = await getaxiosInstance().post('/image/profile', formData);
-
+        const response = await getaxiosInstance().post('/image/profile', data);
         return response.data;
     } catch (error) {
-        console.error('Error uploading profile image:', error);
-        return getNetworkErrorResponse();
+        console.error('Error uploading article image:', error);
+        let dealResult = await dealAxiosError(error);
+        if (dealResult.status == 1412) {
+            return await uploadProfileImage(image);
+        }
+        return dealResult;
     }
 };
 
@@ -33,17 +44,28 @@ export const uploadProfileImage = async (image) => {
 */
 export const uploadArticleImage = async (image) => {
     try {
+        try{
+            image=await compressImage(image,'other');
+        }catch(error){
+            console.error('Error compressing image:', error);
+            return {
+                status: -1,
+                message: '图片过大无法压缩，请压缩后重试 '
+            };
+        }
         const formData = new FormData();
         formData.append('image', image);
-
         console.log('Request Type: POST');
         console.log('Request URL: /image/article');
-
         const response = await getaxiosInstance().post('/image/article', formData);
 
         return response.data;
     } catch (error) {
         console.error('Error uploading article image:', error);
-        return getNetworkErrorResponse();
+        let dealResult = await dealAxiosError(error);
+        if (dealResult.status == 1412) {
+            return await uploadArticleImage(image);
+        }
+        return dealResult;
     }
 };

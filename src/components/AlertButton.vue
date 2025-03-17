@@ -6,12 +6,12 @@
         </div>
     </v-dialog>
     <v-btn elevation="0" @click="click" icon :style="{
-        'width': size,
-        'height': size,
+        'width': size+'px',
+        'height': size+'px',
         'color': color,
         'background-color': 'rgba(0,0,0,0)',
     }">
-        <v-icon size="25" icon="mdi-alert-circle-outline"></v-icon>
+        <v-icon :size="size" icon="mdi-alert-circle-outline"></v-icon>
     </v-btn>
 </template>
 <script>
@@ -28,7 +28,7 @@ export default {
         },
         size: {
             type: String,
-            default: '25px',
+            default: '25',
         },
         color: {
             type: String,

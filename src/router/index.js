@@ -21,19 +21,19 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path:'/article/:id',
+    path:'/article/:id/:post?',
     name:'ArticlePage',
     component: (()=>import('@/pages/ArticlePage.vue')),
     meta: { requiresAuth: true },
   },
   {
-    path:'/post/:id',
+    path:'/post/:id/:reply?',
     name:'PostPage',
     component: (()=>import('@/pages/PostPage.vue')),
     meta: { requiresAuth: true },
   },
   {
-    path:'/course/:id',
+    path:'/course/:id/:post?',
     name:'CoursePage',
     component: (()=>import('@/pages/CoursePage.vue')),
     meta: { requiresAuth: true },

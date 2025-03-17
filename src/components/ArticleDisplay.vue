@@ -13,7 +13,9 @@
     </div>
 </template>
 <script setup>
+import { Editor } from '@wangeditor/editor-for-vue';
 import { MdPreview } from 'md-editor-v3';
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import 'md-editor-v3/lib/preview.css';
 const mdId = 'preview-only';
 </script>
@@ -35,7 +37,9 @@ export default {
             }
         }
     },
-    components: {  },
+    components: { 
+        Editor
+     },
     setup() {
         //Boot.registerModule(formulaModule);
         // editor instance shallowRef

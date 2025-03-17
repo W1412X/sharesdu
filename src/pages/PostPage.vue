@@ -6,9 +6,9 @@
             <div class="title-bold">
                 评论帖子
             </div>
-            <SensitiveTextArea style="margin-top: 10px;" v-model="inputingComment" variant="outlined" density="compact" label="输入评论内容"/>
+            <SensitiveTextArea v-model="inputingComment"  style="margin-top: 10px;" variant="outlined" density="compact" label="输入评论内容"/>
             <div class="dialog-bottom-btn-bar">
-                <v-btn @click="comment" variant="text">发表</v-btn>
+                <v-btn @click="submitComment" variant="text">发表</v-btn>
                 <v-btn @click="setCommentState(false)" variant="text">取消</v-btn>
             </div>
         </v-card>
@@ -19,29 +19,40 @@
             <div class="top-bar">
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium name-font">
-                        <avatar-name :init-data="{avatar:post.avatar,name:post.author}"></avatar-name>
+                        <avatar-name :init-data="{id:this.post.authorId,avatar:post.authorProfileUrl,name:post.authorName}"></avatar-name>
+                    </div>
+                    <v-spacer></v-spacer>
+                    <div class="column-center padding-right-5px">
+                        <star-button @alert="alert" @set_loading="setLoading" :state="post.ifStar" :type="'post'" :id="post.id"></star-button>
                     </div>
                 </div>
                 <div class="title-container title-bold">
                     {{ post.title }}
                 </div>
                 <div class="detail-text text-medium">
-                    {{ post.detail }}
+                    {{ post.content }}
                 </div>
                 <div class="full-column-center text-small grey-font">
                     <div class="comment-star-display-div">
                         <div class="row-right-20px-column-center">
-                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-star"
+                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-heart"
                                 size="18"></v-icon>
                             <div class="column-center">
-                                {{ post.star }}
+                                {{ post.likeNum }}
                             </div>
                         </div>
                         <div class="row-right-20px-column-center">
                             <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment"
                                 size="16"></v-icon>
                             <div class="column-center">
-                                {{ post.comment }}
+                                {{ post.replyNum }}
+                            </div>
+                        </div>
+                        <div class="row-right-20px-column-center">
+                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-eye"
+                                size="16"></v-icon>
+                            <div class="column-center">
+                                {{ post.viewNum }}
                             </div>
                         </div>
                         <v-spacer></v-spacer>
@@ -49,11 +60,12 @@
                             <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock"
                                 size="17"></v-icon>
                             <div class="column-center">
-                                {{ post.time }}
+                                {{ post.publishTime }}
                             </div>
                         </div>
                     </div>
                 </div>
+                <v-btn v-if="this.post.relativeLink!==null" @click="toRelativePage" class="link-btn" variant="tonal" :color="themeColor">关联文章</v-btn>
             </div>
             <div class="bottom-bar">
                 <div class="column-center user-name text-medium">
@@ -61,23 +73,24 @@
                 </div>
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
-                    <div class="column-center padding-right-10px">
-                        <star-button></star-button>
+                    <div class="column-center margin-right-15px">
+                        <alert-button :type="'post'" :id="post.id"></alert-button>
                     </div>
                     <div class="column-center padding-right-5px">
-                        <alert-button></alert-button>
+                        <like-button :type="'post'" :id="post.id" :state="false"></like-button>
                     </div>
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="setCommentState(true)" icon class="bottom-btn">
-                            <v-icon size="22" icon="mdi-comment-outline"></v-icon>
+                            <v-icon size="23" icon="mdi-comment-outline"></v-icon>
                         </v-btn>
                     </div>
                 </div>
             </div>
             <div class="comments-container">
             <div class="column-div">
-                <post-comment v-for="(comment, index) in postComments" :init-data="comment" :key="index">
+                <post-comment v-for="(comment, index) in replyList" :init-data="comment" :key="index">
                 </post-comment>
+                <v-btn variant="tonal" class="load-btn" @click="loadMoreReply">加载更多</v-btn>
             </div>
         </div>
         </div>
@@ -85,7 +98,6 @@
 </template>
 <script>
 import { globalProperties } from '@/main.js';
-import { postShort, postComment } from '@/utils/data'
 import { getCookie } from '@/utils/cookie';
 import StarButton from '@/components/StarButton.vue';
 import AlertButton from '@/components/AlertButton.vue';
@@ -93,6 +105,9 @@ import { computed, ref } from 'vue';
 import PostComment from '@/components/PostComment.vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import AvatarName from '@/components/AvatarName.vue';
+import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink, getProfileUrl } from '@/utils/other';
+import { createReplyUnderPost, getPostDetailById, getReplyListByPostId } from '@/axios/post';
+import LikeButton from '@/components/LikeButton.vue';
 export default {
     name: 'PostPage',
     components: {
@@ -101,6 +116,7 @@ export default {
         PostComment,
         SensitiveTextArea,
         AvatarName,
+        LikeButton,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -141,34 +157,122 @@ export default {
             post: {
                 id: null,
                 title: null,
-                detail: null,
-                star: null,
-                comment: null,
-                author: null,
-                time: null,
+                content: null,
+                starNum: null,
+                replyNum: null,
+                authorName: null,
+                authorProfileUrl:null,
+                relativeLink:null,
+                publishTime: null,
             },
-            postComments: [],
+            replyList: [],
+            replyPageNum:1,
         }
     },
     methods: {
-        comment(){
+        async submitComment(){
             /**
              * need post comment
              */
-            this.setCommentState(false);
+            console.log(this.inputingComment)
+            if(this.inputingComment==""){
+                this.alert(getNormalWarnAlert("评论内容不能为空"));
+                return;
+            }
+            this.setLoading(getLoadMsg("正在提交评论..."));
+            let response=await createReplyUnderPost(this.post.id,this.inputingComment);
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200||response.status==201){
+                this.alert(getNormalSuccessAlert("评论成功"));
+                this.replyList.unshift({
+                    id:response.reply_id,
+                    content:this.inputingComment,
+                    authorName:getCookie("userName"),
+                    authorProfileUrl:getCookie("userProfileUrl"),
+                    likeNum:0,
+                    publishTime:new Date().toLocaleString(),
+                })
+                this.setCommentState(false);
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
+        },
+        setLoading(msg){
+            this.$emit('set_loading',msg);
+        },
+        alert(msg){
+            this.$emit('alert',msg);
+        },
+        toRelativePage(){
+            window.open(this.post.relativeLink,"_blank")
+        },
+        async loadMoreReply(){
+            this.setLoading(getLoadMsg("正在加载评论..."));
+            let response=await getReplyListByPostId(this.post.id,this.replyPageNum);
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200){
+                for(let i=0;i<response.reply_list.length;i++){
+                    let reply={
+                        id:response.reply_list[i].reply_id,
+                        content:response.reply_list[i].reply_content,
+                        authorName:response.reply_list[i].replier_name,
+                        authorId:response.reply_list[i].replier_id,
+                        authorProfileUrl:getProfileUrl(response.reply_list[i].replier_id),
+                        likeNum:response.reply_list[i].like_count,
+                        publishTime:response.reply_list[i].publish_time,
+                    }
+                    this.replyList.push(reply);
+                }
+                if(response.reply_list.length==0){
+                    this.alert(getNormalInfoAlert("没有更多回复了"));
+                }else{
+                    this.replyPageNum++;
+                }
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
         }
     },
-    mounted() {
+    async mounted() {
         /**
          * get the route params and fetch data
          */
-        this.post = postShort;
-        /**
-         * test, comments
-         */
-        for(let i=0;i<15;i++){
-            this.postComments.push(postComment);
+        if(!this.$route.params.id){
+            this.$router.push({
+                name:"ErrorPage",
+                params:{
+                    reason:"未指定资源参数!"
+                }
+            })
+            return;
         }
+        this.setLoading(getLoadMsg("正在加载帖子信息..."));
+        let response=await getPostDetailById(this.$route.params.id);
+        this.setLoading(getCancelLoadMsg());
+        if(response.status==200){
+            this.post.authorId=response.post_detail.poster_id;
+            this.post.authorName=response.post_detail.poster_name;
+            this.post.authorProfileUrl=getProfileUrl(this.post.authorId);
+            this.post.id=response.post_detail.post_id;
+            this.post.title=response.post_detail.post_title;
+            this.post.content=getPostWithoutLink(response.post_detail.post_content);
+            this.post.relativeLink=getLinkInPost(response.post_detail.post_content);
+            this.post.likeNum=response.post_detail.like_count;
+            this.post.replyNum=response.post_detail.reply_count;
+            this.post.viewNum=response.post_detail.view_count;
+            this.post.publishTime=response.post_detail.publish_time;
+            this.post.ifLike=response.post_detail.if_like;
+        }else{
+            this.alert(getNormalErrorAlert(response.message));
+            this.$router.push({
+                name:"ErrorPage",
+                params:{
+                    reason:response.message
+                }
+            });
+            return;
+        }
+        this.loadMoreReply();
     },
 }
 </script>
@@ -200,7 +304,6 @@ export default {
     display: flex;
     flex-direction: column;
 }
-
 .bottom-bar {
     display: flex;
     width: 900px;
@@ -256,7 +359,9 @@ export default {
 .padding-right-10px {
     padding-right: 10px;
 }
-
+.margin-right-15px {
+    margin-right: 20px;
+}
 .full-column-center {
     display: flex;
     height: 100%;

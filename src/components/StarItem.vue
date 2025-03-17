@@ -1,6 +1,6 @@
 <!--star button-->
 <template>
-    <v-card @click="click()" class="card" elevation="5">
+    <v-card @click="click()" class="card" elevation="1">
         <div class="div-2">
             <v-icon :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;" color="grey"/>
             <div class="div-1 ">
@@ -43,13 +43,13 @@ export default {
         click(){
             switch(this.data.type){
                 case 'article':
-                    this.$router.push({ name: 'ArticlePage', params: { id: this.data.id } });
+                    window.open("#/article/"+this.data.id,"_blank")
                     break;
                 case 'course':
-                    this.$router.push({ name: 'CoursePage', params: { id: this.data.id } });
+                    window.open("#/course/"+this.data.id,"_blank")
                     break;
                 case 'post':
-                    this.$router.push({ name: 'PostPage', params: { id:this.data.id } });
+                    window.open("#/post/"+this.data.id,"_blank")
             }
         },
         getIcon(type) {
@@ -80,7 +80,7 @@ export default {
 @media screen and (min-width: 600px) {
     .card {
         padding: 5px;
-        width: 750px;
+        width: 100%;
     }
     .div-1 {
         display: flex;
@@ -97,7 +97,7 @@ export default {
 @media screen and (max-width: 600px) {
     .card {
         padding: 3px;
-        width: 100vw;
+        width: 100%;
     }
     .div-1 {
         width: 100%;

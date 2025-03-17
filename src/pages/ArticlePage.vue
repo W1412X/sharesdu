@@ -1,7 +1,9 @@
 <template>
     <v-dialog v-model="ifShowDialog" class="full-screen dialog">
         <div class="dialog-card-container">
-            <post-editor v-if="ifShowPostEditor" @close="closeDialog"></post-editor>
+            <post-editor v-if="ifShowPostEditor" 
+            @close="closeDialog" @add_post="addPost" @set_loading="setLoading" @alert="alert" 
+            :type-msg="{type:'article',id:this.article.id}"></post-editor>
         </div>
     </v-dialog>
     <div class="full-center">
@@ -21,7 +23,7 @@
                 </div>
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium grey-font">
-                        <avatar-name :init-data="{avatar:article.authorName,name:article.authorProfileUrl}">
+                        <avatar-name :init-data="{id:article.authorId,avatar:article.authorProfileUrl,name:article.authorName}">
                         </avatar-name>
                     </div>
                     <v-spacer></v-spacer>
@@ -74,14 +76,14 @@
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
                     <div class="column-center padding-right-10px">
-                        <star-button></star-button>
+                        <star-button @alert="alert" @set_loading="setLoading" :type="'article'" :id="article.id" :state="article.ifStar"></star-button>
                     </div>
                     <div class="column-center padding-right-5px">
-                        <alert-button></alert-button>
+                        <alert-button :id="this.article.id" :type="'article'"></alert-button>
                     </div>
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="comment" icon class="bottom-btn">
-                            <v-icon icon="mdi-comment-outline"></v-icon>
+                            <v-icon icon="mdi-comment-outline" size="24"></v-icon>
                         </v-btn>
                     </div>
                 </div>
@@ -89,14 +91,14 @@
         </div>
     </div>
     <v-overlay v-model="ifShowComment" class="posts-dialog">
-        <div class="posts-container">
+        <div id="post-container" class="posts-container">
             <div class="column-div">
                 <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
                     发表帖子
                 </v-btn>
                 <post-item v-for="(item,index) in postItems" :init-data="item" :key="index">
                 </post-item>
-                <v-btn v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMorePost" v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
         </div>
     </v-overlay>
@@ -113,7 +115,7 @@ import { computed, ref } from 'vue';
 import PostItem from '@/components/PostItem.vue';
 import PostEditor from '@/components/PostEditor.vue';
 import AvatarName from '@/components/AvatarName.vue';
-import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, openNewWeb } from '@/utils/other';
+import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, getProfileUrl } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 export default {
     name: 'ArticlePage',
@@ -183,8 +185,8 @@ export default {
                 hotScore:"",
                 sourceUrl:"",
                 publishTime:"",
-                ifLike:"",
-                ifStar:"",
+                ifLike:false,
+                ifStar:false,
             },
             editorType:"html",
             postItems:[],
@@ -193,6 +195,9 @@ export default {
         }
     },
     methods: {
+        addPost(item){
+            this.postItems.unshift(item);
+        },
         comment(){
             this.setCommentState(true);
             if(!this.ifGotPost){
@@ -204,22 +209,23 @@ export default {
             this.setLoading(getLoadMsg("正在加载帖子..."));
             let response=await getPostListByArticleId(this.article.id,this.postPageNum);
             if(response.status==200){
-                this.postPageNum++;
                 for(let i=0;i<response.post_list.length;i++){
                     this.postItems.push({
                         id:response.post_list[i].post_id,
                         title:response.post_list[i].post_title,
                         content:response.post_list[i].post_content,
-                        author:response.post_list[i].poster_name,
-                        authorProfileUrl:response.post_list[i].poster_profile_url,
-                        viewCount:response.post_list[i].view_count,
-                        likeCount:response.post_list[i].like_count,
-                        replyCount:response.post_list[i].reply_count,
-                        tags:response.post_list[i].tags,
+                        authorId:response.post_list[i].poster_id,
+                        authorName:response.post_list[i].poster_name,
+                        authorProfileUrl:getProfileUrl(response.post_list[i].poster_id),
+                        viewNum:response.post_list[i].view_count,
+                        likeNum:response.post_list[i].like_count,
+                        replyNum:response.post_list[i].reply_count,
                         publishTime:response.post_list[i].publish_time,
-                        if_like:response.post_list[i].if_like,
+                        ifLike:response.post_list[i].if_like,
+                        ifStar:response.post_list[i].if_star
                     });
                 }
+                this.postPageNum++;
             }else{
                 this.alert(getNormalErrorAlert(response.data.message));
             }
@@ -235,7 +241,7 @@ export default {
             this.$emit("set_loading",msg);
         },
         toOriginLink(){
-            openNewWeb(this.article.originLink);
+            window.open(this.article.originLink,"_blank")
         }
     },
     async mounted() {
@@ -250,7 +256,7 @@ export default {
             this.article.summary=response.article_detail.article_summary;
             this.article.type=response.article_detail.article_type;
             this.article.tags=response.article_detail.article_tags;
-            this.article.originLink=response.article_detail.article_origin_link;
+            this.article.originLink=response.article_detail.origin_link;
             this.article.coverLink=response.article_detail.article_cover_link;
             this.article.content=getContentWithoutEditorType(response.article_detail.article_content);
             this.editorType=extractEditorType(response.article_detail.article_content);
@@ -259,7 +265,8 @@ export default {
             this.article.viewCount=response.article_detail.view_count;
             this.article.starCount=response.article_detail.star_count;
             this.article.authorName=response.article_detail.author_name;
-            this.article.authorProfileUrl=response.article_detail.author_profile_url;
+            this.article.authorId=response.article_detail.author_id;
+            this.article.authorProfileUrl=getProfileUrl(this.article.authorId);
             this.article.sourceUrl=response.article_detail.source_url;
             this.article.publishTime=response.article_detail.publish_time;
             this.article.ifLike=response.article_detail.if_like;

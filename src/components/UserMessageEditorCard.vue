@@ -6,7 +6,7 @@
         @submit="handleResetFinish"></email-examine-card>
     </div>
     <div v-if="ifShowSetProfileCard" style="width: 100%;height:100%;justify-content: center;display: flex">
-      <set-profile-card :user-name="this.userInfo.userName" @close="close" @alert="alert"
+      <set-profile-card @close="close" @alert="alert"
         @set_loading="setLoading"></set-profile-card>
     </div>
   </v-dialog>
@@ -81,6 +81,8 @@ import SensitiveTextArea from './SensitiveTextArea.vue';
 import { logout } from '@/axios/account';
 import { copy, getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { rules, validatePassWord } from '@/utils/rules';
+import { getCookie } from '@/utils/cookie';
+import { globalProperties } from '@/main';
 export default {
   props: {
   },
@@ -95,6 +97,7 @@ export default {
     const ifShowDialog = computed(() => {
       return ifShowEmailExmineCode.value || ifShowSetProfileCard.value;
     })
+    const themeColor=globalProperties.$themeColor;
     const setEmailExmineCodeCardState = (state) => {
       ifShowEmailExmineCode.value = state;
     }
@@ -107,16 +110,16 @@ export default {
       ifShowSetProfileCard,
       setEmailExmineCodeCardState,
       setProfileCardState,
+      themeColor
     }
   },
   data() {
     const userInfo = {
-      userId: '',
-      userName: '',
-      profileUrl:
-        'https://tse1-mm.cn.bing.net/th/id/OIP-C.PO7d9IfnPUy2RO173QYt6wHaHV?w=216&h=213&c=7&r=0&o=5&pid=1.7',
-      passwd: 'test',
-      email: 'test@sdu.edu.cn',
+      userId:getCookie("userId"),
+      userName:getCookie("userName"),
+      profileUrl:getCookie("userProfileUrl"),
+      passwd: '********',
+      email: getCookie("email")
     };
     const editingUserInfo = {
       userName: null,
@@ -145,16 +148,16 @@ export default {
     const ifAbleEditEmail = false
     const ifAbleEditIntroduce = false
     const emailButtonColor = computed(() => {
-      return this.ifAbleEditEmail == true ? '#9c0c13' : '#8a8a8a'
+      return this.ifAbleEditEmail == true ? this.themeColor : '#8a8a8a'
     })
     const userNameButtonColor = computed(() => {
-      return this.ifAbleEditUserName == true ? '#9c0c13' : '#8a8a8a'
+      return this.ifAbleEditUserName == true ? this.themeColor : '#8a8a8a'
     })
     const passwdButtonColor = computed(() => {
-      return this.ifAbleEditPasswd == true ? '#9c0c13' : '#8a8a8a'
+      return this.ifAbleEditPasswd == true ? this.themeColor : '#8a8a8a'
     })
     const introduceButtonColor = computed(() => {
-      return this.ifAbleEditIntroduce == true ? '#9c0c13' : '#8a8a8a'
+      return this.ifAbleEditIntroduce == true ? this.themeColor : '#8a8a8a'
     })
     return {
       buttonText,

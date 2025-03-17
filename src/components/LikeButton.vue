@@ -1,10 +1,10 @@
 <template>
     <v-btn @click="click" elevation="0" icon :style="{
-        'width': '25px',
-        'height': '25px',
+        'width': size+'px',
+        'height': size+'px',
         'border-radius': '100%',
     }">
-        <v-icon :color="color" size="25" :icon="heart"></v-icon>
+        <v-icon :color="color" :size="size" :icon="heart"></v-icon>
     </v-btn>
 </template>
 <script>
@@ -22,7 +22,11 @@ export default{
         state:{
             type:Boolean,
             default:false,
-        }
+        },
+        size:{
+            type:String,
+            default:'24',
+        },
     },
     data(){
         const ifClicked=this.state;
