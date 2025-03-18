@@ -42,3 +42,15 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### to do  
 - define the data model instead of using the convert interface  
+
+### not finish  
+- editor delete block  
+- notification  chat  
+- reply add recursion    
+- post single  
+- follow(not do)  
+- create  
+- use db 
+  - article save  
+  - profile save  
+  - history  

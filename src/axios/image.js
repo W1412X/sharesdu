@@ -69,3 +69,34 @@ export const uploadArticleImage = async (image) => {
         return dealResult;
     }
 };
+
+
+/**
+ * Get profile image update information for users
+ * @param {Array<string>} userIds - The user IDs for which the profile information is to be fetched
+ * @returns 
+ */
+export const getUserProfileImageUpdateInfo = async (userIds) => {
+    try {
+        if (!Array.isArray(userIds) || userIds.length === 0) {
+            return {
+                status: -1,
+                message: 'User IDs must be a non-empty array'
+            };
+        }
+        const userIdsString = userIds.join(',');
+        const requestUrl = `/image/profile/time?user_ids=${userIdsString}`;
+        console.log('Request Type: GET');
+        console.log('Request URL:', requestUrl);
+        const response = await getaxiosInstance().get(requestUrl);
+        return response.data;
+
+    } catch (error) {
+        console.error('Error fetching user profile image update information:', error);
+        let dealResult = await dealAxiosError(error);
+        if (dealResult.status == 1412) {
+            return await getUserProfileImageUpdateInfo(userIds);
+        }
+        return dealResult;
+    }
+};

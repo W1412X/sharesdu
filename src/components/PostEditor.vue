@@ -81,7 +81,7 @@ export default {
             if(this.typeMsg.type=="article"){
                 response=await createPostInArticle(this.typeMsg.id,this.data.title,addLinkToPost(this.data.content,this.typeMsg.type,this.typeMsg.id));
             }else if(this.typeMsg.type=="course"){
-                response=await createPostInCourse(this.data.title,addLinkToPost(this.data.content,this.typeMsg.type,this.typeMsg.id));
+                response=await createPostInCourse(this.typeMsg.id,this.data.title,addLinkToPost(this.data.content,this.typeMsg.type,this.typeMsg.id));
             }else{
                 //test
                 response=await createPostInArticle(20,this.data.title,this.data.content);
@@ -96,7 +96,7 @@ export default {
                     replyNum: 0,
                     likeNum:0,
                     authorName: getCookie("userName"),
-                    authorProfileUrl:getCookie("userProfileUrl"),
+                    authorId: getCookie("userId"),
                 }
                 this.$emit("add_post",tmp)
                 this.close();

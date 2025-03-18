@@ -11,6 +11,7 @@
                     <v-btn @click="closeEditor" variant="text" class="dialog-bottom-bar-btn" >取消</v-btn>
                 </div>
             </v-card>
+            <post-editor v-if="ifShowPostEditor" @add_post="addPost" @close="closePostEditor" @alert="alert" @set_loading="setLoading" :type-msg="{type:'course',id:this.course.id}"></post-editor>
         </div>
     </v-dialog>
     <div class="full-center">
@@ -55,14 +56,14 @@
                             考核方式:{{ course.examineMethod }}
                         </div>
                     </div>
-                    <div class="time-container">
+                </div>
+                <div class="time-container">
                         <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="18"></v-icon>
                         <div class="text-small">
                             {{ course.publishTime }}
                         </div>
                         <v-spacer></v-spacer>
                         <span class="history-text text-small" @click="showHistory">查看历史版本</span>
-                    </div>
                 </div>
                 <div class="visualize-score-card">
                     <div class="bar-left-container">
@@ -120,35 +121,78 @@
                 </div>
                 <v-btn class="load-more-btn" variant="tonal" @click="getCourseCommentList()">加载更多</v-btn>
             </div>
+            <div class="bottom-bar">
+                <div class="column-center user-name text-medium">
+                    {{ userName }}
+                </div>
+                <v-spacer class="spacer"></v-spacer>
+                <div class="row-reverse">
+                    <div class="column-center padding-right-5px">
+                        <alert-button :id="this.course.id" :type="'course'"></alert-button>
+                    </div>
+                    <div class="column-center padding-right-10px">
+                        <v-btn elevation="0" @click="showPost" icon class="bottom-btn">
+                            <v-icon icon="mdi-comment-outline" size="24"></v-icon>
+                        </v-btn>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <v-overlay v-model="ifShowPost" class="posts-dialog">
+        <div id="post-container" class="posts-container">
+            <div style="display: flex;flex-direction: column;width: 100%;">
+                <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
+                    发表帖子
+                </v-btn>
+                <post-item v-for="(item,index) in postItems" :init-data="item" :key="index">
+                </post-item>
+                <v-btn @click="loadMorePost" v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
+            </div>
+        </div>
+    </v-overlay>
 </template>
 <script>
 import CourseComment from '@/components/CourseComment.vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
-import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList } from '@/axios/course';
+import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList, getCoursePostList } from '@/axios/course';
 import { computed,ref } from 'vue';
 import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getProfileUrl } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
 import StarButton from '@/components/StarButton.vue';
+import PostEditor from '@/components/PostEditor.vue';
+import PostItem from '@/components/PostItem.vue';
+import AlertButton from '@/components/AlertButton.vue';
 export default {
     name: 'CoursePage',
     components: {
         CourseComment,
         SensitiveTextArea,
         StarButton,
+        PostEditor,
+        PostItem,
+        AlertButton,
     },
     setup() {
+        const userName=getCookie("userName");
         const themeColor = globalProperties.$themeColor;
         const deviceType = globalProperties.$deviceType;
         const smallStarSize = deviceType == 'mobile' ? 20 : 30;
         const barHeight = deviceType == 'mobile' ? 8 : 11;
         const bigScoreBarSize = deviceType == 'mobile' ? 30 : 40;
         const ifShowCommentEditor=ref(false);
+        const ifShowPostEditor=ref(false);
+        const ifShowPost=ref(false);
+        const setPostEditorState=(state)=>{
+            ifShowPostEditor.value=state;
+        };
+        const setPostState=(state)=>{
+            ifShowPost.value=state;
+        };
         const ifShowDialog=computed(()=>{
-            return ifShowCommentEditor.value;
+            return ifShowCommentEditor.value || ifShowPostEditor.value;
         })
         const setCommentEditorState=(state)=>{
             ifShowCommentEditor.value=state;
@@ -162,6 +206,11 @@ export default {
             ifShowCommentEditor,
             ifShowDialog,
             setCommentEditorState,
+            ifShowPost,
+            setPostEditorState,
+            ifShowPostEditor,
+            userName,
+            setPostState,
         }
     },
     data() {
@@ -194,9 +243,40 @@ export default {
             commentList: [],
             commentPageNum:1,
             ifRated:false,
+            postItems:[],
+            postPageNum:1,
         }
     },
     methods: {
+        async showPost(){
+            this.loadMorePost();
+            this.setPostState(true);
+        },
+        async loadMorePost(){
+            this.setLoading(getLoadMsg("正在加载帖子..."));
+            let response=await getCoursePostList(this.course.id,this.postPageNum);
+            if(response.status==200){
+                for(let i=0;i<response.post_list.length;i++){
+                    this.postItems.push({
+                        id:response.post_list[i].post_id,
+                        title:response.post_list[i].post_title,
+                        content:response.post_list[i].post_content,
+                        authorId:response.post_list[i].poster_id,
+                        authorName:response.post_list[i].poster_name,
+                        viewNum:response.post_list[i].view_count,
+                        likeNum:response.post_list[i].like_count,
+                        replyNum:response.post_list[i].reply_count,
+                        publishTime:response.post_list[i].publish_time,
+                        ifLike:response.post_list[i].if_like,
+                        ifStar:response.post_list[i].if_star
+                    });
+                }
+                this.postPageNum++;
+            }else{
+                this.alert(getNormalErrorAlert(response.data.message));
+            }
+            this.setLoading(getCancelLoadMsg());
+        },
         closeEditor(){
             this.selfComment=copy(this.oriSelfComment);
             this.setCommentEditorState(false);
@@ -285,7 +365,6 @@ export default {
                             id:response.score_list[ind].review_id,
                             authorId:response.score_list[ind].scorer_id,
                             authorName:response.score_list[ind].scorer_name,
-                            authorProfileUrl:getProfileUrl(response.score_list[ind].scorer_id),
                             score:response.score_list[ind].score,
                             comment:response.score_list[ind].comment,
                             time:response.score_list[ind].publish_time,
@@ -299,6 +378,12 @@ export default {
         },
         async showHistory(){
 
+        },
+        addPost(item){
+            this.postItems.unshift(item);
+        },
+        closePostEditor(){
+            this.setPostEditorState(false);
         }
     },
     async mounted() {
@@ -372,15 +457,18 @@ export default {
 .icon-right-5px {
     margin-right: 5px;
 }
+.bottom-btn{
+    width: 23px;
+    height: 23px;
+    color:#8a8a8a;
+    background-color:rgba(0, 0, 0,0);
+}
 .msg-item {
     min-width: 150px;
-    max-width: 100%;
-    width: fit-content;
     margin-right: 20px;
     margin-top: 10px;
     white-space: nowrap;
     word-break: break-all;
-    overflow: hidden;
     color: grey;
 }
 .dialog-bottom-bar{
@@ -388,9 +476,20 @@ export default {
     display: flex;
     flex-direction: row-reverse;
 }
-
+.column-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
 .dialog-bottom-bar-btn{
     margin-right: 10px;
+}
+
+
+.column-div{
+    display: flex;
+    flex-direction: column;
 }
 
 .msg-container {
@@ -427,6 +526,13 @@ export default {
     color: grey;
 }
 
+.padding-right-5px {
+    padding-right: 5px;
+}
+.padding-right-10px {
+    padding-right: 10px;
+}
+
 @media screen and (min-width: 600px) {
     .full-center {
         width: 100%;
@@ -434,6 +540,17 @@ export default {
         justify-content: center;
         align-items: flex-start;
         height: 100%;
+    }
+    .bottom-bar {
+        display: flex;
+        width: 800px;
+        flex-direction: row;
+        position: fixed;
+        bottom: 0;
+        height: 40px;
+        z-index:99;
+        border: #8a8a8a 1px solid;
+        background-color: #ffffff;
     }
     .comment-editor-card{
         display: flex;
@@ -450,7 +567,11 @@ export default {
         word-break: break-all;
         overflow: hidden;
     }
-
+    .user-name {
+        margin-left: 10px;
+        max-width: 300px;
+        color: var(--theme-color);
+    }
     .course-card {
         width: 800px;
         padding: 15px;
@@ -470,6 +591,20 @@ export default {
     .base-score-text {
         color: grey;
         font-size: 20px;
+    }
+
+    .posts-dialog{
+        padding:0px;
+        display: flex;
+        flex-direction: row-reverse;
+    }
+    .posts-container{
+        background-color: #ffffff;
+        border-top: #8a8a8a 1px solid;
+        width: 752px;
+        padding:1px;
+        height: 100vh;
+        overflow-y: scroll;
     }
 
     .actual-score-text {
@@ -560,6 +695,22 @@ export default {
         flex-direction: column;
         padding:10px;
     }
+    .bottom-bar {
+        display: flex;
+        width: 100vw;
+        flex-direction: row;
+        position: fixed;
+        bottom: 0;
+        height: 40px;
+        z-index:99;
+        border: #8a8a8a 1px solid;
+        background-color: #ffffff;
+    }
+    .user-name {
+        margin-left: 2vw;
+        width: 30vw;
+        color: var(--theme-color);
+    }
     .visualize-score-card {
         margin-top: 10px;
         width: 98vw;
@@ -648,6 +799,19 @@ export default {
         width: 100vw;
         display: flex;
         flex-direction: column;
+    }
+    .posts-dialog{
+        padding:0px;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    .posts-container{
+        background-color: #ffffff;
+        border-top: #8a8a8a 1px solid;
+        width: 100vw;
+        height: 60vh;
+        overflow-y: scroll;
+        border-radius: 5px;
     }
 }
 </style>

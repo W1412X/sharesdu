@@ -3,7 +3,7 @@
         <v-card class="column-list">
             <div class="row-div padding-10px title-bold">
                 <div class="name">
-                    <avatar-name :init-data="{name:author.name,avatar:null}"></avatar-name>
+                    <avatar-name v-if="author.id" :init-data="{name:author.name,avatar:null}"></avatar-name>
                 </div>
                 <v-spacer></v-spacer>
                 <v-btn @click="follow" variant="tonal" :color="followState?'grey':themeColor" class="load-btn" rounded>

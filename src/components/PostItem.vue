@@ -2,7 +2,7 @@
     <v-card @click="click()" class="card" elevation="1">
         <div class="row-div">
             <div class="text-small bottom-bar avatar-name-column-center">
-                <avatar-name :initData="{name:data.authorName,avatar:data.authorProfileUrl}"></avatar-name>
+                <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
                 <v-spacer></v-spacer>
                 <div class="bottom-item">
                     <v-icon icon="mdi-heart" size="19"></v-icon>
@@ -43,7 +43,7 @@ export default {
                     viewNum: null,
                     replyNum: null,
                     authorName: null,
-                    authorProfileUrl:null,
+                    authorId:null,
                 }
             }
         }

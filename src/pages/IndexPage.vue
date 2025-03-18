@@ -7,7 +7,7 @@
     </v-dialog>
     <div class="full-screen">
         <div class="top-bar">
-            <avatar-name :init-data="{avatar:userProfileUrl,name:userName,id:userId}" :color="'#ffffff'"></avatar-name>
+            <avatar-name v-if="userId" :init-data="{avatar:userProfileUrl,name:userName,id:userId}" :color="'#ffffff'"></avatar-name>
             <v-spacer></v-spacer>
             <v-text-field v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
                 variant="outlined" color="#ffffff">
@@ -204,7 +204,7 @@ export default {
                             publishTime:response.article_list[ind].publish_time,
                             tags:response.article_list[ind].article_tags,
                             authorName:response.article_list[ind].author_name,
-                            authorProfileUrl:response.article_list[ind].author_profile_url,
+                            authorId:response.article_list[ind].author_id,
                             coverLink:response.article_list[ind].cover_link,
                             type:response.article_list[ind].article_type,
                             hotScore:response.article_list[ind].hot_score
@@ -256,7 +256,6 @@ export default {
                             content:response.post_list[i].post_content,
                             authorId:response.post_list[i].poster_id,
                             authorName:response.post_list[i].poster_name,
-                            authorProfileUrl:getProfileUrl(response.post_list[i].poster_id),
                             viewNum:response.post_list[i].view_count,
                             likeNum:response.post_list[i].like_count,
                             replyNum:response.post_list[i].reply_count,

@@ -1,13 +1,17 @@
 <!--  -->
 <template>
     <div class="avatar-name" @click="toAuthorPage">
-        <v-avatar :size="size" :image="initData.avatar"></v-avatar>
+        <v-icon color="#8a8a8a" v-if="this.profileUrl===null"  :size="size" type="mdi" icon="mdi-account-circle"/>
+        <v-avatar v-else :size="size" :image="this.profileUrl"></v-avatar>
         <div class="name" :style="{color:color}">
             {{initData.name}}
         </div>
     </div>
 </template>
 <script>
+import { getUserProfileImageUpdateInfo } from '@/axios/image'
+import { getProfileUrlInDB } from '@/utils/profile'
+
 export default {
     props:{
         initData: {
@@ -15,7 +19,6 @@ export default {
             default: function () {
                 return {
                     id:null,
-                    avatar: null,
                     name: null,
                 }
             }
@@ -29,6 +32,11 @@ export default {
             default: '#000'
         }
     },
+    data(){
+        return{
+            profileUrl:null,
+        }
+    },
     methods: {
         toAuthorPage(){
             this.$router.push({
@@ -38,6 +46,21 @@ export default {
                 }
             })
         }
+    },
+    async mounted(){
+        console.log(this.initData);
+        //get the update message first  
+        try{
+            let response=await getUserProfileImageUpdateInfo([this.initData.id]);
+            if(response.status==200&&!response.time_list[0].error){
+                let time=response.time_list[0].created_at;
+                this.profileUrl=await getProfileUrlInDB(this.initData.id,time);
+            }
+        }catch(e){
+            console.log(e);
+        }
+        //to do optimize the updatetime logic  
+
     }
 }
 </script>

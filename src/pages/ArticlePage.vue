@@ -23,7 +23,7 @@
                 </div>
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium grey-font">
-                        <avatar-name :init-data="{id:article.authorId,avatar:article.authorProfileUrl,name:article.authorName}">
+                        <avatar-name v-if="article.authorId" :init-data="{id:article.authorId,name:article.authorName}">
                         </avatar-name>
                     </div>
                     <v-spacer></v-spacer>
@@ -177,7 +177,7 @@ export default {
                 tags:"",
                 type:"",
                 authorName:"",
-                authorProfileUrl:"",
+                authorId:"",
                 likeCount:"",
                 starCount:"",
                 viewCount:"",
@@ -216,7 +216,6 @@ export default {
                         content:response.post_list[i].post_content,
                         authorId:response.post_list[i].poster_id,
                         authorName:response.post_list[i].poster_name,
-                        authorProfileUrl:getProfileUrl(response.post_list[i].poster_id),
                         viewNum:response.post_list[i].view_count,
                         likeNum:response.post_list[i].like_count,
                         replyNum:response.post_list[i].reply_count,
@@ -248,29 +247,34 @@ export default {
         /**
          * get the route params and fetch data
          */
-        this.setLoading(getLoadMsg("正在加载文章信息..."));
         if(this.$route.params.id){
+            this.setLoading(getLoadMsg("正在加载文章信息..."));
             let response=await getArticleDetail(this.$route.params.id);
-            this.article.id=response.article_detail.article_id;
-            this.article.title=response.article_detail.article_title;
-            this.article.summary=response.article_detail.article_summary;
-            this.article.type=response.article_detail.article_type;
-            this.article.tags=response.article_detail.article_tags;
-            this.article.originLink=response.article_detail.origin_link;
-            this.article.coverLink=response.article_detail.article_cover_link;
-            this.article.content=getContentWithoutEditorType(response.article_detail.article_content);
-            this.editorType=extractEditorType(response.article_detail.article_content);
-            this.article.likeCount=response.article_detail.like_count;
-            this.article.replyCount=response.article_detail.reply_count;
-            this.article.viewCount=response.article_detail.view_count;
-            this.article.starCount=response.article_detail.star_count;
-            this.article.authorName=response.article_detail.author_name;
-            this.article.authorId=response.article_detail.author_id;
-            this.article.authorProfileUrl=getProfileUrl(this.article.authorId);
-            this.article.sourceUrl=response.article_detail.source_url;
-            this.article.publishTime=response.article_detail.publish_time;
-            this.article.ifLike=response.article_detail.if_like;
-            this.article.ifStar=response.article_detail.if_star;
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200){
+                this.article.id=response.article_detail.article_id;
+                this.article.title=response.article_detail.article_title;
+                this.article.summary=response.article_detail.article_summary;
+                this.article.type=response.article_detail.article_type;
+                this.article.tags=response.article_detail.article_tags;
+                this.article.originLink=response.article_detail.origin_link;
+                this.article.coverLink=response.article_detail.article_cover_link;
+                this.article.content=getContentWithoutEditorType(response.article_detail.article_content);
+                this.editorType=extractEditorType(response.article_detail.article_content);
+                this.article.likeCount=response.article_detail.like_count;
+                this.article.replyCount=response.article_detail.reply_count;
+                this.article.viewCount=response.article_detail.view_count;
+                this.article.starCount=response.article_detail.star_count;
+                this.article.authorName=response.article_detail.author_name;
+                this.article.authorId=response.article_detail.author_id;
+                this.article.sourceUrl=response.article_detail.source_url;
+                this.article.publishTime=response.article_detail.publish_time;
+                this.article.ifLike=response.article_detail.if_like;
+                this.article.ifStar=response.article_detail.if_star;
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+                this.$router.push({name:"ErrorPage",params:{reason:response.message}})
+            }
         }else{
             this.$router.push({name:"ErrorPage",params:{reason:"缺少参数"}})
         }
@@ -293,17 +297,6 @@ export default {
     margin-bottom: 40px;
 }
 
-.bottom-bar {
-    display: flex;
-    width: 1000px;
-    flex-direction: row;
-    position: fixed;
-    bottom: 0;
-    height: 40px;
-    z-index:99;
-    border: #8a8a8a 1px solid;
-    background-color: #ffffff;
-}
 .bottom-btn{
     width: 23px;
     height: 23px;
@@ -398,7 +391,17 @@ export default {
         align-items: flex-start;
         height: 100%;
     }
-
+    .bottom-bar {
+        display: flex;
+        width: 1000px;
+        flex-direction: row;
+        position: fixed;
+        bottom: 0;
+        height: 40px;
+        z-index:99;
+        border: #8a8a8a 1px solid;
+        background-color: #ffffff;
+    }
     .top-bar {
         border: grey 1px solid;
         width: 1000px;
@@ -457,7 +460,17 @@ export default {
         align-items: flex-start;
         height: 100vh;
     }
-
+    .bottom-bar {
+        display: flex;
+        width: 100vw;
+        flex-direction: row;
+        position: fixed;
+        bottom: 0;
+        height: 40px;
+        z-index:99;
+        border: #8a8a8a 1px solid;
+        background-color: #ffffff;
+    }
     .top-bar {
         border: grey 1px solid;
         width: 100vw;

@@ -3,7 +3,7 @@
         <div
             class="name text-medium"
         >
-            <avatar-name :initData="{avatar:data.authorProfileUrl,name:data.authorName}"></avatar-name>
+            <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
         </div>
         <div
             class="comment text-medium"
@@ -47,7 +47,7 @@ export default {
                     publishTime: null,
                     likeNum: null,
                     content: null,
-                    authorProfileUrl:null,
+                    authorId:null,
                 }
             }
         }

@@ -6,7 +6,7 @@
           <v-btn size="20" color="#8a8a8a" variant="text" icon="mdi-close" @click="closeDialog()"></v-btn>
         </div>
         <div v-for="(item, index) in this.blockList" :key="index" class="block-item">
-          <avatar-name :init-data="item" />
+          <avatar-name v-if="item.id" :init-data="item" />
           <v-spacer />
           <v-btn @click="cancelBlock(index)" variant="text">取消拉黑</v-btn>
         </div>
@@ -234,7 +234,7 @@ export default {
       id: getCookie("userId"),
       name: getCookie("userName"),
       profileUrl: getCookie("userProfileUrl"),
-      email: getCookie("userEmail"),
+      email: getCookie("email"),
     }
     //if no id,to the user page
     if(!this.$route.params.id){
@@ -366,6 +366,7 @@ export default {
   }
 
   .view-container {
+    margin-top: 20px;
     width: 750px;
   }
 
@@ -402,6 +403,7 @@ export default {
   }
 
   .view-container {
+    margin-top: 20px;
     width: 100vw;
   }
 

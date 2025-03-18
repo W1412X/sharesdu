@@ -19,7 +19,7 @@
             <div class="top-bar">
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium name-font">
-                        <avatar-name :init-data="{id:this.post.authorId,avatar:post.authorProfileUrl,name:post.authorName}"></avatar-name>
+                        <avatar-name v-if="this.post.authorId" :init-data="{id:this.post.authorId,name:post.authorName}"></avatar-name>
                     </div>
                     <v-spacer></v-spacer>
                     <div class="column-center padding-right-5px">
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <v-btn v-if="this.post.relativeLink!==null" @click="toRelativePage" class="link-btn" variant="tonal" :color="themeColor">关联文章</v-btn>
+                <v-btn v-if="this.post.relativeLink!==null" @click="toRelativePage" class="link-btn" variant="tonal" :color="themeColor">{{ relativeText }}</v-btn>
             </div>
             <div class="bottom-bar">
                 <div class="column-center user-name text-medium">
@@ -152,6 +152,13 @@ export default {
         }
     },
     data() {
+        const relativeText=computed(()=>{
+            if(this.post.relativeLink.includes("course")){
+                return "关联课程";
+            }else{
+                return "关联文章";
+            }
+        })
         return {
             inputingComment:'',
             post: {
@@ -161,10 +168,11 @@ export default {
                 starNum: null,
                 replyNum: null,
                 authorName: null,
-                authorProfileUrl:null,
+                authorId:null,
                 relativeLink:null,
                 publishTime: null,
             },
+            relativeText,
             replyList: [],
             replyPageNum:1,
         }
@@ -188,7 +196,7 @@ export default {
                     id:response.reply_id,
                     content:this.inputingComment,
                     authorName:getCookie("userName"),
-                    authorProfileUrl:getCookie("userProfileUrl"),
+                    authorId:getCookie("userId"),
                     likeNum:0,
                     publishTime:new Date().toLocaleString(),
                 })
@@ -217,7 +225,6 @@ export default {
                         content:response.reply_list[i].reply_content,
                         authorName:response.reply_list[i].replier_name,
                         authorId:response.reply_list[i].replier_id,
-                        authorProfileUrl:getProfileUrl(response.reply_list[i].replier_id),
                         likeNum:response.reply_list[i].like_count,
                         publishTime:response.reply_list[i].publish_time,
                     }
@@ -252,7 +259,6 @@ export default {
         if(response.status==200){
             this.post.authorId=response.post_detail.poster_id;
             this.post.authorName=response.post_detail.poster_name;
-            this.post.authorProfileUrl=getProfileUrl(this.post.authorId);
             this.post.id=response.post_detail.post_id;
             this.post.title=response.post_detail.post_title;
             this.post.content=getPostWithoutLink(response.post_detail.post_content);

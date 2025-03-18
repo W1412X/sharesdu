@@ -51,7 +51,7 @@ export default {
                     hotScore:null,
                     comment: null,
                     authorName: null,
-                    authorProfileUrl:null,
+                    authorId:null,
                     coverLink:null,
                     type:null,
 

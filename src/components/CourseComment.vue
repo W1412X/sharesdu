@@ -1,9 +1,8 @@
 <template>
     <div class="container">
         <div class="row-div">
-            <avatar-name :initData="{
+            <avatar-name v-if="data.authorId" :initData="{
                 name:data.authorName,
-                avatar:data.authorProfileUrl,
                 id:data.authorId
             }"></avatar-name>
         </div>

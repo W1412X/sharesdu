@@ -18,29 +18,31 @@
 
     <v-card class="card" elevation="1">
         <div class="row-reverse-div">
-        <v-btn v-if="type === 'add'" size="20" style="margin-bottom: 10px;" color="#8a8a8a" variant="text" icon="mdi-close" @click="close"></v-btn>
-                </div>
+            <v-btn v-if="type === 'add'" size="20" style="margin-bottom: 10px;" color="#8a8a8a" variant="text"
+                icon="mdi-close" @click="close"></v-btn>
+        </div>
         <v-btn style="width: 100%;" @click="setFolderEditorState(true)" prepend-icon="mdi-plus" :color="themeColor"
-        variant="tonal">新建收藏夹</v-btn>
+            variant="tonal">新建收藏夹</v-btn>
         <div class="column-div-scroll">
             <v-expansion-panels>
                 <v-expansion-panel expand-icon="mdi-folder-star" v-for="(folder, index) in folders" :key="index"
-                    class="with-border"
-                    :text="folder.description" :title="folder.name">
+                    class="with-border" :text="folder.description" :title="folder.name">
                     <div class="row-reverse-div">
-                        <v-btn v-if="type === 'add'" @click="add(folder.id)" :color="themeColor" icon="mdi-star-plus" class="btn"
-                            variant="tonal" size="30"></v-btn>
-                        <v-btn v-if="type === 'show'" @click="load(folder.id)" :color="themeColor" icon="mdi-chevron-down-circle-outline"
-                            class="btn" variant="tonal" size="32"></v-btn>
+                        <v-btn v-if="type === 'add'" @click="add(folder.id)" :color="themeColor" icon="mdi-star-plus"
+                            class="btn" variant="tonal" size="30"></v-btn>
+                        <v-btn v-if="type === 'show'" @click="load(index)" :color="themeColor"
+                            icon="mdi-chevron-down-circle-outline" class="btn" variant="tonal" size="32"></v-btn>
                         <v-spacer></v-spacer>
                         <div class="row-60-scroll">
                             <div class="row-div">
-                                <v-icon class="icon-right-5px icon-left-10px" :color="'#8a8a8a'" icon="mdi-clock" size="20"></v-icon>
-                                <div class="text-medium"  :style="{ 'color':'#8a8a8a' }">
+                                <v-icon class="icon-right-5px icon-left-10px" :color="'#8a8a8a'" icon="mdi-clock"
+                                    size="20"></v-icon>
+                                <div class="text-medium" :style="{ 'color': '#8a8a8a' }">
                                     {{ folder.createTime }}
                                 </div>
-                                <v-icon class="icon-right-5px icon-left-10px" :color="'#8a8a8a'" icon="mdi-star" size="20"></v-icon>
-                                <div class="text-medium" :style="{ 'color':'#8a8a8a' }">
+                                <v-icon class="icon-right-5px icon-left-10px" :color="'#8a8a8a'" icon="mdi-star"
+                                    size="20"></v-icon>
+                                <div class="text-medium" :style="{ 'color': '#8a8a8a' }">
                                     {{ folder.starNum }}
                                 </div>
                             </div>
@@ -122,7 +124,7 @@ export default {
                     id: response.folder_id,
                     starNum: 0,
                     createTime: new Date().toLocaleString(),
-                    items:[]
+                    items: []
                 })
                 this.newFolder.name = "";
                 this.newFolder.description = "";
@@ -131,46 +133,37 @@ export default {
                 this.alert(getNormalErrorAlert(response.message));
             }
         },
-        async load(folderId) {
-            for(let i=0;i<this.folders.length;i++){
-                if(this.folders[i].id==folderId){
-                    if(this.folders[i].items.length!=0){
-                        this.alert(getNormalInfoAlert("文件夹已加载"))
-                        return;
-                    }
-                }
+        async load(index) {
+            if (this.folders[index].items.length != 0) {
+                this.alert(getNormalInfoAlert("文件夹已加载"))
+                return;
             }
             this.setLoading(getLoadMsg("正在加载收藏夹列表..."));
-            let response = await getStarList(folderId);
+            let response = await getStarList(this.folders[index].id);
             this.setLoading(getCancelLoadMsg());
             if (response.status == 200 || response.status == 201) {
-                try{
-                    for(let i=0;i<this.folders.length;i++){
-                    if(this.folders[i].id==folderId){
-                        for(let u=0;u<response.star_list.length;u++){
-                            let type=null;
-                            switch(response.star_list[u].content_type){
-                                case 0:
-                                    type="article";
-                                    break;
-                                case 1:
-                                    type="course";
-                                    break;
-                                case 2:
-                                    type="post";
-                                    break;
-                            }
-                            this.folders[i].items.push({
-                                id:response.star_list[u].content_id,
-                                title:response.star_list[u].content_name,
-                                type:type,
-                                time:response.star_list[u].created_at,
-                            });
+                try {
+                    for (let u = 0; u < response.star_list.length; u++) {
+                        let type = null;
+                        switch (response.star_list[u].content_type) {
+                            case 0:
+                                type = "article";
+                                break;
+                            case 1:
+                                type = "course";
+                                break;
+                            case 2:
+                                type = "post";
+                                break;
                         }
-                        break;
+                        this.folders[index].items.push({
+                            id: response.star_list[u].content_id,
+                            title: response.star_list[u].content_name,
+                            type: type,
+                            time: response.star_list[u].created_at,
+                        });
                     }
-                }
-                }catch (e) {
+                } catch (e) {
                     console.log(e);
                 }
                 this.alert(getNormalSuccessAlert("成功加载收藏"));
@@ -180,22 +173,22 @@ export default {
         },
         async add(folderId) {
             this.setLoading(getLoadMsg("正在添加..."));
-            let type=-1;
-            switch(this.msg.type){
+            let type = -1;
+            switch (this.msg.type) {
                 case "course":
-                    type=0;
+                    type = 0;
                     break;
                 case "article":
-                    type=1;
+                    type = 1;
                     break;
                 case "post":
-                    type=2;
+                    type = 2;
                     break;
                 default:
-                    type=1;
+                    type = 1;
                     break;
             }
-            let response = await starContent(type,this.msg.id,folderId);
+            let response = await starContent(type, this.msg.id, folderId);
             this.setLoading(getCancelLoadMsg());
             if (response.status == 200 || response.status == 201) {
                 this.alert(getNormalSuccessAlert("收藏成功"));
@@ -213,7 +206,7 @@ export default {
         closeDialog() {
             this.setFolderEditorState(false);
         },
-        close(){
+        close() {
             this.$emit('close');
         }
     },
@@ -229,7 +222,7 @@ export default {
                     description: response.folders[i].description,
                     starNum: response.folders[i].star_count,
                     createTime: extractTime(response.folders[i].created_at),
-                    items:[]
+                    items: []
                 })
             }
             this.alert(getNormalSuccessAlert('加载成功'));
@@ -258,40 +251,48 @@ export default {
     padding: 5px;
     width: 100%;
 }
-.with-border{
+
+.with-border {
     border-radius: 5px;
-    border: 1px solid var(--theme-color);
+    border: 1px solid var(--theme-color-transparent);
 }
-.row-div{
+
+.row-div {
     display: flex;
     flex-direction: row;
     align-items: center;
     width: fit-content;
 }
+
 .column-div {
     display: flex;
     flex-direction: column;
 }
-.icon-left-10px{
+
+.icon-left-10px {
     margin-left: 10px;
 }
-.icon-right-5px{
+
+.icon-right-5px {
     margin-right: 5px;
 }
-.row-60-scroll{
+
+.row-60-scroll {
     max-width: 60%;
     overflow: scroll;
 }
+
 @media screen and (min-width: 600px) {
     .card {
         width: 750px;
         max-height: 800px;
         padding: 10px;
     }
+
     .column-div-scroll {
         display: flex;
         flex-direction: column;
-        max-height: 750px;
+        max-height: 650px;
         overflow: auto;
     }
 }
@@ -302,6 +303,7 @@ export default {
         max-height: 80vh;
         padding: 10px;
     }
+
     .column-div-scroll {
         display: flex;
         flex-direction: column;

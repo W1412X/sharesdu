@@ -28,16 +28,17 @@ export const createPostInArticle = async (articleId, postTitle, postContent) => 
     }
 };
 /**
- * 
+ * @param {String} articleId
  * @param {String} postTitle 
  * @param {String} postContent 
  * @returns 
  */
-export const createPostInCourse = async (postTitle, postContent) => {
+export const createPostInCourse = async (courseId,postTitle, postContent) => {
     try {
         console.log('Request Type: POST');
         console.log('Request URL: /post/course_post');
         const response = await getaxiosInstance().post('/post/course_post', { 
+            course_id:courseId,
             post_title: postTitle,
             post_content: postContent 
         });
