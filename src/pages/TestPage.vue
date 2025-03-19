@@ -1,13 +1,25 @@
 <template>
-  <NotificationItem></NotificationItem>
+  <SensitiveTextArea v-model="text"></SensitiveTextArea>
+  <v-btn @click="d()">delte</v-btn>
 </template>
 
 <script>
-import NotificationItem from '@/components/NotificationItem.vue';
+import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
+import { dbDeleteProfile } from '@/utils/db';
 
 export default{
   components:{
-    NotificationItem,
+    SensitiveTextArea,
+  },
+  data(){
+    return {
+      text: ''
+    }
+  },
+  methods:{
+    d(){
+      dbDeleteProfile(this.text);
+    }
   }
 }
 </script>

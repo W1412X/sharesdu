@@ -11,9 +11,10 @@ import { globalProperties } from "@/main";
  */
 export async function getProfileUrlInDB(userId,lastUpdateTime){
     let profileMsg=await dbGetProfile(String(userId));
+    console.log(profileMsg);
     if(profileMsg){//if the profile exsits  
         console.log("profile exsits");
-        if(lastUpdateTime===profileMsg.updateTime){
+        if(lastUpdateTime==profileMsg.updateTime){
             //if version matches  
             console.log("version matches");
             console.log(profileMsg.updateTime,lastUpdateTime);
@@ -27,13 +28,13 @@ export async function getProfileUrlInDB(userId,lastUpdateTime){
              * and do this function again  
              */
             let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
-            dbSetProfile(userId,lastUpdateTime,response.data);
+            await dbSetProfile(userId,lastUpdateTime,response.data);
             return getProfileUrlInDB(userId,lastUpdateTime);
         }
     }else{
         console.log("no profile in db");
         let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
-        dbSetProfile(userId,lastUpdateTime,response.data);
+        await dbSetProfile(userId,lastUpdateTime,response.data);
         return getProfileUrlInDB(userId,lastUpdateTime);
     }
 }

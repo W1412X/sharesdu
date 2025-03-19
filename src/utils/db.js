@@ -9,16 +9,16 @@ db.version(1).stores({
  * @param {int} updateTime 
  * @param {Blob} blob 
  */
-export function dbSetProfile(userId,updateTime,blob){
-    db.profile.put({
+export async function dbSetProfile(userId,updateTime,blob){
+    await db.profile.put({
         userId:userId,
         updateTime:updateTime,
         blob:blob
     })
 }
 
-export function dbGetProfile(userId){
-    return db.profile.get({
+export async function dbGetProfile(userId){
+    return await db.profile.get({
         userId:userId
     });
 }
