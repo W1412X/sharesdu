@@ -75,16 +75,19 @@
                 </div>
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
-                    <div class="column-center padding-right-10px">
-                        <star-button @alert="alert" @set_loading="setLoading" :type="'article'" :id="article.id" :state="article.ifStar"></star-button>
-                    </div>
                     <div class="column-center padding-right-5px">
                         <alert-button :id="this.article.id" :type="'article'"></alert-button>
                     </div>
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="comment" icon class="bottom-btn">
-                            <v-icon icon="mdi-comment-outline" size="24"></v-icon>
+                            <v-icon icon="mdi-comment-outline" size="23"></v-icon>
                         </v-btn>
+                    </div>
+                    <div class="column-center padding-right-10px">
+                        <star-button v-if="article.id!==null" @alert="alert" @set_loading="setLoading" :type="'article'" :id="article.id" :state="article.ifStar"></star-button>
+                    </div>
+                    <div class="column-center padding-right-5px">
+                        <like-button v-if="article.id!==null" @alert="alert" @set_loading="setLoading" :id="this.article.id" :type="'article'" :state="article.ifLike"></like-button>
                     </div>
                 </div>
             </div>
@@ -117,6 +120,7 @@ import PostEditor from '@/components/PostEditor.vue';
 import AvatarName from '@/components/AvatarName.vue';
 import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
+import LikeButton from '@/components/LikeButton.vue';
 export default {
     name: 'ArticlePage',
     components: {
@@ -128,6 +132,7 @@ export default {
         PostItem,
         PostEditor,
         AvatarName,
+        LikeButton
     },
     setup() {
         const themeColor = globalProperties.$themeColor;

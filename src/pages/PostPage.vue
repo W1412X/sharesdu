@@ -77,7 +77,7 @@
                         <alert-button :type="'post'" :id="post.id"></alert-button>
                     </div>
                     <div class="column-center padding-right-5px">
-                        <like-button :type="'post'" :id="post.id" :state="false"></like-button>
+                        <like-button v-if="post.id!==null" :type="'post'" :id="post.id" @alert="alert" @set_loading="setLoading" :state="post.ifLike"></like-button>
                     </div>
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="setCommentState(true)" icon class="bottom-btn">
@@ -88,8 +88,8 @@
             </div>
             <div class="comments-container">
             <div class="column-div">
-                <post-comment v-for="(comment, index) in replyList" :init-data="comment" :key="index">
-                </post-comment>
+                <reply-item v-for="(comment, index) in replyList" :init-data="comment" :key="index">
+                </reply-item>
                 <v-btn variant="tonal" class="load-btn" @click="loadMoreReply">加载更多</v-btn>
             </div>
         </div>
@@ -102,18 +102,18 @@ import { getCookie } from '@/utils/cookie';
 import StarButton from '@/components/StarButton.vue';
 import AlertButton from '@/components/AlertButton.vue';
 import { computed, ref } from 'vue';
-import PostComment from '@/components/PostComment.vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import AvatarName from '@/components/AvatarName.vue';
 import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink } from '@/utils/other';
 import { createReplyUnderPost, getPostDetailById, getReplyListByPostId } from '@/axios/post';
 import LikeButton from '@/components/LikeButton.vue';
+import ReplyItem from '@/components/ReplyItem.vue';
 export default {
     name: 'PostPage',
     components: {
         StarButton,
         AlertButton,
-        PostComment,
+        ReplyItem,
         SensitiveTextArea,
         AvatarName,
         LikeButton,

@@ -20,7 +20,7 @@
             </div>
             <v-spacer></v-spacer>
             <div class="bottom-btn-container">
-                <like-button :size="'20'"></like-button>
+                <like-button @alert="alert" @set_loading="setLoading" :size="'20'" :id="this.data.id" :state="this.data.ifLike" :type="'reply'"></like-button>
             </div>
             <div class="like-num text-small">
                 {{ this.data.likeNum }}
@@ -67,7 +67,13 @@ export default {
     methods: {
         click(){
             window.alert("sss");
-        }
+        },
+        alert(msg){
+            this.$emit('alert',msg);
+        },
+        setLoading(msg){
+            this.$emit('set_loading',msg);
+        },
     }
 }
 </script>

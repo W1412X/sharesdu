@@ -17,13 +17,14 @@
         <div style="display:flex;flex-direction: row;margin-top:5px;color:#8a8a8a">
             <span style="font-size: 16px;">{{ data.time }}</span>
             <v-spacer></v-spacer>
+            <!--
             <like-button :id="data.id" :type="'evaluation'" style="margin-right:10px;"></like-button>
+            -->
             <alert-button :id="data.id" :type="'evaluation'"></alert-button>
         </div>
     </div>
 </template>
 <script>
-import LikeButton from './LikeButton.vue';
 import AlertButton from './AlertButton.vue';
 import AvatarName from './AvatarName.vue';
 import { globalProperties } from '@/main';
@@ -45,7 +46,6 @@ export default {
         }
     },
     components: {
-        LikeButton,
         AlertButton,
         AvatarName,
     },
