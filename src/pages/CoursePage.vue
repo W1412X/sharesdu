@@ -159,7 +159,7 @@ import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
 import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList, getCoursePostList } from '@/axios/course';
 import { computed,ref } from 'vue';
-import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getProfileUrl } from '@/utils/other';
+import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
 import StarButton from '@/components/StarButton.vue';
 import PostEditor from '@/components/PostEditor.vue';

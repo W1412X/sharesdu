@@ -9,8 +9,8 @@
         <div class="top-bar">
             <avatar-name v-if="userId" :init-data="{avatar:userProfileUrl,name:userName,id:userId}" :color="'#ffffff'"></avatar-name>
             <v-spacer></v-spacer>
-            <v-text-field v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
-                variant="outlined" color="#ffffff">
+            <v-text-field color="white" v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
+                variant="outlined">
             </v-text-field>
             <div class="search-btn-container">
                 <v-btn icon="mdi-magnify" variant="text" color="#ffffff" size="40"></v-btn>
@@ -74,7 +74,7 @@ import ArticleItem from '@/components/ArticleItem.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getProfileUrl } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/axios/article';
 import AvatarName from '@/components/AvatarName.vue';
 import { getCourseList } from '@/axios/course';

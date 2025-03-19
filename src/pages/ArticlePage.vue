@@ -115,7 +115,7 @@ import { computed, ref } from 'vue';
 import PostItem from '@/components/PostItem.vue';
 import PostEditor from '@/components/PostEditor.vue';
 import AvatarName from '@/components/AvatarName.vue';
-import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, getProfileUrl } from '@/utils/other';
+import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 export default {
     name: 'ArticlePage',

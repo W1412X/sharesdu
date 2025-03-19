@@ -6,6 +6,7 @@
             <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
         </div>
         <div
+             @click="click"
             class="comment text-medium"
         >
             {{ data.content }}
@@ -64,6 +65,9 @@ export default {
         }
     },
     methods: {
+        click(){
+            window.alert("sss");
+        }
     }
 }
 </script>

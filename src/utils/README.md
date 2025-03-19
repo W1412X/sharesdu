@@ -11,4 +11,5 @@
 
 ## use pre-tree to check the sensitive word  
 
-##  
+## use sessionStorage to save the cache data  
+- for some get request,record the url-response in sessionStorage and use it when the url is same

@@ -1,5 +1,6 @@
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
+import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
 
 /**
  * 收藏课程、文章或帖子
@@ -61,7 +62,12 @@ export const getStarList = async (folder_id=null) => {
     let url = '/star/list';
     if(folder_id !== null) url += `?folder_id=${folder_id}`;
     console.log('Request URL:', url);
+    let cacheResponse=getResponseFromCache(url);
+    if(cacheResponse){
+      return cacheResponse.data;
+    }
     const response = await getaxiosInstance().get(url);
+    saveResponseToCache(url,response);
     return response.data;
   } catch (error) {
     console.error('Error getting star list:', error);
@@ -105,7 +111,12 @@ export const getStarFolders = async () => {
   try {
     console.log('Request Type: GET');
     console.log('Request URL: /star/folder/list');
+    let cacheResponse=getResponseFromCache('/star/folder/list');
+    if(cacheResponse){
+      return cacheResponse.data;
+    }
     const response = await getaxiosInstance().get('/star/folder/list');
+    saveResponseToCache('/star/folder/list',response);
     return response.data;
   } catch (error) {
     console.error('Error getting star folders:', error);

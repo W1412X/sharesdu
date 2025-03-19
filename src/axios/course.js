@@ -6,6 +6,7 @@
  */
 import { dealAxiosError } from "@/utils/other";
 import { getaxiosInstance } from "./axios";
+import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
 
 /**
  * 创建新的课程
@@ -150,7 +151,12 @@ export const getCourseDetail = async (courseId) => {
         console.log('Request Type: GET');
         console.log('Request URL: /course/detail');
         console.log('Request Params:', { course_id: courseId });
+        let cacheResponse=getResponseFromCache('/course/detail?course_id=' + courseId);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/course/detail', { params: { course_id: courseId } });
+        saveResponseToCache('/course/detail?course_id=' + courseId,response);
         return response.data;
     } catch (error) {
         console.error('Error getting course detail:', error);
@@ -174,7 +180,12 @@ export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) 
         console.log('Request Type: GET');
         console.log('Request URL: /course/post_list');
         console.log('Request Params:', { course_id: courseId, page_index: pageIndex, page_size: pageSize });
+        let cacheResponse=getResponseFromCache('/course/post_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/course/post_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
+        saveResponseToCache('/course/post_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
         console.error('Error getting course post list:', error);
@@ -198,7 +209,12 @@ export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20)
         console.log('Request Type: GET');
         console.log('Request URL: /course/score_list');
         console.log('Request Params:', { course_id: courseId, page_index: pageIndex, page_size: pageSize });
+        let cacheResponse=getResponseFromCache('/course/score_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/course/score_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
+        saveResponseToCache('/course/score_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
         console.error('Error getting course score list:', error);
@@ -221,7 +237,12 @@ export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
         console.log('Request Type: GET');
         console.log('Request URL: /course/list');
         console.log('Request Params:', { page_index: pageIndex, page_size: pageSize });
+        let cacheResponse=getResponseFromCache('/course/list?page_index=' + pageIndex + '&page_size=' + pageSize);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/course/list', { params: { page_index: pageIndex, page_size: pageSize } });
+        saveResponseToCache('/course/list?page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
         console.error('Error getting course list:', error);
@@ -291,7 +312,12 @@ export const getCourseHistory = async (courseId, pageIndex = 1, pageSize = 10) =
         console.log('Request Type: GET');
         console.log('Request URL: /api/admin/courses/<course_id>/history');
         console.log('Request Params:', { page_index: pageIndex, page_size: pageSize });
+        let cacheResponse=getResponseFromCache(`/api/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get(`/api/admin/courses/${courseId}/history`, { params: { page_index: pageIndex, page_size: pageSize } });
+        saveResponseToCache(`/api/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`,response);
         return response.data;
     } catch (error) {
         console.error('Error getting course history:', error);

@@ -9,6 +9,7 @@
  */
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
+import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
 
 // 创建文章函数
 export const createArticle = async (data) => {
@@ -73,7 +74,12 @@ export const getArticleDetail = async (id) => {
     try {
         console.log('Request Type: GET');
         console.log('Request URL: /article/detail?id=' + id);
+        let cacheResponse=getResponseFromCache('/article/detail?id=' + id);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/article/detail', { params: { article_id:id } });
+        saveResponseToCache('/article/detail?id=' + id,response);
         console.log('Response Data:', response.data);
         return response.data;
     } catch (error) {
@@ -92,7 +98,12 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
     try {
         console.log('Request Type: GET');
         console.log('Request URL: /article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize);
+        let cacheResponse=getResponseFromCache('/article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/article/post_list', { params: { article_id:id, page_index: pageIndex, page_size: pageSize } });
+        saveResponseToCache('/article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
         console.error('Error getting post list by article ID:', error);
@@ -110,7 +121,12 @@ export const getArticleList = async (sort='time',tags=null,pageIndex = 1, pageSi
     try {
         console.log('Request Type: GET');
         console.log('Request URL: /article/list?page_index=' + pageIndex + '&page_size=' + pageSize);
+        let cacheResponse=getResponseFromCache('/article/list?page_index=' + pageIndex + '&page_size=' + pageSize);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/article/list', { params: { page_index: pageIndex, page_size: pageSize,tags:tags,sort:sort } });
+        saveResponseToCache('/article/list?page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
         console.error('Error getting article list:', error);

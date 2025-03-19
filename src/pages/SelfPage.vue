@@ -93,11 +93,10 @@
       </div>
       <!-- message part  -->
       <div v-if="choose === 'message'">
-        <div v-for="(item, index) in this.messageList" :key="index" class="message-bar">
-          <avatar-name :init-data="{ name: item.name, avatar: item.avatar }"></avatar-name>
-          <div class="text-medium message-text">{{ item.message }}</div>
-          <div class="text-small message-time">{{ item.time }}</div>
-        </div>
+          <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item"></notification-item>
+          <v-btn variant="tonal" rounded width="100%">
+            加载更多
+          </v-btn>
       </div>
       <!-- account part  -->
       <div v-if="choose === 'account'">
@@ -125,17 +124,19 @@
 import { getAuthorInfo } from '@/axios/account';
 import { scSelfInfo } from '@/axios/api_convert/account';
 import { unblockUser } from '@/axios/block';
+import { fetchNotificationsList } from '@/axios/notification';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 import ArticleItem from '@/components/ArticleItem.vue';
 import AvatarName from '@/components/AvatarName.vue';
 import ColorSelectorCard from '@/components/ColorSelectorCard.vue';
 import CourseItem from '@/components/CourseItem.vue';
+import NotificationItem from '@/components/NotificationItem.vue';
 import PostItem from '@/components/PostItem.vue';
 import StarCard from '@/components/StarCard.vue';
 import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { ref, computed } from 'vue';
 export default {
   name: 'SelfPage',
@@ -173,6 +174,22 @@ export default {
       setColorSelectorCardState,
     }
   },
+  watch: {
+    choose: {
+      handler(newVal, oldVal) {
+        console.log(oldVal);
+        switch (newVal) {
+          case 'message':
+            if(this.notificationPageNum==1)
+            this.getNotificationList();
+            break; 
+          default:
+            this.alert(getNormalErrorAlert('未知错误(页面切换)'));
+        }
+      },
+      immediate: true
+    }
+  },
   components: {
     ArticleItem,
     PostItem,
@@ -181,6 +198,7 @@ export default {
     UserMessageEditorCard,
     StarCard,
     ColorSelectorCard,
+    NotificationItem,
   },
   data() {
     return {
@@ -190,7 +208,8 @@ export default {
       selfCourseList: [],
       followList: [],
       followStateList: [],
-      messageList: [],
+      notificationList: [],
+      notificationPageNum:1,
       blockList: [],
     }
   },
@@ -227,6 +246,27 @@ export default {
     closeDialog() {
       this.setBlockListState(false);
       this.setColorSelectorCardState(false);
+    },
+    async getNotificationList() {
+      this.setLoading(getLoadMsg("正在获取通知列表..."));
+      let response=await fetchNotificationsList(this.notificationPageNum);
+      this.setLoading(getCancelLoadMsg());
+      if (response.status == 200) {
+        for(let i=0;i<response.notification_list.length;i++){
+          this.notificationList.push({
+            id:response.notification_list[i].notification_id,
+            type:response.notification_list[i].type,
+            message:response.notification_list[i].message,
+            time:response.notification_list[i].created_at,
+            state:response.notification_list[i].is_read,
+            relatedItem:response.notification_list[i].related_object,
+          })
+        }
+        this.notificationPageNum++;
+        this.alert(getNormalSuccessAlert("获取成功"));
+      }else{
+        this.alert(getNormalErrorAlert(response.message));
+      }
     }
   },
   async mounted() {

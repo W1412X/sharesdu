@@ -1,5 +1,6 @@
 import { dealAxiosError } from "@/utils/other";
 import { getaxiosInstance } from "./axios";
+import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
 
 /**
  * 
@@ -61,7 +62,12 @@ export const getPostDetailById = async (postId) => {
     try {
         console.log('Request Type: GET');
         console.log(`Request URL: /post/detail?post_id=${postId}`);
+        let cacheResponse=getResponseFromCache(`/post/detail?post_id=${postId}`);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/post/detail', { params: { post_id: postId } });
+        saveResponseToCache(`/post/detail?post_id=${postId}`,response);
         return response.data;
     } catch (error) {
         console.error('Error getting post detail by ID:', error);
@@ -83,7 +89,12 @@ export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20)
     try {
         console.log('Request Type: GET');
         console.log(`Request URL: /post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`);
+        let cacheResponse=getResponseFromCache(`/post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/post/reply_list', { params: { post_id: postId, page_index: pageIndex, page_size: pageSize } });
+        saveResponseToCache(`/post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`,response);
         return response.data;
     } catch (error) {
         console.error('Error getting reply list by post ID:', error);
@@ -177,7 +188,12 @@ export const getReplyDetailById = async (replyId) => {
     try {
         console.log('Request Type: GET');
         console.log(`Request URL: /reply/detail?reply_id=${replyId}`);
+        let cacheResponse = getResponseFromCache(`/reply/detail?reply_id=${replyId}`);
+        if(cacheResponse){
+            return cacheResponse.data;
+        }
         const response = await getaxiosInstance().get('/reply/detail', { params: { reply_id: replyId } });
+        saveResponseToCache(`/reply/detail?reply_id=${replyId}`,response);
         return response.data;
     } catch (error) {
         console.error('Error getting reply detail by ID:', error);

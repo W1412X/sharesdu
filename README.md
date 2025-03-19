@@ -53,4 +53,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 - use db 
   - article save  
   - profile save  
-  - history  
+  - history    

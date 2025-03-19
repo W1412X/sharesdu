@@ -105,7 +105,7 @@ import { computed, ref } from 'vue';
 import PostComment from '@/components/PostComment.vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import AvatarName from '@/components/AvatarName.vue';
-import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink, getProfileUrl } from '@/utils/other';
+import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink } from '@/utils/other';
 import { createReplyUnderPost, getPostDetailById, getReplyListByPostId } from '@/axios/post';
 import LikeButton from '@/components/LikeButton.vue';
 export default {
