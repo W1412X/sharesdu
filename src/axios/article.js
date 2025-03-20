@@ -51,19 +51,21 @@ export const editArticle = async (data) => {
 
 
 // 删除文章函数
-export const deleteArticle = async (data) => {
+export const deleteArticle = async (articleId) => {
     try {
         console.log('Request Type: POST');
         console.log('Request URL: /article/delete');
-        console.log('Request Data:', data);
-        const response = await getaxiosInstance().post('/article/delete', data);
+        console.log('Request Data:', {
+            article_id: articleId,
+        });
+        const response = await getaxiosInstance().post('/article/delete', {article_id: articleId});
         return response.data;
     } catch (error) {
         console.error('Error deleting article:', error);
-        let dealResult=await deleteArticle(error);
+        let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
-          return await createArticle(data);
+          return await deleteArticle(articleId);
         }
         return dealResult;
     }

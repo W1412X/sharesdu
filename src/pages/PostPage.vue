@@ -23,6 +23,9 @@
                     </div>
                     <v-spacer></v-spacer>
                     <div class="column-center padding-right-5px">
+                        
+                    </div>
+                    <div class="column-center padding-right-5px">
                         <star-button @alert="alert" @set_loading="setLoading" :state="post.ifStar" :type="'post'" :id="post.id"></star-button>
                     </div>
                 </div>
@@ -73,8 +76,11 @@
                 </div>
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
-                    <div class="column-center margin-right-15px">
+                    <div v-if="userId!=post.authorId" class="column-center margin-right-15px">
                         <alert-button :type="'post'" :id="post.id"></alert-button>
+                    </div>
+                    <div v-else class="column-center margin-right-15px">
+                        <delete-button @delete="deleteSelf" :id="this.post.id" :type="'post'" :size="24" @alert="alert" @set_loading="setLoading"></delete-button>
                     </div>
                     <div class="column-center padding-right-5px">
                         <like-button v-if="post.id!==null" :type="'post'" :id="post.id" @alert="alert" @set_loading="setLoading" :state="post.ifLike"></like-button>
@@ -88,7 +94,7 @@
             </div>
             <div class="comments-container">
             <div class="column-div">
-                <reply-item v-for="(comment, index) in replyList" :init-data="comment" :key="index">
+                <reply-item v-for="(comment, index) in replyList" :init-data="comment" :key="index" @alert="alert" @set_loading="setLoading">
                 </reply-item>
                 <v-btn variant="tonal" class="load-btn" @click="loadMoreReply">加载更多</v-btn>
             </div>
@@ -108,6 +114,7 @@ import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNo
 import { createReplyUnderPost, getPostDetailById, getReplyListByPostId } from '@/axios/post';
 import LikeButton from '@/components/LikeButton.vue';
 import ReplyItem from '@/components/ReplyItem.vue';
+import DeleteButton from '@/components/DeleteButton.vue';
 export default {
     name: 'PostPage',
     components: {
@@ -117,6 +124,7 @@ export default {
         SensitiveTextArea,
         AvatarName,
         LikeButton,
+        DeleteButton,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -138,7 +146,8 @@ export default {
         const ifShowComment = ref(false);
         const ifShowDialog=computed(()=>{
             return ifShowComment.value;
-        })
+        });
+        const userId=getCookie('userId');
         const setCommentState = (state) => {
             ifShowComment.value = state;
         }
@@ -148,7 +157,8 @@ export default {
             userName,
             ifShowComment,
             setCommentState,
-            ifShowDialog
+            ifShowDialog,
+            userId,
         }
     },
     data() {
@@ -210,6 +220,11 @@ export default {
         },
         alert(msg){
             this.$emit('alert',msg);
+        },
+        deleteSelf(){
+            this.$router.push({
+                name:"IndexPage",
+            })
         },
         toRelativePage(){
             window.open(this.post.relativeLink,"_blank")

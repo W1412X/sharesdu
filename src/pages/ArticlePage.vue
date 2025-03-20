@@ -75,8 +75,18 @@
                 </div>
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
-                    <div class="column-center padding-right-5px">
+                    <div v-if="userId!=article.authorId" class="column-center padding-right-5px">
                         <alert-button :id="this.article.id" :type="'article'"></alert-button>
+                    </div>
+                    <div v-else class="row-div">
+                        <div  class="column-center padding-right-5px">
+                            <v-btn elevation="0" @click="edit" icon class="bottom-btn">
+                                <v-icon icon="mdi-pencil-outline" size="23"></v-icon>
+                            </v-btn>
+                        </div>
+                        <div  class="column-center padding-right-5px">
+                            <delete-button @delete="deleteSelf" :id="this.article.id" :type="'article'" :size="24" @alert="alert" @set_loading="setLoading"></delete-button>
+                        </div>
                     </div>
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="comment" icon class="bottom-btn">
@@ -121,6 +131,7 @@ import AvatarName from '@/components/AvatarName.vue';
 import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 import LikeButton from '@/components/LikeButton.vue';
+import DeleteButton from '@/components/DeleteButton.vue';
 export default {
     name: 'ArticlePage',
     components: {
@@ -132,6 +143,7 @@ export default {
         PostItem,
         PostEditor,
         AvatarName,
+        DeleteButton,
         LikeButton
     },
     setup() {
@@ -145,6 +157,7 @@ export default {
          * get user msg
          */
         var userName = getCookie('userName');
+        const userId=getCookie('userId');
         /**
          * posts list visibility control here
          */
@@ -160,6 +173,7 @@ export default {
             ifShowComment.value=state;
         }
         return {
+            userId,
             themeColor,
             loadingMsg,
             userName,
@@ -210,6 +224,19 @@ export default {
                 this.loadMorePost();
             }
         },
+        deleteSelf(){
+            this.$router.push({
+                name:"IndexPage",
+            })
+        },
+        edit(){
+            this.$router.push({
+                name:"EditorPage",
+                params:{
+                    id:this.article.id,
+                }
+            })
+        },
         async loadMorePost(){
             this.setLoading(getLoadMsg("正在加载帖子..."));
             let response=await getPostListByArticleId(this.article.id,this.postPageNum);
@@ -231,7 +258,7 @@ export default {
                 }
                 this.postPageNum++;
             }else{
-                this.alert(getNormalErrorAlert(response.data.message));
+                this.alert(getNormalErrorAlert(response.message));
             }
             this.setLoading(getCancelLoadMsg());
         },
@@ -364,6 +391,7 @@ export default {
     overflow-x: scroll;
     max-width: 100%;
     display: flex;
+    align-items: center;
     flex-direction: row;
 }
 

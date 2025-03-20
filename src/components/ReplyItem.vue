@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div v-if="!ifDeleted" class="container">
         <div
             class="name text-medium"
         >
@@ -26,7 +26,21 @@
                 {{ this.data.likeNum }}
             </div>
             <div style="margin-right: 10px;">
+                    <v-btn @click="toReply" elevation="0" icon :style="{
+                        'width': '20px',
+                        'height': '20px',
+                        'color': '#8a8a8a',
+                        'background-color': 'rgba(0,0,0,0)',
+                        'margin-bottom':'5px'
+                    }">
+                        <v-icon :size="'23'" icon="mdi-reply-outline"></v-icon>
+                    </v-btn>
+            </div>
+            <div v-if="userId!=data.authorId" style="margin-right: 10px;">
                 <alert-button :size="'20'" :id="this.data.id" :type="'reply'"></alert-button>
+            </div>
+            <div v-else style="margin-right: 10px;">
+                <delete-button @delete="deleteSelf" :id="this.data.id" :type="'reply'" :size="20" @alert="alert" @set_loading="setLoading"></delete-button>
             </div>
         </div>
         <div class="bottom-line"></div>
@@ -36,6 +50,8 @@
 import AlertButton from './AlertButton.vue';
 import LikeButton from './LikeButton.vue';
 import AvatarName from './AvatarName.vue';
+import { getCookie } from '@/utils/cookie';
+import DeleteButton from './DeleteButton.vue';
 export default {
     name: 'PostComment',
     props: {
@@ -53,20 +69,26 @@ export default {
             }
         }
     },
+    setup(){
+        const userId=getCookie("userId");
+        return {userId};
+     },
     components:{
         AlertButton,
         LikeButton,
         AvatarName,
+        DeleteButton,
     },
     data(){
         const data=this.initData;
         return{
             data,
+            ifDeleted:false,
         }
     },
     methods: {
         click(){
-            window.alert("sss");
+
         },
         alert(msg){
             this.$emit('alert',msg);
@@ -74,6 +96,12 @@ export default {
         setLoading(msg){
             this.$emit('set_loading',msg);
         },
+        deleteSelf(){
+            this.ifDeleted=true;
+        },
+        toReply(){
+            // to do 
+        }
     }
 }
 </script>

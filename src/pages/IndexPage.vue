@@ -13,7 +13,7 @@
                 variant="outlined">
             </v-text-field>
             <div class="search-btn-container">
-                <v-btn icon="mdi-magnify" variant="text" color="#ffffff" size="40"></v-btn>
+                <v-btn @click="search" icon="mdi-magnify" variant="text" color="#ffffff" size="40"></v-btn>
             </div>
             <v-spacer></v-spacer>
             <div class="top-bar-right">
@@ -74,7 +74,7 @@ import ArticleItem from '@/components/ArticleItem.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/axios/article';
 import AvatarName from '@/components/AvatarName.vue';
 import { getCourseList } from '@/axios/course';
@@ -186,6 +186,9 @@ export default {
             this.setCourseEditorState(false);
             this.setNoticeState(false);
             this.setPostEditorState(false);
+        },
+        search(){
+            this.alert(getNormalInfoAlert("功能未开放..."))
         },
         async loadMore(itemType){
             if(itemType=='article'){

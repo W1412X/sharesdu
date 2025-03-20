@@ -12,6 +12,7 @@
                 </div>
             </v-card>
             <post-editor v-if="ifShowPostEditor" @add_post="addPost" @close="closePostEditor" @alert="alert" @set_loading="setLoading" :type-msg="{type:'course',id:this.course.id}"></post-editor>
+            <course-editor v-if="ifShowCourseEditor" @alert="alert" @set_loading="setLoading" :init-data="this.course"></course-editor>
         </div>
     </v-dialog>
     <div class="full-center">
@@ -130,6 +131,13 @@
                     <div class="column-center padding-right-5px">
                         <alert-button :id="this.course.id" :type="'course'"></alert-button>
                     </div>
+                    <!-- wait to do
+                    <div class="column-center padding-right-5px">
+                        <v-btn elevation="0" @click="setCourseEditorState(true)" icon class="bottom-btn">
+                            <v-icon icon="mdi-pencil-outline" size="24"></v-icon>
+                        </v-btn>
+                    </div>
+                    -->
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="showPost" icon class="bottom-btn">
                             <v-icon icon="mdi-comment-outline" size="24"></v-icon>
@@ -165,6 +173,7 @@ import StarButton from '@/components/StarButton.vue';
 import PostEditor from '@/components/PostEditor.vue';
 import PostItem from '@/components/PostItem.vue';
 import AlertButton from '@/components/AlertButton.vue';
+import CourseEditor from '@/components/CourseEditor.vue';
 export default {
     name: 'CoursePage',
     components: {
@@ -174,6 +183,7 @@ export default {
         PostEditor,
         PostItem,
         AlertButton,
+        CourseEditor,
     },
     setup() {
         const userName=getCookie("userName");
@@ -185,6 +195,7 @@ export default {
         const ifShowCommentEditor=ref(false);
         const ifShowPostEditor=ref(false);
         const ifShowPost=ref(false);
+        const ifShowCourseEditor=ref(false);
         const setPostEditorState=(state)=>{
             ifShowPostEditor.value=state;
         };
@@ -192,10 +203,13 @@ export default {
             ifShowPost.value=state;
         };
         const ifShowDialog=computed(()=>{
-            return ifShowCommentEditor.value || ifShowPostEditor.value;
+            return ifShowCommentEditor.value || ifShowPostEditor.value || ifShowCourseEditor.value;
         })
         const setCommentEditorState=(state)=>{
             ifShowCommentEditor.value=state;
+        }
+        const setCourseEditorState=(state)=>{
+            ifShowCourseEditor.value=state;
         }
         return {
             themeColor,
@@ -211,6 +225,8 @@ export default {
             ifShowPostEditor,
             userName,
             setPostState,
+            ifShowCourseEditor,
+            setCourseEditorState,
         }
     },
     data() {
@@ -464,7 +480,7 @@ export default {
     background-color:rgba(0, 0, 0,0);
 }
 .msg-item {
-    min-width: 150px;
+    width: fit-content;
     margin-right: 20px;
     margin-top: 10px;
     white-space: nowrap;
