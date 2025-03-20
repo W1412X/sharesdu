@@ -5,7 +5,6 @@
 
 <script>
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
-import { dbDeleteProfile } from '@/utils/db';
 
 export default{
   components:{
@@ -18,7 +17,6 @@ export default{
   },
   methods:{
     d(){
-      dbDeleteProfile(this.text);
     }
   }
 }

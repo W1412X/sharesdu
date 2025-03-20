@@ -55,6 +55,7 @@ export default {
             if(response.status==200&&!response.time_list[0].error){
                 let time=response.time_list[0].created_at;
                 this.profileUrl=await getProfileUrlInDB(this.initData.id,time);
+                console.log(this.profileUrl);
             }
         }catch(e){
             console.log(e);

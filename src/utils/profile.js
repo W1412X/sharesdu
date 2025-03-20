@@ -1,16 +1,26 @@
 import { getaxiosInstance } from "@/axios/axios";
-import { dbGetProfile, dbSetProfile } from "./db";
 import { globalProperties } from "@/main";
-
+import Dexie from "dexie";
+const db=new Dexie("sharesdu");
+db.version(1).stores({
+    profile:'&userId,updateTime,blob'
+})
 /**
  * get the profile by userId
  * check the state first,if can be the server version as same as the local version  
  * then use the local version 
  * else get the server version and update the info to the local db  
  * @param {String} userId 
+ * @param {Boolean} state to avoid the recursion deeply
  */
-export async function getProfileUrlInDB(userId,lastUpdateTime){
-    let profileMsg=await dbGetProfile(String(userId));
+export async function getProfileUrlInDB(userId,lastUpdateTime,times=0){
+    if(times>=5){
+        return null;
+    }
+    let profileMsg=await db.profile.get({
+        userId:userId
+    });
+    console.log("profileMsg")
     console.log(profileMsg);
     if(profileMsg){//if the profile exsits  
         console.log("profile exsits");
@@ -28,13 +38,21 @@ export async function getProfileUrlInDB(userId,lastUpdateTime){
              * and do this function again  
              */
             let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
-            await dbSetProfile(userId,lastUpdateTime,response.data);
-            return getProfileUrlInDB(userId,lastUpdateTime);
+            await db.profile.put({
+                userId:userId,
+                updateTime:lastUpdateTime,
+                blob:response.data,
+            })
+            return URL.createObjectURL(response.data);
         }
     }else{
-        console.log("no profile in db");
+
         let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
-        await dbSetProfile(userId,lastUpdateTime,response.data);
-        return getProfileUrlInDB(userId,lastUpdateTime);
+        await db.profile.put({
+            userId:userId,
+            updateTime:lastUpdateTime,
+            blob:response.data,
+        })
+        return URL.createObjectURL(response.data);
     }
 }
