@@ -33,10 +33,10 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path:'/test',
-    name:'TestPage',
-    component: (()=>import('@/pages/TestPage.vue')),
-    meta: { requiresAuth: false },
+    path:'/manage',
+    name:"ManagePage",
+    component:(()=>import("@/pages/ManagePage.vue")),
+    meta:{requiresAuth:true}
   },
   {
     path:'/course/:id/:post?',

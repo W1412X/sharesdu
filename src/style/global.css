@@ -90,6 +90,7 @@
 .row-reverse{
     display: flex;
     flex-direction: row-reverse;
+    align-items: center;
 }
 .link-btn-container{
     width: 100%;
