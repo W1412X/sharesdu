@@ -56,6 +56,7 @@ export default {
                 this.profileUrl=await getProfileUrlInDB(this.initData.id,time);
             }
         }catch(e){
+            // eslint-disable-next-line
         }
         //to do optimize the updatetime logic  
 

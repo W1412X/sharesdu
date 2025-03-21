@@ -70,12 +70,16 @@ export default defineComponent({
             MENU_CONF: {
                 uploadImage: {
                     customUpload,
+                    // eslint-disable-next-line
                     onProgress(progress) {
                     },
+                    // eslint-disable-next-line
                     onSuccess(file, res) {
                     },
+                    // eslint-disable-next-line
                     onFailed(file, res) {
                     },
+                    // eslint-disable-next-line
                     onError(file, err, res) {
                     },
                 },
@@ -101,6 +105,7 @@ export default defineComponent({
     methods: {
         test() {
             const toolbar = DomEditor.getToolbar(this.editorRef);
+            // eslint-disable-next-line
             const curToolBarConfig = toolbar.getConfig();
         },
         setLoading(msg){
@@ -136,6 +141,7 @@ export default defineComponent({
                         URL.revokeObjectURL(oriLocalUrls[i]);
                     }
                 }catch(e){
+                    // eslint-disable-next-line
                 }
                 return {
                     status:200,

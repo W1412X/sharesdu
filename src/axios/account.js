@@ -5,7 +5,7 @@
  * every function return a json with status code and message
  */
 import { dealAxiosError } from "@/utils/other.js";
-import {getaxiosInstance} from "./axios.js";
+import {getaxiosInstance, getNoHeaderAxiosInstance} from "./axios.js";
 import { waitForLock } from "@/utils/lock.js";
 /**
  * registe by Email
@@ -15,15 +15,10 @@ import { waitForLock } from "@/utils/lock.js";
 export const registerByEmail = async (data) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().post('/register', data);
+    const response = await getNoHeaderAxiosInstance().post('/register', data);
     return response.data;
   } catch (error) {
-    let dealResult=await dealAxiosError(error);
-    //which means the error caused by the token and have refreshed it
-    if(dealResult.status==1412){
-      return await registerByEmail(data);
-    }
-    return dealResult;
+    return error.response.data;
   }
 };
 
@@ -35,14 +30,10 @@ export const registerByEmail = async (data) => {
 export const getRegisterEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().get(`/register?send_code=1&email=${email}`);
+    const response = await getNoHeaderAxiosInstance().get(`/register?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
-    let dealResult=await dealAxiosError(error);
-    if(dealResult.status==1412){
-      return await getRegisterEmailCode(email);
-    }
-    return dealResult;
+    return error.response.data;
   }
 };
 
@@ -54,14 +45,10 @@ export const getRegisterEmailCode = async (email) => {
 export const loginWithPassword = async (data) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().post('/login_passwd', data);
+    const response = await getNoHeaderAxiosInstance().post('/login_passwd', data);
     return response.data;
   } catch (error) {
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await loginWithPassword(data);
-    }
-    return dealResult;
+    return error.response.data;
   }
 };
 
@@ -73,14 +60,10 @@ export const loginWithPassword = async (data) => {
 export const getLoginEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().get(`/login_email?send_code=1&email=${email}`);
+    const response = await getNoHeaderAxiosInstance().get(`/login_email?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await getLoginEmailCode(email);
-    }
-    return dealResult;
+    return error.response.data;
   }
 };
 
@@ -92,14 +75,10 @@ export const getLoginEmailCode = async (email) => {
 export const loginWithEmail = async (data) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().post('/login_email', data);
+    const response = await getNoHeaderAxiosInstance().post('/login_email', data);
     return response.data;
   } catch (error) {
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await loginWithEmail(data);
-    }
-    return dealResult;
+    return error.response.data;
   }
 };
 

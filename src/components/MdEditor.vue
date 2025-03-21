@@ -76,6 +76,7 @@ export default {
                         URL.revokeObjectURL(oriLocalUrls[i]);
                     }
                 }catch(e){
+                    // eslint-disable-next-line
                 }
                 return {
                     status:200,

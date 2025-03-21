@@ -49,8 +49,6 @@ export const editArticle = async (data) => {
 export const deleteArticle = async (articleId) => {
     try {
         await waitForLock('token');
-            article_id: articleId,
-        });
         const response = await getaxiosInstance().post('/article/delete', {article_id: articleId});
         return response.data;
     } catch (error) {

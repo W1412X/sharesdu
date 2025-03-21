@@ -144,6 +144,7 @@ export default {
     },
     watch:{
         itemType: {
+            // eslint-disable-next-line
             handler(newVal,oldVal) {
                 switch(newVal){
                     case 'article':

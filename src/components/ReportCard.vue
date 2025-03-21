@@ -64,6 +64,7 @@ export default {
                     content: '请耐心等待举报结果，处理后将会发送处理结果到您的邮箱',
                     color: 'success',
                 }
+                // eslint-disable-next-line
                 const report = {
                     type: this.report.type,
                     id: this.report.id,

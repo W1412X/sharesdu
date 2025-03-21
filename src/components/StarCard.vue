@@ -164,6 +164,7 @@ export default {
                         });
                     }
                 } catch (e) {
+                    // eslint-disable-next-line
                 }
                 this.alert(getNormalSuccessAlert("成功加载收藏"));
             } else {

@@ -187,6 +187,7 @@ export default {
   },
   watch: {
     choose: {
+      // eslint-disable-next-line
       handler(newVal, oldVal) {
         switch (newVal) {
           case 'message':

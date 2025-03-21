@@ -176,6 +176,7 @@ export default {
                             URL.revokeObjectURL(oriLocalUrls[i]);
                         }
                     }catch(e){
+                        // eslint-disable-next-line
                     }
                 }else{
                     this.alert(getNormalErrorAlert("文章图片上传失败"));
