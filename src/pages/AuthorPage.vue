@@ -1,6 +1,6 @@
 <template>
     <div class="full-center">
-        <author-card @set_loading="setLoading" @alert="alert" :id="id"></author-card>
+        <author-card v-if="this.id" @set_loading="setLoading" @alert="alert" :id="id"></author-card>
     </div>
 </template>
 <script>
@@ -16,7 +16,7 @@ export default{
     },
     data(){
         return{
-            id:"",
+            id:null,
         }
     },
     methods:{
