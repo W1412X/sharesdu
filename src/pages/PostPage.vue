@@ -209,7 +209,6 @@ export default {
             /**
              * need post comment
              */
-            console.log(this.inputingComment)
             if(this.inputingComment==""){
                 this.alert(getNormalWarnAlert("评论内容不能为空"));
                 return;

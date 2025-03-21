@@ -15,12 +15,9 @@ import { dealAxiosError } from "@/utils/other.js";
 export const blockUser = async (toUserId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /block');
         const response = await getaxiosInstance().post('/block', { to_user_id: toUserId });
         return response.data;
     } catch (error) {
-        console.error('Error blocking user:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
@@ -37,12 +34,9 @@ export const blockUser = async (toUserId) => {
 export const unblockUser = async (toUserId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /unblock');
         const response = await getaxiosInstance().post('/unblock', { to_user_id: toUserId });
         return response.data;
     } catch (error) {
-        console.error('Error unblocking user:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
@@ -60,12 +54,9 @@ export const unblockUser = async (toUserId) => {
 export const getBlockList = async (userId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /blocklist');
         const response = await getaxiosInstance().get('/blocklist', { params: { user_id: userId } });
         return response.data;
     } catch (error) {
-        console.error('Error getting block list:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){

@@ -15,13 +15,9 @@ import { waitForLock } from "@/utils/lock.js";
 export const registerByEmail = async (data) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /register');
-    console.log('Request Data:', data);
     const response = await getaxiosInstance().post('/register', data);
     return response.data;
   } catch (error) {
-    console.error('Error registering:', error);
     let dealResult=await dealAxiosError(error);
     //which means the error caused by the token and have refreshed it
     if(dealResult.status==1412){
@@ -39,12 +35,9 @@ export const registerByEmail = async (data) => {
 export const getRegisterEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: GET');
-    console.log('Request URL: /register?send_code=1&email=' + email);
     const response = await getaxiosInstance().get(`/register?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
-    console.error('Error getting register email code:', error);
     let dealResult=await dealAxiosError(error);
     if(dealResult.status==1412){
       return await getRegisterEmailCode(email);
@@ -61,13 +54,9 @@ export const getRegisterEmailCode = async (email) => {
 export const loginWithPassword = async (data) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /login_passwd');
-    console.log('Request Data:', data);
     const response = await getaxiosInstance().post('/login_passwd', data);
     return response.data;
   } catch (error) {
-    console.log('Error logging in:',error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await loginWithPassword(data);
@@ -84,12 +73,9 @@ export const loginWithPassword = async (data) => {
 export const getLoginEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: GET');
-    console.log('Request URL: /login_email?send_code=1&email=' + email);
     const response = await getaxiosInstance().get(`/login_email?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
-    console.error('Error getting login email code:', error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await getLoginEmailCode(email);
@@ -106,13 +92,9 @@ export const getLoginEmailCode = async (email) => {
 export const loginWithEmail = async (data) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /login_email');
-    console.log('Request Data:', data);
     const response = await getaxiosInstance().post('/login_email', data);
     return response.data;
   } catch (error) {
-    console.error('Error logging in with email:', error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await loginWithEmail(data);
@@ -128,12 +110,9 @@ export const loginWithEmail = async (data) => {
 export const logout = async () => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /logout');
     const response = await getaxiosInstance().post('/logout');
     return response.data;
   } catch (error) {
-    console.error('Error logging out:', error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await logout();
@@ -150,13 +129,9 @@ export const logout = async () => {
 export const deleteAccount = async (data) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /delete_account');
-    console.log('Request Data:', data);
     const response = await getaxiosInstance().post('/delete_account', data);
     return response.data;
   } catch (error) {
-    console.error('Error deleting account:', error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await deleteAccount(data);
@@ -173,12 +148,9 @@ export const deleteAccount = async (data) => {
 export const getDeleteAccountEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: GET');
-    console.log('Request URL: /delete_account?send_code=1&email=' + email);
     const response = await getaxiosInstance().get(`/delete_account?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
-    console.error('Error getting delete account email code:', error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await getDeleteAccountEmailCode(email);
@@ -195,13 +167,9 @@ export const getDeleteAccountEmailCode = async (email) => {
 export const resetPassword = async (data) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /reset_password');
-    console.log('Request Data:', data);
     const response = await getaxiosInstance().post('/reset_password', data);
     return response.data;
   } catch (error) {
-    console.error('Error resetting password:', error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await resetPassword(data);
@@ -218,12 +186,9 @@ export const resetPassword = async (data) => {
 export const getResetPasswordEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: GET');
-    console.log('Request URL: /reset_password?send_code=1&email=' + email);
     const response = await getaxiosInstance().get(`/reset_password?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
-    console.error('Error getting reset password email code:', error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await getResetPasswordEmailCode(email);
@@ -240,12 +205,9 @@ export const getResetPasswordEmailCode = async (email) => {
 export const getAuthorInfo=async(userId)=>{
   try{
     await waitForLock('token');
-    console.log('Request Type: GET');
-    console.log('Request URL: /user/homepage?user_id='+userId);
     const response=await getaxiosInstance().get(`/user/homepage?user_id=${userId}`);
     return response.data;
   }catch(error){
-    console.error('Error getting author info:',error);
     let dealResult = await dealAxiosError(error);
     if(dealResult.code==1412){
       return await getAuthorInfo(userId);

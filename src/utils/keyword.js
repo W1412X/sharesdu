@@ -20,7 +20,6 @@ export function extractTags(content,num=5){
         }
         return result;
     }catch(e){
-        console.log(e);
         return [];
     }
 }

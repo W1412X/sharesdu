@@ -436,7 +436,6 @@ export default {
                 avgScore:avgScore,
                 scoreDistribution:response.course_detail.score_distribution,
             }
-            console.log(this.course);
             this.alert(getNormalSuccessAlert("获取课程信息成功"));
         }else{
             this.alert(getNormalErrorAlert(response.message));

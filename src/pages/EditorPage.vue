@@ -142,7 +142,6 @@ export default {
                 }else if(this.editorType=="md"){
                     imageDict=this.mdEditorRef.$data.imageDict;
                 }
-                console.log(imageDict);
                 let uploadState=true;
                 let oriLocalUrls=JSON.parse(JSON.stringify(Object.keys(imageDict)));
                 let validLocalUrls=[];
@@ -154,12 +153,10 @@ export default {
                         validLocalUrls.push(oriLocalUrls[i]);
                     }
                 }
-                console.log(validLocalUrls);
                 this.setLoading(getLoadMsg("正在上传图片 0/"+String(validLocalUrls.length)));
                 for(let i=0;i<validLocalUrls.length;i++){
                     this.setLoading(getLoadMsg("正在上传图片 "+(i+1)+"/"+String(validLocalUrls.length)));
                     let response=await uploadArticleImage(imageDict[validLocalUrls[i]]);
-                    console.log(imageDict[validLocalUrls[i]]);
                     if(response.status==200||response.status==201){
                         if(this.editorType=="md"){
                             this.mdEditorRef.$data.data.content=this.mdEditorRef.$data.data.content.replaceAll(validLocalUrls[i],this.apiUrl+response.data.image_url);
@@ -179,7 +176,6 @@ export default {
                             URL.revokeObjectURL(oriLocalUrls[i]);
                         }
                     }catch(e){
-                        console.log(e);
                     }
                 }else{
                     this.alert(getNormalErrorAlert("文章图片上传失败"));
@@ -191,7 +187,6 @@ export default {
                  */
                 if(this.editorBarRef.$data.tmpCoverImage){
                     let coverImage=this.editorBarRef.$data.tmpCoverImage;
-                    console.log(coverImage);
                     this.setLoading(getLoadMsg("封面图片上传中..."));
                     let response=await uploadArticleImage(coverImage);
                     this.setLoading(getCancelLoadMsg());
@@ -259,7 +254,6 @@ export default {
             }catch(e){
                 this.setLoading(getCancelLoadMsg());
                 this.alert(getNormalErrorAlert("未知错误，请查看控制台"));
-                console.log(e);
             }
         },
         alert(msg){
@@ -292,7 +286,6 @@ export default {
                     let article=response.article_detail;
                     this.editorType=extractEditorType(article.article_content);
                     this.editorData.content=getContentWithoutEditorType(article.article_content);
-                    console.log(this.editorData.content);
                     if(this.editorType=="html"){
                         this.htmlData.content=this.editorData.content;
                     }else{

@@ -58,7 +58,6 @@ export default {
                     validLocalUrls.push(oriLocalUrls[i]);
                 }
             }
-            console.log(validLocalUrls);
             this.setLoading(getLoadMsg("正在上传图片 0/"+String(validLocalUrls.length)));
             for(let i=0;i<validLocalUrls.length;i++){
                 this.setLoading(getLoadMsg("正在上传图片 "+(i+1)+"/"+String(validLocalUrls.length)));
@@ -77,7 +76,6 @@ export default {
                         URL.revokeObjectURL(oriLocalUrls[i]);
                     }
                 }catch(e){
-                    console.log(e);
                 }
                 return {
                     status:200,

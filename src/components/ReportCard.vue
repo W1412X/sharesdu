@@ -69,7 +69,6 @@ export default {
                     id: this.report.id,
                     reason: this.report.reason,
                 }
-                console.log(report);
             }
         },
         cancel() {

@@ -9,9 +9,6 @@ import { getaxiosInstance } from "./axios";
  */
 export const getAccessToken=async (refreshToken)=>{
     try {
-        console.log('Request Type: POST');
-        console.log('Request URL: /token/refresh');
-        console.log('Request Data:', data);
         var data={
             refresh:refreshToken,
         }
@@ -22,7 +19,6 @@ export const getAccessToken=async (refreshToken)=>{
          */
         return response.data;
     } catch (error) {
-        console.error('Error refreshing token:', error);
         return error.response.data;
     }
 }

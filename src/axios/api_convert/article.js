@@ -38,7 +38,6 @@ export function csEditArticle(data){
         article_type:data.type,
         origin_link:data.originLink,
     }
-    console.log(result);
     return result;
 }
 

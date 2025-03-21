@@ -21,7 +21,6 @@ import { setCookie } from '@/utils/cookie';
       },
       methods: {
         setColor() {
-            console.log(this.color);
             setCookie("themeColor",this.color,999999);
             this.$emit("set_color");
         },

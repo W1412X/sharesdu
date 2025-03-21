@@ -48,17 +48,14 @@ export default {
         }
     },
     async mounted(){
-        console.log(this.initData);
         //get the update message first  
         try{
             let response=await getUserProfileImageUpdateInfo([this.initData.id]);
             if(response.status==200&&!response.time_list[0].error){
                 let time=response.time_list[0].created_at;
                 this.profileUrl=await getProfileUrlInDB(this.initData.id,time);
-                console.log(this.profileUrl);
             }
         }catch(e){
-            console.log(e);
         }
         //to do optimize the updatetime logic  
 

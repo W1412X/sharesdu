@@ -42,8 +42,6 @@ export default {
   setup(){
     const userName=getCookie('userName');
     const userProfileUrl=getCookie('userProfileUrl');
-    console.log(userName);
-    console.log(userProfileUrl);
     return {
       userName,
       userProfileUrl,

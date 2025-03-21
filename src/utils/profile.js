@@ -21,18 +21,11 @@ export async function getProfileUrlInDB(userId,lastUpdateTime,times=0){
     let profileMsg=await db.profile.get({
         userId:userId
     });
-    console.log("profileMsg")
-    console.log(profileMsg);
     if(profileMsg){//if the profile exsits  
-        console.log("profile exsits");
         if(lastUpdateTime==profileMsg.updateTime){
             //if version matches  
-            console.log("version matches");
-            console.log(profileMsg.updateTime,lastUpdateTime);
             return URL.createObjectURL(profileMsg.blob);
         }else{
-            console.log("version not matches");
-            console.log(profileMsg.updateTime,lastUpdateTime);
             /**
              * get the new version 
              * update it in local db   

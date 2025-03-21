@@ -13,8 +13,6 @@ import { waitForLock } from "@/utils/lock";
 export const createPostInArticle = async (articleId, postTitle, postContent) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /post/article_post');
         const response = await getaxiosInstance().post('/post/article_post', { 
             article_id: articleId,
             post_title: postTitle,
@@ -22,7 +20,6 @@ export const createPostInArticle = async (articleId, postTitle, postContent) => 
         });
         return response.data;
     } catch (error) {
-        console.error('Error creating post in article:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await createPostInArticle(articleId, postTitle, postContent);
@@ -39,8 +36,6 @@ export const createPostInArticle = async (articleId, postTitle, postContent) => 
 export const createPostInCourse = async (courseId,postTitle, postContent) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /post/course_post');
         const response = await getaxiosInstance().post('/post/course_post', { 
             course_id:courseId,
             post_title: postTitle,
@@ -48,7 +43,6 @@ export const createPostInCourse = async (courseId,postTitle, postContent) => {
         });
         return response.data;
     } catch (error) {
-        console.error('Error creating post in course:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await createPostInCourse(postTitle, postContent);
@@ -64,8 +58,6 @@ export const createPostInCourse = async (courseId,postTitle, postContent) => {
 export const getPostDetailById = async (postId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log(`Request URL: /post/detail?post_id=${postId}`);
         let cacheResponse=getResponseFromCache(`/post/detail?post_id=${postId}`);
         if(cacheResponse){
             return cacheResponse.data;
@@ -74,7 +66,6 @@ export const getPostDetailById = async (postId) => {
         saveResponseToCache(`/post/detail?post_id=${postId}`,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting post detail by ID:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await getPostDetailById(postId);
@@ -92,8 +83,6 @@ export const getPostDetailById = async (postId) => {
 export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log(`Request URL: /post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`);
         let cacheResponse=getResponseFromCache(`/post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`);
         if(cacheResponse){
             return cacheResponse.data;
@@ -102,7 +91,6 @@ export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20)
         saveResponseToCache(`/post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting reply list by post ID:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await getReplyListByPostId(postId, pageIndex, pageSize);
@@ -118,12 +106,9 @@ export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20)
 export const deletePostById = async (postId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /post/delete');
         const response = await getaxiosInstance().post('/post/delete', { post_id: postId });
         return response.data;
     } catch (error) {
-        console.error('Error deleting post by ID:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await deletePostById(postId);
@@ -141,8 +126,6 @@ export const deletePostById = async (postId) => {
 export const createReplyUnderPost = async (postId, replyContent, parentReplyId = null) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /reply/create');
         let response=null;
         if(parentReplyId){
             response = await getaxiosInstance().post('/reply/create', { 
@@ -158,7 +141,6 @@ export const createReplyUnderPost = async (postId, replyContent, parentReplyId =
         }
         return response.data;
     } catch (error) {
-        console.error('Error creating reply under post:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await createReplyUnderPost(postId, replyContent, parentReplyId);
@@ -174,12 +156,9 @@ export const createReplyUnderPost = async (postId, replyContent, parentReplyId =
 export const deleteReplyById = async (replyId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /reply/delete');
         const response = await getaxiosInstance().post('/reply/delete', { reply_id: replyId });
         return response.data;
     } catch (error) {
-        console.error('Error deleting reply by ID:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await deleteReplyById(replyId);
@@ -195,8 +174,6 @@ export const deleteReplyById = async (replyId) => {
 export const getReplyDetailById = async (replyId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log(`Request URL: /reply/detail?reply_id=${replyId}`);
         let cacheResponse = getResponseFromCache(`/reply/detail?reply_id=${replyId}`);
         if(cacheResponse){
             return cacheResponse.data;
@@ -205,7 +182,6 @@ export const getReplyDetailById = async (replyId) => {
         saveResponseToCache(`/reply/detail?reply_id=${replyId}`,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting reply detail by ID:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await getReplyDetailById(replyId);

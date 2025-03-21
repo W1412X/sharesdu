@@ -143,7 +143,6 @@ if(tmp!=null){
   document.documentElement.style.setProperty('--theme-color', tmp);
   document.documentElement.style.setProperty('--theme-color-transparent', adjustAlpha(tmp));
 }
-console.log("themeColor:"+themeColor);
 /**
  * Set the theme color, personalized theme color storaged in cookies
  */

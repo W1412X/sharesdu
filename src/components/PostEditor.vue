@@ -54,7 +54,6 @@ export default {
          * post data (editable)
          */
         const data=this.initData;
-        console.log(data)
         return {
             data,
         }

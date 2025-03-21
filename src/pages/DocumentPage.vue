@@ -26,7 +26,6 @@ export default {
         const route = useRoute();
         var doc='';
         if ('name' in route.params) {
-            console.log(route.params);
             doc = route.params['name'];
         }
         doc+='.md';

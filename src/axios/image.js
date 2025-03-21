@@ -16,7 +16,6 @@ export const uploadProfileImage = async (image) => {
         try{
             image=await compressImage(image,'profile');
         }catch(error){
-            console.error('Error compressing image:', error);
             return {
                 status: -1,
                 message: '图片过大无法压缩，请压缩后重试 '
@@ -24,13 +23,9 @@ export const uploadProfileImage = async (image) => {
         }
         const data = new FormData();
         data.append('image', image);
-        console.log('Request Data:', data);
-        console.log('Request Type: POST');
-        console.log('Request URL: /image/profile');
         const response = await getaxiosInstance().post('/image/profile', data);
         return response.data;
     } catch (error) {
-        console.error('Error uploading article image:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await uploadProfileImage(image);
@@ -50,7 +45,6 @@ export const uploadArticleImage = async (image) => {
         try{
             image=await compressImage(image,'other');
         }catch(error){
-            console.error('Error compressing image:', error);
             return {
                 status: -1,
                 message: '图片过大无法压缩，请压缩后重试 '
@@ -58,13 +52,10 @@ export const uploadArticleImage = async (image) => {
         }
         const formData = new FormData();
         formData.append('image', image);
-        console.log('Request Type: POST');
-        console.log('Request URL: /image/article');
         const response = await getaxiosInstance().post('/image/article', formData);
 
         return response.data;
     } catch (error) {
-        console.error('Error uploading article image:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await uploadArticleImage(image);
@@ -90,13 +81,10 @@ export const getUserProfileImageUpdateInfo = async (userIds) => {
         }
         const userIdsString = userIds.join(',');
         const requestUrl = `/image/profile/time?user_ids=${userIdsString}`;
-        console.log('Request Type: GET');
-        console.log('Request URL:', requestUrl);
         const response = await getaxiosInstance().get(requestUrl);
         return response.data;
 
     } catch (error) {
-        console.error('Error fetching user profile image update information:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await getUserProfileImageUpdateInfo(userIds);

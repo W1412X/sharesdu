@@ -143,7 +143,6 @@ export default {
         },
         showParent() {
             this.$emit('show_parent', this.parentReplyId);
-            console.log(this.parentReplyId);
         },
         async reply() {
             if (this.replyContent.length <= 5) {
@@ -151,7 +150,6 @@ export default {
                 return;
             }
             let content = addHeaderToReply(this.replyContent, this.data.authorName, this.data.id);
-            console.log(content);
             this.setLoading(getLoadMsg("正在提交评论..."));
             let response = await createReplyUnderPost(this.postId, content, this.data.id);
             this.setLoading(getCancelLoadMsg());

@@ -71,16 +71,12 @@ export default defineComponent({
                 uploadImage: {
                     customUpload,
                     onProgress(progress) {
-                        console.log('progress', progress);
                     },
                     onSuccess(file, res) {
-                        console.log(`${file.name} 上传成功`, res);
                     },
                     onFailed(file, res) {
-                        console.log(`${file.name} 上传失败`, res);
                     },
                     onError(file, err, res) {
-                        console.log(`${file.name} 上传出错`, err, res);
                     },
                 },
             }
@@ -106,7 +102,6 @@ export default defineComponent({
         test() {
             const toolbar = DomEditor.getToolbar(this.editorRef);
             const curToolBarConfig = toolbar.getConfig();
-            console.log(curToolBarConfig);
         },
         setLoading(msg){
             this.$emit('set_loading',msg);
@@ -123,7 +118,6 @@ export default defineComponent({
                     validLocalUrls.push(oriLocalUrls[i]);
                 }
             }
-            console.log(validLocalUrls);
             this.setLoading(getLoadMsg("正在上传图片 0/"+String(validLocalUrls.length)));
             for(let i=0;i<validLocalUrls.length;i++){
                 this.setLoading(getLoadMsg("正在上传图片 "+(i+1)+"/"+String(validLocalUrls.length)));
@@ -142,7 +136,6 @@ export default defineComponent({
                         URL.revokeObjectURL(oriLocalUrls[i]);
                     }
                 }catch(e){
-                    console.log(e);
                 }
                 return {
                     status:200,

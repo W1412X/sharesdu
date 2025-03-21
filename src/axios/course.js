@@ -17,13 +17,9 @@ import { waitForLock } from "@/utils/lock";
 export const createCourse = async (data) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /course/create');
-        console.log('Request Data:', data);
         const response = await getaxiosInstance().post('/course/create', data);
         return response.data;
     } catch (error) {
-        console.error('Error creating course:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await createCourse(data);
@@ -40,13 +36,9 @@ export const createCourse = async (data) => {
 export const editCourse = async (data) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /course/edit');
-        console.log('Request Data:', data);
         const response = await getaxiosInstance().post('/course/edit', data);
         return response.data;
     } catch (error) {
-        console.error('Error editing course:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await editCourse(data);
@@ -63,13 +55,9 @@ export const editCourse = async (data) => {
 export const deleteCourse = async (courseId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /course/delete');
-        console.log('Request Data:', { course_id: courseId });
         const response = await getaxiosInstance().post('/course/delete', { course_id: courseId });
         return response.data;
     } catch (error) {
-        console.error('Error deleting course:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await deleteCourse(courseId);
@@ -86,13 +74,9 @@ export const deleteCourse = async (courseId) => {
 export const rateCourse = async (data) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /course/rate');
-        console.log('Request Data:', data);
         const response = await getaxiosInstance().post('/course/rate', data);
         return response.data;
     } catch (error) {
-        console.error('Error rating course:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await rateCourse(data);
@@ -109,13 +93,9 @@ export const rateCourse = async (data) => {
 export const editRating = async (data) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /course/edit_rating');
-        console.log('Request Data:', data);
         const response = await getaxiosInstance().post('/course/edit_rating', data);
         return response.data;
     } catch (error) {
-        console.error('Error editing rating:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await editRating(data);
@@ -133,13 +113,9 @@ export const editRating = async (data) => {
 export const getUserCourseEvaluation = async (userId, courseId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /course/user_evaluation');
-        console.log('Request Data:', { user_id: userId, course_id: courseId });
         const response = await getaxiosInstance().post('/course/user_evaluation', { user_id: userId, course_id: courseId });
         return response.data;
     } catch (error) {
-        console.error('Error getting user course evaluation:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await getUserCourseEvaluation(userId, courseId);
@@ -156,9 +132,6 @@ export const getUserCourseEvaluation = async (userId, courseId) => {
 export const getCourseDetail = async (courseId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /course/detail');
-        console.log('Request Params:', { course_id: courseId });
         let cacheResponse=getResponseFromCache('/course/detail?course_id=' + courseId);
         if(cacheResponse){
             return cacheResponse.data;
@@ -167,7 +140,6 @@ export const getCourseDetail = async (courseId) => {
         saveResponseToCache('/course/detail?course_id=' + courseId,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting course detail:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await getCourseDetail(courseId);
@@ -186,9 +158,6 @@ export const getCourseDetail = async (courseId) => {
 export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /course/post_list');
-        console.log('Request Params:', { course_id: courseId, page_index: pageIndex, page_size: pageSize });
         let cacheResponse=getResponseFromCache('/course/post_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize);
         if(cacheResponse){
             return cacheResponse.data;
@@ -197,7 +166,6 @@ export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) 
         saveResponseToCache('/course/post_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting course post list:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await getCoursePostList(courseId, pageIndex, pageSize);
@@ -216,9 +184,6 @@ export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) 
 export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /course/score_list');
-        console.log('Request Params:', { course_id: courseId, page_index: pageIndex, page_size: pageSize });
         let cacheResponse=getResponseFromCache('/course/score_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize);
         if(cacheResponse){
             return cacheResponse.data;
@@ -227,7 +192,6 @@ export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20)
         saveResponseToCache('/course/score_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting course score list:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await getCourseScoreList(courseId, pageIndex, pageSize);
@@ -245,9 +209,6 @@ export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20)
 export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /course/list');
-        console.log('Request Params:', { page_index: pageIndex, page_size: pageSize });
         let cacheResponse=getResponseFromCache('/course/list?page_index=' + pageIndex + '&page_size=' + pageSize);
         if(cacheResponse){
             return cacheResponse.data;
@@ -256,7 +217,6 @@ export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
         saveResponseToCache('/course/list?page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting course list:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await getCourseList(pageIndex, pageSize);
@@ -274,13 +234,9 @@ export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
 export const freezeUnfreezeCourse = async (courseId, action) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /api/admin/courses/freeze');
-        console.log('Request Data:', { course_id: courseId, action: action });
         const response = await getaxiosInstance().post('/api/admin/courses/freeze', { course_id: courseId, action: action });
         return response.data;
     } catch (error) {
-        console.error('Error freezing/unfreezing course:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await freezeUnfreezeCourse(courseId, action);
@@ -298,13 +254,9 @@ export const freezeUnfreezeCourse = async (courseId, action) => {
 export const rollbackCourse = async (courseId, targetVersion) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /api/admin/courses/rollback');
-        console.log('Request Data:', { course_id: courseId, target_version: targetVersion });
         const response = await getaxiosInstance().post('/api/admin/courses/rollback', { course_id: courseId, target_version: targetVersion });
         return response.data;
     } catch (error) {
-        console.error('Error rolling back course:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await rollbackCourse(courseId, targetVersion);
@@ -323,9 +275,6 @@ export const rollbackCourse = async (courseId, targetVersion) => {
 export const getCourseHistory = async (courseId, pageIndex = 1, pageSize = 10) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /api/admin/courses/<course_id>/history');
-        console.log('Request Params:', { page_index: pageIndex, page_size: pageSize });
         let cacheResponse=getResponseFromCache(`/api/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`);
         if(cacheResponse){
             return cacheResponse.data;
@@ -334,7 +283,6 @@ export const getCourseHistory = async (courseId, pageIndex = 1, pageSize = 10) =
         saveResponseToCache(`/api/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting course history:', error);
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
             return await getCourseHistory(courseId, pageIndex, pageSize);

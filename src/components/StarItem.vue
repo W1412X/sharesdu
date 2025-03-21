@@ -61,7 +61,6 @@ export default {
             }
         },
         getIcon(type) {
-            console.log(type)
             switch (type) {
                 case 'article':
                     return 'mdi-file-document-outline';

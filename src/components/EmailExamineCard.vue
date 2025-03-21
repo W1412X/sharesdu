@@ -85,15 +85,12 @@ export default {
             }
             this.setLoading({state:true,progress:-1,text:'正在验证...'});
             var formToSubmit=this.data;
-            console.log(formToSubmit);
             var response=null;
             switch(this.data.type){
                 case 'register':
-                    console.log('register');
                     response=await registerByEmail(csRegisterByEmail(formToSubmit));
                     break;
                 case 'login':
-                    console.log('login');
                     response=await loginWithEmail(csLoginByEmail(formToSubmit));
                     break;
                 case 'delete_account':

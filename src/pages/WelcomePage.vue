@@ -73,7 +73,6 @@ export default {
     setup() {
         const themeColor = globalProperties.$themeColor;
         const deviceType = globalProperties.$deviceType;
-        console.log(deviceType)
         const ifShowLogin = ref(false);
         const ifShowContact = ref(false);
         const ifShowDialog = computed(() => {

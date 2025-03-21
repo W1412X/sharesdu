@@ -40,7 +40,6 @@ var nodeNow = root
 var return_word = ''
 var count=0
 export const detect =(text)=>{//
-    console.log('||'+text)
     nodeNow = root
     for (let ind = 0; ind < text.length; ind++) {
         const char = text[ind]
@@ -58,7 +57,6 @@ export const detect =(text)=>{//
             if (nodeNow.isEnd) {
                 //如果已经出现了敏感词
                 //尝试继续往后进行遍历
-                console.log(return_word)
                 const re=return_word;
                 return_word=''
                 return re

@@ -167,7 +167,6 @@ export default {
         var data=this.initData;
         const file=null;
         const recommendTags=computed(()=>{
-            console.log(this.title);
             return extractTags(this.title);
         })
         return{
@@ -284,7 +283,6 @@ export default {
                 this.alert(msg);
                 return;
             }
-            console.log(this.data.tags);
             this.data.tags.push(this.inputingTag);
             this.inputingTag = '';
             this.ifShowTagInput = false;

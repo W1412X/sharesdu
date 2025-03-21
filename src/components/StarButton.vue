@@ -98,8 +98,6 @@ export default {
                 this.setStarCardState(true);
             }
             //out type and id
-            console.log('type', this.type);
-            console.log('id', this.id);
             //set clickable to true after 2s
             setTimeout(() => {
                 this.isClickable = true;

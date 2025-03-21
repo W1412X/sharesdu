@@ -85,7 +85,6 @@ export default {
             } catch (e) {
                 this.setLoading(getCancelLoadMsg());
                 this.alert(getNormalErrorAlert("未知错误，请查看控制台"));
-                console.log(e);
             }
             setTimeout(() => {
                 this.ifClickable = true;

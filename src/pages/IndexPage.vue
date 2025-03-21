@@ -145,7 +145,6 @@ export default {
     watch:{
         itemType: {
             handler(newVal,oldVal) {
-                console.log(oldVal);
                 switch(newVal){
                     case 'article':
                         if(this.articleList.length==0){

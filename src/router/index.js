@@ -118,7 +118,6 @@ router.beforeEach((to, from, next) => {
     /**
      * if login,then to IndexPage
      */
-    console.log("login");
     if(getCookie("refreshToken")){
       window.alert("您已经登录");
       router.push({name:"IndexPage"});

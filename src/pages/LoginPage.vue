@@ -256,7 +256,6 @@ export default {
              * login
              */
             this.$emit('set_loading',getLoadMsg('正在登陆...',-1));
-            console.log(this.loadMsg);
             const response=await loginWithPassword(csLoginByUserName(this.loginByUsernameData));
             if(response.status==200){
                 this.alert({

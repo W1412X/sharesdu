@@ -66,7 +66,6 @@ export async function dealAxiosError(error){
     /**
      * got response  
      */
-    console.log(error.response.data);
     if (error.response.data) {
         /**
          * here check if the error is caused by the token
@@ -95,7 +94,6 @@ export async function dealAxiosError(error){
                         }
                     }
                     setLock("token",true);
-                    console.log("try to get the token");
                     const response=await getAccessToken(refreshToken);
                     if(response.status==999){
                         setCookie("accessToken",response.access,5);
@@ -112,7 +110,6 @@ export async function dealAxiosError(error){
                         }
                     }
                 }catch(error){
-                    console.log(error);
                     clearTokenCookies();
                     window.open("/#/login");
                     return {
@@ -145,13 +142,11 @@ export async function dealAxiosError(error){
          * no response
          * return the error message  
          */
-        console.error('No response received from server:', error.request);
         return {
           status:-1,
           message:"服务器无响应，请联系管理员"
         }
       } else {
-        console.error('Error during login attempt:', error.message);
         return {
           status:-1,
           message:"未知错误，请联系管理员"

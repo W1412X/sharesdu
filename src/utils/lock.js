@@ -15,7 +15,6 @@ export function getLock(name) {
 
 export async function waitForLock(name) {
     if (getLock(name)) {
-      console.log('Lock is still occupied, waiting...');
       await new Promise(resolve => setTimeout(resolve, 500));  // 每隔 1 秒检查一次
       await waitForLock(name);
     }

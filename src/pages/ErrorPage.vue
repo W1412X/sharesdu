@@ -20,7 +20,6 @@ export default {
     methods: {
     },
     mounted() {
-        console.log(this.$route.params)
         if ('reason' in this.$route.params) {
             this.reason = this.$route.params.reason;
         }

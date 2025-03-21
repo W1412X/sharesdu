@@ -11,15 +11,12 @@ import { waitForLock } from "@/utils/lock";
 export const sendPrivateMessage = async (receiverId, content) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /message/send');
         const response = await getaxiosInstance().post('/message/send', { 
             receiver_id: receiverId,
             content: content
         });
         return response.data;
     } catch (error) {
-        console.error('Error sending private message:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await sendPrivateMessage(receiverId, content);
@@ -37,14 +34,11 @@ export const sendPrivateMessage = async (receiverId, content) => {
 export const getPrivateMessageList = async (pageSize = 10, pageIndex = 1) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log(`Request URL: /messages/list?page_size=${pageSize}&page_index=${pageIndex}`);
         const response = await getaxiosInstance().get('/messages/list', { 
             params: { page_size: pageSize, page_index: pageIndex }
         });
         return response.data;
     } catch (error) {
-        console.error('Error getting private message list:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await getPrivateMessageList(pageSize, pageIndex);
@@ -61,14 +55,11 @@ export const getPrivateMessageList = async (pageSize = 10, pageIndex = 1) => {
 export const markMessageAsRead = async (messageId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /message/read');
         const response = await getaxiosInstance().post('/message/read', { 
             message_id: messageId
         });
         return response.data;
     } catch (error) {
-        console.error('Error marking message as read:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await markMessageAsRead(messageId);
@@ -85,14 +76,11 @@ export const markMessageAsRead = async (messageId) => {
 export const deletePrivateMessage = async (messageId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /message/delete');
         const response = await getaxiosInstance().post('/message/delete', { 
             message_id: messageId
         });
         return response.data;
     } catch (error) {
-        console.error('Error deleting private message:', error);
         let dealResult = await dealAxiosError(error);
         if(dealResult.status == 1412){
             return await deletePrivateMessage(messageId);

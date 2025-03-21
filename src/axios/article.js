@@ -16,13 +16,9 @@ import { waitForLock } from "@/utils/lock.js";
 export const createArticle = async (data) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /article/create');
-        console.log('Request Data:', data);
         const response = await getaxiosInstance().post('/article/create', data);
         return response.data;
     } catch (error) {
-        console.error('Error creating article:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
@@ -36,13 +32,9 @@ export const createArticle = async (data) => {
 export const editArticle = async (data) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /article/edit');
-        console.log('Request Data:', data);
         const response = await getaxiosInstance().post('/article/edit', data);
         return response.data;
     } catch (error) {
-        console.error('Error editing article:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
@@ -57,15 +49,11 @@ export const editArticle = async (data) => {
 export const deleteArticle = async (articleId) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: POST');
-        console.log('Request URL: /article/delete');
-        console.log('Request Data:', {
             article_id: articleId,
         });
         const response = await getaxiosInstance().post('/article/delete', {article_id: articleId});
         return response.data;
     } catch (error) {
-        console.error('Error deleting article:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
@@ -79,18 +67,14 @@ export const deleteArticle = async (articleId) => {
 export const getArticleDetail = async (id) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /article/detail?id=' + id);
         let cacheResponse=getResponseFromCache('/article/detail?id=' + id);
         if(cacheResponse){
             return cacheResponse.data;
         }
         const response = await getaxiosInstance().get('/article/detail', { params: { article_id:id } });
         saveResponseToCache('/article/detail?id=' + id,response);
-        console.log('Response Data:', response.data);
         return response.data;
     } catch (error) {
-        console.error('Error getting article detail:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
@@ -104,8 +88,6 @@ export const getArticleDetail = async (id) => {
 export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize);
         let cacheResponse=getResponseFromCache('/article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize);
         if(cacheResponse){
             return cacheResponse.data;
@@ -114,7 +96,6 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
         saveResponseToCache('/article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting post list by article ID:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
@@ -128,8 +109,6 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
 export const getArticleList = async (sort='time',tags=null,pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        console.log('Request Type: GET');
-        console.log('Request URL: /article/list?page_index=' + pageIndex + '&page_size=' + pageSize);
         let cacheResponse=getResponseFromCache('/article/list?page_index=' + pageIndex + '&page_size=' + pageSize);
         if(cacheResponse){
             return cacheResponse.data;
@@ -138,7 +117,6 @@ export const getArticleList = async (sort='time',tags=null,pageIndex = 1, pageSi
         saveResponseToCache('/article/list?page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
-        console.error('Error getting article list:', error);
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){

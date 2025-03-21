@@ -164,7 +164,6 @@ export default {
                         });
                     }
                 } catch (e) {
-                    console.log(e);
                 }
                 this.alert(getNormalSuccessAlert("成功加载收藏"));
             } else {

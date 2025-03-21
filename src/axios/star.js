@@ -13,14 +13,10 @@ import { waitForLock } from "@/utils/lock.js";
 export const starContent = async (content_type, content_id, folder_id=null) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /star');
     const data = {content_type, content_id, folder_id};
-    console.log('Request Data:', data);
     const response = await getaxiosInstance().post('/star', data);
     return response.data;
   } catch (error) {
-    console.error('Error starring content:', error);
     let dealResult=await dealAxiosError(error);
     if(dealResult.status==1412){
       return await starContent(content_type, content_id, folder_id);
@@ -38,14 +34,10 @@ export const starContent = async (content_type, content_id, folder_id=null) => {
 export const createStarFolder = async (folder_name, description=null) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /star/create');
     const data = {folder_name, description};
-    console.log('Request Data:', data);
     const response = await getaxiosInstance().post('/star/create', data);
     return response.data;
   } catch (error) {
-    console.error('Error creating star folder:', error);
     let dealResult=await dealAxiosError(error);
     if(dealResult.status==1412){
       return await createStarFolder(folder_name, description);
@@ -62,10 +54,8 @@ export const createStarFolder = async (folder_name, description=null) => {
 export const getStarList = async (folder_id=null) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: GET');
     let url = '/star/list';
     if(folder_id !== null) url += `?folder_id=${folder_id}`;
-    console.log('Request URL:', url);
     let cacheResponse=getResponseFromCache(url);
     if(cacheResponse){
       return cacheResponse.data;
@@ -74,7 +64,6 @@ export const getStarList = async (folder_id=null) => {
     saveResponseToCache(url,response);
     return response.data;
   } catch (error) {
-    console.error('Error getting star list:', error);
     let dealResult=await dealAxiosError(error);
     if(dealResult.status==1412){
       return await getStarList(folder_id);
@@ -92,14 +81,10 @@ export const getStarList = async (folder_id=null) => {
 export const unstarContent = async (content_type, content_id) => {
   try {
     await waitForLock('token');
-    console.log('Request Type: POST');
-    console.log('Request URL: /unstar');
     const data = {content_type, content_id};
-    console.log('Request Data:', data);
     const response = await getaxiosInstance().post('/unstar', data);
     return response.data;
   } catch (error) {
-    console.error('Error unstarring content:', error);
     let dealResult=await dealAxiosError(error);
     if(dealResult.status==1412){
       return await unstarContent(content_type, content_id);
@@ -115,8 +100,6 @@ export const unstarContent = async (content_type, content_id) => {
 export const getStarFolders = async () => {
   try {
     await waitForLock('token');
-    console.log('Request Type: GET');
-    console.log('Request URL: /star/folder/list');
     let cacheResponse=getResponseFromCache('/star/folder/list');
     if(cacheResponse){
       return cacheResponse.data;
@@ -125,7 +108,6 @@ export const getStarFolders = async () => {
     saveResponseToCache('/star/folder/list',response);
     return response.data;
   } catch (error) {
-    console.error('Error getting star folders:', error);
     let dealResult=await dealAxiosError(error);
     if(dealResult.status==1412){
       return await getStarFolders();

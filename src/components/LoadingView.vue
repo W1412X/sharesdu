@@ -63,7 +63,6 @@ export default {
         const data = computed(() => {
             return this.initData;
         })
-        console.log(data.value);
         return {
             data
         }

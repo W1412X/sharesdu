@@ -188,7 +188,6 @@ export default {
   watch: {
     choose: {
       handler(newVal, oldVal) {
-        console.log(oldVal);
         switch (newVal) {
           case 'message':
             if(this.notificationPageNum==1)
@@ -228,7 +227,6 @@ export default {
   methods: {
 
     test() {
-      console.log(this.drawer);
     },
     follow(name, index) {
       this.followStateList[index] = !this.followStateList[index];
