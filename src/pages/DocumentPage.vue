@@ -7,6 +7,7 @@
 <script>
 import ArticleDisplay from '@/components/ArticleDisplay.vue'
 import {mdContent} from '@/utils/data'
+import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { useRoute } from 'vue-router';
 export default {
     name: 'DocumentPage',
@@ -22,7 +23,11 @@ export default {
             data,
         }
     },
+    created(){
+        this.$emit("set_loading",getLoadMsg("正在加载..."));
+    },
     async mounted() {
+        this.$emit("set_loading",getCancelLoadMsg());
         const route = useRoute();
         var doc='';
         if ('name' in route.params) {

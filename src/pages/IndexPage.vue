@@ -288,6 +288,7 @@ export default {
         }
     },
     mounted() {
+        this.setLoading(getCancelLoadMsg());
         //load set in the watch  
     }
 }

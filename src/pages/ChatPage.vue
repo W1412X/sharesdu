@@ -78,6 +78,7 @@ export default{
         }
     },
     mounted(){
+        this.setLoading(getCancelLoadMsg());
         /**
          * get the id from the url
          */

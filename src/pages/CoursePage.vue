@@ -406,6 +406,7 @@ export default {
         }
     },
     async mounted() {
+        this.setLoading(getCancelLoadMsg());
         /**
          * get the course id from the url
          */

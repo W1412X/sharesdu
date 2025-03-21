@@ -11,7 +11,7 @@ import { waitForLock } from "@/utils/lock";
 export const sendPrivateMessage = async (receiverId, content) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/message/send', { 
+        const response = await getaxiosInstance().post('/messages/send', { 
             receiver_id: receiverId,
             content: content
         });
@@ -55,7 +55,7 @@ export const getPrivateMessageList = async (pageSize = 10, pageIndex = 1) => {
 export const markMessageAsRead = async (messageId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/message/read', { 
+        const response = await getaxiosInstance().post('/messages/read', { 
             message_id: messageId
         });
         return response.data;
@@ -76,7 +76,7 @@ export const markMessageAsRead = async (messageId) => {
 export const deletePrivateMessage = async (messageId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/message/delete', { 
+        const response = await getaxiosInstance().post('/messages/delete', { 
             message_id: messageId
         });
         return response.data;

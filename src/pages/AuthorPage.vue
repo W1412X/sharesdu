@@ -6,6 +6,7 @@
 <script>
 import AuthorCard from '@/components/AuthorCard.vue';
 import { getCookie } from '@/utils/cookie';
+import { getCancelLoadMsg } from '@/utils/other';
 
 export default{
     name:'AuthorPage',
@@ -28,6 +29,7 @@ export default{
         }
     },
     async mounted(){
+        this.setLoading(getCancelLoadMsg());
         if(this.$route.params.id==getCookie("userId")){
             this.$router.push({name:'SelfPage',params:{id:getCookie("userId")}})
             return;

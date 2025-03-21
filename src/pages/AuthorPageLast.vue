@@ -187,6 +187,7 @@ export default{
         }
     },
     async mounted(){
+        this.setLoading(getCancelLoadMsg());
         /**
          * if the user is the author,then go to self page instead  
          */

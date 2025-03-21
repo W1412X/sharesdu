@@ -277,6 +277,7 @@ export default {
         }
     },
     async mounted() {
+        this.setLoading(getCancelLoadMsg());
         /**
          * get the route params and fetch data
          */

@@ -18,7 +18,7 @@
         <!-- Reputation and Level Section -->
         <div class="row-div text-medium">
             <v-icon size="20" class="icon-left-10px">mdi-trophy</v-icon>
-            <span class="margin-left-10px">{{ "LV." + data.reputation }}</span>
+            <span v-if="type=='self'" class="margin-left-10px">{{ "LV." + data.reputation }}</span>
             <v-chip class="margin-left-10px" density="compact" style="margin-left: 5px;" variant="tonal" :color="themeColor" :text="data.reputationLevel"></v-chip>
         </div>
 
@@ -47,7 +47,7 @@
         <div class="row-div text-medium">
             <v-spacer></v-spacer>
             <v-icon v-if="(data.master || data.superMaster) &&  type=='author'">mdi-shield-account</v-icon>
-            <v-btn v-if="(data.master || data.superMaster) && this.type==='self'"  variant="outlined" :color="'#8a8a8a'" prepend-icon="mdi-shield-account">管理网站</v-btn>
+            <v-btn v-if="(data.master || data.superMaster) && this.type==='self'" @click="toManage"  variant="outlined" :color="'#8a8a8a'" prepend-icon="mdi-shield-account">管理网站</v-btn>
         </div>
         <div v-if="type==='author'" class="row-div text-small">
             更多功能开发ing
@@ -98,6 +98,9 @@ export default{
         alert(msg){
             this.$emit("alert", msg);
         },
+        toManage(){
+            window.open("/#/manage","_blank");
+        },
         async block(){
             /**
              * block state  
@@ -119,6 +122,7 @@ export default{
                     this.alert(getNormalSuccessAlert('设置成功'));
                     this.blockState=!this.blockState;
                 }else{
+                    this.blockState=!this.blockState;
                     this.alert(getNormalErrorAlert(response.message))
                 }
             }else{

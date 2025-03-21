@@ -6,6 +6,8 @@
     </div>
 </template>
 <script>
+import { getCancelLoadMsg } from '@/utils/other';
+
 export default {
     name: 'ErrorPage',
     setup() {
@@ -20,6 +22,7 @@ export default {
     methods: {
     },
     mounted() {
+        this.setLoading(getCancelLoadMsg());
         if ('reason' in this.$route.params) {
             this.reason = this.$route.params.reason;
         }

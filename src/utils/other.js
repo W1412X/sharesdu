@@ -319,14 +319,18 @@ export function getProfileUrl(userId){
  * @returns 
  */
 export function extractTime(str) {
-    const regex = /.*(\d{4})-(\d{2})-(\d{2}).*(\d{2}):(\d{2}):(\d{2}).*/;
-    const match = str.match(regex);
-
-    if (match && match.length === 7) {
-        const formattedTime = `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}:${match[6]}`;
-        return formattedTime;
-    } else {
-        return "time ungot";
+    try{
+        const regex = /.*(\d{4})-(\d{2})-(\d{2}).*(\d{2}):(\d{2}):(\d{2}).*/;
+        const match = str.match(regex);
+    
+        if (match && match.length === 7) {
+            const formattedTime = `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}:${match[6]}`;
+            return formattedTime;
+        } else {
+            return "time ungot";
+        }
+    }catch(e){
+        return "";
     }
 }
 /**

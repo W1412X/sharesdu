@@ -122,7 +122,7 @@
             text="隐私政策"></v-btn>
           <v-btn to="/document/about_us" target="_blank" prepend-icon="mdi-information-variant" color="grey"
             variant="outlined" text="关于我们"></v-btn>
-          <v-btn @click="setBlockListState(true)" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
+          <v-btn @click="getBlockList" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
             text="黑名单"></v-btn>
             <v-btn @click="setColorSelectorCardState(true)" prepend-icon="mdi-account-box" color="grey" variant="outlined"
             text="个性化主题"></v-btn>
@@ -132,7 +132,7 @@
   </div>
 </template>
 <script>
-import { unblockUser } from '@/axios/block';
+import { getBlockList, unblockUser } from '@/axios/block';
 import { fetchNotificationsList } from '@/axios/notification';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 import ArticleItem from '@/components/ArticleItem.vue';
@@ -238,6 +238,23 @@ export default {
     alert(msg) {
       this.$emit("alert", msg);
     },
+    async getBlockList() {
+      this.setLoading(getLoadMsg("正在获取黑名单列表..."));
+      let response = await getBlockList();
+      this.setLoading(getCancelLoadMsg());
+      if(response.status==200){
+        for(let i=0;i<response.block_list.length;i++){
+          this.blockList.push({
+            id:response.block_list[i].to_user_id,
+            name:response.block_list[i].to_user_name,
+          })
+        }
+        this.alert(getNormalSuccessAlert("加载成功"));
+        this.setBlockListState(true);
+      }else{
+        this.alert(getNormalErrorAlert(response.message));
+      }
+    },
     async cancelBlock(index) {
       let user = this.blockList[index];
       /**
@@ -281,6 +298,7 @@ export default {
     }
   },
   async mounted() {
+    this.setLoading(getCancelLoadMsg());
     this.user={
       id: getCookie("userId"),
       name:getCookie("userName"),

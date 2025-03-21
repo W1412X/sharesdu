@@ -67,6 +67,7 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
+import { getCancelLoadMsg } from '@/utils/other';
 import { ref, computed } from 'vue';
 export default {
     name: 'WelcomePage',
@@ -113,6 +114,7 @@ export default {
         }
     },
     mounted() {
+        this.setLoading(getCancelLoadMsg());
     }
 }
 </script>

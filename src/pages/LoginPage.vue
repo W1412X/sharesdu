@@ -370,6 +370,7 @@ export default {
         }
     },
     mounted() {
+        this.setLoading(getCancelLoadMsg());
 
     },
     created() {
