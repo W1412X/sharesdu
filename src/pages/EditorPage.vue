@@ -276,6 +276,7 @@ export default {
         }
     },
     async mounted() {
+        this.setLoading(getCancelLoadMsg());
         /**
          * check if with id
          * if yes, get the data and set the data,which means editing 

@@ -230,6 +230,7 @@ export default {
             })
         },
         edit(){
+            this.setLoading(getLoadMsg("正在加载编辑器..."))
             this.$router.push({
                 name:"EditorPage",
                 params:{

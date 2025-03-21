@@ -19,7 +19,7 @@
             <div class="top-bar-right">
                 <v-btn @click="setPostEditorState(true)" icon="mdi-comment-question-outline" variant="text"
                     color="#ffffff" size="40"></v-btn>
-                <v-btn to="/editor" icon="mdi-file-edit-outline" variant="text" color="#ffffff" size="40"></v-btn>
+                <v-btn @click="editArticle" icon="mdi-file-edit-outline" variant="text" color="#ffffff" size="40"></v-btn>
                 <v-btn @click="setCourseEditorState(true)" icon="mdi-book-plus-outline" variant="text" color="#ffffff"
                     size="40"></v-btn>
             </div>
@@ -182,6 +182,9 @@ export default {
         }
     },
     methods: {
+        editArticle(){
+            window.open("#/editor","_blank")
+        },
         closeDialog() {
             this.setCourseEditorState(false);
             this.setNoticeState(false);
