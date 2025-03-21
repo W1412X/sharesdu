@@ -1,6 +1,7 @@
 import { getAccessToken } from "@/axios/token";
 import { clearTokenCookies, getCookie, setCookie } from "./cookie";
 import { globalProperties } from "@/main";
+import { setLock, waitForLock } from "./lock";
 /**
  * a deep copy function for json object
  * @param {json} json 
@@ -77,8 +78,23 @@ export async function dealAxiosError(error){
              * if not -> to login page and alert
              */
             const refreshToken=getCookie("refreshToken");
+            setCookie("accessToken","",-1);
             if(refreshToken){
                 try{
+                    /**
+                     * wait for the token lock
+                     * ensure the access now is empty
+                     * and if the access not empty after wait 
+                     * means that other request have get the access token
+                     * return 1412
+                     */
+                    await waitForLock("token");
+                    if(getCookie("accessToken")){
+                        return {
+                            status:1412,
+                        }
+                    }
+                    setLock("token",true);
                     console.log("try to get the token");
                     const response=await getAccessToken(refreshToken);
                     if(response.status==999){
@@ -103,6 +119,8 @@ export async function dealAxiosError(error){
                         status: -1,
                         message:"重新登陆，令牌无效"
                     }
+                }finally{
+                    setLock("token",false);
                 }
             }else{
                 /**
@@ -263,6 +281,34 @@ export function getPostWithoutLink(content){
     }else{
         return content;
     }
+}
+/**
+ * get the reply content with header
+ * @param {String} content 
+ * @param {String} authorName 
+ * @param {String} parentReplyId 
+ * @returns 
+ */
+export function addHeaderToReply(content,authorName,parentReplyId){
+    return "@"+authorName+"\n"+parentReplyId+"\n"+content;
+}
+/**
+ * get the reply content without header  
+ * @param {String} content 
+ * @returns 
+ */
+export function getReplyContentWithoutHeader(content){
+    let tmp=content.substring(content.indexOf("\n")+1);
+    tmp=tmp.substring(tmp.indexOf("\n")+1);
+    return tmp;
+}
+
+export function getAuthorNameFromReply(content){
+    return content.substring(0,content.indexOf("\n"));
+}
+export function getParentReplyIdFromReply(content){
+    let tmp=content.substring(content.indexOf("\n")+1);
+    return tmp.substring(0,tmp.indexOf("\n"));
 }
 /**
  * get user profile url

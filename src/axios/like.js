@@ -1,5 +1,6 @@
 import { dealAxiosError } from "@/utils/other";
 import { getaxiosInstance } from "./axios";
+import { waitForLock } from "@/utils/lock";
 
 /**
  * Like content (article/post/reply)
@@ -9,6 +10,7 @@ import { getaxiosInstance } from "./axios";
  */
 export const likeContent = async (content_type, content_id) => {
     try {
+      await waitForLock('token');
       console.log('Request Type: POST');
       console.log('Request URL: /like');
       console.log('Request Data:', { content_type, content_id });
@@ -32,6 +34,7 @@ export const likeContent = async (content_type, content_id) => {
    */
   export const unlikeContent = async (content_type, content_id) => {
     try {
+      await waitForLock('token');
       console.log('Request Type: POST');
       console.log('Request URL: /unlike');
       console.log('Request Data:', { content_type, content_id });
@@ -55,6 +58,7 @@ export const likeContent = async (content_type, content_id) => {
    */
   export const getContentLikeCount = async (content_type, content_id) => {
     try {
+      await waitForLock('token');
       console.log('Request Type: GET');
       console.log(`Request URL: /like/count?content_type=${content_type}&content_id=${content_id}`);
       const response = await getaxiosInstance().get('/like/count', {
@@ -80,6 +84,7 @@ export const likeContent = async (content_type, content_id) => {
    */
   export const fetchUserLikedContents = async (user_id, page_size = 20, page_index = 1) => {
     try {
+      await waitForLock('token');
       console.log('Request Type: GET');
       console.log(`Request URL: /like/user?user_id=${user_id}&page_size=${page_size}&page_index=${page_index}`);
       const response = await getaxiosInstance().get('/like/user', {

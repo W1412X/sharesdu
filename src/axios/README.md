@@ -6,4 +6,7 @@
 - dealAxiosError function is used to deal with the error of axios.
 
 ### a risk code 
-recursion not done  
+recursion not done    
+
+### to avoid fetch token in many requests meanwhile  
+- use the await waitForLock('token');

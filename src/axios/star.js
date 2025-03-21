@@ -1,6 +1,7 @@
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
 import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
+import { waitForLock } from "@/utils/lock.js";
 
 /**
  * 收藏课程、文章或帖子
@@ -11,6 +12,7 @@ import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
  */
 export const starContent = async (content_type, content_id, folder_id=null) => {
   try {
+    await waitForLock('token');
     console.log('Request Type: POST');
     console.log('Request URL: /star');
     const data = {content_type, content_id, folder_id};
@@ -35,6 +37,7 @@ export const starContent = async (content_type, content_id, folder_id=null) => {
  */
 export const createStarFolder = async (folder_name, description=null) => {
   try {
+    await waitForLock('token');
     console.log('Request Type: POST');
     console.log('Request URL: /star/create');
     const data = {folder_name, description};
@@ -58,6 +61,7 @@ export const createStarFolder = async (folder_name, description=null) => {
  */
 export const getStarList = async (folder_id=null) => {
   try {
+    await waitForLock('token');
     console.log('Request Type: GET');
     let url = '/star/list';
     if(folder_id !== null) url += `?folder_id=${folder_id}`;
@@ -87,6 +91,7 @@ export const getStarList = async (folder_id=null) => {
  */
 export const unstarContent = async (content_type, content_id) => {
   try {
+    await waitForLock('token');
     console.log('Request Type: POST');
     console.log('Request URL: /unstar');
     const data = {content_type, content_id};
@@ -109,6 +114,7 @@ export const unstarContent = async (content_type, content_id) => {
  */
 export const getStarFolders = async () => {
   try {
+    await waitForLock('token');
     console.log('Request Type: GET');
     console.log('Request URL: /star/folder/list');
     let cacheResponse=getResponseFromCache('/star/folder/list');

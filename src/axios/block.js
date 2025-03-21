@@ -4,6 +4,7 @@
  * returns the original response message
  * every function return a json with status code and message
  */
+import { waitForLock } from "@/utils/lock.js";
 import { getaxiosInstance } from "./axios.js";
 import { getNetworkErrorResponse } from "./statusCodeMessages.js";
 /**
@@ -13,6 +14,7 @@ import { getNetworkErrorResponse } from "./statusCodeMessages.js";
  */
 export const blockUser = async (toUserId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /block');
         const response = await getaxiosInstance().post('/block', { to_user_id: toUserId });
@@ -29,6 +31,7 @@ export const blockUser = async (toUserId) => {
  */
 export const unblockUser = async (toUserId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /unblock');
         const response = await getaxiosInstance().post('/unblock', { to_user_id: toUserId });
@@ -46,6 +49,7 @@ export const unblockUser = async (toUserId) => {
  */
 export const getBlockList = async (userId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /blocklist');
         const response = await getaxiosInstance().get('/blocklist', { params: { user_id: userId } });

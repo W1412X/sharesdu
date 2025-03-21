@@ -1,6 +1,7 @@
 import { dealAxiosError } from "@/utils/other";
 import { getaxiosInstance } from "./axios";
 import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
+import { waitForLock } from "@/utils/lock";
 
 /**
  * 
@@ -11,6 +12,7 @@ import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
  */
 export const createPostInArticle = async (articleId, postTitle, postContent) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /post/article_post');
         const response = await getaxiosInstance().post('/post/article_post', { 
@@ -36,6 +38,7 @@ export const createPostInArticle = async (articleId, postTitle, postContent) => 
  */
 export const createPostInCourse = async (courseId,postTitle, postContent) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /post/course_post');
         const response = await getaxiosInstance().post('/post/course_post', { 
@@ -60,6 +63,7 @@ export const createPostInCourse = async (courseId,postTitle, postContent) => {
  */
 export const getPostDetailById = async (postId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log(`Request URL: /post/detail?post_id=${postId}`);
         let cacheResponse=getResponseFromCache(`/post/detail?post_id=${postId}`);
@@ -87,6 +91,7 @@ export const getPostDetailById = async (postId) => {
  */
 export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log(`Request URL: /post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`);
         let cacheResponse=getResponseFromCache(`/post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`);
@@ -112,6 +117,7 @@ export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20)
  */
 export const deletePostById = async (postId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /post/delete');
         const response = await getaxiosInstance().post('/post/delete', { post_id: postId });
@@ -134,6 +140,7 @@ export const deletePostById = async (postId) => {
  */
 export const createReplyUnderPost = async (postId, replyContent, parentReplyId = null) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /reply/create');
         let response=null;
@@ -166,6 +173,7 @@ export const createReplyUnderPost = async (postId, replyContent, parentReplyId =
  */
 export const deleteReplyById = async (replyId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /reply/delete');
         const response = await getaxiosInstance().post('/reply/delete', { reply_id: replyId });
@@ -186,6 +194,7 @@ export const deleteReplyById = async (replyId) => {
  */
 export const getReplyDetailById = async (replyId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log(`Request URL: /reply/detail?reply_id=${replyId}`);
         let cacheResponse = getResponseFromCache(`/reply/detail?reply_id=${replyId}`);

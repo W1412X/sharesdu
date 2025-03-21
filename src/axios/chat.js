@@ -10,6 +10,7 @@ import { getNetworkErrorResponse } from "./statusCodeMessages.js";
  */
 export const chatSend = async (data) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /blocklist');
         const response = await getaxiosInstance().get('/blocklist', { params: { user_id: userId } });

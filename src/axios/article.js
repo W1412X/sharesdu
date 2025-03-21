@@ -10,10 +10,12 @@
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
 import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
+import { waitForLock } from "@/utils/lock.js";
 
 // 创建文章函数
 export const createArticle = async (data) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /article/create');
         console.log('Request Data:', data);
@@ -33,6 +35,7 @@ export const createArticle = async (data) => {
 // 编辑文章函数
 export const editArticle = async (data) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /article/edit');
         console.log('Request Data:', data);
@@ -53,6 +56,7 @@ export const editArticle = async (data) => {
 // 删除文章函数
 export const deleteArticle = async (articleId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /article/delete');
         console.log('Request Data:', {
@@ -74,6 +78,7 @@ export const deleteArticle = async (articleId) => {
 // 获取文章详细信息函数
 export const getArticleDetail = async (id) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /article/detail?id=' + id);
         let cacheResponse=getResponseFromCache('/article/detail?id=' + id);
@@ -98,6 +103,7 @@ export const getArticleDetail = async (id) => {
 // 获取文章下的Post列表函数
 export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize);
         let cacheResponse=getResponseFromCache('/article/post_list?id=' + id + '&page_index=' + pageIndex + '&page_size=' + pageSize);
@@ -121,6 +127,7 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
 // 获取文章列表函数
 export const getArticleList = async (sort='time',tags=null,pageIndex = 1, pageSize = 20) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /article/list?page_index=' + pageIndex + '&page_size=' + pageSize);
         let cacheResponse=getResponseFromCache('/article/list?page_index=' + pageIndex + '&page_size=' + pageSize);

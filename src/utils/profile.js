@@ -1,6 +1,7 @@
 import { getaxiosInstance } from "@/axios/axios";
 import { globalProperties } from "@/main";
 import Dexie from "dexie";
+import { waitForLock } from "./lock";
 const db=new Dexie("sharesdu");
 db.version(1).stores({
     profile:'&userId,updateTime,blob'
@@ -37,6 +38,7 @@ export async function getProfileUrlInDB(userId,lastUpdateTime,times=0){
              * update it in local db   
              * and do this function again  
              */
+            await waitForLock("token");
             let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
             await db.profile.put({
                 userId:userId,
@@ -46,8 +48,11 @@ export async function getProfileUrlInDB(userId,lastUpdateTime,times=0){
             return URL.createObjectURL(response.data);
         }
     }else{
-
+        await waitForLock("token");
         let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
+        if(response.status==1412){
+            return null;
+        }
         await db.profile.put({
             userId:userId,
             updateTime:lastUpdateTime,

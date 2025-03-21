@@ -13,6 +13,16 @@
             </div>
         </v-card>
       </div>
+      <div v-if="ifShowTmpParentReply" style="width: 100%;height:100%;justify-content: center;display: flex;">
+        <div style="display: flex;flex-direction: column;">
+            <div style="display: flex;flex-direction: row-reverse;">
+                <v-btn @click="closeParentReply" color="#00000000" variant="text" size="25">
+                    <v-icon type="mdi" icon="mdi-close" :color="themeColor"></v-icon>
+                </v-btn>
+            </div>
+            <reply-item v-if="ifShowTmpParentReply" :post-id="this.post.id" :init-data="this.tmpParentReply" @show_parent="getParentReply" @reply="addReply" @alert="alert" @set_loading="setLoading"></reply-item>
+        </div>
+      </div>
     </v-dialog>
     <div class="full-center">
         <div>
@@ -94,7 +104,7 @@
             </div>
             <div class="comments-container">
             <div class="column-div">
-                <reply-item v-for="(comment, index) in replyList" :init-data="comment" :key="index" @alert="alert" @set_loading="setLoading">
+                <reply-item v-for="comment in replyList" :init-data="comment" @show_parent="getParentReply" @reply="addReply" :post-id="this.post.id" :key="comment.id" @alert="alert" @set_loading="setLoading">
                 </reply-item>
                 <v-btn variant="tonal" class="load-btn" @click="loadMoreReply">加载更多</v-btn>
             </div>
@@ -111,7 +121,7 @@ import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import AvatarName from '@/components/AvatarName.vue';
 import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink } from '@/utils/other';
-import { createReplyUnderPost, getPostDetailById, getReplyListByPostId } from '@/axios/post';
+import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyListByPostId } from '@/axios/post';
 import LikeButton from '@/components/LikeButton.vue';
 import ReplyItem from '@/components/ReplyItem.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
@@ -144,12 +154,16 @@ export default {
          * posts list visibility control here
          */
         const ifShowComment = ref(false);
+        const ifShowTmpParentReply=ref(false);
         const ifShowDialog=computed(()=>{
-            return ifShowComment.value;
+            return ifShowComment.value || ifShowTmpParentReply.value;
         });
         const userId=getCookie('userId');
         const setCommentState = (state) => {
             ifShowComment.value = state;
+        }
+        const setTmpParentReplyState = (state) => {
+            ifShowTmpParentReply.value = state;
         }
         return {
             themeColor,
@@ -159,6 +173,8 @@ export default {
             setCommentState,
             ifShowDialog,
             userId,
+            setTmpParentReplyState,
+            ifShowTmpParentReply,
         }
     },
     data() {
@@ -185,6 +201,7 @@ export default {
             relativeText,
             replyList: [],
             replyPageNum:1,
+            tmpParentReply:null
         }
     },
     methods: {
@@ -214,6 +231,11 @@ export default {
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
+        },
+        addReply(tmp){
+            this.replyList.unshift(
+                tmp
+            )
         },
         setLoading(msg){
             this.$emit('set_loading',msg);
@@ -253,7 +275,38 @@ export default {
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
-        }
+        },
+        async getParentReply(id){
+            if(id==null){
+                this.alert(getNormalErrorAlert("无父级回复"));
+                return;
+            }
+            //to ensure the state
+            this.setTmpParentReplyState(false);
+            this.tmpParentReply=null;
+
+            this.setLoading(getLoadMsg("正在加载..."));
+            let response=await getReplyDetailById(id);
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200||response.status==201){
+                this.alert(getNormalSuccessAlert("加载成功"));
+                this.tmpParentReply={
+                    id:response.reply_detail.reply_id,
+                    content:response.reply_detail.reply_content,
+                    authorName:response.reply_detail.replier_name,
+                    authorId:response.reply_detail.replier_id,
+                    likeNum:response.reply_detail.like_count,
+                    publishTime:response.reply_detail.publish_time,
+                }
+                this.setTmpParentReplyState(true);
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
+        },
+        closeParentReply() {
+            this.setTmpParentReplyState(false);
+            this.tmpParentReply=null;
+        },
     },
     async mounted() {
         /**

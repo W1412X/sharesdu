@@ -4,6 +4,7 @@
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
 import { compressImage } from "@/utils/image.js";
+import { waitForLock } from "@/utils/lock.js";
 /**
  * Upload user profile image
  * @param {File} image - The image file to upload
@@ -11,6 +12,7 @@ import { compressImage } from "@/utils/image.js";
  */
 export const uploadProfileImage = async (image) => {
     try {
+        await waitForLock('token');
         try{
             image=await compressImage(image,'profile');
         }catch(error){
@@ -44,6 +46,7 @@ export const uploadProfileImage = async (image) => {
 */
 export const uploadArticleImage = async (image) => {
     try {
+        await waitForLock('token');
         try{
             image=await compressImage(image,'other');
         }catch(error){
@@ -78,6 +81,7 @@ export const uploadArticleImage = async (image) => {
  */
 export const getUserProfileImageUpdateInfo = async (userIds) => {
     try {
+        await waitForLock('token');
         if (!Array.isArray(userIds) || userIds.length === 0) {
             return {
                 status: -1,

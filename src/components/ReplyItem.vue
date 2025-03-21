@@ -1,5 +1,17 @@
 <template>
-    <div v-if="!ifDeleted" class="container">
+    <v-dialog v-model="ifShowDialog" style="display: flex;flex-direction: row;align-items: center;justify-content: center;width: 100%;height: 100%;">
+        <v-card v-if="ifShowReplyEditor" class="dialog-card">
+            <div class="title-bold">
+                回复评论
+            </div>
+            <SensitiveTextArea v-model="replyContent"  style="margin-top: 10px;" variant="outlined" density="compact" label="输入评论内容"/>
+            <div class="dialog-bottom-btn-bar">
+                <v-btn @click="reply" variant="text">发表</v-btn>
+                <v-btn @click="setReplyEditorState(false)" variant="text">取消</v-btn>
+            </div>
+        </v-card>
+    </v-dialog>
+    <v-card elevation="1" v-if="!ifDeleted" class="container">
         <div
             class="name text-medium"
         >
@@ -8,7 +20,8 @@
         <div
              @click="click"
             class="comment text-medium"
-        >
+        >   
+            <span v-if="this.ifChild==true" @click="showParent" class="text-medium-bold" :style="{'color':themeColor}">{{ parentAuthorName+'： ' }}</span>
             {{ data.content }}
         </div>
         <div
@@ -26,7 +39,7 @@
                 {{ this.data.likeNum }}
             </div>
             <div style="margin-right: 10px;">
-                    <v-btn @click="toReply" elevation="0" icon :style="{
+                    <v-btn @click="setReplyEditorState(true)" elevation="0" icon :style="{
                         'width': '20px',
                         'height': '20px',
                         'color': '#8a8a8a',
@@ -43,8 +56,7 @@
                 <delete-button @delete="deleteSelf" :id="this.data.id" :type="'reply'" :size="20" @alert="alert" @set_loading="setLoading"></delete-button>
             </div>
         </div>
-        <div class="bottom-line"></div>
-    </div>
+    </v-card>
 </template>
 <script>
 import AlertButton from './AlertButton.vue';
@@ -52,8 +64,13 @@ import LikeButton from './LikeButton.vue';
 import AvatarName from './AvatarName.vue';
 import { getCookie } from '@/utils/cookie';
 import DeleteButton from './DeleteButton.vue';
+import { globalProperties } from '@/main';
+import { computed, ref } from 'vue';
+import SensitiveTextArea from './SensitiveTextArea.vue';
+import { addHeaderToReply, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader } from '@/utils/other';
+import { createReplyUnderPost } from '@/axios/post';
 export default {
-    name: 'PostComment',
+    name: 'ReplyItem',
     props: {
         initData: {
             type: Object,
@@ -67,23 +84,46 @@ export default {
                     authorId:null,
                 }
             }
-        }
+        },
+        postId: {
+            type: String,
+            default: null
+        },
     },
     setup(){
+        const themeColor=globalProperties.$themeColor;
         const userId=getCookie("userId");
-        return {userId};
+        const ifShowReplyEditor=ref(false);
+        const ifShowDialog=computed(()=>{
+            return ifShowReplyEditor.value;
+        })
+        const setReplyEditorState=(state)=>{
+            ifShowReplyEditor.value=state;
+        }
+        return {userId,
+            themeColor,
+            ifShowDialog,
+            ifShowReplyEditor,
+            setReplyEditorState,
+        };
      },
     components:{
         AlertButton,
         LikeButton,
         AvatarName,
         DeleteButton,
+        SensitiveTextArea,
     },
     data(){
         const data=this.initData;
         return{
             data,
             ifDeleted:false,
+            ifChild:false,
+            parentAuthorName:null,
+            parentReplyId:null,
+            childReplys:[],
+            replyContent:"",
         }
     },
     methods: {
@@ -99,8 +139,48 @@ export default {
         deleteSelf(){
             this.ifDeleted=true;
         },
-        toReply(){
-            // to do 
+        showParent(){
+            this.$emit('show_parent',this.parentReplyId);
+            console.log(this.parentReplyId);
+        },
+        async reply(){
+            if(this.replyContent.length<=5){
+                this.alert(getNormalWarnAlert("评论内容过短"));
+                return;
+            }
+            let content=addHeaderToReply(this.replyContent,this.data.authorName,this.data.id);
+            console.log(content);
+            this.setLoading(getLoadMsg("正在提交评论..."));
+            let response=await createReplyUnderPost(this.postId,content,this.data.id);
+            this.setLoading(getCancelLoadMsg());     
+            if(response.status==200||response.status==201){
+                this.alert(getNormalSuccessAlert("评论成功"));
+                this.replyContent="";
+                this.$emit("reply",{
+                    id:response.reply_id,
+                    content:content,
+                    authorName:getCookie("userName"),
+                    authorId:getCookie("userId"),
+                    likeNum:0,
+                    publishTime:new Date().toLocaleString(),
+                })
+                this.setReplyEditorState(false);
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
+        }
+    },
+    async created(){
+        //deal with the reply with parent  
+        if(this.data.content.startsWith("@")){
+            try{
+                this.parentAuthorName=getAuthorNameFromReply(this.data.content);
+                this.parentReplyId=getParentReplyIdFromReply(this.data.content);
+                this.data.content=getReplyContentWithoutHeader(this.data.content);
+                this.ifChild=true;
+            }catch(e){
+                return;
+            }
         }
     }
 }
@@ -120,6 +200,15 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+.dialog-card{
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.dialog-bottom-btn-bar{
+    display: flex;
+    flex-direction: row-reverse;
 }
 .like-num{
     display: flex;

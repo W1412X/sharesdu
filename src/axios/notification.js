@@ -1,6 +1,7 @@
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
 import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
+import { waitForLock } from "@/utils/lock.js";
 /**
  * Fetch notifications list
  * @param {int} [page_size=10] Number of notifications per page, default is 10
@@ -9,6 +10,7 @@ import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
  */
 export const fetchNotificationsList = async (page_index = 1,page_size = 10) => {
     try {
+      await waitForLock('token');
       console.log('Request Type: GET');
       console.log(`Request URL: /notifications/list?page_size=${page_size}&page_index=${page_index}`);
       let cacheResponse=getResponseFromCache(`/notifications/list?page_size=${page_size}&page_index=${page_index}`);
@@ -37,6 +39,7 @@ export const fetchNotificationsList = async (page_index = 1,page_size = 10) => {
    */
   export const markAsReadNotification = async (notification_id) => {
     try {
+      await waitForLock('token');
       console.log('Request Type: POST');
       console.log('Request URL: /notifications/read');
       console.log('Request Data: ', { notification_id });

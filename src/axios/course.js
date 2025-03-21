@@ -7,6 +7,7 @@
 import { dealAxiosError } from "@/utils/other";
 import { getaxiosInstance } from "./axios";
 import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
+import { waitForLock } from "@/utils/lock";
 
 /**
  * 创建新的课程
@@ -15,6 +16,7 @@ import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
  */
 export const createCourse = async (data) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /course/create');
         console.log('Request Data:', data);
@@ -37,6 +39,7 @@ export const createCourse = async (data) => {
  */
 export const editCourse = async (data) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /course/edit');
         console.log('Request Data:', data);
@@ -59,6 +62,7 @@ export const editCourse = async (data) => {
  */
 export const deleteCourse = async (courseId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /course/delete');
         console.log('Request Data:', { course_id: courseId });
@@ -81,6 +85,7 @@ export const deleteCourse = async (courseId) => {
  */
 export const rateCourse = async (data) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /course/rate');
         console.log('Request Data:', data);
@@ -103,6 +108,7 @@ export const rateCourse = async (data) => {
  */
 export const editRating = async (data) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /course/edit_rating');
         console.log('Request Data:', data);
@@ -126,6 +132,7 @@ export const editRating = async (data) => {
  */
 export const getUserCourseEvaluation = async (userId, courseId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /course/user_evaluation');
         console.log('Request Data:', { user_id: userId, course_id: courseId });
@@ -148,6 +155,7 @@ export const getUserCourseEvaluation = async (userId, courseId) => {
  */
 export const getCourseDetail = async (courseId) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /course/detail');
         console.log('Request Params:', { course_id: courseId });
@@ -177,6 +185,7 @@ export const getCourseDetail = async (courseId) => {
  */
 export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /course/post_list');
         console.log('Request Params:', { course_id: courseId, page_index: pageIndex, page_size: pageSize });
@@ -206,6 +215,7 @@ export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) 
  */
 export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /course/score_list');
         console.log('Request Params:', { course_id: courseId, page_index: pageIndex, page_size: pageSize });
@@ -234,6 +244,7 @@ export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20)
  */
 export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /course/list');
         console.log('Request Params:', { page_index: pageIndex, page_size: pageSize });
@@ -262,6 +273,7 @@ export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
  */
 export const freezeUnfreezeCourse = async (courseId, action) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /api/admin/courses/freeze');
         console.log('Request Data:', { course_id: courseId, action: action });
@@ -285,6 +297,7 @@ export const freezeUnfreezeCourse = async (courseId, action) => {
  */
 export const rollbackCourse = async (courseId, targetVersion) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: POST');
         console.log('Request URL: /api/admin/courses/rollback');
         console.log('Request Data:', { course_id: courseId, target_version: targetVersion });
@@ -309,6 +322,7 @@ export const rollbackCourse = async (courseId, targetVersion) => {
  */
 export const getCourseHistory = async (courseId, pageIndex = 1, pageSize = 10) => {
     try {
+        await waitForLock('token');
         console.log('Request Type: GET');
         console.log('Request URL: /api/admin/courses/<course_id>/history');
         console.log('Request Params:', { page_index: pageIndex, page_size: pageSize });
