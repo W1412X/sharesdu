@@ -300,14 +300,14 @@ export default {
 @media screen and (max-width: 600px) {
     .card {
         width: 100vw;
-        max-height: 80vh;
+        max-height: 90vh;
         padding: 10px;
     }
 
     .column-div-scroll {
         display: flex;
         flex-direction: column;
-        max-height: 70vh;
+        max-height: 80vh;
         overflow: auto;
     }
 }

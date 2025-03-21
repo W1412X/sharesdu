@@ -10,7 +10,7 @@
             <div class="message-editor row-div">
                 <sensitive-text-field variant="outlined" density="compact" v-model="editingMessage"/>
                 <div class="send-btn-container">
-                    <v-btn icon="mdi-send" size="40" rounded="false" :color="themeColor"></v-btn>
+                    <v-btn @click="send" icon="mdi-send" size="40" rounded="false" :color="themeColor"></v-btn>
                 </div>
             </div>
             <v-btn class="refresh-btn" icon="mdi-refresh"></v-btn>
@@ -21,8 +21,9 @@
 import ChatMessage from '@/components/ChatMessage.vue';
 import SensitiveTextField from '@/components/SensitiveTextField.vue';
 import { getCookie } from '@/utils/cookie';
-import { getLoadMsg,getCancelLoadMsg } from '@/utils/other';
+import { getLoadMsg,getCancelLoadMsg, getNormalSuccessAlert, getNormalErrorAlert } from '@/utils/other';
 import { globalProperties } from '@/main';
+import { sendPrivateMessage } from '@/axios/chat';
 export default{
     setup(){
         /**
@@ -43,53 +44,10 @@ export default{
     },
     data(){
         return{
-            messages:[
-                {
-                    content:'contentcontent',
-                    time:'2022-08-01 22:55:11',
-                    avatar:'avatar',
-                    isSelf:false,
-                },
-                {
-                    content:'contentcontent',
-                    time:'2022-08-01 22:55:11',
-                    avatar:'avatar',
-                    isSelf:true,
-                },
-                {
-                    content:'contentcontent',
-                    time:'2022-08-01 22:55:11',
-                    avatar:'avatar',
-                    isSelf:false,
-                },
-                {
-                    content:'contentcontent',
-                    time:'2022-08-01 22:55:11',
-                    avatar:'avatar',
-                    isSelf:true,
-                },
-                {
-                    content:'contentcontent',
-                    time:'2022-08-01 22:55:11',
-                    avatar:'avatar',
-                    isSelf:false,
-                },
-                {
-                    content:'contentcontent',
-                    time:'2022-08-01 22:55:11',
-                    avatar:'avatar',
-                    isSelf:true,
-                },
-                {
-                    content:'contentcontent',
-                    time:'2022-08-01 22:55:11',
-                    avatar:'avatar',
-                    isSelf:false,
-                }
-            ],
             receiverId:null,
             receiverName:'null',
             editingMessage:null,
+            messages:[],
         }
     },
     methods:{
@@ -98,6 +56,25 @@ export default{
         },
         setLoading(msg){
             this.$emit('set_loading',msg);
+        },
+        async send(){
+            this.setLoading(getLoadMsg('正在发送私信...'));
+            let response=await sendPrivateMessage(this.receiverId,this.editingMessage);
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200||response.status==201){
+                this.alert(getNormalSuccessAlert('发送成功'));
+                this.messages.push({
+                    id:response.data.message_id,
+                    content:this.editingMessage,
+                    time: new Date().getTime(),
+                    isSelf:true,
+                })
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
+        },
+        refresh(){
+            this.alert("待实现");
         }
     },
     mounted(){
@@ -106,6 +83,7 @@ export default{
          */
         this.setLoading(getLoadMsg('正在获取聊天信息...',-1));
         this.receiverId=this.$route.params.id;
+        this.receiverName=this.$route.params.name;
         /**
          * get the receiver name and avatar  
          */

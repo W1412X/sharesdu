@@ -6,7 +6,7 @@
  */
 import { waitForLock } from "@/utils/lock.js";
 import { getaxiosInstance } from "./axios.js";
-import { getNetworkErrorResponse } from "./statusCodeMessages.js";
+import { dealAxiosError } from "@/utils/other.js";
 /**
  * 
  * @param {block user id} toUserId 
@@ -21,7 +21,12 @@ export const blockUser = async (toUserId) => {
         return response.data;
     } catch (error) {
         console.error('Error blocking user:', error);
-        return getNetworkErrorResponse();
+        let dealResult=await dealAxiosError(error);
+        //which means the error caused by the token and have refreshed it
+        if(dealResult.status==1412){
+          return await blockUser(toUserId);
+        }
+        return dealResult;
     }
 };
 /**
@@ -38,7 +43,12 @@ export const unblockUser = async (toUserId) => {
         return response.data;
     } catch (error) {
         console.error('Error unblocking user:', error);
-        return getNetworkErrorResponse();
+        let dealResult=await dealAxiosError(error);
+        //which means the error caused by the token and have refreshed it
+        if(dealResult.status==1412){
+          return await unblockUser(toUserId);
+        }
+        return dealResult;
     }
 };
 
@@ -56,6 +66,11 @@ export const getBlockList = async (userId) => {
         return response.data;
     } catch (error) {
         console.error('Error getting block list:', error);
-        return getNetworkErrorResponse();
+        let dealResult=await dealAxiosError(error);
+        //which means the error caused by the token and have refreshed it
+        if(dealResult.status==1412){
+          return await getBlockList(userId);
+        }
+        return dealResult;
     }
 };

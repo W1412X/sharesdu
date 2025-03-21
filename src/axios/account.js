@@ -241,8 +241,8 @@ export const getAuthorInfo=async(userId)=>{
   try{
     await waitForLock('token');
     console.log('Request Type: GET');
-    console.log('Request URL: /homepage?user_id='+userId);
-    const response=await getaxiosInstance().get(`/homepage?user_id=${userId}`);
+    console.log('Request URL: /user/homepage?user_id='+userId);
+    const response=await getaxiosInstance().get(`/user/homepage?user_id=${userId}`);
     return response.data;
   }catch(error){
     console.error('Error getting author info:',error);

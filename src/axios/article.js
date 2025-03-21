@@ -142,7 +142,7 @@ export const getArticleList = async (sort='time',tags=null,pageIndex = 1, pageSi
         let dealResult=await dealAxiosError(error);
         //which means the error caused by the token and have refreshed it
         if(dealResult.status==1412){
-          return await getArticleList(pageIndex,pageSize);
+          return await getArticleList(sort,pageIndex,pageSize);
         }
         return dealResult;
     }

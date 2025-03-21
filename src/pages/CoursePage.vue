@@ -13,6 +13,9 @@
             </v-card>
             <post-editor v-if="ifShowPostEditor" @add_post="addPost" @close="closePostEditor" @alert="alert" @set_loading="setLoading" :type-msg="{type:'course',id:this.course.id}"></post-editor>
             <course-editor v-if="ifShowCourseEditor" @alert="alert" @set_loading="setLoading" :init-data="this.course"></course-editor>
+            <v-card class="">
+
+            </v-card>
         </div>
     </v-dialog>
     <div class="full-center">
@@ -466,6 +469,9 @@ export default {
 .row-div {
     display: flex;
     flex-direction: row;
+}
+.column-scroll-div{
+    display: flex;
 }
 .comment-icon-div{
     margin-top: 2px;

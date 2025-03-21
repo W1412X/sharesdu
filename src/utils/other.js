@@ -241,7 +241,7 @@ export function getNormalInfoAlert(title){
 export function getNormalWarnAlert(title){
     return {
         state: true,
-        color: 'wanning',
+        color: 'warning',
         title: title,
         content: '',
     }

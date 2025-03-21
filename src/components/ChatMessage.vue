@@ -46,7 +46,7 @@ export default {
             type: Object,
             default: function () {
                 return {
-                    message_id:null,
+                    id:null,
                     content: null,
                     time: null,
                     isSelf: null,//bool
@@ -71,7 +71,6 @@ export default {
         }
     },
     methods: {
-        
     }
 }
 </script>

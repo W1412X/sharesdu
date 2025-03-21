@@ -21,11 +21,14 @@
       <v-divider></v-divider>
       <v-btn v-if="!rail" size="30" class="menu-btn" :icon="'mdi-chevron-left'" @click.stop="rail = !rail"></v-btn>
       <v-list density="compact" nav :color="themeColor">
+        <v-list-item @click="choose = 'info'" prepend-icon="mdi-account" title="资料" value="info"></v-list-item>
         <v-list-item @click="choose = 'write'" prepend-icon="mdi-pencil" title="创作" value="write"></v-list-item>
         <v-list-item @click="choose = 'star'" prepend-icon="mdi-star" title="收藏" value="star"></v-list-item>
+        <!--
         <v-list-item @click="choose = 'follow'" prepend-icon="mdi-account-plus" title="关注" value="follow"></v-list-item>
+        -->
         <v-list-item @click="choose = 'message'" prepend-icon="mdi-email" title="信息" value="message"></v-list-item>
-        <v-list-item @click="choose = 'account'" prepend-icon="mdi-account" title="账户" value="account"></v-list-item>
+        <v-list-item @click="choose = 'account'" prepend-icon="mdi-account-edit" title="账户" value="account"></v-list-item>
         <v-list-item @click="choose = 'setting'" prepend-icon="mdi-cog" title="设置" value="setting"></v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -37,9 +40,12 @@
       <v-btn size="30" class="menu-btn" :icon="navVisible ? 'mdi-chevron-left' : 'mdi-chevron-right'"
         @click="navVisible = !navVisible"></v-btn>
       <v-list density="compact" nav :color="themeColor">
+        <v-list-item @click="choose = 'info'" prepend-icon="mdi-account" title="资料" value="info"></v-list-item>
         <v-list-item @click="choose = 'write'" prepend-icon="mdi-pencil" title="创作" value="write"></v-list-item>
         <v-list-item @click="choose = 'star'" prepend-icon="mdi-star" title="收藏" value="star"></v-list-item>
+        <!--
         <v-list-item @click="choose = 'follow'" prepend-icon="mdi-account-plus" title="关注" value="follow"></v-list-item>
+        -->
         <v-list-item @click="choose = 'message'" prepend-icon="mdi-email" title="信息" value="message"></v-list-item>
         <v-list-item @click="choose = 'account'" prepend-icon="mdi-account" title="账户" value="account"></v-list-item>
         <v-list-item @click="choose = 'setting'" prepend-icon="mdi-cog" title="设置" value="setting"></v-list-item>
@@ -76,11 +82,15 @@
           <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
         </div>
       </div>
+      <!-- init part -->
+      <div v-if="choose === 'info'">
+        <author-card v-if="this.user.id != null" :type="'self'" :id="this.user.id" @alert="alert" @set_loading="setLoading"></author-card>
+      </div>
       <!-- star part -->
       <div v-if="choose === 'star'">
           <star-card @alert="alert" @set_loading="setLoading" :type="'show'"></star-card>
       </div>
-      <!-- follow part  -->
+      <!-- follow part
       <div v-if="choose === 'follow'">
         <div v-for="(item, index) in followList" :key="index" class="follow-bar">
           <avatar-name :init-data="{ name: item.name, avatar: item.avatar }"></avatar-name>
@@ -91,6 +101,7 @@
           </v-btn>
         </div>
       </div>
+        -->
       <!-- message part  -->
       <div v-if="choose === 'message'">
           <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item"></notification-item>
@@ -121,12 +132,11 @@
   </div>
 </template>
 <script>
-import { getAuthorInfo } from '@/axios/account';
-import { scSelfInfo } from '@/axios/api_convert/account';
 import { unblockUser } from '@/axios/block';
 import { fetchNotificationsList } from '@/axios/notification';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 import ArticleItem from '@/components/ArticleItem.vue';
+import AuthorCard from '@/components/AuthorCard.vue';
 import AvatarName from '@/components/AvatarName.vue';
 import ColorSelectorCard from '@/components/ColorSelectorCard.vue';
 import CourseItem from '@/components/CourseItem.vue';
@@ -137,12 +147,13 @@ import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getProfileUrlInDB } from '@/utils/profile';
 import { ref, computed } from 'vue';
 export default {
   name: 'SelfPage',
   setup() {
     var drawer = ref(true);
-    var choose = ref('write');
+    var choose = ref('info');
     const rail = ref(true);
     const deviceType = globalProperties.$deviceType;
     const themeColor = globalProperties.$themeColor;
@@ -184,7 +195,7 @@ export default {
             this.getNotificationList();
             break; 
           default:
-            this.alert(getNormalErrorAlert('未知错误(页面切换)'));
+            return;
         }
       },
       immediate: true
@@ -199,6 +210,7 @@ export default {
     StarCard,
     ColorSelectorCard,
     NotificationItem,
+    AuthorCard,
   },
   data() {
     return {
@@ -272,9 +284,10 @@ export default {
   async mounted() {
     this.user={
       id: getCookie("userId"),
-      name: getCookie("userName"),
-      profileUrl: getCookie("userProfileUrl"),
-      email: getCookie("email"),
+      name:getCookie("userName"),
+      email:getCookie("userEmail"),
+      passwd:"********",
+      profileUrl:await getProfileUrlInDB(getCookie("userId")),
     }
     //if no id,to the user page
     if(!this.$route.params.id){
@@ -287,40 +300,6 @@ export default {
     if (this.$route.params.id != getCookie("userId")) {
       this.$router.push({ name: 'AuthorPage', params: { id: this.$route.params.id } })
       return;
-    }
-    /**
-     * get the user message
-     */
-    const response = await getAuthorInfo(this.$route.params.id);
-    if (response.status == 200) {
-      const tmp = scSelfInfo(response.info);
-      if (tmp.blockStatus) {
-        //if the user is blocked  
-        this.alert({
-          color: "warning",
-          title: "您已被封禁",
-          content: "您的账户已被封禁，请联系管理员",
-          state: true
-        })
-        this.$router.push({
-          name: 'ErrorPage', params: {
-            reason: "账户已被封禁至 " + String(tmp.blockEndTime)
-          }
-        });
-        return;
-      } else {
-        /**
-         * set the got data
-         */
-        this.user = tmp;
-      }
-    } else {
-      /**
-       * error
-       * to error page and show the alert
-       */
-      this.alert(getNormalErrorAlert(response.message));
-      //this.$router.push({ name: 'ErrorPage', params: { reason: "无法找到此用户" } });
     }
   }
   /**

@@ -1,7 +1,8 @@
 export function getResponseFromCache(route){
     if(sessionStorage.getItem(route)){
         console.log("use cache data in sessionStorage");
-        return JSON.parse(sessionStorage.getItem(route));
+        return null;
+        //return JSON.parse(sessionStorage.getItem(route));
     }else{
         return null;
     }

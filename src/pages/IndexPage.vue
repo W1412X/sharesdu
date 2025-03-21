@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="ifShowDialog" class="full-screen dialog">
         <div class="dialog-card-container">
-            <post-editor v-if="ifShowPostEditor" @close="closeDialog" @alert="alert" @set_loading="setLoading"></post-editor>
+            <post-editor v-if="ifShowPostEditor" @close="closeDialog" @alert="alert" @set_loading="setLoading" @add_post="addPost"></post-editor>
             <course-editor v-if="ifShowCourseEditor" @close="closeDialog"  @alert="alert" @set_loading="setLoading"></course-editor>
         </div>
     </v-dialog>
@@ -280,6 +280,9 @@ export default {
         setLoading(msg){
             this.$emit('set_loading',msg);
         },
+        addPost(item){
+            this.postList.unshift(item);
+        }
     },
     mounted() {
         //load set in the watch  
