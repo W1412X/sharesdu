@@ -104,7 +104,7 @@
         -->
       <!-- message part  -->
       <div v-if="choose === 'message'">
-          <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item"></notification-item>
+          <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item" @alert="alert" @set_loading="setLoading" ></notification-item>
           <v-btn variant="tonal" rounded width="100%">
             加载更多
           </v-btn>

@@ -21,7 +21,7 @@
 <script>
 import { markAsReadNotification } from '@/axios/notification';
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { computed } from 'vue';
 
 export default {
@@ -61,13 +61,13 @@ export default {
         })
         const typeIcon=computed(()=>{
             switch(this.data.type){
-                case "文章帖子":
+                case "文章有新帖子":
                     return "mdi-note-alert";
-                case "回复评论":
+                case "评论有新回复":
                     return "mdi-reply-circle";
-                case "帖子回复":
+                case "帖子有新回复":
                     return "mdi-message-reply-text";
-                case "私信":
+                case "新的私信":
                     return "mdi-chat";
                 case "系统消息":
                     return "mdi-bell";
@@ -96,7 +96,10 @@ export default {
             this.setLoading(getCancelLoadMsg());
             if(response.status==200){
                 this.data.state=true;
-                window.open("#/"+this.data.relatedItem.type+"/"+this.data.relatedItem.id,"_blank");
+                this.alert(getNormalSuccessAlert("已标记为已读"));
+                if(this.data.relatedItem.type!='reply'){
+                    window.open("#/"+this.data.relatedItem.type+"/"+this.data.relatedItem.id,"_blank");
+                }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
@@ -104,19 +107,19 @@ export default {
     },
     mounted() {
         switch(this.data.type){
-            case "post for your article":
-                this.data.type="文章帖子";
+            case "post_for_your_article":
+                this.data.type="文章有新帖子";
                 break;
-            case "reply for your reply":
-                this.data.type="回复评论";
+            case "reply_for_your_reply":
+                this.data.type="评论有新回复";
                 break;
-            case "reply for your post":
-                this.data.type="帖子回复";
+            case "reply_for_your_post":
+                this.data.type="帖子有新回复";
                 break;
-            case "private message":
-                this.data.type="私信";
+            case "private_message":
+                this.data.type="新的私信";
                 break;
-            case "system message":
+            case "system_message":
                 this.data.type="系统消息";
                 break;
             case "course_moderation":

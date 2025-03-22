@@ -1,7 +1,7 @@
 <!-- this page use to display all the md document -->
 <template>
     <div class="full-center">
-        <article-display :initData="data"/>
+        <article-display v-if="loadState" :initData="data"/>
     </div>
 </template>
 <script>
@@ -21,13 +21,13 @@ export default {
         }
         return {
             data,
+            loadState:false,
         }
     },
     created(){
-        this.$emit("set_loading",getLoadMsg("正在加载..."));
     },
     async mounted() {
-        this.$emit("set_loading",getCancelLoadMsg());
+        this.$emit("set_loading",getLoadMsg("正在加载..."));
         const route = useRoute();
         var doc='';
         if ('name' in route.params) {
@@ -44,6 +44,8 @@ export default {
         } catch (error) {
             this.data.content = 'Error fetching the file.';
         }
+        this.loadState=true;
+        this.$emit("set_loading",getCancelLoadMsg());
     },
 }
 </script>

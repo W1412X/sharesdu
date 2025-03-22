@@ -3,6 +3,7 @@
         <div class="dialog-card-container">
             <post-editor v-if="ifShowPostEditor" @close="closeDialog" @alert="alert" @set_loading="setLoading" @add_post="addPost"></post-editor>
             <course-editor v-if="ifShowCourseEditor" @close="closeDialog"  @alert="alert" @set_loading="setLoading"></course-editor>
+            <history-card v-if="ifShowHistory" @close="closeDialog"></history-card>
         </div>
     </v-dialog>
     <div class="full-screen">
@@ -21,6 +22,8 @@
                     color="#ffffff" size="40"></v-btn>
                 <v-btn @click="editArticle" icon="mdi-file-edit-outline" variant="text" color="#ffffff" size="40"></v-btn>
                 <v-btn @click="setCourseEditorState(true)" icon="mdi-book-plus-outline" variant="text" color="#ffffff"
+                    size="40"></v-btn>
+                <v-btn @click="setHistoryState(true)" icon="mdi-history" variant="text" color="#ffffff"
                     size="40"></v-btn>
             </div>
         </div>
@@ -79,6 +82,7 @@ import { getArticleList, getPostListByArticleId } from '@/axios/article';
 import AvatarName from '@/components/AvatarName.vue';
 import { getCourseList } from '@/axios/course';
 import SensitiveTextField from '@/components/SensitiveTextField.vue';
+import HistoryCard from '@/components/HistoryCard.vue';
 export default {
     name: 'IndexPage',
     components: {
@@ -89,6 +93,7 @@ export default {
         PostItem,
         AvatarName,
         SensitiveTextField,
+        HistoryCard,
     },
     setup() {
         /**
@@ -111,9 +116,10 @@ export default {
          */
         const ifShowPostEditor = ref(false);
         const ifShowCourseEditor = ref(false);
+        const ifShowHistory=ref(false);
         const ifShowNotice = ref(false);
         const ifShowDialog = computed(() => {
-            return ifShowPostEditor.value || ifShowCourseEditor.value || ifShowNotice.value;
+            return ifShowPostEditor.value || ifShowCourseEditor.value || ifShowNotice.value || ifShowHistory.value;
         })
         const setPostEditorState = (state) => {
             ifShowPostEditor.value = state;
@@ -125,6 +131,9 @@ export default {
             ifShowNotice.value = state;
         }
         const userId=getCookie('userId');
+        const setHistoryState=(state)=>{
+            ifShowHistory.value=state;
+        }
         /**
          * control the item type
          * range: article,post,course
@@ -142,6 +151,8 @@ export default {
             userId,
             userName,
             userProfileUrl,
+            ifShowHistory,
+            setHistoryState,
         }
     },
     watch:{
@@ -191,6 +202,7 @@ export default {
             this.setCourseEditorState(false);
             this.setNoticeState(false);
             this.setPostEditorState(false);
+            this.setHistoryState(false);
         },
         search(){
             this.alert(getNormalInfoAlert("功能未开放..."))
