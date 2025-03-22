@@ -38,4 +38,9 @@
 
 ## 7. 联系信息
 - 管理员邮箱  admin@sharesdu.com  
-- QQ群 [246680702]  
+- QQ群 [246680702]     
+## QQ交流群  
+![](https://sharesdu.com/qq_img/group_qr.png)    
+
+## 微信公众号  
+![](https://sharesdu.com/wechat/wechat_qr.jpg)    

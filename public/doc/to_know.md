@@ -39,4 +39,10 @@
 - **管理员邮箱**：[admin@sharesdu.com]
 - **QQ群**：[246680702]
 
+## QQ交流群  
+![](https://sharesdu.com/qq_img/group_qr.png)    
+
+## 微信公众号  
+![](https://sharesdu.com/wechat/wechat_qr.jpg)     
+
 感谢您使用[ShareSdu]，期待与您共同建设一个优质的学习资源共享平台！
