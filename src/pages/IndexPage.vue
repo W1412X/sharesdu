@@ -9,9 +9,9 @@
         <div class="top-bar">
             <avatar-name v-if="userId" :init-data="{avatar:userProfileUrl,name:userName,id:userId}" :color="'#ffffff'"></avatar-name>
             <v-spacer></v-spacer>
-            <v-text-field color="white" v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
+            <sensitive-text-field color="white" v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
                 variant="outlined">
-            </v-text-field>
+            </sensitive-text-field>
             <div class="search-btn-container">
                 <v-btn @click="search" icon="mdi-magnify" variant="text" color="#ffffff" size="40"></v-btn>
             </div>
@@ -78,6 +78,7 @@ import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, 
 import { getArticleList, getPostListByArticleId } from '@/axios/article';
 import AvatarName from '@/components/AvatarName.vue';
 import { getCourseList } from '@/axios/course';
+import SensitiveTextField from '@/components/SensitiveTextField.vue';
 export default {
     name: 'IndexPage',
     components: {
@@ -86,7 +87,8 @@ export default {
         ArticleItem,
         CourseItem,
         PostItem,
-        AvatarName
+        AvatarName,
+        SensitiveTextField,
     },
     setup() {
         /**

@@ -125,6 +125,7 @@ import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyLi
 import LikeButton from '@/components/LikeButton.vue';
 import ReplyItem from '@/components/ReplyItem.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
+import { addHistory } from '@/utils/history';
 export default {
     name: 'PostPage',
     components: {
@@ -336,6 +337,7 @@ export default {
             this.post.viewNum=response.post_detail.view_count;
             this.post.publishTime=response.post_detail.publish_time;
             this.post.ifLike=response.post_detail.if_like;
+            await addHistory("post",this.post.id,this.post.title);
         }else{
             this.alert(getNormalErrorAlert(response.message));
             this.$router.push({

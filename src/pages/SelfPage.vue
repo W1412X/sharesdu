@@ -34,7 +34,7 @@
     </v-navigation-drawer>
     <v-navigation-drawer v-if="deviceType === 'mobile' && navVisible" v-model="drawer" :rail='false' permanent
       @click="rail = false">
-      <v-list-item class="name" :prepend-avatar="user.avatar" :title="user.name" nav>
+      <v-list-item class="name" :prepend-avatar="user.profileUrl" :title="user.name" nav>
       </v-list-item>
       <v-divider></v-divider>
       <v-btn size="30" class="menu-btn" :icon="navVisible ? 'mdi-chevron-left' : 'mdi-chevron-right'"

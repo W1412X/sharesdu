@@ -1,8 +1,8 @@
 <!--star button-->
 <template>
-    <v-card @click="click()" class="card" elevation="1" variant="tonal" :color="themeColor">
+    <v-card @click="click()" class="card" elevation="1" variant="tonal" :color="'#8a8a8a'">
         <div class="div-2">
-            <v-icon :color="themeColor" :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;"/>
+            <v-icon :color="'#8a8a8a'" :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;"/>
             <div class="div-1">
                 <div class="title-container title">
                     {{ data.title }}

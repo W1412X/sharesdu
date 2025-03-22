@@ -1,6 +1,6 @@
 <!-- a text area with sensitive words filter -->
 <template>
-    <v-textarea v-bind="textareaProps" v-model="internalValue" @compositionend="handleCompositionEnd"
+    <v-textarea ref="input" v-bind="textareaProps" :rules="[rules.sensitiveHint]" v-model="internalValue" @compositionend="handleCompositionEnd"
         @compositionstart="handleCompositionStart" @input="handleInput" />
 </template>
 
@@ -18,7 +18,6 @@ export default defineComponent({
     },
     setup(props) {
         const internalValue = ref(props.modelValue);
-
         const textareaProps = computed(() => {
             const { modelValue, style, ...restProps } = props;
             modelValue
@@ -29,7 +28,6 @@ export default defineComponent({
         watch(() => props.modelValue, (newValue) => {
             internalValue.value = newValue;
         });
-
         return {
             internalValue,
             textareaProps,
@@ -38,24 +36,40 @@ export default defineComponent({
     data() {
         return {
             ifTyping: false,
+            rules:{
+                sensitiveHint : value => this.checkSensitive(value)
+            }
         }
     },
     methods: {
+        checkSensitive(value){
+            const result = replaceAll(value);
+            if(result.length==0){
+                return true;
+            }else{
+                return "包含敏感词 \""+result.join("\"、\"")+"\"";
+            }
+        },
         handleCompositionStart() {
             this.ifTyping = true
+            console.log("中文输入开始");
+            console.log(this.internalValue);
         },
         handleCompositionEnd() {
-            this.ifTyping = false
+            this.ifTyping = false;
+            console.log("中文输入完成");
+            this.handleInput();
+        },
+        sensitiveHint(){
+
         },
         handleInput() {
             if (this.ifTyping) {//if tying,ignore
+                setTimeout(()=>{
+                    this.$emit('update:modelValue', this.internalValue);
+                },100);
             } else {//not tying,examine
                 setTimeout(() => {
-                    const result = replaceAll(this.internalValue);
-                    for (const word of result) {
-                        let replaceStr = '*'.repeat(word.length);
-                        this.internalValue = this.internalValue.replace(word, replaceStr);
-                    }
                     this.$emit('update:modelValue', this.internalValue);
                 }, 100)
             }

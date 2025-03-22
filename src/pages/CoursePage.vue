@@ -177,6 +177,7 @@ import PostEditor from '@/components/PostEditor.vue';
 import PostItem from '@/components/PostItem.vue';
 import AlertButton from '@/components/AlertButton.vue';
 import CourseEditor from '@/components/CourseEditor.vue';
+import { addHistory } from '@/utils/history';
 export default {
     name: 'CoursePage',
     components: {
@@ -310,15 +311,7 @@ export default {
                 })
                 return;
             }
-            if(this.selfComment.comment==null||this.selfComment.comment.length<5){
-                this.alert({
-                    state:true,
-                    color:'warning',
-                    title:'评分失败',
-                    content:'评论不可以少于5个字符',
-                })
-                return;
-            }
+            this.selfComment=this.selfComment+" ";
             this.setLoading(getLoadMsg("正在提交您的评分...",-1));
             let response=null;
             if(this.ifRated){
@@ -437,6 +430,7 @@ export default {
                 avgScore:avgScore,
                 scoreDistribution:response.course_detail.score_distribution,
             }
+            await addHistory("course",this.course.id,this.course.name);
             this.alert(getNormalSuccessAlert("获取课程信息成功"));
         }else{
             this.alert(getNormalErrorAlert(response.message));

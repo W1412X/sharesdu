@@ -1,6 +1,6 @@
 <template>
     <div style="border: 1px solid #ccc">
-        <Toolbar class="tool-bar" :editor="editorRef" :defaultConfig="toolbarConfig"
+        <Toolbar v-if="type=='edit'" class="tool-bar" :editor="editorRef" :defaultConfig="toolbarConfig"
             :mode="mode" />
         <Editor class="editor" v-model="data.content" :defaultConfig="editorConfig" :mode="mode"
             @onCreated="handleCreated" />
@@ -8,11 +8,10 @@
 </template>
 <script>
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
-import { onBeforeUnmount, shallowRef, inject, defineComponent } from 'vue'
+import { onBeforeUnmount, shallowRef, defineComponent } from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { Boot } from '@wangeditor/editor'
 import formulaModule from '@wangeditor/plugin-formula'
-import { DomEditor } from '@wangeditor/editor'
 import { uploadArticleImage } from '@/axios/image';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other'
 export default defineComponent({
@@ -22,24 +21,34 @@ export default defineComponent({
             type:Object,
             default: () => {
                 return {
-                    content:`<p><span style="color: rgb(0, 0, 0); font-size: 24px; font-family: 楷体;"><strong>图片与视频：</strong></span></p>...`,
+                    content:null,
                 }
             }
+        },
+        type:{
+            type:String,
+            default: "edit",//edit/preview
         }
     },
     components: { Editor, Toolbar },
-    setup() {
-        const store = inject('store');
-        if (!store.state.ifRegisterEditor) {
+    setup(props) {
+        try{
             Boot.registerModule(formulaModule);
-            store.commit('registerEditor');
+        }catch(e){
+            console.log(e);
         }
-
         //use shallowRef
         const editorRef = shallowRef();
         //exclude fullScreen and uploadVideo
         const toolbarConfig = {
-            excludeKeys: ['fullScreen', 'uploadVideo']
+            index:0,
+            excludeKeys: ['fullScreen', 'uploadVideo'],
+            insertKeys: {
+                index: 0,
+                keys: [
+                    'insertFormula',
+                ],
+            },
         };
 
         onBeforeUnmount(() => {
@@ -50,6 +59,12 @@ export default defineComponent({
 
         const handleCreated = (editor) => {
             editorRef.value = editor; // record the editor instance
+            console.log(props);
+            if(props.type=="edit"){
+                return;
+            }else{
+                editor.disable();
+            }
         };
         var imageDict={};
         const customUpload = (file, insertFn) => {
@@ -58,15 +73,13 @@ export default defineComponent({
             insertFn(tmpUrl);
             imageDict[tmpUrl]=image;
         };
-
         const editorConfig = {
             hoverbarKeys: {
-                formula: {
-                    menuKeys: ['editFormula'],
+            formula: {
+                    menuKeys: ['editFormula'], // “编辑公式”菜单
                 },
             },
             scroll: false,
-            excludeKeys: ['uploadVideo'],
             MENU_CONF: {
                 uploadImage: {
                     customUpload,
@@ -87,7 +100,7 @@ export default defineComponent({
         };
         return {
             editorRef,
-            mode: 'default', // 或 'simple'
+            mode: '', // 或 'simple'
             toolbarConfig,
             handleCreated,
             editorConfig,
@@ -103,11 +116,6 @@ export default defineComponent({
         }
     },
     methods: {
-        test() {
-            const toolbar = DomEditor.getToolbar(this.editorRef);
-            // eslint-disable-next-line
-            const curToolBarConfig = toolbar.getConfig();
-        },
         setLoading(msg){
             this.$emit('set_loading',msg);
         },

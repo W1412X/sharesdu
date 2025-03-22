@@ -16,7 +16,7 @@
                 </v-icon>
                 <v-card v-if="ifShowMore" class="column-div-reverse message-more-card">
                     <v-btn prepend-icon="mdi-alert-circle-outline" text="举报" variant="text"></v-btn>
-                    <v-btn prepend-icon="mdi-email-arrow-left-outline" text="撤回" variant="text"></v-btn>
+                    <v-btn @click="recall" prepend-icon="mdi-email-arrow-left-outline" text="撤回" variant="text"></v-btn>
                 </v-card>
             </div>
         </div>
@@ -38,6 +38,8 @@
     </div>
 </template>
 <script>
+import { deletePrivateMessage } from '@/axios/chat';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { ref } from 'vue';
 export default {
     name: 'ChatMessage',
@@ -71,6 +73,24 @@ export default {
         }
     },
     methods: {
+        alert(msg){
+            this.$emit("alert",msg);
+        },
+        setLoading(msg){
+            this.$emit("set_loading",msg);
+        },
+        async recall(){
+            this.setLoading(getLoadMsg("正在撤回..."));
+            let response=await deletePrivateMessage(this.data.id);
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200){
+                this.alert(getNormalSuccessAlert("撤回成功"));
+                this.$emit("recall",this.data.id);
+            }
+            else{
+                this.alert(getNormalErrorAlert("撤回失败"));
+            }
+        }
     }
 }
 </script>

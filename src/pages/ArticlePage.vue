@@ -68,7 +68,7 @@
                     <source-bar :init-data="article.sourceUrl"></source-bar>
                 </div>
             </div>
-            <article-display class="margin-bottom-40px" :init-data="{type:this.editorType,content:this.article.content}"></article-display>
+            <article-display v-if="loadState" class="margin-bottom-40px" :init-data="displayMsg"></article-display>
             <div class="bottom-bar">
                 <div class="column-center user-name text-medium">
                     {{ userName }}
@@ -132,6 +132,7 @@ import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLo
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 import LikeButton from '@/components/LikeButton.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
+import { addHistory } from '@/utils/history';
 export default {
     name: 'ArticlePage',
     components: {
@@ -211,6 +212,13 @@ export default {
             postItems:[],
             postPageNum:1,
             ifGotPost:false,
+            displayMsg:computed(()=>{
+                return {
+                    type:this.editorType,
+                    content:this.article.content,
+                }
+            }),
+            loadState:false,
         }
     },
     methods: {
@@ -305,6 +313,9 @@ export default {
                 this.article.publishTime=response.article_detail.publish_time;
                 this.article.ifLike=response.article_detail.if_like;
                 this.article.ifStar=response.article_detail.if_star;
+                this.loadState=true;
+                //add to history
+                await addHistory("article",this.article.id,this.article.title);
             }else{
                 this.alert(getNormalErrorAlert(response.message));
                 this.$router.push({name:"ErrorPage",params:{reason:response.message}})

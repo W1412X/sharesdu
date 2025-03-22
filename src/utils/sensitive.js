@@ -110,7 +110,9 @@ export const replaceAll=(text)=> {
                 if(if_can_expand(nodeNow,text,ind+1)){
                     continue;
                 }else{
-                    word_set.push(return_word)
+                    if(!word_set.includes(return_word)){
+                        word_set.push(return_word)
+                    }
                     nodeNow = root
                     return_word = ''
                 }

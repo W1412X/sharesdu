@@ -16,11 +16,11 @@
                 <v-tabs-window-item v-if="loginMethod === 'userName'" title="登录" value="login">
                     <sensitive-text-field v-model="loginByUsernameData.userName" :rules="[loginRules.userName]"
                         class="input" :density="inputType" variant="solo-filled" label="用户名" prepend-inner-icon="mdi-account"></sensitive-text-field>
-                    <v-text-field class="input" v-model="loginByUsernameData.passwd"
+                    <sensitive-text-field class="input" v-model="loginByUsernameData.passwd"
                         :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
                         :type="passwdVisible ? 'text' : 'password'" :density="inputType" :rules="[loginRules.password]"
                         placeholder="输入密码" prepend-inner-icon="mdi-lock-outline" variant="solo-filled"
-                        label="输入密码" @click:append-inner="passwdVisible = !passwdVisible"></v-text-field>
+                        label="输入密码" @click:append-inner="passwdVisible = !passwdVisible"></sensitive-text-field>
                     <v-btn @click="loginByUsername()" class="login-btn" variant="outlined"
                         :disabled="!(valUserName(loginByUsernameData.userName) && valPassWord(loginByUsernameData.passwd))"
                         :color="themeColor">登陆</v-btn>
@@ -38,16 +38,16 @@
                     <sensitive-text-field v-model="registerByEmailData.userName" prepend-inner-icon="mdi-account" class="input"
                         :rules="[loginRules.userName]" :density="inputType" variant="solo-filled"
                         label="用户名"></sensitive-text-field>
-                    <v-text-field class="input" v-model="registerByEmailData.passwd"
+                    <sensitive-text-field class="input" v-model="registerByEmailData.passwd"
                         :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
                         :type="passwdVisible ? 'text' : 'password'" :density="inputType" :rules="[loginRules.password]"
                         placeholder="输入密码" prepend-inner-icon="mdi-lock-outline" variant="solo-filled"
-                        label="密码" @click:append-inner="passwdVisible = !passwdVisible"></v-text-field>
-                    <v-text-field class="input" v-model="registerByEmailData.passwdConfirm"
+                        label="密码" @click:append-inner="passwdVisible = !passwdVisible"></sensitive-text-field>
+                    <sensitive-text-field class="input" v-model="registerByEmailData.passwdConfirm"
                         :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
                         :type="passwdVisible ? 'text' : 'password'" :density="inputType" :rules="[loginRules.password]"
                         placeholder="确认密码" prepend-inner-icon="mdi-lock-outline" variant="solo-filled"
-                        label="确认密码" @click:append-inner="passwdVisible = !passwdVisible"></v-text-field>
+                        label="确认密码" @click:append-inner="passwdVisible = !passwdVisible"></sensitive-text-field>
                     <v-btn @click="step" class="login-btn" variant="outlined" :color="themeColor"
                         :disabled="!(valUserName(registerByEmailData.userName) && valPassWord(registerByEmailData.passwd) && valPassWord(registerByEmailData.passwdConfirm))">下一步</v-btn>
                 </v-tabs-window-item>
@@ -65,10 +65,10 @@
                         <sensitive-text-field class="select-input" v-model="registerByEmailData.major"
                             :density="inputType" variant="solo-filled" label="专业"></sensitive-text-field>
                     </div>
-                    <v-text-field  v-model="registerByEmailData.email" class="input" :rules="[loginRules.email]"
+                    <sensitive-text-field  v-model="registerByEmailData.email" class="input" :rules="[loginRules.email]"
                         :density="inputType" variant="solo-filled"
                         prepend-inner-icon="mdi-email"
-                        label="校园邮箱(@mail.sdu.edu.cn)"></v-text-field>
+                        label="校园邮箱(@mail.sdu.edu.cn)"></sensitive-text-field>
                     <div class="text-small agreement-text-container">
                         注册即代表您已阅读并同意
                         <router-link to="/document/to_know" target="_blank">
@@ -91,16 +91,16 @@
                     <sensitive-text-field v-model="registerByInviteData.userName" class="input"
                         :rules="[loginRules.userName]" prepend-inner-icon="mdi-account" :density="inputType" variant="solo-filled"
                         label="用户名"></sensitive-text-field>
-                    <v-text-field class="input" v-model="registerByInviteData.passwd"
+                    <sensitive-text-field class="input" v-model="registerByInviteData.passwd"
                         :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
                         :type="passwdVisible ? 'text' : 'password'" :density="inputType" :rules="[loginRules.password]"
                         placeholder="输入密码" prepend-inner-icon="mdi-lock-outline" variant="solo-filled"
-                        label="密码" @click:append-inner="passwdVisible = !passwdVisible"></v-text-field>
-                    <v-text-field class="input" v-model="registerByInviteData.passwdConfirm"
+                        label="密码" @click:append-inner="passwdVisible = !passwdVisible"></sensitive-text-field>
+                    <sensitive-text-field class="input" v-model="registerByInviteData.passwdConfirm"
                         :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
                         :type="passwdVisible ? 'text' : 'password'" :density="inputType" :rules="[loginRules.password]"
                         placeholder="确认密码" prepend-inner-icon="mdi-lock-outline" variant="solo-filled"
-                        label="确认密码" @click:append-inner="passwdVisible = !passwdVisible"></v-text-field>
+                        label="确认密码" @click:append-inner="passwdVisible = !passwdVisible"></sensitive-text-field>
                     <v-btn @click="step" class="login-btn" variant="outlined" :color="themeColor"
                         :disabled="!(valUserName(registerByInviteData.userName) && valPassWord(registerByInviteData.passwd) && valPassWord(registerByInviteData.passwdConfirm))">下一步</v-btn>
                 </v-tabs-window-item>
@@ -370,7 +370,7 @@ export default {
         }
     },
     mounted() {
-        this.setLoading(getCancelLoadMsg());
+        
 
     },
     created() {

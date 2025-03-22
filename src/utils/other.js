@@ -2,6 +2,8 @@ import { getAccessToken } from "@/axios/token";
 import { clearTokenCookies, getCookie, setCookie } from "./cookie";
 import { globalProperties } from "@/main";
 import { setLock, waitForLock } from "./lock";
+import { useRouter } from "vue-router";
+const router=useRouter();
 /**
  * a deep copy function for json object
  * @param {json} json 
@@ -103,7 +105,9 @@ export async function dealAxiosError(error){
                         }
                     }else{
                         clearTokenCookies();
-                        window.open("/#/login");
+                        router.push({
+                            name:"LoginPage"
+                        })
                         return {
                             status:-1,
                             message:"获取access失败，请重新登陆",
@@ -111,7 +115,9 @@ export async function dealAxiosError(error){
                     }
                 }catch(error){
                     clearTokenCookies();
-                    window.open("/#/login");
+                    router.push({
+                        name:"LoginPage"
+                    })
                     return {
                         status: -1,
                         message:"重新登陆，令牌无效"
@@ -126,7 +132,9 @@ export async function dealAxiosError(error){
                  * and redirect to login page
                  */
                 clearTokenCookies();
-                window.open("/#/login");
+                router.push({
+                    name:"LoginPage"
+                })
                 return {
                     status: -1,
                     message:"重新登陆"

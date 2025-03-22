@@ -146,10 +146,10 @@ export default {
                     for (let u = 0; u < response.star_list.length; u++) {
                         let type = null;
                         switch (response.star_list[u].content_type) {
-                            case 0:
+                            case 1:
                                 type = "article";
                                 break;
-                            case 1:
+                            case 0:
                                 type = "course";
                                 break;
                             case 2:
@@ -185,7 +185,7 @@ export default {
                     type = 2;
                     break;
                 default:
-                    type = 1;
+                    type = -1;
                     break;
             }
             let response = await starContent(type, this.msg.id, folderId);
