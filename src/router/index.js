@@ -111,8 +111,8 @@ router.beforeEach((to, from, next) => {
     if(getCookie("refreshToken")){
       next();
     }else{
-      window.alert("令牌已过期，请重新登录");
       router.push({name:"LoginPage"});
+      window.alert("令牌已过期，请重新登录");
     }
   }else if(to.path=="/login"){
     /**
