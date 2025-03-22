@@ -33,6 +33,7 @@
     "segmentit": "^2.0.3",
     "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.2.13",
+    "vue-iframe": "^0.0.0",
     "vue-router": "^4.4.0",
     "vuetify": "^3.6.12",
     "vuex": "^4.1.0",

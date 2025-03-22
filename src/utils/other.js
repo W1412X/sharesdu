@@ -65,101 +65,109 @@ export function getContentWithoutEditorType(content){
     }
 }
 export async function dealAxiosError(error){
-    /**
-     * got response  
-     */
-    if (error.response.data) {
+    try{
         /**
-         * here check if the error is caused by the token
-         */
-        if(error.response.data.status==1000||error.response.data.status==1001){
-            /**
-             * check if the refresh token is exsits
-             * if exsits -> try to get the new access token and reload  
-             * if not -> to login page and alert
+             * got response  
              */
-            const refreshToken=getCookie("refreshToken");
-            setCookie("accessToken","",-1);
-            if(refreshToken){
-                try{
-                    /**
-                     * wait for the token lock
-                     * ensure the access now is empty
-                     * and if the access not empty after wait 
-                     * means that other request have get the access token
-                     * return 1412
-                     */
-                    await waitForLock("token");
-                    if(getCookie("accessToken")){
-                        return {
-                            status:1412,
+        if (error.response.data) {
+            /**
+             * here check if the error is caused by the token
+             */
+            if(error.response.data.status==1000||error.response.data.status==1001){
+                /**
+                 * check if the refresh token is exsits
+                 * if exsits -> try to get the new access token and reload  
+                 * if not -> to login page and alert
+                 */
+                const refreshToken=getCookie("refreshToken");
+                setCookie("accessToken","",-1);
+                if(refreshToken){
+                    try{
+                        /**
+                         * wait for the token lock
+                         * ensure the access now is empty
+                         * and if the access not empty after wait 
+                         * means that other request have get the access token
+                         * return 1412
+                         */
+                        await waitForLock("token");
+                        if(getCookie("accessToken")){
+                            return {
+                                status:1412,
+                            }
                         }
-                    }
-                    setLock("token",true);
-                    const response=await getAccessToken(refreshToken);
-                    if(response.status==999){
-                        setCookie("accessToken",response.access,5);
-                        return {
-                            status:1412,
-                            message:"已更新access token，重新请求"
+                        setLock("token",true);
+                        const response=await getAccessToken(refreshToken);
+                        if(response.status==999){
+                            setCookie("accessToken",response.access,5);
+                            return {
+                                status:1412,
+                                message:"已更新access token，重新请求"
+                            }
+                        }else{
+                            clearTokenCookies();
+                            router.push({
+                                name:"LoginPage"
+                            })
+                            return {
+                                status:-1,
+                                message:"获取access失败，请重新登陆",
+                            }
                         }
-                    }else{
+                    }catch(error){
                         clearTokenCookies();
                         router.push({
                             name:"LoginPage"
                         })
                         return {
-                            status:-1,
-                            message:"获取access失败，请重新登陆",
+                            status: -1,
+                            message:"重新登陆，令牌无效"
                         }
+                    }finally{
+                        setLock("token",false);
                     }
-                }catch(error){
+                }else{
+                    /**
+                     * if the refresh key not exists too
+                     * then delete all the user message
+                     * and redirect to login page
+                     */
                     clearTokenCookies();
                     router.push({
                         name:"LoginPage"
                     })
                     return {
                         status: -1,
-                        message:"重新登陆，令牌无效"
+                        message:"重新登陆"
                     }
-                }finally{
-                    setLock("token",false);
-                }
-            }else{
-                /**
-                 * if the refresh key not exists too
-                 * then delete all the user message
-                 * and redirect to login page
-                 */
-                clearTokenCookies();
-                router.push({
-                    name:"LoginPage"
-                })
-                return {
-                    status: -1,
-                    message:"重新登陆"
                 }
             }
+            /**
+             * not token error
+             */
+            return error.response.data;
+        }else if (error.request) {
+            /**
+             * no response
+             * return the error message  
+             */
+            return {
+            status:-1,
+            message:"服务器无响应，请联系管理员"
+            }
+        } else {
+            return {
+            status:-1,
+            message:"未知错误，请联系管理员"
+            }
         }
-        /**
-         * not token error
-         */
-        return error.response.data;
-      }else if (error.request) {
-        /**
-         * no response
-         * return the error message  
-         */
+    }catch (error) {
+        console.log('Error', error);
         return {
-          status:-1,
-          message:"服务器无响应，请联系管理员"
+            status:-1,
+            message:"未知错误，请联系管理员"
         }
-      } else {
-        return {
-          status:-1,
-          message:"未知错误，请联系管理员"
-        }
-      }
+    }
 }
 
 /**
