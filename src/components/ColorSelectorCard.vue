@@ -23,6 +23,7 @@ import { setCookie } from '@/utils/cookie';
         setColor() {
             setCookie("themeColor",this.color,999999);
             this.$emit("set_color");
+            location.reload();
         },
       },
     }

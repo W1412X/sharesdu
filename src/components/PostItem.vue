@@ -1,5 +1,5 @@
 <template>
-    <v-card @click="click()" class="card" elevation="1">
+    <v-card @click="click()" class="card" elevation="0">
         <div class="row-div">
             <div class="text-small bottom-bar avatar-name-column-center">
                 <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
@@ -18,7 +18,10 @@
                 </div>
             </div>
             <div class="title title-container">{{ data.title }}</div>
-            <div class="text-small detail-container">{{ data.content }}</div>
+            <!--
+             <div class="text-small detail-container">{{ data.content }}</div>
+            -->
+            <div class="text-medium detail-expand">{{ data.content }}</div>
         </div>
     </v-card>
 </template>
@@ -26,7 +29,7 @@
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/AvatarName.vue';
 import { computed } from 'vue';
-import { getLinkInPost, getPostWithoutLink } from '@/utils/other';
+import { getLinkInPost, getPostWithoutLink, openNewPage } from '@/utils/other';
 export default {
     name: 'PostItem',
     components: {
@@ -83,7 +86,7 @@ export default {
                 })
                 return;
             }
-            window.open("#/post/"+this.data.id,"_blank");
+            openNewPage("#/post/"+this.data.id)
         },
     }
 }
@@ -100,10 +103,11 @@ export default {
         padding: 10px;
         width: 750px;
         margin-top: 5px;
+        border-bottom: #eeeeee 1px solid;
+        border-radius: 0px;
     }
     .row-div {
         display: flex;
-        height: 120px;
         flex-direction: column;
     }
     .title-container {
@@ -123,6 +127,17 @@ export default {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
+        text-overflow: ellipsis;
+    }
+    .detail-expand{
+        max-width: 730px;
+        white-space: normal;
+        word-break: break-all;
+        color: #6a6a6a;
+        overflow: hidden;
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
         text-overflow: ellipsis;
     }
     .bottom-bar {
@@ -145,13 +160,14 @@ export default {
 
 @media screen and (max-width: 600px) {
     .card {
+        border-bottom: #eeeeee 1px solid;
+        border-radius: 0px;
         padding: 5px;
         width: 100vw;
         margin-top: 1px;
     }
     .row-div {
         width: 100%;
-        height: 105px;
         display: flex;
         flex-direction: column;
     }
@@ -174,6 +190,16 @@ export default {
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
         text-overflow: ellipsis;
+    }
+    .detail-expand{
+        color: #6a6a6a;
+        padding-top: 2px;
+        white-space: normal;
+        word-break: break-all;
+        overflow: hidden;
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
     }
     .bottom-bar {
         display: flex;

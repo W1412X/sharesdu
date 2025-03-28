@@ -10,6 +10,7 @@
 </template>
 <script>
 import { getUserProfileImageUpdateInfo } from '@/axios/image'
+import { getCookie } from '@/utils/cookie'
 import { getProfileUrlInDB } from '@/utils/profile'
 
 export default {
@@ -39,12 +40,21 @@ export default {
     },
     methods: {
         toAuthorPage(){
-            this.$router.push({
-                name: 'AuthorPage',
-                params: {
-                    id: this.initData.id
-                }
-            })
+            if(getCookie("userId")==this.initData.id){
+                this.$router.push({
+                    name: 'SelfPage',
+                    params: {
+                        id: this.initData.id
+                    }
+                });
+            }else{
+                this.$router.push({
+                    name: 'AuthorPage',
+                    params: {
+                        id: this.initData.id
+                    }
+                })
+            }
         }
     },
     async mounted(){

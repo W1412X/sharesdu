@@ -2,7 +2,11 @@
     <div class="full-center">
         <v-card class="total-container">
             <div class="top-bar title-bold">
+                <v-spacer/>
                 {{ receiverName }}
+                <v-spacer/>
+                <v-btn @click="toHomePage" style="margin-top: 2px;"  icon="mdi-home" variant="text" :color="navIconColor"
+                    size="40"></v-btn>
             </div>
             <div class="message-container">
                 <chat-message v-for="(message,index) in messages" :init-data="message" :key="index" @alert="alert" @set_loading="setLoading"></chat-message>
@@ -51,6 +55,11 @@ export default{
         }
     },
     methods:{
+        toHomePage(){
+            this.$router.push({
+                name: 'IndexPage',
+            })
+        },
         alert(msg){
             this.$emit('alert',msg);
         },

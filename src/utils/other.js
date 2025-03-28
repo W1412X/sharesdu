@@ -2,8 +2,7 @@ import { getAccessToken } from "@/axios/token";
 import { clearTokenCookies, getCookie, setCookie } from "./cookie";
 import { globalProperties } from "@/main";
 import { setLock, waitForLock } from "./lock";
-import { useRouter } from "vue-router";
-const router=useRouter();
+//import { getDeviceType } from "./device";
 /**
  * a deep copy function for json object
  * @param {json} json 
@@ -106,9 +105,8 @@ export async function dealAxiosError(error){
                             }
                         }else{
                             clearTokenCookies();
-                            router.push({
-                                name:"LoginPage"
-                            })
+                            window.alert("令牌已过期，请重新登录");
+                            window.open("/#/login","_self")
                             return {
                                 status:-1,
                                 message:"获取access失败，请重新登陆",
@@ -116,9 +114,8 @@ export async function dealAxiosError(error){
                         }
                     }catch(error){
                         clearTokenCookies();
-                        router.push({
-                            name:"LoginPage"
-                        })
+                        window.alert("令牌已过期，请重新登录");
+                        window.open("/#/login","_self")
                         return {
                             status: -1,
                             message:"重新登陆，令牌无效"
@@ -133,9 +130,8 @@ export async function dealAxiosError(error){
                      * and redirect to login page
                      */
                     clearTokenCookies();
-                    router.push({
-                        name:"LoginPage"
-                    })
+                    window.alert("令牌已过期，请重新登录");
+                    window.open("/#/login","_self")
                     return {
                         status: -1,
                         message:"重新登陆"
@@ -156,16 +152,21 @@ export async function dealAxiosError(error){
             message:"服务器无响应，请联系管理员"
             }
         } else {
+            clearTokenCookies();
+            window.alert("令牌已过期，请重新登录");
+            window.open("/#/login","_self")
             return {
-            status:-1,
-            message:"未知错误，请联系管理员"
+                status: -1,
+                message:"重新登陆"
             }
         }
     }catch (error) {
-        console.log('Error', error);
+        clearTokenCookies();
+        window.alert("令牌已过期，请重新登录");
+        window.open("/#/login","_self")
         return {
-            status:-1,
-            message:"未知错误，请联系管理员"
+            status: -1,
+            message:"重新登陆"
         }
     }
 }
@@ -190,13 +191,6 @@ export function base64Encode(str){
 
 export function base64Decode(str){
     return window.atob(str);
-}
-/**
- * open the new web  
- * @param {String} url 
- */
-export function openNewWeb(url){
-    window.open(url,"_blank");
 }
 /**
  * convert a string array to string
@@ -373,4 +367,47 @@ export function adjustAlpha(hexColor, alpha = 0.1) {
     } else {
         throw new Error('Invalid hex color format');
     }
+}
+
+/**
+ * 
+ * @param {String} hex 
+ * @param {Float} opacity 
+ * @returns 
+ */
+export function hexToRgba(hex, opacity) {
+    hex = hex.replace('#', '');
+    if (hex.length === 8) {
+      let r = parseInt(hex.substr(0, 2), 16);
+      let g = parseInt(hex.substr(2, 2), 16);
+      let b = parseInt(hex.substr(4, 2), 16);
+      let a = parseInt(hex.substr(6, 2), 16) / 255;
+      if (opacity !== undefined) {
+        a = opacity;
+      }
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    } 
+    else if (hex.length === 6) {
+      let r = parseInt(hex.substr(0, 2), 16);
+      let g = parseInt(hex.substr(2, 2), 16);
+      let b = parseInt(hex.substr(4, 2), 16);
+      let a = (opacity !== undefined) ? opacity : 1;
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    } 
+    else {
+      return hexToRgba("#9c0c13",0.1);
+    }
+  }
+  
+/**
+ * 
+ */
+export function openNewPage(url){
+    //let device=getDeviceType();
+    window.open(url,"_self");
+    /*if(device==="mobile"){
+        window.open(url,"_self");
+    }else{
+        window.open(url,"_blank");
+    }*/
 }

@@ -85,10 +85,6 @@ export const getUserProfileImageUpdateInfo = async (userIds) => {
         return response.data;
 
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getUserProfileImageUpdateInfo(userIds);
-        }
-        return dealResult;
+        return error.response.data;
     }
 };

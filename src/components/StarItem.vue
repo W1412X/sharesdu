@@ -17,6 +17,7 @@
 
 <script>
 import { globalProperties } from '@/main';
+import { openNewPage } from '@/utils/other';
 
 export default {
     props: {
@@ -51,13 +52,13 @@ export default {
         click(){
             switch(this.data.type){
                 case 'article':
-                    window.open("#/article/"+this.data.id,"_blank")
+                    openNewPage("#/article/"+this.data.id);
                     break;
                 case 'course':
-                    window.open("#/course/"+this.data.id,"_blank")
+                    openNewPage("#/course/"+this.data.id);
                     break;
                 case 'post':
-                    window.open("#/post/"+this.data.id,"_blank")
+                    openNewPage("#/post/"+this.data.id);
             }
         },
         getIcon(type) {

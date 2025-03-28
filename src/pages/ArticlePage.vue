@@ -128,7 +128,7 @@ import { computed, ref } from 'vue';
 import PostItem from '@/components/PostItem.vue';
 import PostEditor from '@/components/PostEditor.vue';
 import AvatarName from '@/components/AvatarName.vue';
-import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
+import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, openNewPage } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 import LikeButton from '@/components/LikeButton.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
@@ -281,7 +281,7 @@ export default {
             this.$emit("set_loading",msg);
         },
         toOriginLink(){
-            window.open(this.article.originLink,"_blank")
+            openNewPage(this.article.originLink);
         }
     },
     async mounted() {

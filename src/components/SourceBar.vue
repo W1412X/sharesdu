@@ -14,6 +14,8 @@
     </v-card>
 </template>
 <script>
+import { openNewPage } from '@/utils/other'
+
 export default {
     props: {
         initData:{
@@ -34,7 +36,7 @@ export default {
     },
     methods: {
         downloadSource() {
-            window.open(this.initData.link)
+            openNewPage(this.initData.link);
         },
     },
 }

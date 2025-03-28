@@ -69,7 +69,7 @@ import { blockArticle, blockUser, getBlockedUserList, getUserList, unblockArticl
 import AvatarName from '@/components/AvatarName.vue';
 import WebCard from '@/components/WebCard.vue';
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
 import { computed, ref } from 'vue';
 
 export default{

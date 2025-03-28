@@ -1,73 +1,104 @@
 <template>
-    <div class="top-bar">
-        <span class="logo-text logo-margin">ShareSdu</span>
-        <div class="top-btn-div">
-            <v-btn @click="this.setContactState(true)" :color="themeColor" variant="text"
-                class="title-bold">联系我们</v-btn>
-            <v-btn @click="openApi" :color="themeColor" variant="text" class="title-bold">开发文档</v-btn>
-            <v-btn :color="themeColor" variant="text" class="title-bold">APP</v-btn>
-        </div>
-    </div>
-    <div class="logo-line"></div>
-    <div class="full-center">
-        <v-dialog v-model="ifShowDialog" class="full-center">
-            <div class="dialog-card-container">
-                <v-card v-if="ifShowLogin" class="card">
-                    <div class="title-bold">敬请期待</div>
-                    <div class="text-medium">暂未对外开放<br />(预计于25年3月份开放注册)</div>
-                    <div class="card-bottom-div">
-                        <v-btn variant="text" @click="this.setLoginState(false)">好的</v-btn>
-                    </div>
-                </v-card>
-                <v-card v-if="ifShowContact" class="card">
-                    <div class="title-bold">联系我们</div>
-                    <div class="text-medium-bold">
-                        邮箱：<a href="mailto:admin@sharesdu.com">admin@sharesdu.com</a><br />
-                        QQ群：246680702
-                    </div>
-                    <div class="card-bottom-div">
-                        <v-btn variant="text" @click="this.setContactState(false)">好的</v-btn>
-                    </div>
-                </v-card>
-            </div>
-        </v-dialog>
-        <div class="column-div">
-            <v-card class="intro-card" elevation="12">
-                <div class="title-big-bold intro-text-div">一个大学资源分享平台</div>
-                <div class="title intro-text-div">旨在为大学生提供一个内容纯净精确的分享、搜索、获取大学生活中需要的学习资料，经验贴，课程评价、问答以及其他信息的
-                    <span class="title-bold">永久免费</span>
-                    的平台
+    <div style="position: fixed;">
+        <canvas class="background" id="canvas"></canvas>
+        <div style="max-height: 100vh;overflow-y: scroll;">
+            <div class="top-bar">
+                <span class="logo-text logo-margin">ShareSdu</span>
+                <div class="top-btn-div">
+                    <v-btn @click="this.setContactState(true)" :color="themeColor" variant="text"
+                        class="title-bold">联系我们</v-btn>
+                    <v-btn @click="downloadApp" :color="themeColor" variant="text" class="title-bold">安装APP</v-btn>
                 </div>
-                <div class="column-btn-div">
-                    <v-btn to="/document/intro" prepend-icon="mdi-file-document" color="primary"
-                        class="intro-btn">查看网站介绍</v-btn>
-                    <v-btn to="/login" prepend-icon="mdi-login-variant" color="secondary"
-                        class="intro-btn">注册用户账号</v-btn>
-                </div>
-                <div class="text-tiny intro-text-div">拥有山大云邮(@mail.sdu.edu.cn)的人员均可注册 （¯﹃¯） </div>
-            </v-card>
-            <div class="img-container">
-                <img class="img" src="/qq_img/group_qr.png" />
-                <img class="img" src="/wechat/wechat_qr.jpg" />
             </div>
-        </div>
-    </div>
-    <div
-        style="width: 100%;display: flex;justify-content: center;margin-top: 10px;flex-direction: row;align-items: center;margin-bottom: 10px;">
-        <div
-            style="display: flex;flex-direction: row;font-size: 13px;font-weight: 600;justify-content: center;margin-right: 10px;">
-            <a href="https://beian.miit.gov.cn/" style="color: #8a8a8a;" target="_blank">鲁ICP备2024118409号-1</a>
-        </div>
-        <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
-            <img style="vertical-align:middle;width: 20px;height: 20px;margin-right: 5px;" src="../../public/police.png">
-            <a style="font-size:13px;font-weight: bold;color: #8a8a8a;"
-                href="//www.beian.gov.cn/portal/registerSystemInfo?recordcode=37028202001173">鲁公网安备37028202001173号</a>
+            <div class="logo-line"></div>
+            <div class="full-center">
+                <v-dialog v-model="ifShowDialog" class="full-center">
+                    <div class="dialog-card-container">
+                        <v-card v-if="ifShowLogin" class="card">
+                            <div class="title-bold">敬请期待</div>
+                            <div class="text-medium">暂未对外开放<br />(预计于25年3月份开放注册)</div>
+                            <div class="card-bottom-div">
+                                <v-btn variant="text" @click="this.setLoginState(false)">好的</v-btn>
+                            </div>
+                        </v-card>
+                        <v-card v-if="ifShowContact" class="card">
+                            <div class="title-bold">联系我们</div>
+                            <div class="text-medium-bold">
+                                邮箱：<a href="mailto:admin@sharesdu.com">admin@sharesdu.com</a><br />
+                                QQ群：<a href="https://qm.qq.com/q/Uh7X13Hp8Q">246680702</a>
+                            </div>
+                            <div class="card-bottom-div">
+                                <v-btn variant="text" @click="this.setContactState(false)">好的</v-btn>
+                            </div>
+                        </v-card>
+                        <v-card v-if="ifShowDownload" class="card">
+                            <div class="title-bold">下载APP</div>
+                            <div class="text-medium" style="margin: 5px;">
+                                对于OPPO，VIVO，小米等品牌用户直接下载Android版本并安装
+                                <br />
+                                对于苹果用户，在手机原生浏览器点击IOS按钮后安装网页应用
+                                <br />
+                                对于华为鸿蒙用户，下载Harmony版本安装
+                                <br/>
+                                <span class="text-tiny">IOS应用由<a class="text-tiny-bold" href="https://app.60day.cn/">第三方平台</a>打包生成，谨慎授予相关权限</span>
+                                <br />
+                                <span class="text-tiny">注：如有无法安装的情况请联系开发者(<a class="text-tiny-bold" href="https://qm.qq.com/q/Uh7X13Hp8Q">点击此处进入QQ群</a>)</span>
+                            </div>
+                            <div class="card-bottom-div">
+                                <v-btn class="download-btn" prepend-icon="mdi-android" color="grey" variant="outlined"
+                                    @click="openUrl('/app/sharesdu-android.apk')">Android</v-btn>
+                                <v-btn class="download-btn"  prepend-icon="mdi-apple" color="grey" variant="outlined"
+                                    @click="openUrl('https://appe.wapbyme.cn/dw/448765-9pKT')">IOS</v-btn>
+                                <v-btn class="download-btn" prepend-icon="mdi-circle-outline" color="grey" variant="outlined"
+                                    @click="openUrl('/app/sharesdu-harmony.hap')">HARMONY</v-btn>
+                            </div>
+                        </v-card>
+                    </div>
+                </v-dialog>
+                <div class="column-div">
+                    <v-card class="intro-card" elevation="12">
+                        <div class="title-big-bold intro-text-div">一个大学交流分享平台</div>
+                        <div class="title intro-text-div">旨在构建一个符合现代大学学生及相关人员实际需求的内容分享交流平台
+                        </div>
+                        <div class="column-btn-div">
+                            <v-btn to="/document/intro" prepend-icon="mdi-file-document" color="primary"
+                                class="intro-btn">查看网站介绍</v-btn>
+                            <v-btn to="/login" prepend-icon="mdi-login-variant" color="secondary"
+                                class="intro-btn">注册用户账号</v-btn>
+                        </div>
+                        <div class="text-tiny intro-text-div">
+                            本站提供Android,IOS以及Harmony三种移动端的APP(点击右上角APP下载安装)<br/>
+                            扫描下方二维码或<a class="text-tiny-bold" href="https://qm.qq.com/q/Uh7X13Hp8Q">点击此处</a>，加入官方QQ交流群/关注公众号
+                        </div>
+                            <br/>
+                            
+                        </v-card>
+                    <div class="img-container">
+                        <img class="img" src="/qq_img/group_qr.png" />
+                        <img class="img" src="/wechat/wechat_qr.jpg" />
+                    </div>
+                </div>
+            </div>
+            <div
+                style="width: 100%;display: flex;justify-content: center;margin-top: 10px;flex-direction: row;align-items: center;margin-bottom: 10px;">
+                <div
+                    style="display: flex;flex-direction: row;font-size: 13px;font-weight: 600;justify-content: center;margin-right: 10px;">
+                    <a href="https://beian.miit.gov.cn/" style="color: #8a8a8a;" target="_blank">鲁ICP备2024118409号-1</a>
+                </div>
+                <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
+                    <img style="vertical-align:middle;width: 20px;height: 20px;margin-right: 5px;"
+                        src="../../public/police.png">
+                    <a style="font-size:13px;font-weight: bold;color: #8a8a8a;"
+                        href="//www.beian.gov.cn/portal/registerSystemInfo?recordcode=37028202001173">鲁公网安备37028202001173号</a>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 <script>
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg } from '@/utils/other';
+import { initTriangleEffect } from '@/utils/animation';
+import { openNewPage } from '@/utils/other';
 import { ref, computed } from 'vue';
 export default {
     name: 'WelcomePage',
@@ -76,14 +107,18 @@ export default {
         const deviceType = globalProperties.$deviceType;
         const ifShowLogin = ref(false);
         const ifShowContact = ref(false);
+        const ifShowDownload = ref(false);
         const ifShowDialog = computed(() => {
-            return ifShowLogin.value || ifShowContact.value;
+            return ifShowLogin.value || ifShowContact.value || ifShowDownload.value;
         })
         const setLoginState = (state) => {
             ifShowLogin.value = state;
         }
         const setContactState = (state) => {
             ifShowContact.value = state;
+        }
+        const setDownloadState = (state) => {
+            ifShowDownload.value = state;
         }
         return {
             ifShowContact,
@@ -92,7 +127,9 @@ export default {
             setContactState,
             setLoginState,
             themeColor,
-            deviceType
+            deviceType,
+            ifShowDownload,
+            setDownloadState
         }
     },
     components: {
@@ -104,21 +141,22 @@ export default {
         }
     },
     methods: {
-        openApi(){
-            this.$emit("alert",{
-                state:true,
-                color:'info',
-                title:'>_< API文档暂时不开放',
-                content:'...................'
-            })
+        downloadApp() {
+            this.setDownloadState(true);
+        },
+        openUrl(url) {
+            openNewPage(url);
         }
     },
     mounted() {
-        this.setLoading(getCancelLoadMsg());
+        initTriangleEffect(document);
     }
 }
 </script>
 <style scoped>
+.download-btn {
+    margin: 5px;
+}
 /** desktop */
 @media screen and (min-width: 600px) {
     .top-btn-div {
@@ -140,12 +178,12 @@ export default {
 
     .card {
         padding: 10px;
-        max-width: 400px;
+        max-width: 600px;
     }
 
     .card-bottom-div {
         display: flex;
-        flex-direction: row-reverse;
+        flex-direction: column;
         padding: 5px;
         margin-top: 5px;
     }
@@ -237,12 +275,13 @@ export default {
 
     .card {
         padding: 10px;
-        max-width: 200px;
+        max-width: 80vw;
     }
+
 
     .card-bottom-div {
         display: flex;
-        flex-direction: row-reverse;
+        flex-direction: column;
         padding: 5px;
         margin-top: 5px;
     }

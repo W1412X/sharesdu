@@ -1,27 +1,57 @@
 <template>
-  <SensitiveTextArea v-model="text"></SensitiveTextArea>
-  <v-btn @click="d()">delte</v-btn>
+  <div class="background-container">
+    <!-- Bubble canvas background -->
+    <canvas class="background" id="bubble_canvas"></canvas>
+  </div>
 </template>
 
 <script>
-import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
+import { initBubbleEffect } from '@/utils/animation';
 
-export default{
-  components:{
-    SensitiveTextArea,
+export default {
+  components: {
   },
-  data(){
+  data() {
     return {
-      text: ''
-    }
+      text: '',
+    };
   },
-  methods:{
-    d(){
-    }
-  }
-}
+  mounted() {
+    initBubbleEffect(document)
+  },
+  methods: {
+    d() {
+      this.text = ''; // Add your delete functionality here
+    },
+
+  },
+};
 </script>
+
 <style scoped>
+.background-container {
+  position: relative;
+  background-color: white;
+  width: 100%;
+  height: 100vh;
+}
+
+#header_canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1; /* Place it behind the content */
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  color: white;
+}
+
 input {
   margin-bottom: 10px;
 }

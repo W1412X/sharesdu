@@ -6,7 +6,7 @@
         </div>
         <div class="column-div-scroll">
             <div class="item-container">
-                <history-item v-for="(item, index) in historyList" :init-data="item" :key="index"></history-item>
+                <history-item v-for="(item, index) in historyList" class="item" @close="close" :init-data="item" :key="index"></history-item>
             </div>
         </div>
     </v-card>
@@ -73,6 +73,9 @@ export default {
     flex-direction: row-reverse;
     margin-bottom: 5px;
 }
+.item{
+    width: 100%;
+}
 .item-container{
     display: flex;
     flex-direction: column;
@@ -104,7 +107,7 @@ export default {
     .column-div-scroll {
         display: flex;
         flex-direction: column;
-        max-height: 80vh;
+        max-height: 40vh;
         overflow: auto;
     }
 }

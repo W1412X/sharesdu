@@ -120,7 +120,7 @@ import AlertButton from '@/components/AlertButton.vue';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import AvatarName from '@/components/AvatarName.vue';
-import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink } from '@/utils/other';
+import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink, openNewPage } from '@/utils/other';
 import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyListByPostId } from '@/axios/post';
 import LikeButton from '@/components/LikeButton.vue';
 import ReplyItem from '@/components/ReplyItem.vue';
@@ -249,7 +249,7 @@ export default {
             })
         },
         toRelativePage(){
-            window.open(this.post.relativeLink,"_blank")
+            openNewPage(this.post.relativeLink);
         },
         async loadMoreReply(){
             this.setLoading(getLoadMsg("正在加载评论..."));

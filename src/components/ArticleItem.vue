@@ -31,6 +31,7 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
+import { openNewPage } from '@/utils/other';
 export default {
     name: 'ArticleItem',
     components: {
@@ -79,9 +80,9 @@ export default {
              * open a new tab and go
              */
             if(!this.data.id){//no id param
-                window.open("#/error/无法找到此资源","_blank");
+                openNewPage("#/error/无法找到此资源");
             }
-            window.open("#/article/"+this.data.id,"_blank");
+            openNewPage("#/article/"+this.data.id);
         }
     }
 }

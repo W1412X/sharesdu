@@ -1,32 +1,9 @@
 <template>
     <v-dialog v-model="ifShowDialog" class="full-screen dialog">
         <div class="dialog-card-container">
-            <post-editor v-if="ifShowPostEditor" @close="closeDialog" @alert="alert" @set_loading="setLoading" @add_post="addPost"></post-editor>
-            <course-editor v-if="ifShowCourseEditor" @close="closeDialog"  @alert="alert" @set_loading="setLoading"></course-editor>
-            <history-card v-if="ifShowHistory" @close="closeDialog"></history-card>
         </div>
     </v-dialog>
     <div class="full-screen">
-        <div class="top-bar">
-            <avatar-name v-if="userId" :init-data="{avatar:userProfileUrl,name:userName,id:userId}" :color="'#ffffff'"></avatar-name>
-            <v-spacer></v-spacer>
-            <sensitive-text-field color="white" v-model="searchContent" density="compact" label="搜索文章/帖子/课程" :items="['平台使用说明']"
-                variant="outlined">
-            </sensitive-text-field>
-            <div class="search-btn-container">
-                <v-btn @click="search" icon="mdi-magnify" variant="text" color="#ffffff" size="40"></v-btn>
-            </div>
-            <v-spacer></v-spacer>
-            <div class="top-bar-right">
-                <v-btn @click="setPostEditorState(true)" icon="mdi-comment-question-outline" variant="text"
-                    color="#ffffff" size="40"></v-btn>
-                <v-btn @click="editArticle" icon="mdi-file-edit-outline" variant="text" color="#ffffff" size="40"></v-btn>
-                <v-btn @click="setCourseEditorState(true)" icon="mdi-book-plus-outline" variant="text" color="#ffffff"
-                    size="40"></v-btn>
-                <v-btn @click="setHistoryState(true)" icon="mdi-history" variant="text" color="#ffffff"
-                    size="40"></v-btn>
-            </div>
-        </div>
         <div class="row-center">
             <v-tabs v-model="itemType" fixed-tabs class="select-bar">
                 <v-tab
@@ -71,29 +48,19 @@
 <script>
 import { globalProperties } from '@/main';
 import { ref, computed } from 'vue';
-import PostEditor from '@/components/PostEditor.vue';
-import CourseEditor from '@/components/CourseEditor.vue';
 import ArticleItem from '@/components/ArticleItem.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/axios/article';
-import AvatarName from '@/components/AvatarName.vue';
 import { getCourseList } from '@/axios/course';
-import SensitiveTextField from '@/components/SensitiveTextField.vue';
-import HistoryCard from '@/components/HistoryCard.vue';
 export default {
     name: 'IndexPage',
     components: {
-        PostEditor,
-        CourseEditor,
         ArticleItem,
         CourseItem,
         PostItem,
-        AvatarName,
-        SensitiveTextField,
-        HistoryCard,
     },
     setup() {
         /**
@@ -114,26 +81,10 @@ export default {
         /**
          * dialog
          */
-        const ifShowPostEditor = ref(false);
-        const ifShowCourseEditor = ref(false);
-        const ifShowHistory=ref(false);
-        const ifShowNotice = ref(false);
         const ifShowDialog = computed(() => {
-            return ifShowPostEditor.value || ifShowCourseEditor.value || ifShowNotice.value || ifShowHistory.value;
+            return false;
         })
-        const setPostEditorState = (state) => {
-            ifShowPostEditor.value = state;
-        }
-        const setCourseEditorState = (state) => {
-            ifShowCourseEditor.value = state;
-        }
-        const setNoticeState = (state) => {
-            ifShowNotice.value = state;
-        }
         const userId=getCookie('userId');
-        const setHistoryState=(state)=>{
-            ifShowHistory.value=state;
-        }
         /**
          * control the item type
          * range: article,post,course
@@ -142,17 +93,9 @@ export default {
             loadingMsg,
             deviceType,
             ifShowDialog,
-            ifShowPostEditor,
-            ifShowCourseEditor,
-            ifShowNotice,
-            setPostEditorState,
-            setCourseEditorState,
-            setNoticeState,
             userId,
             userName,
             userProfileUrl,
-            ifShowHistory,
-            setHistoryState,
         }
     },
     watch:{
@@ -196,13 +139,9 @@ export default {
     },
     methods: {
         editArticle(){
-            window.open("#/editor","_blank")
+            openNewPage("#/editor")
         },
         closeDialog() {
-            this.setCourseEditorState(false);
-            this.setNoticeState(false);
-            this.setPostEditorState(false);
-            this.setHistoryState(false);
         },
         search(){
             this.alert(getNormalInfoAlert("功能未开放..."))
@@ -302,8 +241,6 @@ export default {
         }
     },
     mounted() {
-        this.setLoading(getCancelLoadMsg());
-        //load set in the watch  
     }
 }
 </script>
@@ -348,7 +285,6 @@ export default {
         position: fixed;
         width: 750px;
         height: 40px;
-        margin-top: 55px;
     }
     .row-center{
         display:flex;
@@ -357,7 +293,8 @@ export default {
         justify-content: center;
     }
     .item-container{
-        margin-top: 95px;
+        margin-bottom: 50px;
+        margin-top: 40px;
         display: flex;
         flex-direction: column;
     }
@@ -400,7 +337,6 @@ export default {
         width: 100vw;
         position: fixed;
         height: 40px;
-        margin-top: 55px;
     }
     .row-center{
         display:flex;
@@ -409,7 +345,8 @@ export default {
         justify-content: center;
     }
     .item-container{
-        margin-top: 95px;
+        margin-bottom: 50px;
+        margin-top: 40px;
         display: flex;
         flex-direction: column;
     }

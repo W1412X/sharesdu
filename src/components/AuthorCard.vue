@@ -59,7 +59,7 @@
 import { globalProperties } from '@/main';
 import AvatarName from './AvatarName.vue';
 import { getAuthorInfo } from '@/axios/account';
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert } from '@/utils/other';
+import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
 import { blockUser, unblockUser } from '@/axios/block';
 
 export default{
@@ -99,7 +99,7 @@ export default{
             this.$emit("alert", msg);
         },
         toManage(){
-            window.open("/#/manage","_blank");
+            openNewPage("/#/manage");
         },
         async block(){
             /**

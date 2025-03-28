@@ -116,11 +116,11 @@
       <!-- setting part -->
       <div v-if="choose === 'setting'">
         <div class="column-list">
-          <v-btn to="/document/to_know" target="_blank" prepend-icon="mdi-bulletin-board" color="grey"
+          <v-btn @click="toUrl('/#/document/to_know')" prepend-icon="mdi-bulletin-board" color="grey"
             variant="outlined" text="入站须知"></v-btn>
-          <v-btn to="/document/privacy" target="_blank" prepend-icon="mdi-lock-outline" color="grey" variant="outlined"
+          <v-btn @click="toUrl('/#/document/privacy')" prepend-icon="mdi-lock-outline" color="grey" variant="outlined"
             text="隐私政策"></v-btn>
-          <v-btn to="/document/about_us" target="_blank" prepend-icon="mdi-information-variant" color="grey"
+          <v-btn @click="toUrl('/#/document/about_us')" prepend-icon="mdi-information-variant" color="grey"
             variant="outlined" text="关于我们"></v-btn>
           <v-btn @click="getBlockList" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
             text="黑名单"></v-btn>
@@ -146,7 +146,7 @@ import StarCard from '@/components/StarCard.vue';
 import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
 import { getProfileUrlInDB } from '@/utils/profile';
 import { ref, computed } from 'vue';
 export default {
@@ -275,6 +275,9 @@ export default {
       this.setBlockListState(false);
       this.setColorSelectorCardState(false);
     },
+    toUrl(url){
+      openNewPage(url);
+    },
     async getNotificationList() {
       this.setLoading(getLoadMsg("正在获取通知列表..."));
       let response=await fetchNotificationsList(this.notificationPageNum);
@@ -305,18 +308,6 @@ export default {
       email:getCookie("userEmail"),
       passwd:"********",
       profileUrl:await getProfileUrlInDB(getCookie("userId")),
-    }
-    //if no id,to the user page
-    if(!this.$route.params.id){
-      this.$router.push({ name: 'SelfPage', params: { id: getCookie("userId") } })
-      return;
-    }
-    /**
-     * check if the user is self
-     */
-    if (this.$route.params.id != getCookie("userId")) {
-      this.$router.push({ name: 'AuthorPage', params: { id: this.$route.params.id } })
-      return;
     }
   }
   /**

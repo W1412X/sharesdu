@@ -40,6 +40,7 @@
 //import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiComment, mdiStar } from '@mdi/js';
 import { globalProperties } from '@/main';
+import { openNewPage } from '@/utils/other';
 export default {
     name: 'CourseItem',
     components: {
@@ -92,7 +93,7 @@ export default {
             /**
              * open a new tab and go
              */
-            window.open("#/course/"+this.data.id,"_blank");
+            openNewPage("#/course/"+this.data.id)
         }
     }
 }

@@ -14,3 +14,15 @@ export function getDeviceType() {
     }
     return deviceType
   }
+
+export function getDeviceTypeByAgent() {
+    const userAgent = navigator.userAgent;
+  
+    if (/mobile/i.test(userAgent)) {
+      return 'mobile'; // 手机
+    } else if (/tablet/i.test(userAgent)) {
+      return 'tablet'; // 平板
+    } else {
+      return 'desktop'; // 电脑
+    }
+  }
