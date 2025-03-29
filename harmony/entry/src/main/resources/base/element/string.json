@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "ShareSDU 鸿蒙版应用"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "ShareSDU 鸿蒙版应用"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "ShareSDU"
+    },
+    {
+      "name":"internet_reason",
+      "value": "联网以获取ShareSDU的服务"
+    }
+  ]
+}
