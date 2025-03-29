@@ -34,15 +34,15 @@
                         <v-card v-if="ifShowDownload" class="card">
                             <div class="title-bold">下载APP</div>
                             <div class="text-medium" style="margin: 5px;">
-                                对于OPPO，VIVO，小米等品牌用户直接下载Android版本并安装
+                                对于OPPO，VIVO，小米等品牌以及<span class="text-medium-bold">非纯血鸿蒙华为</span>用户直接下载Android版本并安装
                                 <br />
                                 对于苹果用户，在手机原生浏览器点击IOS按钮后安装网页应用
                                 <br />
-                                对于华为鸿蒙用户，下载Harmony版本安装
+                                对于<span class="text-medium-bold">华为鸿蒙NEXT</span>用户，下载Harmony版本安装
                                 <br/>
                                 <span class="text-tiny">IOS应用由<a class="text-tiny-bold" href="https://app.60day.cn/">第三方平台</a>打包生成，谨慎授予相关权限</span>
                                 <br />
-                                <span class="text-tiny">注：如有无法安装的情况请联系开发者(<a class="text-tiny-bold" href="https://qm.qq.com/q/Uh7X13Hp8Q">点击此处进入QQ群</a>)</span>
+                                <span class="text-tiny">注：如有无法安装以及其他问题请联系开发者(<a class="text-tiny-bold" href="https://qm.qq.com/q/Uh7X13Hp8Q">点击此处进入QQ群</a>)</span>
                             </div>
                             <div class="card-bottom-div">
                                 <v-btn class="download-btn" prepend-icon="mdi-android" color="grey" variant="outlined"
