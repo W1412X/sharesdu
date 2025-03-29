@@ -6,8 +6,11 @@
                 <div class="title-bold">
                     回复评论
                 </div>
-                <SensitiveTextArea v-model="replyContent" style="margin-top: 10px;" variant="outlined" density="compact"
+                <div class="row-div">
+                    <SensitiveTextArea v-model="replyContent" style="margin-top: 10px;" variant="outlined" density="compact"
                     label="输入评论内容" />
+                    <EmojiPicker @emoji="addEmoji"></EmojiPicker>
+                </div>
                 <div class="dialog-bottom-btn-bar">
                     <v-btn @click="reply" variant="text">发表</v-btn>
                     <v-btn @click="setReplyEditorState(false)" variant="text">取消</v-btn>
@@ -70,6 +73,7 @@ import { computed, ref } from 'vue';
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import { addHeaderToReply, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader } from '@/utils/other';
 import { createReplyUnderPost } from '@/axios/post';
+import EmojiPicker from './EmojiPicker.vue';
 export default {
     name: 'ReplyItem',
     props: {
@@ -115,6 +119,7 @@ export default {
         AvatarName,
         DeleteButton,
         SensitiveTextArea,
+        EmojiPicker,
     },
     data() {
         const data = this.initData;
@@ -129,6 +134,9 @@ export default {
         }
     },
     methods: {
+        addEmoji(emoji){
+            this.replyContent+=emoji;
+        },
         click() {
 
         },
@@ -197,7 +205,11 @@ export default {
     margin-top: 5px;
     border-bottom: #8a8a8a 1px solid;
 }
-
+.row-div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 .column-center {
     display: flex;
     flex-direction: row;

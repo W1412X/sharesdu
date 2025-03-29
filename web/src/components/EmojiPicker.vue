@@ -13,9 +13,14 @@
                 </v-btn-toggle>
                 <div class="chip-container" column>
                     <div style="height: fit-content;">
+                        <div v-if="emojisClasses[toggle]=='自定义'||emojisClasses[toggle]=='常用'" class="text-tiny" style="color: grey;">注：您的常用表情和自定义表情仅保存在本地</div>
                         <v-chip class="emoji-chip" @click="emojiClick(emoji)"
                             v-for="emoji in this.emojis[emojisClasses[toggle]]" :key="emoji" :text="emoji"
                             :value="emoji"></v-chip>
+                        <div v-if="emojisClasses[toggle]=='自定义'" class="emoji-edit-container">
+                            <sensitive-text-field v-if="ifShowEmojiEditor" label="编辑自定义表情" density="compact" v-model="editingEmoji" variant="outlined"></sensitive-text-field>
+                            <v-btn @click="addEmoji" class="add-emoji-btn" :color="themeColor" :text="ifShowEmojiEditor?'添加':'添加自定义表情'" variant="text"></v-btn>
+                        </div>
                     </div>
                 </div>
             </v-card>
@@ -29,7 +34,9 @@
  * emoji save in localstorage
  */
 import { globalProperties } from '@/main';
+import { addSelfEmoji, addUsedEmoji, fetchEmojis } from '@/utils/emoji';
 import { computed, ref } from 'vue';
+import SensitiveTextField from './SensitiveTextField.vue';
 export default {
     setup() {
         const toggle = ref(0);
@@ -49,52 +56,41 @@ export default {
             ifShowDialog,
         }
     },
+    components:{
+        SensitiveTextField,
+    },
     data() {
         return {
             ifLoad: false,
             emojis: null,
             emojisClasses: [],
+            editingEmoji:"",
+            ifShowEmojiEditor:false,
         }
     },
     methods: {
-        async fetchEmojis() {
-            try {
-                //ensure the localstorage canbe use
-                if (!localStorage&&localStorage.getItem('emojis')) {
-                    console.log(localStorage.getItem('emojis'));
-                    return JSON.parse(localStorage.getItem('emojis'));
-                }
-                const url = `/resource/emojis.json`;
-                const response = await fetch(url);
-                console.log('response',response);
-                if (response.ok) {
-                    const emojisData = await response.json();
-                    console.log(emojisData);
-                    try{
-                        localStorage.setItem('emojis', JSON.stringify(emojisData));
-                    }catch(e){
-                        console.error(e);
-                    }
-                    return emojisData;
-                } else {
-                    return {};
-                }
-            } catch (error) {
-                console.error('Error fetching emojis:', error);
-                return {}
+        addEmoji() {
+            if(!this.ifShowEmojiEditor){
+                this.ifShowEmojiEditor=true;
+                return;
+            }
+            if(this.editingEmoji!=""){
+                addSelfEmoji(this.editingEmoji);
+                this.emojis["自定义"].unshift(this.editingEmoji);
+                this.ifShowEmojiEditor=false;
             }
         },
         emojiClick(emoji) {
             this.$emit('emoji', emoji);
+            addUsedEmoji(emoji);
             this.closePicker();
-            console.log(emoji);
         },
         closePicker() {
             this.setPickerState(false);
         }
     },
     async mounted() {
-        this.emojis = await this.fetchEmojis();
+        this.emojis = await fetchEmojis();
         this.emojisClasses = Object.keys(this.emojis);
         this.ifLoad = true;
     }
@@ -112,12 +108,23 @@ export default {
     display: flex;
     flex-direction: row;
 }
-
+.add-emoji-btn{
+    margin: 3px;
+    margin-bottom: 20px;
+}
 .emoji-btn-toggle {
     overflow: auto;
     width: fit-content;
 }
-
+.emoji-edit-container{
+    min-width:300px; 
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 20px;
+}
 .emoji-chip {
     margin: 5px;
     min-height: fit-content;
