@@ -1,6 +1,6 @@
 /**
  * deal with emoji  
- */
+ */  
 export async function fetchEmojis() {
     try {
         //ensure the localstorage canbe use

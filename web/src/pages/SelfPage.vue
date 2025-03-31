@@ -124,6 +124,8 @@
             variant="outlined" text="关于我们"></v-btn>
           <v-btn @click="getBlockList" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
             text="黑名单"></v-btn>
+            <v-btn to="#/welcome" prepend-icon="mdi-application-outline" color="grey" variant="outlined"
+            text="下载APP"></v-btn>
             <v-btn @click="setColorSelectorCardState(true)" prepend-icon="mdi-account-box" color="grey" variant="outlined"
             text="个性化主题"></v-btn>
         </div>

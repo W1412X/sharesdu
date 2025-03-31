@@ -64,7 +64,7 @@
                         <v-tabs-window-item v-if="registerMethod === 'email' && registerByEmailStep === 1" title="注册"
                             value="register">
                             <div class="text-small-bold tip-text-container">
-                                <span>注：校区，学院，专业均为选填</span>
+                                <span>注：当前仅对山东大学开放，校区，学院，专业均为选填</span>
                             </div>
                             <div class="row-center-div">
                                 <v-select class="select-input" v-model="registerByEmailData.campus"

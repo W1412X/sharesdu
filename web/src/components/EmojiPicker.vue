@@ -11,12 +11,14 @@
                     <v-btn v-for="(cata, index) in emojisClasses" :key="index" :color="themeColor" variant="text"
                         density="compact" :text="cata"></v-btn>
                 </v-btn-toggle>
-                <div class="chip-container" column>
+                <div class="chip-container">
                     <div style="height: fit-content;">
                         <div v-if="emojisClasses[toggle]=='自定义'||emojisClasses[toggle]=='常用'" class="text-tiny" style="color: grey;">注：您的常用表情和自定义表情仅保存在本地</div>
-                        <v-chip class="emoji-chip" @click="emojiClick(emoji)"
-                            v-for="emoji in this.emojis[emojisClasses[toggle]]" :key="emoji" :text="emoji"
-                            :value="emoji"></v-chip>
+                        <div class="chip-container">
+                            <v-card density="compact" variant="text" class="mx-auto emoji-chip" @click="emojiClick(emoji)"
+                                v-for="emoji in this.emojis[emojisClasses[toggle]]" :key="emoji" :text="emoji"
+                                :value="emoji"></v-card>
+                        </div>
                         <div v-if="emojisClasses[toggle]=='自定义'" class="emoji-edit-container">
                             <sensitive-text-field v-if="ifShowEmojiEditor" label="编辑自定义表情" density="compact" v-model="editingEmoji" variant="outlined"></sensitive-text-field>
                             <v-btn @click="addEmoji" class="add-emoji-btn" :color="themeColor" :text="ifShowEmojiEditor?'添加':'添加自定义表情'" variant="text"></v-btn>
@@ -127,15 +129,17 @@ export default {
 }
 .emoji-chip {
     margin: 5px;
-    min-height: fit-content;
-    max-height: fit-content;
     white-space: pre-line;
     overflow: auto;
+    border: #eeeeee 1px solid;
     border-radius: 5px;
+    padding: 5px;
 }
 
 .chip-container {
     display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
     height: 80%;
     overflow-y: scroll;
     padding: 5px;

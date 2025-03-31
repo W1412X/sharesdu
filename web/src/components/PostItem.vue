@@ -100,9 +100,12 @@ export default {
 }
 @media screen and (min-width: 600px) {
     .card {
-        padding: 10px;
         width: 750px;
         margin-top: 5px;
+        padding-top: 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-bottom: 15px;
         border-bottom: #eeeeee 1px solid;
         border-radius: 0px;
     }
@@ -162,7 +165,10 @@ export default {
     .card {
         border-bottom: #eeeeee 1px solid;
         border-radius: 0px;
-        padding: 5px;
+        padding-top: 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-bottom: 15px;
         width: 100vw;
         margin-top: 1px;
     }
