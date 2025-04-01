@@ -235,6 +235,26 @@ export default {
             setCourseEditorState,
         }
     },
+    beforeRouteLeave (to, from, next) {
+        //use session storage to save memory now  
+        let scanMsg={};
+        scanMsg.course=this.course;
+        scanMsg.commentList=this.commentList;
+        scanMsg.commentPageNum=this.commentPageNum;
+        scanMsg.postItems=this.postItems;
+        scanMsg.postPageNum=this.postPageNum;
+        scanMsg.selfComment=this.selfComment;
+        scanMsg.oriSelfComment=this.oriSelfComment;
+        scanMsg.scrollTop=document.scrollingElement.scrollTop;
+        scanMsg.postState=this.ifShowPost;
+        if(scanMsg.postState){
+            scanMsg.postScrollTop=document.getElementById("post-container").scrollTop;
+        }
+        let key='courseScanMsg|'+this.course.id;
+        scanMsg.ifRated=this.ifRated;
+        sessionStorage.setItem(key,JSON.stringify(scanMsg));
+        next()
+    },
     data() {
         return {
             course: {
@@ -403,6 +423,25 @@ export default {
         }
     },
     async mounted() {
+        if(sessionStorage.getItem('courseScanMsg|'+this.$route.params.id)){
+            let scanMsg=JSON.parse(sessionStorage.getItem('courseScanMsg|'+this.$route.params.id));
+            this.course=scanMsg.course;
+            this.postItems=scanMsg.postItems;
+            this.postPageNum=scanMsg.postPageNum;
+            this.commentList=scanMsg.commentList;
+            this.commentPageNum=scanMsg.commentPageNum;
+            this.selfComment=scanMsg.selfComment;
+            this.oriSelfComment=scanMsg.oriSelfComment;
+            this.ifRated=scanMsg.ifRated;
+            this.setPostState(scanMsg.postState);
+            setTimeout(()=>{
+                document.scrollingElement.scrollTop=scanMsg.scrollTop;
+                if(scanMsg.postState){
+                    document.getElementById("post-container").scrollTop=scanMsg.postScrollTop;
+                }
+            },10);
+            return;
+        }
         this.setLoading(getCancelLoadMsg());
         /**
          * get the course id from the url

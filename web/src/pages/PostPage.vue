@@ -188,6 +188,18 @@ export default {
             ifShowTmpParentReply,
         }
     },
+    beforeRouteLeave (to, from, next) {
+        //use session storage to save memory now  
+        let scanMsg={};
+        scanMsg.post=this.post;
+        scanMsg.replyList=this.replyList;
+        scanMsg.replyPageNum=this.replyPageNum;
+        scanMsg.scrollTop=document.scrollingElement.scrollTop;
+        let key='postScanMsg|'+this.post.id;
+        sessionStorage.setItem(key,JSON.stringify(scanMsg));
+        console.log(scanMsg);
+        next()
+    },
     data() {
         const relativeText=computed(()=>{
             if(this.post.relativeLink.includes("course")){
@@ -322,6 +334,17 @@ export default {
         },
     },
     async mounted() {
+        if(sessionStorage.getItem('postScanMsg|'+this.$route.params.id)){
+            console.log("scan msg")
+            let scanMsg=JSON.parse(sessionStorage.getItem('postScanMsg|'+this.$route.params.id));
+            this.post=scanMsg.post;
+            this.replyList=scanMsg.replyList;
+            this.replyPageNum=scanMsg.replyPageNum;
+            setTimeout(()=>{
+                document.scrollingElement.scrollTop=scanMsg.scrollTop;
+            },10);
+            return;
+        }
         this.setLoading(getCancelLoadMsg());
         /**
          * get the route params and fetch data
@@ -546,7 +569,6 @@ export default {
         padding: 1px;
         margin-bottom: 40px;
         height: fit-content;
-        overflow-y: scroll;
     }
 
     .name-font {
@@ -608,7 +630,6 @@ export default {
         border-top: #8a8a8a 1px solid;
         width: 100vw;
         height: fit-content;
-        overflow-y: scroll;
         border-radius: 5px;
         margin-bottom: 40px;
     }

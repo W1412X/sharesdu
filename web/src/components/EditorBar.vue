@@ -50,8 +50,8 @@
                     <v-icon type="mdi" icon="mdi-help-circle-outline" color="#8a8a8a" size="16"
                         class="before-icon"></v-icon>
                 </div>
-                <div>
-                    <v-img @click="selectImage()" :width="160" aspect-ratio="1.2" cover :src="data.coverLink"></v-img>
+                <div @click="selectImage()" >
+                    <img-card :width="160" :clickable="false" :height="160" :src="data.coverLink"></img-card>
                 </div>
             </div>
             <div class="row-div">
@@ -79,7 +79,6 @@
                 <div>
                     <div style="display: flex">
                         <div style="margin-bottom: 10px;">
-
                             <v-btn variant="tonal" :color="data.type == '原创' ? themeColor : '#8a8a8a'"
                                 :style="{ 'margin': '5px', 'width': '20px', 'height': '25px' }" @click="data.type = '原创'">
                                 原创
@@ -121,6 +120,7 @@ import { computed, ref } from 'vue';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
 import { uploadArticleImage } from '@/axios/image';
 import { extractTags } from '@/utils/keyword';
+import ImgCard from './ImgCard.vue';
 export default {
     name: 'EditorBar',
     props: {
@@ -162,6 +162,7 @@ export default {
     },
     components: {
         SensitiveTextArea,
+        ImgCard,
     },
     data() {
         var data=this.initData;

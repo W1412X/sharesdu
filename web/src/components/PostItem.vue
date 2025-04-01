@@ -103,7 +103,6 @@ export default {
         this.data.link=link;
         this.data.content=content;
         this.data.imgList=imgList;
-        console.log(this.initData);
     }
 }
 </script>

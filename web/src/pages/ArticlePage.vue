@@ -211,7 +211,6 @@ export default {
             editorType:"html",
             postItems:[],
             postPageNum:1,
-            ifGotPost:false,
             displayMsg:computed(()=>{
                 return {
                     type:this.editorType,
@@ -221,14 +220,28 @@ export default {
             loadState:false,
         }
     },
+    beforeRouteLeave (to, from, next) {
+            //use session storage to save memory now  
+            let scanMsg={};
+            scanMsg.article=this.article;
+            scanMsg.postItems=this.postItems;
+            scanMsg.postPageNum=this.postPageNum;
+            scanMsg.commentState=this.ifShowComment;
+            let key='articleScanMsg|'+this.article.id;
+            if(scanMsg.commentState){
+                let postScrollTop=document.getElementById("post-container").scrollTop;
+                scanMsg.postScrollTop=postScrollTop;
+            }
+            sessionStorage.setItem(key,JSON.stringify(scanMsg));
+            next();
+    },
     methods: {
         addPost(item){
             this.postItems.unshift(item);
         },
         comment(){
             this.setCommentState(true);
-            if(!this.ifGotPost){
-                //get the post items
+            if(this.postPageNum==1){
                 this.loadMorePost();
             }
         },
@@ -285,6 +298,22 @@ export default {
         }
     },
     async mounted() {
+        if(sessionStorage.getItem('articleScanMsg|'+this.$route.params.id)){
+            let scanMsg=JSON.parse(sessionStorage.getItem('articleScanMsg|'+this.$route.params.id));
+            this.article=scanMsg.article;
+            this.postItems=scanMsg.postItems;
+            this.postPageNum=scanMsg.postPageNum;
+            this.setCommentState(scanMsg.commentState);
+            this.loadState=true;
+            setTimeout(()=>{
+                if(scanMsg.commentState){
+                    document.getElementById("post-container").scrollTop=scanMsg.postScrollTop;
+                }
+            },10)
+            //add to history
+            await addHistory("article",this.article.id,this.article.title);
+            return;
+        }
         this.setLoading(getCancelLoadMsg());
         /**
          * get the route params and fetch data

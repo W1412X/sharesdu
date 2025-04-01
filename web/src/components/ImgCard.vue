@@ -11,7 +11,7 @@
         </div>
     </v-dialog>
     <div class="img-card-container">
-      <v-img @click="setImgDetailState(true)" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover :src="loadState ? src : lazyImgUrl" :max-width="width" :min-width="width">
+      <v-img @click="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover :src="loadState ? src : lazyImgUrl" :max-width="width" :min-width="width">
       </v-img>
       <v-btn 
         v-if="editable"
@@ -49,6 +49,10 @@ import { computed, ref } from 'vue';
       editable:{
         type:Boolean,
         default:false
+      },
+      clickable:{
+        type:Boolean,
+        default:true
       }
     },
     setup() {
@@ -77,6 +81,11 @@ import { computed, ref } from 'vue';
     methods: {
         deleteSelf() {
             this.$emit('delete_img',this.src);
+        },
+        imgClick(){
+            if(this.clickable){
+                this.setImgDetailState(true);
+            }
         }
     },
     mounted() {
@@ -88,6 +97,7 @@ import { computed, ref } from 'vue';
   <style scoped>
   .img-card-container {
     position: relative;
+    margin: 1px;
   }
   .img-big{
     max-width: 80vw;

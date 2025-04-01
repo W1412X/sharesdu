@@ -203,6 +203,16 @@ export default {
       immediate: true
     }
   },
+  beforeRouteLeave(to, from, next) {
+    let scanMsg = {};
+    scanMsg.notificationList = this.notificationList;
+    scanMsg.notificationPageNum = this.notificationPageNum;
+    scanMsg.scrollTop = document.scrollingElement.scrollTop;
+    scanMsg.choose = this.choose;
+    let key = 'selfScanMsg';
+    sessionStorage.setItem(key, JSON.stringify(scanMsg));
+    next()
+  },
   components: {
     ArticleItem,
     PostItem,
@@ -310,6 +320,16 @@ export default {
       email:getCookie("userEmail"),
       passwd:"********",
       profileUrl:await getProfileUrlInDB(getCookie("userId")),
+    }
+    if(sessionStorage.getItem('selfScanMsg')){
+      let scanMsg = JSON.parse(sessionStorage.getItem('selfScanMsg'));
+      this.notificationList=scanMsg.notificationList;
+      this.notificationPageNum=scanMsg.notificationPageNum;
+      setTimeout(()=>{
+        document.scrollingElement.scrollTop=scanMsg.scrollTop;
+      },10);
+      this.choose=scanMsg.choose;
+      
     }
   }
   /**

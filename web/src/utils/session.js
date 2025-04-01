@@ -1,4 +1,8 @@
 export function getResponseFromCache(route) {
+    //eslint-disable-next-line
+    if(true){
+        return null;
+    }
     try{
         const cachedData = sessionStorage.getItem(route);
         if (cachedData) {
@@ -19,6 +23,10 @@ export function getResponseFromCache(route) {
 }
 
 export function saveResponseToCache(route, response) {
+    //eslint-disable-next-line
+    if(true){
+        return;
+    }
     try{
         if (response.data.status === 200) {
             const cacheData = {
