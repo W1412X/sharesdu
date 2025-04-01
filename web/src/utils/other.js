@@ -8,7 +8,7 @@ import { setLock, waitForLock } from "./lock";
  * @param {json} json 
  * @returns 
  */
-export function copy(json){
+export function copy(json) {
     return JSON.parse(JSON.stringify(json));
 }
 /**
@@ -17,32 +17,32 @@ export function copy(json){
  * @param {int} progress always -1 if there's no progress requirement 
  * @returns 
  */
-export function getLoadMsg(text,progress=-1){
-    return{
-        state:true,
-        text:text,
-        progress:progress
+export function getLoadMsg(text, progress = -1) {
+    return {
+        state: true,
+        text: text,
+        progress: progress
     }
 }
 /**
  * cancel the loading view
  */
-export function getCancelLoadMsg(){
-    return{
-        state:false,
-        text:'加载中...',
-        progress:-1
+export function getCancelLoadMsg() {
+    return {
+        state: false,
+        text: '加载中...',
+        progress: -1
     }
 }
 /**
  * get the editor type from the content got from the server
  * @param {String} content 
  */
-export function extractEditorType(content){
-    let editor=content.substring(0,4);
-    if(editor=="html"){
+export function extractEditorType(content) {
+    let editor = content.substring(0, 4);
+    if (editor == "html") {
         return "html";
-    }else{
+    } else {
         return "md";
     }
 }
@@ -52,19 +52,19 @@ export function extractEditorType(content){
  * @param {String} editorType 
  * @returns 
  */
-export function addEditorType(content,editorType){
-    return editorType+content;
+export function addEditorType(content, editorType) {
+    return editorType + content;
 }
-export function getContentWithoutEditorType(content){
-    let editorType=extractEditorType(content);
-    if(editorType=="html"){
+export function getContentWithoutEditorType(content) {
+    let editorType = extractEditorType(content);
+    if (editorType == "html") {
         return content.substring(4);
-    }else{
+    } else {
         return content.substring(2);
     }
 }
-export async function dealAxiosError(error){
-    try{
+export async function dealAxiosError(error) {
+    try {
         /**
              * got response  
              */
@@ -72,16 +72,16 @@ export async function dealAxiosError(error){
             /**
              * here check if the error is caused by the token
              */
-            if(error.response.data.status==1000||error.response.data.status==1001){
+            if (error.response.data.status == 1000 || error.response.data.status == 1001) {
                 /**
                  * check if the refresh token is exsits
                  * if exsits -> try to get the new access token and reload  
                  * if not -> to login page and alert
                  */
-                const refreshToken=getCookie("refreshToken");
-                setCookie("accessToken","",-1);
-                if(refreshToken){
-                    try{
+                const refreshToken = getCookie("refreshToken");
+                setCookie("accessToken", "", -1);
+                if (refreshToken) {
+                    try {
                         /**
                          * wait for the token lock
                          * ensure the access now is empty
@@ -90,40 +90,40 @@ export async function dealAxiosError(error){
                          * return 1412
                          */
                         await waitForLock("token");
-                        if(getCookie("accessToken")){
+                        if (getCookie("accessToken")) {
                             return {
-                                status:1412,
+                                status: 1412,
                             }
                         }
-                        setLock("token",true);
-                        const response=await getAccessToken(refreshToken);
-                        if(response.status==999){
-                            setCookie("accessToken",response.access,5);
+                        setLock("token", true);
+                        const response = await getAccessToken(refreshToken);
+                        if (response.status == 999) {
+                            setCookie("accessToken", response.access, 5);
                             return {
-                                status:1412,
-                                message:"已更新access token，重新请求"
+                                status: 1412,
+                                message: "已更新access token，重新请求"
                             }
-                        }else{
+                        } else {
                             clearTokenCookies();
                             window.alert("令牌已过期，请重新登录");
-                            window.open("/#/login","_self")
+                            window.open("/#/login", "_self")
                             return {
-                                status:-1,
-                                message:"获取access失败，请重新登陆",
+                                status: -1,
+                                message: "获取access失败，请重新登陆",
                             }
                         }
-                    }catch(error){
+                    } catch (error) {
                         clearTokenCookies();
                         window.alert("令牌已过期，请重新登录");
-                        window.open("/#/login","_self")
+                        window.open("/#/login", "_self")
                         return {
                             status: -1,
-                            message:"重新登陆，令牌无效"
+                            message: "重新登陆，令牌无效"
                         }
-                    }finally{
-                        setLock("token",false);
+                    } finally {
+                        setLock("token", false);
                     }
-                }else{
+                } else {
                     /**
                      * if the refresh key not exists too
                      * then delete all the user message
@@ -131,10 +131,10 @@ export async function dealAxiosError(error){
                      */
                     clearTokenCookies();
                     window.alert("令牌已过期，请重新登录");
-                    window.open("/#/login","_self")
+                    window.open("/#/login", "_self")
                     return {
                         status: -1,
-                        message:"重新登陆"
+                        message: "重新登陆"
                     }
                 }
             }
@@ -142,31 +142,31 @@ export async function dealAxiosError(error){
              * not token error
              */
             return error.response.data;
-        }else if (error.request) {
+        } else if (error.request) {
             /**
              * no response
              * return the error message  
              */
             return {
-            status:-1,
-            message:"服务器无响应，请联系管理员"
+                status: -1,
+                message: "服务器无响应，请联系管理员"
             }
         } else {
             clearTokenCookies();
             window.alert("令牌已过期，请重新登录");
-            window.open("/#/login","_self")
+            window.open("/#/login", "_self")
             return {
                 status: -1,
-                message:"重新登陆"
+                message: "重新登陆"
             }
         }
-    }catch (error) {
+    } catch (error) {
         clearTokenCookies();
         window.alert("令牌已过期，请重新登录");
-        window.open("/#/login","_self")
+        window.open("/#/login", "_self")
         return {
             status: -1,
-            message:"重新登陆"
+            message: "重新登陆"
         }
     }
 }
@@ -176,20 +176,20 @@ export async function dealAxiosError(error){
  * @param {String} content - which always the response.message 
  * @returns 
  */
-export function getNormalErrorAlert(content){
+export function getNormalErrorAlert(content) {
     return {
-        state:true,
-        color:'error',
-        title:'请求错误',
-        content:content
+        state: true,
+        color: 'error',
+        title: '请求错误',
+        content: content
     }
 }
 
-export function base64Encode(str){
+export function base64Encode(str) {
     return window.btoa(str);
 }
 
-export function base64Decode(str){
+export function base64Decode(str) {
     return window.atob(str);
 }
 /**
@@ -198,13 +198,13 @@ export function base64Decode(str){
  * @param {String} split 
  * @returns 
  */
-export function arrToString(arr,split=","){
-    let result="";
-    for(let i=0;i<arr.length;i++){
-        if(i==0){
-            result+=arr[0];
-        }else{
-            result+=split+arr[i];
+export function arrToString(arr, split = ",") {
+    let result = "";
+    for (let i = 0; i < arr.length; i++) {
+        if (i == 0) {
+            result += arr[0];
+        } else {
+            result += split + arr[i];
         }
     }
     return result;
@@ -212,7 +212,7 @@ export function arrToString(arr,split=","){
 /**
  * convert a string array to 
  */
-export function stringToArr(str,split=","){
+export function stringToArr(str, split = ",") {
     return str.split(split);
 }
 /**
@@ -220,14 +220,14 @@ export function stringToArr(str,split=","){
  * @param {json} dict a dictionary blob-url
  * @param {String} content a string which represent the content
  */
-export function replaceImageBlob(dict,content){
-    const keys=JSON.parse(JSON.stringify(Object.keys(dict)));
-    for(let i=0;i<keys.length;i++){
-        content=content.replace(keys[i],dict[keys[i]]);
+export function replaceImageBlob(dict, content) {
+    const keys = JSON.parse(JSON.stringify(Object.keys(dict)));
+    for (let i = 0; i < keys.length; i++) {
+        content = content.replace(keys[i], dict[keys[i]]);
     }
     return content;
 }
-export function getNormalSuccessAlert(title){
+export function getNormalSuccessAlert(title) {
     return {
         state: true,
         color: 'success',
@@ -235,7 +235,7 @@ export function getNormalSuccessAlert(title){
         content: '',
     }
 }
-export function getNormalInfoAlert(title){
+export function getNormalInfoAlert(title) {
     return {
         state: true,
         color: 'info',
@@ -243,7 +243,7 @@ export function getNormalInfoAlert(title){
         content: '',
     }
 }
-export function getNormalWarnAlert(title){
+export function getNormalWarnAlert(title) {
     return {
         state: true,
         color: 'warning',
@@ -256,11 +256,11 @@ export function getNormalWarnAlert(title){
  * @param {String} content 
  * @returns 
  */
-export function getLinkInPost(content){
-    let begin=content.split("\n")[0];
-    if(begin.startsWith("#/")){
+export function getLinkInPost(content) {
+    let begin = content.split("\n")[0];
+    if (begin.startsWith("#/")) {
         return begin;
-    }else{
+    } else {
         return null;
     }
 }
@@ -271,19 +271,19 @@ export function getLinkInPost(content){
  * @param {String} id 
  * @returns 
  */
-export function addLinkToPost(content,type,id){
-    let link="#/"+type+"/"+id;
-    return link+"\n"+content;
+export function addLinkToPost(content, type, id) {
+    let link = "#/" + type + "/" + id;
+    return link + "\n" + content;
 }
 /**
  * get the content in the post
  * @param {String} content 
  * @returns 
  */
-export function getPostWithoutLink(content){
-    if(content.startsWith("#/")){
-        return content.substring(content.indexOf("\n")+1);
-    }else{
+export function getPostWithoutLink(content) {
+    if (content.startsWith("#/")) {
+        return content.substring(content.indexOf("\n") + 1);
+    } else {
         return content;
     }
 }
@@ -294,34 +294,34 @@ export function getPostWithoutLink(content){
  * @param {String} parentReplyId 
  * @returns 
  */
-export function addHeaderToReply(content,authorName,parentReplyId){
-    return "@"+authorName+"\n"+parentReplyId+"\n"+content;
+export function addHeaderToReply(content, authorName, parentReplyId) {
+    return "@" + authorName + "\n" + parentReplyId + "\n" + content;
 }
 /**
  * get the reply content without header  
  * @param {String} content 
  * @returns 
  */
-export function getReplyContentWithoutHeader(content){
-    let tmp=content.substring(content.indexOf("\n")+1);
-    tmp=tmp.substring(tmp.indexOf("\n")+1);
+export function getReplyContentWithoutHeader(content) {
+    let tmp = content.substring(content.indexOf("\n") + 1);
+    tmp = tmp.substring(tmp.indexOf("\n") + 1);
     return tmp;
 }
 
-export function getAuthorNameFromReply(content){
-    return content.substring(0,content.indexOf("\n"));
+export function getAuthorNameFromReply(content) {
+    return content.substring(0, content.indexOf("\n"));
 }
-export function getParentReplyIdFromReply(content){
-    let tmp=content.substring(content.indexOf("\n")+1);
-    return tmp.substring(0,tmp.indexOf("\n"));
+export function getParentReplyIdFromReply(content) {
+    let tmp = content.substring(content.indexOf("\n") + 1);
+    return tmp.substring(0, tmp.indexOf("\n"));
 }
 /**
  * get user profile url
  * @param {String} userId 
  * @returns 
  */
-export function getProfileUrl(userId){
-    return globalProperties.$apiUrl+"/image/user?user_id="+userId;
+export function getProfileUrl(userId) {
+    return globalProperties.$apiUrl + "/image/user?user_id=" + userId;
 }
 /**
  * 
@@ -329,17 +329,17 @@ export function getProfileUrl(userId){
  * @returns 
  */
 export function extractTime(str) {
-    try{
+    try {
         const regex = /.*(\d{4})-(\d{2})-(\d{2}).*(\d{2}):(\d{2}):(\d{2}).*/;
         const match = str.match(regex);
-    
+
         if (match && match.length === 7) {
             const formattedTime = `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}:${match[6]}`;
             return formattedTime;
         } else {
             return "time ungot";
         }
-    }catch(e){
+    } catch (e) {
         return "";
     }
 }
@@ -378,36 +378,52 @@ export function adjustAlpha(hexColor, alpha = 0.1) {
 export function hexToRgba(hex, opacity) {
     hex = hex.replace('#', '');
     if (hex.length === 8) {
-      let r = parseInt(hex.substr(0, 2), 16);
-      let g = parseInt(hex.substr(2, 2), 16);
-      let b = parseInt(hex.substr(4, 2), 16);
-      let a = parseInt(hex.substr(6, 2), 16) / 255;
-      if (opacity !== undefined) {
-        a = opacity;
-      }
-      return `rgba(${r}, ${g}, ${b}, ${a})`;
-    } 
-    else if (hex.length === 6) {
-      let r = parseInt(hex.substr(0, 2), 16);
-      let g = parseInt(hex.substr(2, 2), 16);
-      let b = parseInt(hex.substr(4, 2), 16);
-      let a = (opacity !== undefined) ? opacity : 1;
-      return `rgba(${r}, ${g}, ${b}, ${a})`;
-    } 
-    else {
-      return hexToRgba("#9c0c13",0.1);
+        let r = parseInt(hex.substr(0, 2), 16);
+        let g = parseInt(hex.substr(2, 2), 16);
+        let b = parseInt(hex.substr(4, 2), 16);
+        let a = parseInt(hex.substr(6, 2), 16) / 255;
+        if (opacity !== undefined) {
+            a = opacity;
+        }
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
     }
-  }
-  
+    else if (hex.length === 6) {
+        let r = parseInt(hex.substr(0, 2), 16);
+        let g = parseInt(hex.substr(2, 2), 16);
+        let b = parseInt(hex.substr(4, 2), 16);
+        let a = (opacity !== undefined) ? opacity : 1;
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+    else {
+        return hexToRgba("#9c0c13", 0.1);
+    }
+}
+
 /**
  * 
  */
-export function openNewPage(url){
+export function openNewPage(url) {
     //let device=getDeviceType();
-    window.open(url,"_self");
+    window.open(url, "_self");
     /*if(device==="mobile"){
         window.open(url,"_self");
     }else{
         window.open(url,"_blank");
     }*/
+}
+
+export function extractStringsInBrackets(inputString) {
+    const regex = /\[([^\]]+)\]/g;
+    let result = [];
+    let match;
+    while ((match = regex.exec(inputString)) !== null) {
+        result.push(match[1]);
+    }
+
+    return result;
+}
+
+export function removeStringsInBrackets(inputString) {
+    const regex = /\[([^\]]+)\]/g;
+    return inputString.replace(regex, '');
 }

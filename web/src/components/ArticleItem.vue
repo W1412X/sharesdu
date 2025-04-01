@@ -1,8 +1,8 @@
 <template>
     <v-card class="card" @click="click()">
         <div class="column-div">
-            <v-img v-if="deviceType === 'desktop'" :width="imgSize" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
-                cover aspect-ratio="4/3"></v-img>
+            <img-card v-if="deviceType === 'desktop'" :width="140" :height="120" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
+                cover aspect-ratio="7/6"></img-card>
             <div class="row-div padding-left-5">
                 <div class="title title-container">{{ data.title }}</div>
                 <div class="text-small summary-container">{{ data.summary }}</div>
@@ -32,10 +32,9 @@
 <script>
 import { globalProperties } from '@/main';
 import { openNewPage } from '@/utils/other';
+import ImgCard from './ImgCard.vue';
 export default {
     name: 'ArticleItem',
-    components: {
-    },
     props: {
         initData: {
             type: Object,
@@ -73,6 +72,9 @@ export default {
         return {
             data,
         }
+    },
+    components:{
+        ImgCard,
     },
     methods:{
         click(){

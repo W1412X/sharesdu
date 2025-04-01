@@ -1,5 +1,5 @@
 <template>
-    <v-card @click="click()" class="card" elevation="0">
+    <v-card class="card" elevation="0">
         <div class="row-div">
             <div class="text-small bottom-bar avatar-name-column-center">
                 <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
@@ -17,23 +17,28 @@
                     <div>{{ data.replyNum }}</div>
                 </div>
             </div>
-            <div class="title title-container">{{ data.title }}</div>
+            <div @click="click()" class="title title-container">{{ data.title }}</div>
             <!--
              <div class="text-small detail-container">{{ data.content }}</div>
             -->
-            <div class="text-medium detail-expand">{{ data.content }}</div>
+            <div @click="click()" class="text-medium detail-expand">{{ data.content }}</div>
+            <div class="row-div-scroll">
+                <img-card v-for="(img,index) in data.imgList" :height="100" :width="100" :src="img" :key="index"></img-card>
+            </div>
         </div>
     </v-card>
 </template>
 <script>
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/AvatarName.vue';
-import { computed } from 'vue';
-import { getLinkInPost, getPostWithoutLink, openNewPage } from '@/utils/other';
+import { ref } from 'vue';
+import { extractStringsInBrackets, getLinkInPost, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
+import ImgCard from './ImgCard.vue';
 export default {
     name: 'PostItem',
     components: {
         AvatarName,
+        ImgCard,
     },
     props: {
         initData: {
@@ -55,19 +60,27 @@ export default {
         const themeColor = globalProperties.$themeColor;
         const lazyImgUrl = globalProperties.$lazyImgUrl;
         const deviceType = globalProperties.$deviceType;
+        const loadState=ref(false);
+        const setLoadState=(state)=>{
+            loadState.value=state;
+        }
         return {
             deviceType,
             lazyImgUrl,
             themeColor,
+            loadState,
+            setLoadState,
         }
     },
     data() {
-        var data = computed(()=>{
-            let tmp=this.initData;
-            tmp.link=getLinkInPost(this.initData.content);
-            tmp.content=getPostWithoutLink(this.initData.content);
-            return tmp;
-        });
+        let link=getLinkInPost(this.initData.content);
+        let content=getPostWithoutLink(this.initData.content);
+        let imgList=extractStringsInBrackets(content);
+        content=removeStringsInBrackets(content);
+        var data =this.initData;
+        data.link=link;
+        data.content=content;
+        data.imgList=imgList;
         return {
             data,
         }
@@ -97,6 +110,13 @@ export default {
     align-items: center;
     margin-top:5px;
     margin-bottom:5px;
+}
+.row-div-scroll{
+    margin: 5px;
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    width: 100%;
 }
 @media screen and (min-width: 600px) {
     .card {

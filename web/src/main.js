@@ -123,7 +123,7 @@ app.config.globalProperties.$examineMethods=[
 /**
  * lazy load img url
  */
-app.config.globalProperties.$lazyImgUrl="https://cdn.vuetifyjs.com/images/parallax/material.jpg";
+app.config.globalProperties.$lazyImgUrl="https://sharesdu.com/resource/default_img.png";
 
 const deviceType=getDeviceType();
 /**

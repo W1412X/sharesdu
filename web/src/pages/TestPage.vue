@@ -2,16 +2,19 @@
   <div class="background-container">
     <!-- Bubble canvas background -->
     <EmojiPicker></EmojiPicker>
+    <ImgCard src="https://tse1-mm.cn.bing.net/th/id/OIP-C.IJZgTNx1vp9EML_1wV5p2gHaEo?rs=1&pid=ImgDetMain"></ImgCard>
   </div>
 </template>
 
 <script>
 import EmojiPicker from '@/components/EmojiPicker.vue';
+import ImgCard from '@/components/ImgCard.vue';
 
 
 export default {
   components: {
     EmojiPicker,
+    ImgCard,
   },
   data() {
     return {

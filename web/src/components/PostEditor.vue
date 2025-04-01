@@ -9,6 +9,11 @@
                 <sensitive-text-area v-model="data.content" variant="outlined" rows="3" label="编辑帖子详述"></sensitive-text-area>
                 <emoji-picker @emoji="addEmoji"></emoji-picker>
             </div>
+            <div class="row-div-scroll">
+                <img-card :editable="true" @delete_img="removeImage" v-for="(src,index) in imgSrcList" :key="index" :src="src" :width="100" :height="100">
+                </img-card>
+            </div>
+            <v-btn @click="triggerFileInput" variant="text" :color="themeColor" prepend-icon="mdi-plus" text="添加图片"></v-btn>
             <div class="bottom-btn-div">
                 <v-btn @click="submit" variant="text" class="btn" density="compact">发布</v-btn>
                 <v-btn variant="text" class="btn" density="compact" @click="close">取消</v-btn>
@@ -24,6 +29,9 @@ import { createPostInArticle, createPostInCourse } from '@/axios/post';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 import { getCookie } from '@/utils/cookie';
 import EmojiPicker from './EmojiPicker.vue';
+import { globalProperties } from '@/main';
+import ImgCard from './ImgCard.vue';
+import { uploadArticleImage } from '@/axios/image';
 export default {
     name: 'PostEditor',
     props:{
@@ -48,11 +56,18 @@ export default {
         }
     },
     setup() {
+        const themeColor=globalProperties.$themeColor;
+        const apiUrl=globalProperties.$apiUrl;
+        return {
+            themeColor,
+            apiUrl,
+        }
     },
     components: {
         SensitiveTextField,
         SensitiveTextArea,
         EmojiPicker,
+        ImgCard,
     },
     data() {
         /**
@@ -60,10 +75,32 @@ export default {
          */
         const data=this.initData;
         return {
+            imgDict:{},
+            imgSrcList:[],
             data,
         }
     },
     methods: {
+        triggerFileInput() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;
+            input.addEventListener('change', this.handleFileChange);
+            input.click();
+        },
+        handleFileChange(event) {
+            const files = Array.from(event.target.files);
+            for(let i=0;i<files.length;i++){
+                let tmp=URL.createObjectURL(files[i]);
+                this.imgSrcList.push(tmp);
+                this.imgDict[tmp]=files[i];
+            }
+        },
+        removeImage(src){
+            this.imgSrcList.splice(this.imgSrcList.indexOf(src),1);
+            URL.revokeObjectURL(src);
+        },
         addEmoji(emoji){
             this.data.content+=emoji;
         },
@@ -80,6 +117,28 @@ export default {
             this.$emit('set_loading',msg);
         },
         async submit(){
+            /**
+             * submit img first  
+             */
+            if(!this.data.title||this.data.title.length<=2){
+                this.alert(getNormalErrorAlert('标题过短'));
+            }
+            if(!this.data.content||this.data.content.length<=2){
+                this.alert(getNormalErrorAlert('内容过短'));
+            }
+            this.setLoading(getLoadMsg('正在上传图片'));
+            let imgNum=this.imgSrcList.length;
+            for(let i=0;i<imgNum;i++){
+                this.setLoading(getLoadMsg(`正在上传图片 ${i+1}/${imgNum}`));
+                let img=this.imgSrcList[i];
+                let file=this.imgDict[img];
+                let response=await uploadArticleImage(file);
+                if(response.status!=200&&response.status!=201){
+                    this.alert(getNormalErrorAlert("图片上传失败"));
+                    return;
+                }
+                this.data.content+=`[${this.apiUrl+response.data.image_url}]`;
+            }
             /** 
              * submit post data
              */
@@ -116,6 +175,12 @@ export default {
 }
 </script>
 <style scoped>
+.row-div-scroll{
+    display: flex;
+    overflow-x: scroll;
+    flex-direction: row;
+    align-items: center;
+}
 .row-div{
     display: flex;
     flex-direction: row;

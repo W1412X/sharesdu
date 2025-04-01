@@ -48,6 +48,9 @@
                 <div class="detail-text text-medium">
                     {{ post.content }}
                 </div>
+                <div class="row-div-scroll">
+                    <img-card v-for="(img,index) in post.imgList" :height="140" :width="140" :src="img" :key="index"></img-card>
+                </div>
                 <div class="full-column-center text-small grey-font">
                     <div class="comment-star-display-div">
                         <div class="row-right-20px-column-center">
@@ -123,13 +126,14 @@ import AlertButton from '@/components/AlertButton.vue';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
 import AvatarName from '@/components/AvatarName.vue';
-import { getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink, openNewPage } from '@/utils/other';
+import { extractStringsInBrackets, getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
 import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyListByPostId } from '@/axios/post';
 import LikeButton from '@/components/LikeButton.vue';
 import ReplyItem from '@/components/ReplyItem.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
 import { addHistory } from '@/utils/history';
 import EmojiPicker from '@/components/EmojiPicker.vue';
+import ImgCard from '@/components/ImgCard.vue';
 export default {
     name: 'PostPage',
     components: {
@@ -141,6 +145,7 @@ export default {
         LikeButton,
         DeleteButton,
         EmojiPicker,
+        ImgCard,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -339,6 +344,8 @@ export default {
             this.post.id=response.post_detail.post_id;
             this.post.title=response.post_detail.post_title;
             this.post.content=getPostWithoutLink(response.post_detail.post_content);
+            this.post.imgList=extractStringsInBrackets(this.post.content);
+            this.post.content=removeStringsInBrackets(this.post.content);
             this.post.relativeLink=getLinkInPost(response.post_detail.post_content);
             this.post.likeNum=response.post_detail.like_count;
             this.post.replyNum=response.post_detail.reply_count;
@@ -392,6 +399,14 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+.row-div-scroll{
+    margin: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: scroll;
+    width: 100%;
 }
 .bottom-bar {
     display: flex;
