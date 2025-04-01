@@ -119,11 +119,27 @@ export default {
                         }
                         break;
                     default:
+                        console.log(newVal);
                         this.alert(getNormalErrorAlert('未知错误(页面切换)'));
                 }
             },
-            immediate: true
+            immediate: false,
         }
+    },
+    beforeRouteLeave (to, from, next) {
+        //use session storage to save memory now  
+        let lastScanMsg={}
+        lastScanMsg.itemType=this.itemType;
+        lastScanMsg.articleList=this.articleList;
+        lastScanMsg.postList=this.postList;
+        lastScanMsg.courseList=this.courseList;
+        lastScanMsg.articlePageNum=this.articlePageNum;
+        lastScanMsg.postPageNum=this.postPageNum;
+        lastScanMsg.coursePageNum=this.coursePageNum;
+        let scrollPosition = document.scrollingElement.scrollTop;
+        lastScanMsg.scrollPosition=scrollPosition;
+        sessionStorage.setItem('indexScanMsg', JSON.stringify(lastScanMsg))
+        next()
     },
     data() {
         const itemType = 'article';
@@ -240,7 +256,23 @@ export default {
             this.postList.unshift(item);
         }
     },
-    mounted() {
+    async mounted() {
+        //use session storage to save memory now  
+        try{
+            let lastScanMsg=JSON.parse(sessionStorage.getItem("indexScanMsg"))
+            this.itemType=lastScanMsg.itemType;
+            this.articleList=lastScanMsg.articleList;
+            this.postList=lastScanMsg.postList;
+            this.courseList=lastScanMsg.courseList;
+            this.postPageNum=lastScanMsg.postPageNum;
+            this.coursePageNum=lastScanMsg.coursePageNum;
+            this.articlePageNum=lastScanMsg.articlePageNum;
+            setTimeout(()=>{
+                document.scrollingElement.scrollTop=lastScanMsg.scrollPosition;
+            },10)
+        }catch(e){
+            await this.loadMore(this.itemType)
+        }
     }
 }
 </script>

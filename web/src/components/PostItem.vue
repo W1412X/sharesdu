@@ -32,7 +32,7 @@
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/AvatarName.vue';
 import { ref } from 'vue';
-import { extractStringsInBrackets, getLinkInPost, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
+import { copy, extractStringsInBrackets, getLinkInPost, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
 import ImgCard from './ImgCard.vue';
 export default {
     name: 'PostItem',
@@ -73,16 +73,8 @@ export default {
         }
     },
     data() {
-        let link=getLinkInPost(this.initData.content);
-        let content=getPostWithoutLink(this.initData.content);
-        let imgList=extractStringsInBrackets(content);
-        content=removeStringsInBrackets(content);
-        var data =this.initData;
-        data.link=link;
-        data.content=content;
-        data.imgList=imgList;
         return {
-            data,
+            data:{},
         }
     },
     methods:{
@@ -101,6 +93,17 @@ export default {
             }
             openNewPage("#/post/"+this.data.id)
         },
+    },
+    mounted(){
+        this.data =copy(this.initData);
+        let link=getLinkInPost(this.data.content);
+        let content=getPostWithoutLink(this.data.content);
+        let imgList=extractStringsInBrackets(content);
+        content=removeStringsInBrackets(content);
+        this.data.link=link;
+        this.data.content=content;
+        this.data.imgList=imgList;
+        console.log(this.initData);
     }
 }
 </script>
