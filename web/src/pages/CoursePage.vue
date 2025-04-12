@@ -434,6 +434,7 @@ export default {
             this.oriSelfComment=scanMsg.oriSelfComment;
             this.ifRated=scanMsg.ifRated;
             this.setPostState(scanMsg.postState);
+            await addHistory("course",this.course.id,this.course.name);
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
                 if(scanMsg.postState){

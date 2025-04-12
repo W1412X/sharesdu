@@ -343,6 +343,7 @@ export default {
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },10);
+            await addHistory("post",this.post.id,this.post.title);
             return;
         }
         this.setLoading(getCancelLoadMsg());

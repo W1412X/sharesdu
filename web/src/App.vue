@@ -22,7 +22,7 @@
       <p v-if="alertMsg.content" class="text-medium">{{ alertMsg.content }}</p>
     </v-snackbar>
     <div v-if="this.ifShowNav" class="nav-bar" :style="{ 'background-color': navColor }">
-      <avatar-name v-if="ifShowAvatar" :init-data="{ id: userId, name: ifMobile ? '' : userName }"
+      <avatar-name id="avatar-name" v-if="ifAvatarState&&ifShowAvatar" :init-data="{ id: userId, name: ifMobile ? '' : userName }"
         :color="'#ffffff'"></avatar-name>
       <v-spacer></v-spacer>
       <sensitive-text-field :color="navIconColor" v-model="searchContent" style="min-width: 200px;" density="compact"
@@ -66,7 +66,7 @@
   </v-app>
 </template>
 <script>
-import { computed, ref, watch } from 'vue';
+import { computed, getCurrentInstance, ref, watch } from 'vue';
 import LoadingView from './components/LoadingView.vue';
 import { useRoute } from 'vue-router';
 import { globalProperties } from './main';
@@ -97,10 +97,6 @@ export default {
     const setLoadState = (state) => {
       loadState.value = state;
     }
-    // eslint-disable-next-line
-    watch(route, (newRoute, oldRoute) => {
-      page.value = newRoute.name;
-    });
     const ifShowNav = computed(() => {
       if (loadState.value && ['WelcomePage', 'LoginPage', 'DocumentPage', 'ManagePage', 'ChatPage', undefined, null].includes(page.value)) {
         return false;
@@ -139,11 +135,23 @@ export default {
         return true;
       }
     })
+    const ifAvatarState=ref(true);
     const ifMobile=computed(()=>{
         return deviceType.value=="mobile";
     })
-    const userId = getCookie("userId");
-    const userName = getCookie("userName");
+    const userId = ref(getCookie("userId"));
+    const userName = ref(getCookie("userName"));
+    const { proxy } = getCurrentInstance();
+    // eslint-disable-next-line
+    watch(route, (newRoute, oldRoute) => {
+      page.value = newRoute.name;
+      userId.value=getCookie("userId");
+      userName.value=getCookie("userName");
+      ifAvatarState.value=false;
+      proxy.$nextTick(() => {
+        ifAvatarState.value=true;
+      });
+    });
     const ifShowHistory = ref(false);
     const ifShowCourseEditor = ref(false);
     const ifShowPostEditor = ref(false);
@@ -177,6 +185,7 @@ export default {
       routerMarginTop,
       ifShowDialog,
       ifShowHistory,
+      ifAvatarState,
       setShowHistoryState,
       ifShowAvatar,
       setLoadState,

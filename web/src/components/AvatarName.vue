@@ -1,8 +1,8 @@
 <!--  -->
 <template>
     <div class="avatar-name" @click="toAuthorPage">
-        <v-icon color="#8a8a8a" v-if="this.profileUrl===null"  :size="size" type="mdi" icon="mdi-account-circle"/>
-        <v-avatar v-else :size="size" :image="this.profileUrl"></v-avatar>
+        
+        <v-avatar :size="size" :image="this.profileUrl"></v-avatar>
         <div class="name" :style="{color:color}">
             {{initData.name}}
         </div>
@@ -58,7 +58,7 @@ export default {
         }
     },
     async mounted(){
-        //get the update message first  
+        //get the update message first 
         try{
             let response=await getUserProfileImageUpdateInfo([this.initData.id]);
             if(response.status==200&&!response.time_list[0].error){

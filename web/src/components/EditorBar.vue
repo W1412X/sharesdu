@@ -103,8 +103,7 @@
                         class="before-icon"></v-icon>
                 </div>
                 <div class="before-container">
-                    <v-file-input v-model="this.file" @change="handleFileChange" width="250px" density="compact"
-                        label="File input"></v-file-input>
+                    <v-file-upload v-model="this.file" color="#8a8a8a" height="0px" title="" :border="0" @change="handleFileChange" clearable density="compact"></v-file-upload>
                 </div>
             </div>
         </div>
@@ -121,6 +120,7 @@ import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other
 import { uploadArticleImage } from '@/axios/image';
 import { extractTags } from '@/utils/keyword';
 import ImgCard from './ImgCard.vue';
+import { VFileUpload } from 'vuetify/lib/labs/components.mjs';
 export default {
     name: 'EditorBar',
     props: {
@@ -163,6 +163,7 @@ export default {
     components: {
         SensitiveTextArea,
         ImgCard,
+        VFileUpload,
     },
     data() {
         var data=this.initData;
@@ -395,6 +396,7 @@ export default {
     flex-direction: row-reverse;
 }
 .row-div{
+    align-items: center;
     display: flex;
     flex-direction: row;
     margin:10px;
