@@ -101,6 +101,7 @@ export default{
         /**
          * get the chat info
          */   
+         document.getElementById('web-title').innerText='聊天|'+this.receiverName;
         this.setLoading(getCancelLoadMsg());
     }
 }

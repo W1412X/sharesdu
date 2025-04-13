@@ -1,6 +1,6 @@
 <template>
     <div class="full-center">
-        <author-card v-if="this.id" @set_loading="setLoading" @alert="alert" :id="id"></author-card>
+        <author-card v-if="this.id" @set_loading="setLoading" @alert="alert" @author_name="handleName" :id="id"></author-card>
     </div>
 </template>
 <script>
@@ -26,11 +26,13 @@ export default{
         },
         alert(msg){
             this.$emit('alert',msg);
+        },
+        handleName(name){
+            document.getElementById('web-title').innerText='作者 | '+name;
         }
     },
     async mounted(){
         this.setLoading(getCancelLoadMsg());
-        
         if(this.$route.params.id==getCookie("userId")){
             console.log("from author to self");
             this.$router.push({name:'SelfPage',params:{id:getCookie("userId")}})

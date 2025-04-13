@@ -42,6 +42,9 @@
                         <!-- register by email STEP 1 -->
                         <v-tabs-window-item v-if="registerMethod === 'email' && registerByEmailStep === 0" title="注册"
                             value="register">
+                            <div class="text-small tip-text-container">
+                                <span>团体/组织注册(如社团等)请联系管理员以添加认证</span>
+                            </div>
                             <sensitive-text-field v-model="registerByEmailData.userName"
                                 prepend-inner-icon="mdi-account" class="input" :rules="[loginRules.userName]"
                                 :density="inputType" variant="solo-filled" label="用户名"></sensitive-text-field>
@@ -150,7 +153,7 @@
                             <v-btn @click="shiftLoginMethod" class="text-small" density="compact" variant="text">{{
                                 loginMethod == 'userName' ? '使用邮箱登陆' : '使用用户名登陆' }}</v-btn>
                             <v-spacer></v-spacer>
-                            <agree-button @click="handleAgree"></agree-button>
+                            <agree-button v-if="loginMethod == 'userName' && deviceType=='mobile'" @click="handleAgree"></agree-button>
                         </div>
                         <div v-if="nowTab === 'register'" class="bottom-bar">
                             <v-btn @click="shiftRegisterMethod" class="text-small" density="compact" variant="text">{{

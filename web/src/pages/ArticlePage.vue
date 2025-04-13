@@ -311,6 +311,7 @@ export default {
                 }
             },10)
             //add to history
+            document.getElementById('web-title').innerText='文章 | '+this.article.title;
             await addHistory("article",this.article.id,this.article.title);
             return;
         }
@@ -345,6 +346,7 @@ export default {
                 this.loadState=true;
                 //add to history
                 await addHistory("article",this.article.id,this.article.title);
+                document.getElementById('web-title').innerText='文章 | '+this.article.title;
             }else{
                 this.alert(getNormalErrorAlert(response.message));
                 this.$router.push({name:"ErrorPage",params:{reason:response.message}})

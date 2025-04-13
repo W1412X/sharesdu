@@ -58,7 +58,7 @@
                 <div class="column-div">
                     <v-card class="intro-card" elevation="12">
                         <div class="title-big-bold intro-text-div">一个大学交流分享平台</div>
-                        <div class="title intro-text-div">旨在构建一个符合现代大学学生及相关人员实际需求的内容分享交流平台
+                        <div class="title intro-text-div">旨在构建一个符合现代大学学生及相关人员实际需求的内容分享交流平台(当前正在测试，用户信息不会保留)
                         </div>
                         <div class="column-btn-div">
                             <v-btn to="/document/intro" prepend-icon="mdi-file-document" color="primary"
@@ -66,12 +66,14 @@
                             <v-btn to="/login" prepend-icon="mdi-login-variant" color="secondary"
                                 class="intro-btn">注册用户账号</v-btn>
                         </div>
+                        <div class="text-small-bold intro-text-div">
+                            本站已进行公安备案，发表违法信息后果自负
+                        </div>  
                         <div class="text-tiny intro-text-div">
                             本站提供Android,IOS以及Harmony三种移动端的APP(点击右上角APP下载安装)<br/>
                             扫描下方二维码或<a class="text-tiny-bold" href="https://qm.qq.com/q/Uh7X13Hp8Q">点击此处</a>，加入官方QQ交流群/关注公众号
                         </div>
-                            <br/>
-                            
+                        <br/>
                         </v-card>
                     <div class="img-container">
                         <img class="img" src="/qq_img/group_qr.png" />

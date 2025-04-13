@@ -321,6 +321,7 @@ export default {
       passwd:"********",
       profileUrl:await getProfileUrlInDB(getCookie("userId")),
     }
+    document.getElementById('web-title').innerText="我的";
     if(sessionStorage.getItem('selfScanMsg')){
       let scanMsg = JSON.parse(sessionStorage.getItem('selfScanMsg'));
       this.notificationList=scanMsg.notificationList;

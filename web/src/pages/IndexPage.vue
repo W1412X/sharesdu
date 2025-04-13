@@ -270,6 +270,7 @@ export default {
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=lastScanMsg.scrollPosition;
             },10)
+            document.getElementById('web-title').innerText='ShareSDU | 首页';
         }catch(e){
             await this.loadMore(this.itemType)
         }

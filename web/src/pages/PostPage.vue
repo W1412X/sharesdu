@@ -343,6 +343,7 @@ export default {
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },10);
+            document.getElementById('web-title').innerText='帖子 | '+this.course.name;
             await addHistory("post",this.post.id,this.post.title);
             return;
         }
@@ -377,6 +378,7 @@ export default {
             this.post.publishTime=response.post_detail.publish_time;
             this.post.ifLike=response.post_detail.if_like;
             await addHistory("post",this.post.id,this.post.title);
+            document.getElementById('web-title').innerText='帖子 | '+this.post.title;
         }else{
             this.alert(getNormalErrorAlert(response.message));
             this.$router.push({

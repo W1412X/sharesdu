@@ -435,6 +435,7 @@ export default {
             this.ifRated=scanMsg.ifRated;
             this.setPostState(scanMsg.postState);
             await addHistory("course",this.course.id,this.course.name);
+            document.getElementById('web-title').innerText='课程 | '+this.course.name;
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
                 if(scanMsg.postState){
@@ -475,6 +476,7 @@ export default {
                 scoreDistribution:response.course_detail.score_distribution,
             }
             await addHistory("course",this.course.id,this.course.name);
+            document.getElementById('web-title').innerText='课程 | '+this.course.name;
             this.alert(getNormalSuccessAlert("获取课程信息成功"));
         }else{
             this.alert(getNormalErrorAlert(response.message));

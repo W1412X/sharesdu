@@ -174,6 +174,7 @@ export default{
             if(!this.data.major){
                 this.data.major="未知专业";
             }
+            this.$emit("author_name",this.data.name);
             this.loadState=true;
         } else {
             this.alert(getNormalErrorAlert(response.message));
