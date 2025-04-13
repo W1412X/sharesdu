@@ -55,21 +55,30 @@ export default {
                     }
                 })
             }
+        },
+        async getProfile(){
+            try {
+                let response = await getUserProfileImageUpdateInfo([this.initData.id]);
+                if (response.status == 200 && !response.time_list[0].error) {
+                    let time = response.time_list[0].created_at;
+                    this.profileUrl = await getProfileUrlInDB(this.initData.id, time);
+                }
+            } catch (e) {
+                // eslint-disable-next-line
+            }
+        },
+        async getProfileRecursion(){
+            if(this.initData.id){
+                await this.getProfile();
+            }else{
+                setTimeout(()=>{
+                    this.getProfileRecursion();
+                },1000);
+            }
         }
     },
     async mounted(){
-        //get the update message first 
-        try{
-            let response=await getUserProfileImageUpdateInfo([this.initData.id]);
-            if(response.status==200&&!response.time_list[0].error){
-                let time=response.time_list[0].created_at;
-                this.profileUrl=await getProfileUrlInDB(this.initData.id,time);
-            }
-        }catch(e){
-            // eslint-disable-next-line
-        }
-        //to do optimize the updatetime logic  
-
+        await this.getProfileRecursion();
     }
 }
 </script>

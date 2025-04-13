@@ -149,6 +149,8 @@
                         <div v-if="nowTab === 'login'" class="bottom-bar">
                             <v-btn @click="shiftLoginMethod" class="text-small" density="compact" variant="text">{{
                                 loginMethod == 'userName' ? '使用邮箱登陆' : '使用用户名登陆' }}</v-btn>
+                            <v-spacer></v-spacer>
+                            <agree-button @click="handleAgree"></agree-button>
                         </div>
                         <div v-if="nowTab === 'register'" class="bottom-bar">
                             <v-btn @click="shiftRegisterMethod" class="text-small" density="compact" variant="text">{{
@@ -169,10 +171,10 @@ import { computed, ref } from 'vue';
 import { rules } from '@/utils/rules';
 import { validateEmail, validatePassWord, validateUserName } from '@/utils/rules';
 import { /*getRegisterEmailCode*/ loginWithPassword, /*loginWithEmail, register*/ } from '@/axios/account';
-import { getCancelLoadMsg, getLoadMsg, getNormalWarnAlert, openNewPage } from '@/utils/other';
-import { setCookie } from '@/utils/cookie';
+import { getCancelLoadMsg, getLoadMsg, getNormalWarnAlert, openNewPage, setLogin } from '@/utils/other';
 import { csLoginByUserName } from '@/axios/api_convert/account';
 import { initTriangleEffect } from '@/utils/animation';
+import AgreeButton from '@/components/AgreeButton.vue';
 export default {
     name: 'LoginPage',
     setup() {
@@ -206,6 +208,7 @@ export default {
     components: {
         EmailExamineCard,
         SensitiveTextField,
+        AgreeButton,
     },
     data() {
         const loginByUsernameData = {
@@ -273,6 +276,7 @@ export default {
             registerByInviteStep,
             examineCardInfo,
             passwdVisible: false,
+            ifSavePasswd:false,
         }
     },
     methods: {
@@ -292,11 +296,7 @@ export default {
                 /**
                  * save the user message
                  */
-                setCookie('userName', response.user_name, 7 * 24);
-                setCookie('userId', response.user_id, 7 * 24);
-                setCookie('email', response.email, 7 * 24);
-                setCookie('refreshToken', response.refresh, 7 * 24);
-                setCookie('userProfileUrl', this.apiUrl + "/image/user?user_id=" + response.user_id, 7 * 24);
+                setLogin(response.user_name,response.user_id,response.email,response.refresh,this.apiUrl + "/image/user?user_id=" + response.user_id,this.ifSavePasswd?this.loginByUsernameData.passwd:null)
                 /**
                  * to the index page
                  */
@@ -384,6 +384,9 @@ export default {
         },
         toUrl(url) {
             openNewPage(url);
+        },
+        handleAgree(state){
+            this.ifSavePasswd=state;
         }
     },
     mounted() {

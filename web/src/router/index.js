@@ -87,6 +87,12 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
+    path:'/test',
+    name:'TestPage',
+    component: (()=>import('@/pages/TestPage.vue')),
+    meta: { requiresAuth: false },
+  },
+  {
     path:'/chat/:id/:name',//user id
     name:'ChatPage',
     component: (()=>import('@/pages/ChatPage.vue')),
@@ -109,17 +115,9 @@ const router = createRouter({
  * so we just check if the cookie exsits here  
  */
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    /**
-     * we just judge if refreshToken here
-     * and about the accessToken obtain deal in the api  
-     */
-    if(getCookie("refreshToken")){
-      next();
-    }else{
-      router.push({name:"LoginPage"});
-      window.alert("令牌已过期，请重新登录");
-    }
+  if(to.matched.some(record => record.meta.requiresAuth)){
+    //if need login,do nothing here,in the request part will do 
+    next();
   }else if(to.path=="/login"){
     /**
      * if login,then to IndexPage

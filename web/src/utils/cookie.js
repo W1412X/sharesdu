@@ -64,4 +64,5 @@ export function clearTokenCookies() {
   setCookie("userName", "", -1);
   setCookie("email", "", -1);
   setCookie("userProfileUrl","",-1);
+  setCookie("passwd","",-1);
 }

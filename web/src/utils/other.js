@@ -2,6 +2,7 @@ import { getAccessToken } from "@/axios/token";
 import { clearTokenCookies, getCookie, setCookie } from "./cookie";
 import { globalProperties } from "@/main";
 import { setLock, waitForLock } from "./lock";
+import { loginWithPassword } from "@/axios/account";
 //import { getDeviceType } from "./device";
 /**
  * a deep copy function for json object
@@ -96,26 +97,68 @@ export async function dealAxiosError(error) {
                             }
                         }
                         setLock("token", true);
+                        console.log("refresh token存在，尝试获取access token");
                         const response = await getAccessToken(refreshToken);
                         if (response.status == 999) {
+                            console.log("成功获取access token");
                             setCookie("accessToken", response.access, 5);
                             return {
                                 status: 1412,
                                 message: "已更新access token，重新请求"
                             }
                         } else {
-                            clearTokenCookies();
-                            window.alert("令牌已过期，请重新登录");
-                            window.open("/#/login", "_self")
-                            return {
-                                status: -1,
-                                message: "获取access失败，请重新登陆",
+                            console.log("获取access token失败，尝试自动登陆");
+                            /**
+                             * here the refresh token expired
+                             * so we try login by passwd if savepasswd
+                             */
+                            if (getCookie("passwd")) {
+                                console.log("保存了密码，尝试自动登陆");
+                                let response = await loginWithPassword({
+                                    user_name: getCookie("userName"),
+                                    pass_word: getCookie("passwd")
+                                })
+                                if (response.status == 200) {
+                                    console.log("自动登陆成功");
+                                    setLogin(response.user_name, response.user_id, response.email, response.refresh, globalProperties.$apiUrl + "/image/user?user_id=" + response.user_id, getCookie("passwd"))
+                                    return {
+                                        status: 1412,
+                                        message: "已更新access token，重新请求"
+                                    }
+                                } else {
+                                    console.log("自动登陆失败，手动登陆");
+                                    clearTokenCookies();
+                                    window.alert("自动登陆失败，请手动登陆");
+                                    setTimeout(()=>{
+                                        window.open("/#/login", "_self")
+                                        location.reload();
+                                    },1000)
+                                    return {
+                                        status: -1,
+                                        message: "自动登陆失败，请手动登陆",
+                                    }
+                                }
+                            } else {
+                                console.log("没有保存密码，手动登陆");
+                                clearTokenCookies();
+                                window.alert("令牌已过期，请重新登录");
+                                setTimeout(()=>{
+                                    window.open("/#/login", "_self")
+                                    location.reload();
+                                },1000)
+                                return {
+                                    status: -1,
+                                    message: "获取access失败，请重新登陆",
+                                }
                             }
                         }
                     } catch (error) {
                         clearTokenCookies();
                         window.alert("令牌已过期，请重新登录");
-                        window.open("/#/login", "_self")
+                        setTimeout(()=>{
+                            window.open("/#/login", "_self")
+                            location.reload();
+                        },1000)
                         return {
                             status: -1,
                             message: "重新登陆，令牌无效"
@@ -124,17 +167,50 @@ export async function dealAxiosError(error) {
                         setLock("token", false);
                     }
                 } else {
-                    /**
-                     * if the refresh key not exists too
-                     * then delete all the user message
-                     * and redirect to login page
-                     */
-                    clearTokenCookies();
-                    window.alert("令牌已过期，请重新登录");
-                    window.open("/#/login", "_self")
-                    return {
-                        status: -1,
-                        message: "重新登陆"
+                    console.log("refresh token不存在");
+                    if (getCookie("passwd")) {
+                        console.log("保存了密码，尝试自动登陆");
+                        let response = await loginWithPassword({
+                            user_name: getCookie("userName"),
+                            pass_word: getCookie("passwd")
+                        })
+                        if (response.status == 200) {
+                            console.log("自动登陆成功");
+                            setLogin(response.user_name, response.user_id, response.email, response.refresh, globalProperties.$apiUrl + "/image/user?user_id=" + response.user_id, getCookie("passwd"))
+                            return {
+                                status: 1412,
+                                message: "已更新access token，重新请求"
+                            }
+                        } else {
+                            console.log("自动登陆失败，手动登陆");
+                            clearTokenCookies();
+                            window.alert("自动登陆失败，请手动登陆");
+                            setTimeout(()=>{
+                                window.open("/#/login", "_self")
+                                location.reload();
+                            },1000)
+                            return {
+                                status: -1,
+                                message: "自动登陆失败，请手动登陆",
+                            }
+                        }
+                    } else {
+                        console.log("没有保存密码，手动登陆");
+                        /**
+ * if the refresh key not exists too
+ * then delete all the user message
+ * and redirect to login page
+ */
+                        clearTokenCookies();
+                        window.alert("令牌已过期，请重新登录");
+                        setTimeout(()=>{
+                            window.open("/#/login", "_self")
+                            location.reload();
+                        },1000)
+                        return {
+                            status: -1,
+                            message: "重新登陆"
+                        }
                     }
                 }
             }
@@ -154,7 +230,10 @@ export async function dealAxiosError(error) {
         } else {
             clearTokenCookies();
             window.alert("令牌已过期，请重新登录");
-            window.open("/#/login", "_self")
+            setTimeout(()=>{
+                window.open("/#/login", "_self")
+                location.reload();
+            },1000)
             return {
                 status: -1,
                 message: "重新登陆"
@@ -163,7 +242,10 @@ export async function dealAxiosError(error) {
     } catch (error) {
         clearTokenCookies();
         window.alert("令牌已过期，请重新登录");
-        window.open("/#/login", "_self")
+        setTimeout(()=>{
+            window.open("/#/login", "_self")
+            location.reload();
+        },1000)
         return {
             status: -1,
             message: "重新登陆"
@@ -426,4 +508,16 @@ export function extractStringsInBrackets(inputString) {
 export function removeStringsInBrackets(inputString) {
     const regex = /\[([^\]]+)\]/g;
     return inputString.replace(regex, '');
+}
+
+export function setLogin(userName, user_id, email, refresh, profile, passwd = null) {
+    setCookie('userName', userName, 7 * 24);
+    setCookie('userId', user_id, 7 * 24);
+    setCookie('email', email, 7 * 24);
+    setCookie('refreshToken', refresh, 7 * 24);
+    setCookie('userProfileUrl', profile, 7 * 24);
+    if (passwd) {
+        setCookie('passwd', passwd, 9999 * 24);
+        setCookie('userName', userName, 9999 * 24);
+    }
 }

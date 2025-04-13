@@ -3,10 +3,12 @@
     <!-- Bubble canvas background -->
     <EmojiPicker></EmojiPicker>
     <ImgCard src="https://tse1-mm.cn.bing.net/th/id/OIP-C.IJZgTNx1vp9EML_1wV5p2gHaEo?rs=1&pid=ImgDetMain"></ImgCard>
+    <AgreeButton @agree="handleAgree"></AgreeButton>
   </div>
 </template>
 
 <script>
+import AgreeButton from '@/components/AgreeButton.vue';
 import EmojiPicker from '@/components/EmojiPicker.vue';
 import ImgCard from '@/components/ImgCard.vue';
 
@@ -15,6 +17,7 @@ export default {
   components: {
     EmojiPicker,
     ImgCard,
+    AgreeButton,
   },
   data() {
     return {
@@ -24,6 +27,13 @@ export default {
   mounted() {
   },
   methods: {
+    handleAgree(state){
+      if(state){
+        window.alert("agreed");
+      }else{
+        window.alert("disagreed");
+      }
+    },
     d() {
       this.text = ''; // Add your delete functionality here
     },

@@ -44,7 +44,6 @@ export const getRegisterEmailCode = async (email) => {
  */
 export const loginWithPassword = async (data) => {
   try {
-    await waitForLock('token');
     const response = await getNoHeaderAxiosInstance().post('/login_passwd', data);
     return response.data;
   } catch (error) {
