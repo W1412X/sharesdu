@@ -61,13 +61,13 @@
         <div class="row-div">
             <div class="col-div">
                 <v-btn variant="text" @click="selectImage">上传原图像</v-btn>
-                <img-card :width="200" :src="oriImageUrl"></img-card>
+                <img-card :if-need-deal="false" :width="200" :src="oriImageUrl"></img-card>
             </div>
             <div v-if="ifImage"  class="col-div">
                 <div class="medium-text-div">
                     转换后图像
                 </div>
-                <img-card v-if="styleImageUrl != null" :width="200" :src="styleImageUrl"></img-card>
+                <img-card :if-need-deal="false"  v-if="styleImageUrl != null" :width="200" :src="styleImageUrl"></img-card>
             </div>
         </div>
         <div class='text-img-container'>

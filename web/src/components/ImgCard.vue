@@ -11,7 +11,7 @@
         </div>
     </v-dialog>
     <div class="img-card-container">
-      <v-img @click="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover :src="imgUrl" :max-width="width" :min-width="width">
+      <v-img @click="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover :src="ifNeedDeal?imgUrl:src" :max-width="width" :min-width="width">
         <template v-slot:placeholder>
           <v-row
             align="center"
@@ -19,7 +19,7 @@
             justify="center"
           >
             <v-progress-circular
-              color="grey-lighten-5"
+              :color="themeColor"
               indeterminate
             ></v-progress-circular>
           </v-row>
@@ -66,7 +66,11 @@ import { computed, ref } from 'vue';
       clickable:{
         type:Boolean,
         default:true
-      }
+      },
+      ifNeedDeal:{
+        type:Boolean,
+        default:true
+      },
     },
     setup() {
         const themeColor=globalProperties.$themeColor;
@@ -104,7 +108,9 @@ import { computed, ref } from 'vue';
         }
     },
     async mounted() {
-      this.imgUrl=await fetchImgAndDeal(this.imgUrl);
+      if(this.ifNeedDeal){
+        this.imgUrl=await fetchImgAndDeal(this.imgUrl);
+      }
       this.loadState=true;
     }
   }
