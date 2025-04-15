@@ -11,7 +11,19 @@
         </div>
     </v-dialog>
     <div class="img-card-container">
-      <v-img @click="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover :src="loadState ? src : lazyImgUrl" :max-width="width" :min-width="width">
+      <v-img @click="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover :src="imgUrl" :max-width="width" :min-width="width">
+        <template v-slot:placeholder>
+          <v-row
+            align="center"
+            class="fill-height ma-0"
+            justify="center"
+          >
+            <v-progress-circular
+              color="grey-lighten-5"
+              indeterminate
+            ></v-progress-circular>
+          </v-row>
+        </template>
       </v-img>
       <v-btn 
         v-if="editable"
@@ -29,6 +41,7 @@
   
   <script>
   import { globalProperties } from '@/main';
+import { fetchImgAndDeal } from '@/utils/image';
 import { computed, ref } from 'vue';
   
   export default {
@@ -44,7 +57,7 @@ import { computed, ref } from 'vue';
       },
       height:{
         type: Number,
-        default: 120
+        default: null
       },
       editable:{
         type:Boolean,
@@ -57,7 +70,7 @@ import { computed, ref } from 'vue';
     },
     setup() {
         const themeColor=globalProperties.$themeColor;
-      const lazyImgUrl = globalProperties.$lazyImgUrl;
+      const lazyImgUrl = globalProperties.$imgLazy;
       const ifShowImgDetail=ref(false);
       const ifShowDialog=computed(()=>{
         return ifShowImgDetail.value;
@@ -76,6 +89,8 @@ import { computed, ref } from 'vue';
     data() {
       return {
         loadState: false,
+        imgBlob:null,
+        imgUrl:this.src,
       }
     },
     methods: {
@@ -88,8 +103,9 @@ import { computed, ref } from 'vue';
             }
         }
     },
-    mounted() {
-        this.loadState=true;
+    async mounted() {
+      this.imgUrl=await fetchImgAndDeal(this.imgUrl);
+      this.loadState=true;
     }
   }
   </script>

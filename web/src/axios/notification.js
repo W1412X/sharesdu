@@ -34,15 +34,15 @@ export const fetchNotificationsList = async (page_index = 1,page_size = 10) => {
    * @param {int} notification_id The ID of the notification to mark as read
    * @returns {Promise}
    */
-  export const markAsReadNotification = async (notification_id) => {
+  export const markAsReadNotification = async (notification_ids) => {
     try {
       await waitForLock('token');
-      const response = await getaxiosInstance().post('/notifications/read', { notification_id });
+      const response = await getaxiosInstance().post('/notifications/read', { notification_ids:notification_ids });
       return response.data;
     } catch (error) {
       let dealResult = await dealAxiosError(error);
       if(dealResult.status == 1412){
-        return await markAsReadNotification(notification_id);
+        return await markAsReadNotification(notification_ids);
       }
       return dealResult;
     }

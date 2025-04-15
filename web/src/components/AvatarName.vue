@@ -1,8 +1,8 @@
 <!--  -->
 <template>
     <div class="avatar-name" @click="toAuthorPage">
-        
-        <v-avatar :size="size" :image="this.profileUrl"></v-avatar>
+        <v-icon v-if="this.profileUrl==null" icon="mdi-account-circle-outline" :size="size" color='#8a8a8a'></v-icon>
+        <v-avatar v-if="this.profileUrl!=null" :size="size" :image="this.profileUrl"></v-avatar>
         <div class="name" :style="{color:color}">
             {{initData.name}}
         </div>

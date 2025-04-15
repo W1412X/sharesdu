@@ -3,6 +3,7 @@ import { clearTokenCookies, getCookie, setCookie } from "./cookie";
 import { globalProperties } from "@/main";
 import { setLock, waitForLock } from "./lock";
 import { loginWithPassword } from "@/axios/account";
+import { fetchImgAndDeal } from "./image";
 //import { getDeviceType } from "./device";
 /**
  * a deep copy function for json object
@@ -521,3 +522,62 @@ export function setLogin(userName, user_id, email, refresh, profile, passwd = nu
         setCookie('userName', userName, 9999 * 24);
     }
 }
+
+/**
+ * 
+ * @param {String} inputString 
+ * @returns 
+ */
+export function extractImageLinks(inputString) {
+    const regex = /https:\/\/api\.sharesdu\.com\/index\/api\/image\/get[^\s")]+/g;
+    const matches = inputString.match(regex);
+    return matches || [];
+}
+
+
+  export async function formatImageLinkInArticle(content){
+    let imgs=extractImageLinks(content);
+    console.log(imgs);
+    let formattedImgs=[];
+    for(let i=0;i<imgs.length;i++){
+        formattedImgs.push(await fetchImgAndDeal(imgs[i],'png'));
+    }
+    for(let i=0;i<imgs.length;i++){
+        content=content.replace(imgs[i],formattedImgs[i]);
+    }
+    return content;
+  }
+
+  /**
+   * 
+   * @param {JSON} response 
+   * @returns 
+   */
+  export async function responseToArticle(response){
+    let article={};
+    article.id=response.article_detail.article_id;
+    article.title=response.article_detail.article_title;
+    article.summary=response.article_detail.article_summary;
+    article.type=response.article_detail.article_type;
+    article.tags=response.article_detail.article_tags;
+    article.originLink=response.article_detail.origin_link;
+    article.coverLink=response.article_detail.article_cover_link;
+    article.content=getContentWithoutEditorType(response.article_detail.article_content);
+    //check the image data  
+    article.content=await formatImageLinkInArticle(article.content);
+    let editorType=extractEditorType(response.article_detail.article_content);
+    article.likeCount=response.article_detail.like_count;
+    article.replyCount=response.article_detail.reply_count;
+    article.viewCount=response.article_detail.view_count;
+    article.starCount=response.article_detail.star_count;
+    article.authorName=response.article_detail.author_name;
+    article.authorId=response.article_detail.author_id;
+    article.sourceUrl=response.article_detail.source_url;
+    article.publishTime=response.article_detail.publish_time;
+    article.ifLike=response.article_detail.if_like;
+    article.ifStar=response.article_detail.if_star;
+    return [
+        article,
+        editorType,
+    ]
+  }

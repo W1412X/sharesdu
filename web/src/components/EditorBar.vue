@@ -51,7 +51,7 @@
                         class="before-icon"></v-icon>
                 </div>
                 <div @click="selectImage()" >
-                    <img-card :width="160" :clickable="false" :height="160" :src="data.coverLink"></img-card>
+                    <v-img :width="160" :clickable="false" :height="160" :src="data.coverLink"></v-img>
                 </div>
             </div>
             <div class="row-div">
@@ -119,7 +119,6 @@ import { computed, ref } from 'vue';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
 import { uploadArticleImage } from '@/axios/image';
 import { extractTags } from '@/utils/keyword';
-import ImgCard from './ImgCard.vue';
 import { VFileUpload } from 'vuetify/lib/labs/components.mjs';
 export default {
     name: 'EditorBar',
@@ -162,7 +161,6 @@ export default {
     },
     components: {
         SensitiveTextArea,
-        ImgCard,
         VFileUpload,
     },
     data() {

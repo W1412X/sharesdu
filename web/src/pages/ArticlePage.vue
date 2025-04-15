@@ -128,7 +128,7 @@ import { computed, ref } from 'vue';
 import PostItem from '@/components/PostItem.vue';
 import PostEditor from '@/components/PostEditor.vue';
 import AvatarName from '@/components/AvatarName.vue';
-import { extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, openNewPage } from '@/utils/other';
+import { formatImageLinkInArticle, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, openNewPage, responseToArticle } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 import LikeButton from '@/components/LikeButton.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
@@ -187,6 +187,7 @@ export default {
     },
     data() {
         return {
+            articleResponse:null,
             article: {
                 id: "",
                 title: "",
@@ -223,7 +224,7 @@ export default {
     beforeRouteLeave (to, from, next) {
             //use session storage to save memory now  
             let scanMsg={};
-            scanMsg.article=this.article;
+            scanMsg.articleResponse=this.articleResponse;
             scanMsg.postItems=this.postItems;
             scanMsg.postPageNum=this.postPageNum;
             scanMsg.commentState=this.ifShowComment;
@@ -300,7 +301,11 @@ export default {
     async mounted() {
         if(sessionStorage.getItem('articleScanMsg|'+this.$route.params.id)){
             let scanMsg=JSON.parse(sessionStorage.getItem('articleScanMsg|'+this.$route.params.id));
-            this.article=scanMsg.article;
+            this.articleResponse=scanMsg.articleResponse;
+            [this.article,this.editorType]=await responseToArticle(scanMsg.articleResponse);
+            this.setLoading(getLoadMsg("正在获取文章图片..."));
+            this.article.content=await formatImageLinkInArticle(this.article.content);
+            this.setLoading(getCancelLoadMsg());
             this.postItems=scanMsg.postItems;
             this.postPageNum=scanMsg.postPageNum;
             this.setCommentState(scanMsg.commentState);
@@ -324,25 +329,8 @@ export default {
             let response=await getArticleDetail(this.$route.params.id);
             this.setLoading(getCancelLoadMsg());
             if(response.status==200){
-                this.article.id=response.article_detail.article_id;
-                this.article.title=response.article_detail.article_title;
-                this.article.summary=response.article_detail.article_summary;
-                this.article.type=response.article_detail.article_type;
-                this.article.tags=response.article_detail.article_tags;
-                this.article.originLink=response.article_detail.origin_link;
-                this.article.coverLink=response.article_detail.article_cover_link;
-                this.article.content=getContentWithoutEditorType(response.article_detail.article_content);
-                this.editorType=extractEditorType(response.article_detail.article_content);
-                this.article.likeCount=response.article_detail.like_count;
-                this.article.replyCount=response.article_detail.reply_count;
-                this.article.viewCount=response.article_detail.view_count;
-                this.article.starCount=response.article_detail.star_count;
-                this.article.authorName=response.article_detail.author_name;
-                this.article.authorId=response.article_detail.author_id;
-                this.article.sourceUrl=response.article_detail.source_url;
-                this.article.publishTime=response.article_detail.publish_time;
-                this.article.ifLike=response.article_detail.if_like;
-                this.article.ifStar=response.article_detail.if_star;
+                this.articleResponse=response;
+                [this.article,this.editorType]=await responseToArticle(response);
                 this.loadState=true;
                 //add to history
                 await addHistory("article",this.article.id,this.article.title);

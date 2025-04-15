@@ -291,11 +291,13 @@ export default {
       openNewPage(url);
     },
     async getNotificationList() {
+      let ids=[]
       this.setLoading(getLoadMsg("正在获取通知列表..."));
       let response=await fetchNotificationsList(this.notificationPageNum);
       this.setLoading(getCancelLoadMsg());
       if (response.status == 200) {
         for(let i=0;i<response.notification_list.length;i++){
+          ids.push(response.notification_list[i].notification_id);
           this.notificationList.push({
             id:response.notification_list[i].notification_id,
             type:response.notification_list[i].type,

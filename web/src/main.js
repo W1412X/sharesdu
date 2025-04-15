@@ -123,8 +123,29 @@ app.config.globalProperties.$examineMethods=[
 /**
  * lazy load img url
  */
-app.config.globalProperties.$lazyImgUrl="https://sharesdu.com/resource/default_img.png";
-
+app.config.globalProperties.$imgDict={
+  svg:{
+    lazy:window.location.origin+"/resource/default_img.svg",
+    reviewing:window.location.origin+"/resource/reviewing.svg",
+    empty:window.location.origin+"/resource/no_img.svg",
+    notFound:window.location.origin+"/resource/404.svg",
+    unreviewed:window.location.origin+"/resource/review_failed.svg",
+  },
+  png:{
+    lazy:window.location.origin+"/resource/default_img.svg",
+    reviewing:window.location.origin+"/resource/reviewing.svg",
+    empty:window.location.origin+"/resource/no_img.svg",
+    notFound:window.location.origin+"/resource/404.svg",
+    unreviewed:window.location.origin+"/resource/review_failed.svg",
+  },
+  test:{
+    lazy:window.location.origin+"/resource/default_img.png",
+    reviewing:window.location.origin+"/resource/reviewing.png",
+    empty:window.location.origin+"/resource/no_img.png",
+    notFound:window.location.origin+"/resource/404.png",
+    unreviewed:window.location.origin+"/resource/review_failed.png",
+  }
+}
 const deviceType=getDeviceType();
 /**
  * mobile/desktop  

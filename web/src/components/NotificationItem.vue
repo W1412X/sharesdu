@@ -92,7 +92,7 @@ export default {
         },
         async click() {
             this.setLoading(getLoadMsg("获取信息..."));
-            let response=await markAsReadNotification(this.data.id);
+            let response=await markAsReadNotification([this.data.id]);
             this.setLoading(getCancelLoadMsg());
             if(response.status==200){
                 this.data.state=true;
