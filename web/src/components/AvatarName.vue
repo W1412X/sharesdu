@@ -3,7 +3,7 @@
     <div class="avatar-name" @click="toAuthorPage">
         <v-icon v-if="this.profileUrl==null" icon="mdi-account-circle-outline" :size="size" color='#8a8a8a'></v-icon>
         <v-avatar v-if="this.profileUrl!=null" :size="size" :image="this.profileUrl"></v-avatar>
-        <div class="name" :style="{color:color}">
+        <div v-if="ifShowName"  class="name" :style="{color:color}">
             {{initData.name}}
         </div>
     </div>
@@ -31,15 +31,27 @@ export default {
         color:{
             type: String,
             default: '#000'
+        },
+        clickable:{
+            type: Boolean,
+            default: true
+        },
+        ifShowName:{
+            type: Boolean,
+            default: true
         }
     },
     data(){
         return{
             profileUrl:null,
+            time:1000,
         }
     },
     methods: {
         toAuthorPage(){
+            if(!this.clickable){
+                return;
+            }
             if(getCookie("userId")==this.initData.id){
                 this.$router.push({
                     name: 'SelfPage',
@@ -73,6 +85,7 @@ export default {
             }else{
                 setTimeout(()=>{
                     this.getProfileRecursion();
+                    this.time=this.time*2;
                 },1000);
             }
         }

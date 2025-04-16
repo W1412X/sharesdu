@@ -20,7 +20,7 @@
       </v-list-item>
       <v-divider></v-divider>
       <v-btn v-if="!rail" size="30" class="menu-btn" :icon="'mdi-chevron-left'" @click.stop="rail = !rail"></v-btn>
-      <v-list density="compact" nav :color="themeColor">
+      <v-list density="compact" nav :color="themeColor" v-model="choose">
         <v-list-item @click="choose = 'info'" prepend-icon="mdi-account" title="资料" value="info"></v-list-item>
         <v-list-item @click="choose = 'write'" prepend-icon="mdi-pencil" title="创作" value="write"></v-list-item>
         <v-list-item @click="choose = 'star'" prepend-icon="mdi-star" title="收藏" value="star"></v-list-item>
@@ -39,7 +39,7 @@
       <v-divider></v-divider>
       <v-btn size="30" class="menu-btn" :icon="navVisible ? 'mdi-chevron-left' : 'mdi-chevron-right'"
         @click="navVisible = !navVisible"></v-btn>
-      <v-list density="compact" nav :color="themeColor">
+      <v-list density="compact" nav :color="themeColor" v-model="choose">
         <v-list-item @click="choose = 'info'" prepend-icon="mdi-account" title="资料" value="info"></v-list-item>
         <v-list-item @click="choose = 'write'" prepend-icon="mdi-pencil" title="创作" value="write"></v-list-item>
         <v-list-item @click="choose = 'star'" prepend-icon="mdi-star" title="收藏" value="star"></v-list-item>
