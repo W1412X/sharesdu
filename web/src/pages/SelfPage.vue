@@ -122,7 +122,6 @@ import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
-import { getProfileUrlInDB } from '@/utils/profile';
 import { ref, computed } from 'vue';
 export default {
   name: 'SelfPage',
@@ -287,7 +286,7 @@ export default {
       name:getCookie("userName"),
       email:getCookie("userEmail"),
       passwd:"********",
-      profileUrl:await getProfileUrlInDB(getCookie("userId")),
+      profileUrl:getCookie('userProfileUrl'),
     }
     document.getElementById('web-title').innerText="我的";
     if(sessionStorage.getItem('selfScanMsg')){
