@@ -20,7 +20,7 @@
 
     </v-dialog>
     <v-card elevation="1" v-if="!ifDeleted" class="container">
-        <div class="name text-medium">
+        <div v-if="!ifPreview" class="name text-medium">
             <avatar-name v-if="data.authorId" :initData="{ id: data.authorId, name: data.authorName }"></avatar-name>
         </div>
         <div @click="click" class="comment text-medium content">
@@ -34,14 +34,14 @@
                 <span>{{ this.data.publishTime }}</span>
             </div>
             <v-spacer></v-spacer>
-            <div class="bottom-btn-container">
+            <div v-if="!ifPreview" class="bottom-btn-container">
                 <like-button @alert="alert" @set_loading="setLoading" :size="'20'" :id="this.data.id"
                     :state="this.data.ifLike" :type="'reply'"></like-button>
             </div>
             <div class="like-num text-small">
                 {{ this.data.likeNum }}
             </div>
-            <div style="margin-right: 10px;">
+            <div v-if="!ifPreview" style="margin-right: 10px;">
                 <v-btn @click="setReplyEditorState(true)" elevation="0" icon :style="{
                     'width': '20px',
                     'height': '20px',
@@ -94,6 +94,10 @@ export default {
             type: String,
             default: null
         },
+        ifPreview:{
+            type: Boolean,
+            default: false,
+        }
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -138,7 +142,14 @@ export default {
             this.replyContent+=emoji;
         },
         click() {
-
+            if(this.ifPreview){
+                this.$router.push({
+                    name: 'PostPage',
+                    params: {
+                        id: this.data.id,
+                    }
+                });
+            }
         },
         alert(msg) {
             this.$emit('alert', msg);

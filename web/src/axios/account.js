@@ -193,3 +193,42 @@ export const getAuthorInfo=async(userId)=>{
     return dealResult;
   }
 }
+
+/**
+ * 获取用户创作内容预览
+ * @param {*} userId 
+ * @returns 
+ */
+export const getUserPreview = async (userId) => {
+  try {
+      const response = await getaxiosInstance().get(`/user/preview?user_id=${userId}`);
+      return response.data;
+  } catch (error) {
+      let dealResult = await dealAxiosError(error);
+      if (dealResult.status == 1412) {
+          return await getUserPreview(userId);
+      }
+      return dealResult;
+  }
+};
+
+/**
+ * 获取用户创作详情
+ * @param {*} contentType 内容类型：article/post/reply
+ * @param {*} userId 目标用户的user_id
+ * @param {*} page 页码
+ * @param {*} pageSize 每页数量
+ * @returns 
+ */
+export const getUserContent = async (contentType, userId, page = 1, pageSize = 10) => {
+  try {
+      const response = await getaxiosInstance().get(`/user/content?type=${contentType}&user_id=${userId}&page=${page}&page_size=${pageSize}`);
+      return response.data;
+  } catch (error) {
+      let dealResult = await dealAxiosError(error);
+      if (dealResult.status == 1412) {
+          return await getUserContent(contentType, userId, page, pageSize);
+      }
+      return dealResult;
+  }
+};

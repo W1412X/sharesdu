@@ -55,32 +55,7 @@
     <div class="view-container">
       <!-- write part -->
       <div v-if="choose === 'write'">
-        <v-tabs v-model="selfItemType" fixed-tabs class="select-bar">
-          <v-tab class="tab"
-            :style="{ background: 'rgba(255,255,255,1)', 'color': this.selfItemType == 'article' ? '#000000' : '#8a8a8a' }"
-            height="40px" value="article" text="文章"></v-tab>
-          <v-tab class="tab"
-            :style="{ background: 'rgba(255,255,255,1)', 'color': this.selfItemType == 'post' ? '#000000' : '#8a8a8a' }"
-            height="40px" value="post" text="帖子"></v-tab>
-          <v-tab class="tab"
-            :style="{ background: 'rgba(255,255,255,1)', 'color': this.selfItemType == 'course' ? '#000000' : '#8a8a8a' }"
-            height="40px" value="course" text="课程"></v-tab>
-        </v-tabs>
-        <div v-if="selfItemType == 'article'" class="item-container">
-          <article-item v-for="(item, index) in this.selfArticleList" :key="index" :init-data="item">
-          </article-item>
-          <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
-        </div>
-        <div v-if="selfItemType == 'post'" class="item-container">
-          <post-item v-for="(item, index) in this.selfPostList" :key="index" :init-data="item">
-          </post-item>
-          <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
-        </div>
-        <div v-if="selfItemType == 'course'" class="item-container">
-          <course-item v-for="(item, index) in this.selfCourseList" :key="index" :init-data="item">
-          </course-item>
-          <v-btn variant="tonal" class="load-btn">加载更多</v-btn>
-        </div>
+        <create-preview-and-list :type="'all'" @alert="alert" @set_loading="setLoading" :user-id="this.user.id"></create-preview-and-list>
       </div>
       <!-- init part -->
       <div v-if="choose === 'info'">
@@ -137,13 +112,11 @@
 import { getBlockList, unblockUser } from '@/axios/block';
 import { fetchNotificationsList } from '@/axios/notification';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
-import ArticleItem from '@/components/ArticleItem.vue';
 import AuthorCard from '@/components/AuthorCard.vue';
 import AvatarName from '@/components/AvatarName.vue';
 import ColorSelectorCard from '@/components/ColorSelectorCard.vue';
-import CourseItem from '@/components/CourseItem.vue';
+import CreatePreviewAndList from '@/components/CreatePreviewAndList.vue';
 import NotificationItem from '@/components/NotificationItem.vue';
-import PostItem from '@/components/PostItem.vue';
 import StarCard from '@/components/StarCard.vue';
 import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
@@ -214,24 +187,17 @@ export default {
     next()
   },
   components: {
-    ArticleItem,
-    PostItem,
-    CourseItem,
     AvatarName,
     UserMessageEditorCard,
     StarCard,
     ColorSelectorCard,
     NotificationItem,
     AuthorCard,
+    CreatePreviewAndList,
   },
   data() {
     return {
       user: {},
-      selfArticleList: [],
-      selfPostList: [],
-      selfCourseList: [],
-      followList: [],
-      followStateList: [],
       notificationList: [],
       notificationPageNum:1,
       blockList: [],

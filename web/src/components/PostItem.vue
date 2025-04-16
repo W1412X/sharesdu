@@ -4,15 +4,15 @@
             <div class="text-small bottom-bar avatar-name-column-center">
                 <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
                 <v-spacer></v-spacer>
-                <div class="bottom-item">
+                <div v-if="data.likeNum!=null" class="bottom-item">
                     <v-icon icon="mdi-heart" size="19"></v-icon>
                     <div>{{ data.likeNum }}</div>
                 </div>
-                <div class="bottom-item">
+                <div v-if="data.viewNum!=null" class="bottom-item">
                     <v-icon icon="mdi-eye" size="20"></v-icon>
                     <div>{{ data.viewNum }}</div>
                 </div>
-                <div class="bottom-item">
+                <div v-if="data.replyNum!=null" class="bottom-item">
                     <v-icon icon="mdi-comment" size="18" style="margin-top: 2px;"></v-icon>
                     <div>{{ data.replyNum }}</div>
                 </div>

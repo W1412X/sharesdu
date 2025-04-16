@@ -323,9 +323,13 @@ export default {
          */
         this.setLoading(getLoadMsg('正在获取聊天信息...', -1));
         let response = await getChatUsers();
+        let ifParamIdIn=false;
         this.setLoading(getCancelLoadMsg());
         if (response.status == 200) {
             for (let i = 0; i < response.chat_users.length; i++) {
+                if(this.receiverId==response.chat_users[i].user_id){
+                    ifParamIdIn=true;
+                }
                 this.chatUsers.push({
                     id: response.chat_users[i].user_id,
                     name: response.chat_users[i].username,
@@ -340,8 +344,19 @@ export default {
         } else {
             this.alert(getNormalErrorAlert(response.message));
         }
+        if(!ifParamIdIn){
+            this.chatUsers.push({
+                id:this.receiverId,
+                name:this.receiverName,
+                msgNum:0,
+                lastMsg:{
+                    content:"新的聊天",
+                    time:extractTime(new Date().toISOString()),
+                    isSelf:true
+                }
+            })
+        }
         document.getElementById('web-title').innerText = '聊天 | ' + this.receiverName;
-
     }
 }
 </script>

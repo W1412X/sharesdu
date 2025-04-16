@@ -50,7 +50,7 @@
             <v-btn v-if="(data.master || data.superMaster) && this.type==='self'" @click="toManage"  variant="outlined" :color="'#8a8a8a'" prepend-icon="mdi-shield-account">管理网站</v-btn>
         </div>
         <div v-if="type==='author'" class="row-div text-small">
-            更多功能开发ing
+            (仅展示作者的部分创作信息)
         </div>
     </v-card>
 </template>
@@ -142,6 +142,8 @@ export default{
         }
     },
     async mounted(){
+    try {
+
         this.setLoading(getLoadMsg("正在获取用户信息..."));
         let response = await getAuthorInfo(this.id);
         this.setLoading(getCancelLoadMsg());
@@ -180,6 +182,10 @@ export default{
             this.alert(getNormalErrorAlert(response.message));
             this.$router.push({ name: 'ErrorPage', params: { reason: "无法找到此用户" } });
         }
+    }catch(e){
+        this.alert(getNormalErrorAlert("获取用户信息失败"));
+        console.log(e);
+    }
     }
 };
 </script>
@@ -256,6 +262,7 @@ export default{
 @media screen and (max-width: 600px) {
     .card {
         margin:20px;
+        width: 100vw;
         max-height: 90vh;
         padding: 15px;
         background-color: var(--theme-color-transparent);

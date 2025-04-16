@@ -1,26 +1,30 @@
 <template>
     <v-card class="card" @click="click()">
         <div class="column-div">
-            <img-card v-if="deviceType === 'desktop'" :width="140" :height="120" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
+            <img-card v-if="data.coverLink!=null&&deviceType === 'desktop'" :width="140" :height="120" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
                 cover aspect-ratio="7/6"></img-card>
             <div class="row-div padding-left-5">
                 <div class="title title-container">{{ data.title }}</div>
                 <div class="text-small summary-container">{{ data.summary }}</div>
                 <v-spacer></v-spacer>
                 <div class="text-small bottom-bar">
-                    <div class="bottom-item">
+                    <div v-if="data.authorName != null" class="bottom-item">
                     @{{ data.authorName }}
                     </div>
                     <v-spacer></v-spacer>
-                    <div class="bottom-item">
+                    <div v-if="data.starNum != null" class="bottom-item">
                         <v-icon icon="mdi-star" size="20"></v-icon>
                         {{ data.starNum }}
                     </div>
-                    <div class="bottom-item">
+                    <div v-if="data.hotScore != null" class="bottom-item">
                         <v-icon icon="mdi-fire" size="20"></v-icon>
                         {{ data.hotScore }}
                     </div>
-                    <div class="bottom-item">
+                    <div v-if="data.replyNum != null" class="bottom-item">
+                        <v-icon icon="mdi-message-reply" size="18"></v-icon>
+                        {{ data.replyNum }}
+                    </div>
+                    <div v-if="data.viewNum != null" class="bottom-item">
                         <v-icon icon="mdi-eye" size="18" style="margin-top: 2px;"></v-icon>
                         {{ data.viewNum }}
                     </div>

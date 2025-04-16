@@ -1,8 +1,8 @@
 <!--star button-->
 <template>
-    <v-card @click="click()" class="card" elevation="1" variant="tonal" :color="themeColor">
+    <v-card @click="click()" class="card" elevation="1" variant="tonal" :color="ifStarType?themeColor:'white'">
         <div class="div-2">
-            <v-icon :color="themeColor" :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;"/>
+            <v-icon :color="ifStarType?themeColor:'grey'" :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;"/>
             <div class="div-1">
                 <div class="title-container title">
                     {{ data.title }}
@@ -17,7 +17,7 @@
 
 <script>
 import { globalProperties } from '@/main';
-import { openNewPage } from '@/utils/other';
+import { getReplyContentWithoutHeader, openNewPage } from '@/utils/other';
 
 export default {
     props: {
@@ -31,6 +31,10 @@ export default {
                     time: null,
                 }
             }
+        },
+        ifStarType:{
+            type: Boolean,
+            default: true,
         }
     },
     setup(){
@@ -41,6 +45,9 @@ export default {
     },
     data() {
         const data = this.initData;
+        if(data.type=='reply'){
+            data.title=getReplyContentWithoutHeader(data.title);
+        }
         return {
             data,
             ifStar: true,
@@ -59,6 +66,9 @@ export default {
                     break;
                 case 'post':
                     openNewPage("#/post/"+this.data.id);
+                    break;
+                case 'reply':
+                    openNewPage("#/post/"+this.data.postId);
             }
         },
         getIcon(type) {
@@ -68,7 +78,9 @@ export default {
                 case 'course':
                     return 'mdi-book-outline';
                 case 'post':
-                    return "mdi-comment-question-outline"
+                    return "mdi-comment-question-outline";
+                case 'reply':
+                    return "mdi-reply-outline";
             }
             return "mdi-star"
         },
