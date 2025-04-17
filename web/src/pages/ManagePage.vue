@@ -6,16 +6,17 @@
                         <web-card :url="nowShowUrl"></web-card>
                         <div style="display: flex;flex-direction: row;">
                             <v-spacer></v-spacer>
-                            <v-btn :color="themeColor" @click="block" text="确认封禁"/>
+                            <v-btn :color="themeColor" @click="confirm" text="确认操作"/>
                             <v-spacer></v-spacer>
                             <v-btn :color="themeColor" @click="setWebCardState(false)" text="取消操作"/>
                             <v-spacer></v-spacer>
                         </div>
                     </div>
+                    <course-history-card v-if="ifShowCourseHistory" :id="this.itemId" :type="'admin'" @close="setCourseHistoryState(false)" @set_loading="setLoading" @alert="alert"></course-history-card>
                 </div>
             </v-dialog>
             <v-card class="card column-div-scroll">
-                <v-select  label="封禁类型" density="compact" variant="outlined" :items="['article','user']" v-model="itemType"></v-select>
+                <v-select  label="对象类型" density="compact" variant="outlined" :items="['article','user','course']" v-model="itemType"></v-select>
                 <v-textarea  label="ID" rows="1" density="compact" variant="outlined" v-model="itemId" :hint="'ID'"></v-textarea>
                 <v-textarea
                     v-if="itemType === 'user'"
@@ -27,8 +28,11 @@
                 />
                 <v-textarea  v-if="itemType=='article'" label="封禁原因" rows="2" density="compact" variant="outlined" v-model="blockReason"></v-textarea>
                 <div style="display: flex;flex-direction: row-reverse;align-items: center;">
-                    <v-btn variant="outlined" @click="showConfirm" :color="themeColor" prepend-icon="mdi-lock">封禁</v-btn>
-                    <v-btn variant="outlined" style="margin-right: 10px;" @click="unblock" :color="themeColor"  prepend-icon="mdi-lock-open-variant">解封</v-btn>
+                    <v-btn v-if="itemType=='article'||itemType=='user'" variant="outlined" @click="showConfirm" :color="themeColor" prepend-icon="mdi-lock">封禁</v-btn>
+                    <v-btn v-if="itemType=='article'||itemType=='user'" variant="outlined" style="margin-right: 10px;" @click="unblock" :color="themeColor"  prepend-icon="mdi-lock-open-variant">解封</v-btn>
+                    <v-btn v-if="itemType=='course'" variant="outlined" style="margin-right: 10px;" @click="showConfirm" :color="themeColor"  prepend-icon="mdi-lock">冻结</v-btn>
+                    <v-btn v-if="itemType=='course'" variant="outlined" style="margin-right: 10px;" @click="unfreeze" :color="themeColor"  prepend-icon="mdi-lock-open-variant">解冻</v-btn>
+                    <v-btn v-if="itemType=='course'" variant="outlined" style="margin-right: 10px;" @click="rollback" :color="themeColor"  prepend-icon="mdi-undo">回滚</v-btn>
                     <v-spacer></v-spacer>
                     <span style="color: #8a8a8a;" class="text-medium"></span>    
                 </div>
@@ -65,11 +69,13 @@
         </div>
 </template>
 <script>
+import { freezeUnfreezeCourse } from '@/axios/course';
 import { blockArticle, blockUser, getBlockedUserList, getUserList, unblockArticle, unblockUser } from '@/axios/manage';
 import AvatarName from '@/components/AvatarName.vue';
+import CourseHistoryCard from '@/components/CourseHistoryCard.vue';
 import WebCard from '@/components/WebCard.vue';
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert } from '@/utils/other';
 import { computed, ref } from 'vue';
 
 export default{
@@ -77,21 +83,28 @@ export default{
         const themeColor=globalProperties.$themeColor;
         const ifShowWebCard=ref(false);
         const ifShowDialog=computed(()=>{
-            return ifShowWebCard.value;
+            return ifShowWebCard.value||ifShowCourseHistory.value;
         })
         const setWebCardState=(state)=>{
             ifShowWebCard.value=state;
         }   
+        const ifShowCourseHistory=ref(false);
+        const setCourseHistoryState=(state)=>{
+            ifShowCourseHistory.value=state;
+        }
         return {
             themeColor,
             ifShowDialog,
             ifShowWebCard,
-            setWebCardState
+            setWebCardState,
+            ifShowCourseHistory,
+            setCourseHistoryState,
         }
     },
     components:{
         AvatarName,
         WebCard,
+        CourseHistoryCard,
     },
     data(){
         return{
@@ -120,6 +133,9 @@ export default{
                 this.setWebCardState(true);
             }else if(this.itemType=='user'){
                 this.nowShowUrl=(`#/author/${this.itemId}`)
+                this.setWebCardState(true);
+            }else if(this.itemType=='course'){
+                this.nowShowUrl=(`#/course/${this.itemId}`)
                 this.setWebCardState(true);
             }
         },
@@ -169,6 +185,48 @@ export default{
                 }else{
                     this.alert(getNormalErrorAlert("解封失败"));
                 }
+            }
+        },
+        async freeze(){
+            if(this.itemId){
+                this.setLoading(getLoadMsg("正在冻结..."));
+                let response = await freezeUnfreezeCourse(this.itemId, "freeze");
+                this.setLoading(getCancelLoadMsg());
+                if(response.status==200){
+                    this.alert(getNormalSuccessAlert("已冻结课程"));
+                }else{
+                    this.alert(getNormalErrorAlert(response.message));
+                }
+            }else{
+                this.alert(getNormalWarnAlert("请设置课程ID"));
+            }
+        },
+        async unfreeze(){
+            if(this.itemId){
+                this.setLoading(getLoadMsg("正在冻结..."));
+                let response = await freezeUnfreezeCourse(this.itemId, "unfreeze");
+                this.setLoading(getCancelLoadMsg());
+                if(response.status==200){
+                    this.alert(getNormalSuccessAlert("已解冻课程"));
+                }else{
+                    this.alert(getNormalErrorAlert(response.message));
+                }
+            }else{
+                this.alert(getNormalWarnAlert("请设置课程ID"));
+            }
+        },
+        async confirm(){
+            if(this.itemType=='article'||this.itemType=='user'){
+                this.block();
+            }else if(this.itemType=='course'){
+                this.freeze();
+            }
+        },
+        rollback(){
+            if(this.itemId){
+                this.setCourseHistoryState(true);
+            }else{
+                this.alert(getNormalWarnAlert("请设置课程ID"));
             }
         },
         setUserId(id){
@@ -235,7 +293,6 @@ export default{
                 return;
             }
             this.loadBlockUser();
-
         },
 
     }

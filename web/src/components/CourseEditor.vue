@@ -71,7 +71,7 @@
                 ></v-select>
             </div>
             <div class="bottom-btn-div">
-                <v-btn variant="text" class="btn" density="compact" @click="submit">发布</v-btn>
+                <v-btn variant="text" class="btn" density="compact" @click="submit">{{ this.data.id?'提交修改':'发布' }}</v-btn>
                 <v-btn variant="text" class="btn" density="compact" @click="close">取消</v-btn>
             </div>
         </div>
@@ -81,7 +81,8 @@
 import { getCurrentInstance } from 'vue';
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import SensitiveTextField from './SensitiveTextField.vue';
-import { createCourse/*, getCourseDetail,editCourse*/ } from '@/axios/course';
+import { createCourse,/*, getCourseDetail,editCourse*/ 
+editCourse} from '@/axios/course';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 
 export default {
@@ -133,6 +134,13 @@ export default {
             this.$emit('close')
         },
         async submit() {
+            if(this.data.id){
+                await this.edit();
+            }else{
+                await this.create();
+            }
+        },
+        async create(){
             this.setLoading(getLoadMsg('正在创建课程...',-1));
             let type=null;
             switch(this.data.type){
@@ -177,6 +185,57 @@ export default {
             this.setLoading(getCancelLoadMsg());
             if(response.status==200||response.status==201){
                 this.alert(getNormalSuccessAlert("课程创建成功"));
+                this.close();
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+            }
+        },
+        async edit(){
+            this.setLoading(getLoadMsg('正在提交修改...',-1));
+            let type=null;
+            switch(this.data.type){
+                case "必修课":
+                    type='compulsory';
+                    break;
+                case "选修课":
+                    type='elective';
+                    break;
+                case "限选课":
+                    type='restricted_elective';
+                    break;
+                default:
+                    type='other';
+                    break;
+            }
+            let attendMethod=null;
+            switch (this.data.attendMethod) {
+                case "线下":
+                    attendMethod='offline';
+                    break;
+                case "线上":
+                    attendMethod='online';
+                    break;
+                case "混合":
+                    attendMethod='hybrid';
+                    break;
+                default:
+                    attendMethod='other';
+                    break;
+            }
+            let response=await editCourse({
+                id:this.data.id,
+                course_name:this.data.name,
+                course_type:type,
+                college:this.data.college,
+                campus:this.data.campus,
+                course_teacher:this.data.teacher,
+                course_method:attendMethod,
+                assessment_method:this.data.examineMethod,
+                credits:this.data.credit,
+            })
+            this.setLoading(getCancelLoadMsg());
+            if(response.status==200||response.status==201){
+                this.alert(getNormalSuccessAlert("课程修改成功"));
                 this.close();
             }else{
                 this.alert(getNormalErrorAlert(response.message));

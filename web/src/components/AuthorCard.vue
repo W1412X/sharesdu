@@ -262,7 +262,7 @@ export default{
 @media screen and (max-width: 600px) {
     .card {
         margin:20px;
-        width: 100vw;
+        width: 90vw;
         max-height: 90vh;
         padding: 15px;
         background-color: var(--theme-color-transparent);

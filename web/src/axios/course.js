@@ -234,7 +234,7 @@ export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
 export const freezeUnfreezeCourse = async (courseId, action) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/api/admin/courses/freeze', { course_id: courseId, action: action });
+        const response = await getaxiosInstance().post('/admin/courses/freeze', { course_id: courseId, action: action });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -254,7 +254,7 @@ export const freezeUnfreezeCourse = async (courseId, action) => {
 export const rollbackCourse = async (courseId, targetVersion) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/api/admin/courses/rollback', { course_id: courseId, target_version: targetVersion });
+        const response = await getaxiosInstance().post('/admin/courses/rollback', { course_id: courseId, target_version: targetVersion });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -275,12 +275,12 @@ export const rollbackCourse = async (courseId, targetVersion) => {
 export const getCourseHistory = async (courseId, pageIndex = 1, pageSize = 10) => {
     try {
         await waitForLock('token');
-        let cacheResponse=getResponseFromCache(`/api/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`);
+        let cacheResponse=getResponseFromCache(`/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`);
         if(cacheResponse){
             return cacheResponse.data;
         }
-        const response = await getaxiosInstance().get(`/api/admin/courses/${courseId}/history`, { params: { page_index: pageIndex, page_size: pageSize } });
-        saveResponseToCache(`/api/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`,response);
+        const response = await getaxiosInstance().get(`/admin/courses/${courseId}/history`, { params: { page_index: pageIndex, page_size: pageSize } });
+        saveResponseToCache(`/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

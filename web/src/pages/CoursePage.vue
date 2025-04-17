@@ -15,7 +15,8 @@
                 </div>
             </v-card>
             <post-editor v-if="ifShowPostEditor" @add_post="addPost" @close="closePostEditor" @alert="alert" @set_loading="setLoading" :type-msg="{type:'course',id:this.course.id}"></post-editor>
-            <course-editor v-if="ifShowCourseEditor" @alert="alert" @set_loading="setLoading" :init-data="this.course"></course-editor>
+            <course-editor v-if="ifShowCourseEditor" @alert="alert" @set_loading="setLoading" :init-data="this.course" @close="setCourseEditorState(false)"></course-editor>
+            <course-history-card v-if="ifShowHistory" :id="this.course.id" @close="setHistoryState(false)" @set_loading="setLoading" @alert="alert"></course-history-card>
         </div>
     </v-dialog>
     <div class="full-center">
@@ -26,6 +27,10 @@
                         {{ course.name }}
                     </div>
                     <v-spacer></v-spacer>
+                    <v-btn @click="setCourseEditorState(true)" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;" elevation="0" icon variant="text">
+                        <v-icon icon="mdi-book-edit-outline" size="22" :color="'#8a8a8a'"></v-icon>
+                        <v-tooltip activator="parent">如课程信息有误，您可以提交修改</v-tooltip>
+                    </v-btn>
                     <star-button :id="this.course.id" :type="'course'" @alert="alert" @set_loading="setLoading" :state="this.course.ifStar"></star-button>
                     <!--
                     <v-icon class="icon-right-5px" icon="mdi-star" size="22" color="grey"></v-icon>
@@ -179,6 +184,7 @@ import AlertButton from '@/components/AlertButton.vue';
 import CourseEditor from '@/components/CourseEditor.vue';
 import { addHistory } from '@/utils/history';
 import EmojiPicker from '@/components/EmojiPicker.vue';
+import CourseHistoryCard from '@/components/CourseHistoryCard.vue';
 export default {
     name: 'CoursePage',
     components: {
@@ -190,6 +196,7 @@ export default {
         AlertButton,
         CourseEditor,
         EmojiPicker,
+        CourseHistoryCard,
     },
     setup() {
         const userName=getCookie("userName");
@@ -202,14 +209,18 @@ export default {
         const ifShowPostEditor=ref(false);
         const ifShowPost=ref(false);
         const ifShowCourseEditor=ref(false);
+        const ifShowHistory=ref(false);
         const setPostEditorState=(state)=>{
             ifShowPostEditor.value=state;
         };
         const setPostState=(state)=>{
             ifShowPost.value=state;
         };
+        const setHistoryState=(state)=>{
+            ifShowHistory.value=state;
+        };
         const ifShowDialog=computed(()=>{
-            return ifShowCommentEditor.value || ifShowPostEditor.value || ifShowCourseEditor.value;
+            return ifShowCommentEditor.value || ifShowPostEditor.value || ifShowCourseEditor.value || ifShowHistory.value;
         })
         const setCommentEditorState=(state)=>{
             ifShowCommentEditor.value=state;
@@ -233,6 +244,8 @@ export default {
             setPostState,
             ifShowCourseEditor,
             setCourseEditorState,
+            ifShowHistory,
+            setHistoryState,
         }
     },
     beforeRouteLeave (to, from, next) {
@@ -412,8 +425,8 @@ export default {
                 this.alert(getNormalErrorAlert(response.message));
             }
         },
-        async showHistory(){
-
+        showHistory(){
+            this.setHistoryState(true)
         },
         addPost(item){
             this.postItems.unshift(item);

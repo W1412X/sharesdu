@@ -3,7 +3,7 @@
     <div class="avatar-name" @click="toAuthorPage">
         <v-icon v-if="this.profileUrl==null" icon="mdi-account-circle-outline" :size="size" color='#8a8a8a'></v-icon>
         <v-avatar v-if="this.profileUrl!=null" :size="size" :image="this.profileUrl"></v-avatar>
-        <div v-if="ifShowName"  class="name" :style="{color:color}">
+        <div v-if="ifShowName"   :style="{color:color,'font-size':nameSize+'px'}">
             {{initData.name}}
         </div>
     </div>
@@ -39,6 +39,10 @@ export default {
         ifShowName:{
             type: Boolean,
             default: true
+        },
+        nameSize:{
+            type: String,
+            default: '16'
         }
     },
     data(){
@@ -100,8 +104,5 @@ export default {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-.name{
-    font-size: 16px;
 }
 </style>

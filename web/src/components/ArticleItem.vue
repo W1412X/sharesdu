@@ -1,7 +1,7 @@
 <template>
     <v-card class="card" @click="click()">
         <div class="column-div">
-            <img-card v-if="deviceType === 'desktop'" :width="140" :height="120" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
+            <img-card :width="deviceType === 'desktop'?140:95" :height="deviceType === 'desktop'?130:95" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
                 cover aspect-ratio="7/6"></img-card>
             <div class="row-div padding-left-5">
                 <div class="title title-container">{{ data.title }}</div>
