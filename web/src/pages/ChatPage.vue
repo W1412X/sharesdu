@@ -36,13 +36,13 @@
                 <avatar-name :color="'white'" style="margin-left: 10px;" v-if="deviceType == 'desktop'"
                     :init-data="{ id: selfId, name: selfName }"></avatar-name>
                 <v-spacer></v-spacer>
-                <span>与 {{ receiverName }} 的聊天</span>
+                <span> {{ this.receiverId==null?'':receiverName }}</span>
                 <v-spacer></v-spacer>
                 <v-btn icon="mdi-home" variant="text" @click="toHomePage"></v-btn>
             </div>
             <div v-if="deviceType == 'mobile'" id="message-container" class="message-container">
                 <div class="tip-text-btn">
-                    <span @click="loadFrontier" class="text-tiny">
+                    <span v-if="this.receiverId" @click="loadFrontier" class="text-tiny">
                         查看更早的消息
                     </span>
                 </div>
@@ -78,7 +78,7 @@
                 <div id="desktop-message-editor-container" style="flex:1;display: flex;flex-direction: column;">
                     <div id="message-container" class="message-container">
                         <div class="tip-text-btn">
-                            <span @click="loadFrontier" class="text-tiny">
+                            <span v-if="this.receiverId" @click="loadFrontier" class="text-tiny">
                                 查看更早的消息
                             </span>
                         </div>
@@ -109,7 +109,7 @@
 <script>
 import ChatMessage from '@/components/ChatMessage.vue';
 import { getCookie } from '@/utils/cookie';
-import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, extractTime, getNormalInfoAlert } from '@/utils/other';
+import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, extractTime, getNormalInfoAlert, copy } from '@/utils/other';
 import { globalProperties } from '@/main';
 import { getChatHistory, getChatUsers, markMessageAsRead, sendPrivateMessage } from '@/axios/chat';
 import { ref } from 'vue';
@@ -164,7 +164,8 @@ export default {
         receiverId: {
             //eslint-disable-next-line
             async handler(newValue, oldValue) {
-                if (newValue != null) {
+                console.log(newValue);
+                if (newValue) {
                     if (this.chatHistoryDict[newValue] == null) {
                         //get history  
                         this.setLoading(getLoadMsg('正在获取用户列表...'));
@@ -173,8 +174,8 @@ export default {
                         if (response.status == 200) {
                             this.messages = [];
                             response.results = response.results.reverse();
+                            this.chatPageDict[this.receiverId] = 2;
                             for (let i = 0; i < response.results.length; i++) {
-                                this.chatPageDict[this.receiverId] = 2;
                                 this.messages.push({
                                     id: response.results[i].message_id,
                                     content: response.results[i].content,
@@ -182,9 +183,11 @@ export default {
                                     isSelf: response.results[i].is_sender,
                                     ifRead: response.results[i].read,
                                 })
-                                if (!this.messages[this.messages.length - 1].ifRead) {
+                                if (!this.messages[this.messages.length - 1].ifRead&&!this.messages[this.messages.length - 1].isSelf) {
                                     this.setLoading(getLoadMsg('正在处理信息...'))
-                                    await markMessageAsRead(this.messages[this.messages.length - 1]);
+                                    await markMessageAsRead(this.messages[this.messages.length - 1].id);
+                                    this.chatUsers[newValue].msgNum--;
+                                    this.messages[this.messages.length - 1].ifRead=true;
                                     this.setLoading(getCancelLoadMsg());
                                 }
                                 if (response.results[i].is_sender) {
@@ -230,6 +233,11 @@ export default {
                 document.getElementById('message-container').scrollTo(0, document.getElementById('message-container').scrollHeight);
             },100);
         },
+        scrollToTop(){
+            setTimeout(()=>{
+                document.getElementById('message-container').scrollTo(0, 0);
+            },100);
+        },
         alert(msg) {
             this.$emit('alert', msg);
         },
@@ -268,6 +276,9 @@ export default {
             this.alert("待实现");
         },
         async loadFrontier() {
+            console.log("chatPageDict",this.chatPageDict);
+            console.log("recervierId",this.receiverId);
+            console.log("page",this.chatPageDict[this.receiverId]);
             this.setLoading(getLoadMsg('正在获取...'));
             let response = await getChatHistory(this.receiverId, this.chatPageDict[this.receiverId]);
             this.setLoading(getCancelLoadMsg());
@@ -282,22 +293,27 @@ export default {
                         time: response.results[i].sent_at,
                         isSelf: response.results[i].is_sender,
                         ifRead: response.results[i].read,
+                        userName: this.receiverName,
+                        userId: this.receiverId,
                     })
-                    if (!tmp[tmp.length - 1].ifRead) {
+                    if (!tmp[tmp.length - 1].ifRead&&!tmp[tmp.length-1].isSelf) {
                         this.setLoading(getLoadMsg('正在处理信息...'))
                         await markMessageAsRead(tmp[tmp.length - 1]);
+                        //sub the msgNum  
+                        this.chatUsers[this.receiverId].msgNum--;
+                        this.messages[this.messages.length - 1].ifRead=true;
                         this.setLoading(getCancelLoadMsg());
                     }
                 }
                 for(let i=0;i<this.messages.length;i++){
-                    tmp.push(this.messages[i]);
+                    tmp.push(copy(this.messages[i]));
                 }
                 this.messages=tmp;
                 this.chatHistoryDict[this.receiverId] = this.messages;
+                this.scrollToTop();
             }else{
                 this.alert(getNormalInfoAlert('无更多信息'))
             }
-            this.scrollToBottom();
         },
         selectUser(index) {
             this.receiverId = this.chatUsers[index].id;
@@ -324,6 +340,9 @@ export default {
         this.setLoading(getLoadMsg('正在获取聊天信息...', -1));
         let response = await getChatUsers();
         let ifParamIdIn=false;
+        if(!this.receiverId){
+            ifParamIdIn=true;
+        }
         this.setLoading(getCancelLoadMsg());
         if (response.status == 200) {
             for (let i = 0; i < response.chat_users.length; i++) {

@@ -97,7 +97,9 @@ export default {
             if(response.status==200){
                 this.data.state=true;
                 this.alert(getNormalSuccessAlert("已标记为已读"));
-                if(this.data.relatedItem.type!='reply'){
+                if(this.data.relatedItem.type=='message'){
+                    openNewPage("#/chat");
+                }else{
                     openNewPage("#/"+this.data.relatedItem.type+"/"+this.data.relatedItem.id);
                 }
             }else{

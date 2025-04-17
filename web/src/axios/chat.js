@@ -111,7 +111,13 @@ export const getChatUsers = async () => {
 export const getChatHistory = async (userId, page,page_size=10) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get(`/messages/history/${userId}`, { page:page,page_size:page_size });
+        let response=null;
+        console.log(page)
+        if(page==null||page==undefined||page==1){
+            response = await getaxiosInstance().get(`/messages/history/${userId}`);
+        }else{
+            response= await getaxiosInstance().get(`/messages/history/${userId}?page=${page}`);
+        }
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

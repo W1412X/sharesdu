@@ -93,7 +93,7 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
-    path:'/chat/:id/:name',//user id
+    path:'/chat/:id?/:name?',//user id
     name:'ChatPage',
     component: (()=>import('@/pages/ChatPage.vue')),
     meta: { requiresAuth: true },
