@@ -97,6 +97,17 @@ import { computed, ref } from 'vue';
         imgUrl:this.src,
       }
     },
+    watch:{
+      src:{
+        //eslint-disable-next-line
+        async handler(newValue,oldValue){
+            if(this.ifNeedDeal){
+              this.imgUrl=await fetchImgAndDeal(newValue);
+            }
+        },
+        immdiate:false,
+      }
+    },
     methods: {
         deleteSelf() {
             this.$emit('delete_img',this.src);

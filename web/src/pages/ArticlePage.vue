@@ -65,7 +65,7 @@
                     <tag-button v-for="(tag, index) in article.tags" :data="tag" :key="index"></tag-button>
                 </div>
                 <div v-if="this.article.sourceUrl" class="source-bar-container">
-                    <source-bar :init-data="article.sourceUrl"></source-bar>
+                    <source-bar :article-id="this.article.id" :article-title="this.article.title"></source-bar>
                 </div>
             </div>
             <article-display v-if="loadState" class="margin-bottom-40px" :init-data="displayMsg"></article-display>
@@ -343,6 +343,7 @@ export default {
             this.$router.push({name:"ErrorPage",params:{reason:"缺少参数"}})
         }
         this.setLoading(getCancelLoadMsg());
+        console.log(this.article);
     },
 }
 </script>

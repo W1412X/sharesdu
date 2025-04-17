@@ -5,13 +5,14 @@
             <div class="title-bold">
                 添加标签
             </div>
-            <v-autocomplete
+            <sensitive-text-area
                 v-model="inputingTag"
                 label="输入标签"
+                rows="1"
                 :items="this.recommendTags"
                 density="compact"
                 variant="outlined"
-            ></v-autocomplete>
+            ></sensitive-text-area>
             <div class="dialog-bottom-btn-bar">
                 <v-btn @click="addTag" variant="text">添加</v-btn>
                 <v-btn @click="setTagInputState(false)" variant="text">取消</v-btn>
@@ -50,8 +51,12 @@
                     <v-icon type="mdi" icon="mdi-help-circle-outline" color="#8a8a8a" size="16"
                         class="before-icon"></v-icon>
                 </div>
-                <div @click="selectImage()" >
-                    <img-card :width="160" :clickable="false" :height="160" :src="data.coverLink"></img-card>
+                <div>
+                    <v-btn @click="selectImage()" v-if="this.data.coverLink==''" :color="'grey'" variant="outlined" text="+" :width="160" :height="160"></v-btn>
+                    <div  v-else @click="selectImage()">
+                        <img-card :width="160" :clickable="false" :height="160" :src="this.data.coverLink"></img-card>
+                    </div>
+                    
                 </div>
             </div>
             <div class="row-div">
@@ -98,7 +103,7 @@
                 <div class="before-container">
                     <span class="before-text">上传资源:</span>
                     <v-tooltip activator="parent" class="tool-tip" location="top">上传你的文章的绑定资源
-                        <br />上传的资源不得超过100MB(如有需求请联系管理员)<br />上传的资源类型仅能为压缩包,PDF,WORD以及PPT</v-tooltip>
+                        <br />上传的资源不得超过80MB(如有需求请联系管理员)<br />上传的资源类型仅能为压缩包,PDF,WORD以及PPT</v-tooltip>
                     <v-icon type="mdi" icon="mdi-help-circle-outline" color="#8a8a8a" size="16"
                         class="before-icon"></v-icon>
                 </div>
@@ -120,7 +125,7 @@
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalWarnAlert } from '@/utils/other';
 import { uploadArticleImage } from '@/axios/image';
 import { extractTags } from '@/utils/keyword';
 import { VFileUpload } from 'vuetify/lib/labs/components.mjs';
@@ -136,7 +141,7 @@ export default {
                     type: "",
                     tags: [],//[]/""
                     originLink: "",
-                    coverLink:globalProperties.$imgDict['svg']['empty'],
+                    coverLink:"",
                     sourceUrl:"",
                 }
             },
@@ -216,9 +221,9 @@ export default {
                 this.file = null
                 return
             }
-            const maxSize = 100 * 1024 * 1024 // max 100MB
+            const maxSize = 80 * 1024 * 1024 // max 100MB
             if (selectedFile.size > maxSize) {
-                this.$emit('alert', { state: true, color: 'warning', title: '文件大小超过限制', content: '一次最多可以上传一个不多于100m的文件' })
+                this.$emit('alert', { state: true, color: 'warning', title: '文件大小超过限制', content: '一次最多可以上传一个不多于80MB的文件' })
                 this.file = null
                 return
             }
@@ -232,7 +237,11 @@ export default {
              * if tag is empty
              */
             if (this.inputingTag === '') {
+                this.alert(getNormalWarnAlert("标签不能为空"));
                 return;
+            }
+            if(this.inputingTag.length>15){
+                this.alert(getNormalWarnAlert("标签长度不能超过15个字符"));
             }
             /**
              * tag can only contain chinese and english

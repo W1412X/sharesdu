@@ -108,7 +108,7 @@ export default {
                 type:"",
                 tags:"",
                 originLink:"",
-                coverLink: globalProperties.$imgDict['svg']['upload'],
+                coverLink: "",
                 sourceUrl:"",
             },
             htmlData:{
@@ -245,20 +245,14 @@ export default {
                             this.setLoading(getLoadMsg("正在上传资源文件...", -1));
                             let response=await uploadResource(this.editorBarRef.$data.file,this.articleId);
                             if(response.status==200||response.status==201){
-                                //here reedit the article  
-                                form.source_url=response.source_url;
-                                form.article_id=this.articleId;
-                                let response=await editArticle(form);
-                                if(response.status==200){
-                                    this.alert(getNormalSuccessAlert("创建成功"));
-                                }else{
-                                    this.alert(getNormalErrorAlert(response.message));
-                                }
+                                this.alert(getNormalSuccessAlert("资源上传成功"));
+                                this.setEditFinishCardState(true);
                             }else{
                                 this.alert(getNormalErrorAlert("资源上传失败"));
                             }
+                        }else{
+                            this.setEditFinishCardState(true);
                         }
-                        this.setEditFinishCardState(true);
                     }else{
                         this.alert(getNormalErrorAlert(response.message));
                     }
