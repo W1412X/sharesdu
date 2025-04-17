@@ -266,6 +266,11 @@ export default {
                     userName: this.selfName,
                     userId: this.selfId,
                 })
+                this.chatUsers[this.receiverId].lastMsg={
+                    content:this.editingMessage,
+                    time:extractTime(new Date().toISOString()),
+                    isSelf:true,
+                }
                 this.editingMessage = "";
                 this.scrollToBottom();
             } else {
@@ -321,6 +326,13 @@ export default {
         }
     },
     async mounted() {
+        //add listen
+        document.addEventListener('keydown', async (event) => {
+            if (event.ctrlKey && (event.key === 'Enter' || event.code === 'Enter')) {
+                event.preventDefault();
+                await this.send();
+            }
+        });
         //init the view  
         let viewportHeight = window.innerHeight || document.documentElement.clientHeight;
         document.getElementById('message-container').style.maxHeight = String(viewportHeight - 90) + 'px';

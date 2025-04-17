@@ -98,7 +98,7 @@ export default {
       loadState.value = state;
     }
     const ifShowNav = computed(() => {
-      if (loadState.value && ['WelcomePage', 'LoginPage', 'DocumentPage', 'ManagePage', 'ChatPage', undefined, null].includes(page.value)) {
+      if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage', undefined, null].includes(page.value)) {
         return false;
       } else {
         return true;
@@ -126,7 +126,7 @@ export default {
       }
     });
     const ifShowHomeBtn = computed(() => {
-      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage";
+      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage" || page.value=="AuthorPage" || page.value=="ManagePage";
     })
     const ifShowAvatar = computed(() => {
       if (page.value == "SelfPage") {
