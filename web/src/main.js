@@ -130,6 +130,7 @@ app.config.globalProperties.$imgDict={
     empty:window.location.origin+"/resource/no_img.svg",
     notFound:window.location.origin+"/resource/404.svg",
     unreviewed:window.location.origin+"/resource/review_failed.svg",
+    upload:window.location.origin+"/resource/upload.svg",
   },
   png:{
     lazy:window.location.origin+"/resource/default_img.svg",

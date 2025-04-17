@@ -48,12 +48,13 @@
 <script>
 import { createArticle, editArticle, getArticleDetail } from '@/axios/article';
 import { uploadArticleImage } from '@/axios/image';
+import { uploadResource } from '@/axios/resource';
 import EditorBar from '@/components/EditorBar.vue';
 import HtmlEditor from '@/components/HtmlEditor.vue';
 import MdEditor from '@/components/MdEditor.vue';
 import SensitiveTextField from '@/components/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
-import { addEditorType, arrToString, extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
+import { addEditorType, arrToString, extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { computed,ref } from 'vue';
 export default {
     name: 'EditorPage',
@@ -94,7 +95,6 @@ export default {
         HtmlEditor,
         MdEditor,
         EditorBar,
-
     },
     data(){
         return{
@@ -108,7 +108,7 @@ export default {
                 type:"",
                 tags:"",
                 originLink:"",
-                coverLink: "",
+                coverLink: globalProperties.$imgDict['svg']['upload'],
                 sourceUrl:"",
             },
             htmlData:{
@@ -240,12 +240,24 @@ export default {
                     let response=await createArticle(form);
                     if(response.status==200){
                         this.articleId=response.article_id;
-                        this.alert({
-                            state:true,
-                            color:'success',
-                            title:'创建成功',
-                            content:response.message,
-                        })
+                        //if resource upload  
+                        if(this.editorBarRef.$data.file!=null){
+                            this.setLoading(getLoadMsg("正在上传资源文件...", -1));
+                            let response=await uploadResource(this.editorBarRef.$data.file,this.articleId);
+                            if(response.status==200||response.status==201){
+                                //here reedit the article  
+                                form.source_url=response.source_url;
+                                form.article_id=this.articleId;
+                                let response=await editArticle(form);
+                                if(response.status==200){
+                                    this.alert(getNormalSuccessAlert("创建成功"));
+                                }else{
+                                    this.alert(getNormalErrorAlert(response.message));
+                                }
+                            }else{
+                                this.alert(getNormalErrorAlert("资源上传失败"));
+                            }
+                        }
                         this.setEditFinishCardState(true);
                     }else{
                         this.alert(getNormalErrorAlert(response.message));
@@ -299,7 +311,8 @@ export default {
                     this.editorBarData.tags=article.article_tags;
                     this.editorBarData.originLink=article.origin_link;
                     this.editorBarData.coverLink=article.cover_link;
-                    this.editorBarData.sourceUrl=article.source_url;
+                    //this.editorBarData.sourceUrl=article.source_url;
+                    this.editorBarData.sourceUrl="none";
                 }catch(e){
                     this.alert(getNormalErrorAlert("表单格式化错误"));
                 }

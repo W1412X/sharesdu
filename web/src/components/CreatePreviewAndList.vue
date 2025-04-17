@@ -15,21 +15,21 @@
           <div class="column-div">
             <star-item :if-star-type="false" v-for="(item, index) in this.articleList" :key="index" :init-data="item">
           </star-item>
-          <v-btn v-if="this.type=='all'" @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
+          <v-btn v-if="this.type=='all'" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
           </div>
         </div>
         <div v-if="itemType == 'post'" class="column-div-scroll">
             <div class="column-div">
                 <star-item :if-star-type="false" v-for="(item, index) in this.postList" :key="index" :init-data="item">
           </star-item>
-          <v-btn v-if="this.type=='all'" @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
+          <v-btn v-if="this.type=='all'" width="100%"  @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
         </div>
         <div v-if="itemType == 'reply'" class="column-div-scroll">
           <div class="column-div">
             <star-item :if-star-type="false" v-for="(item, index) in this.replyList" :key="index" :init-data="item" :postId="item.postId" :if-preview="true">
           </star-item>
-          <v-btn v-if="this.type=='all'"  @click="loadMore('reply')" variant="tonal" class="load-btn">加载更多</v-btn>
+          <v-btn v-if="this.type=='all'" width="100%"  @click="loadMore('reply')" variant="tonal" class="load-btn">加载更多</v-btn>
           </div>
         </div>
     </v-card>
@@ -226,7 +226,7 @@ export default{
     .column-div-scroll {
         display: flex;
         flex-direction: column;
-        height: 650px;
+        max-height: 650px;
         height: fit-content;
         overflow: auto;
     }
@@ -243,7 +243,6 @@ export default{
         display: flex;
         flex-direction: column;
         max-height: 80vh;
-        height: fit-content;
         height: fit-content;
         overflow: auto;
     }

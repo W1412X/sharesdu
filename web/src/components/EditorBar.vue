@@ -51,7 +51,7 @@
                         class="before-icon"></v-icon>
                 </div>
                 <div @click="selectImage()" >
-                    <v-img :width="160" :clickable="false" :height="160" :src="data.coverLink"></v-img>
+                    <img-card :width="160" :clickable="false" :height="160" :src="data.coverLink"></img-card>
                 </div>
             </div>
             <div class="row-div">
@@ -98,12 +98,16 @@
                 <div class="before-container">
                     <span class="before-text">上传资源:</span>
                     <v-tooltip activator="parent" class="tool-tip" location="top">上传你的文章的绑定资源
-                        <br />上传的资源不得超过100MB<br />上传的资源类型仅能为压缩包,PDF,WORD以及PPT</v-tooltip>
+                        <br />上传的资源不得超过100MB(如有需求请联系管理员)<br />上传的资源类型仅能为压缩包,PDF,WORD以及PPT</v-tooltip>
                     <v-icon type="mdi" icon="mdi-help-circle-outline" color="#8a8a8a" size="16"
                         class="before-icon"></v-icon>
                 </div>
-                <div class="before-container">
-                    <v-file-upload v-model="this.file" color="#8a8a8a" height="0px" title="" :border="0" @change="handleFileChange" clearable density="compact"></v-file-upload>
+                <div v-if="data.sourceUrl==''" class="before-container">
+                    <v-file-upload v-model="this.file" title="" max-height="98" width="98" @change="handleFileChange" clearable variant="compact" density="compact">
+                    </v-file-upload>
+                </div>
+                <div v-if="data.sourceUrl!=''" class="before-container">
+                    <div>暂不支持在编辑时上传/修改资源，如有变更需求请编辑新的文章</div>
                 </div>
             </div>
         </div>
@@ -120,6 +124,7 @@ import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other
 import { uploadArticleImage } from '@/axios/image';
 import { extractTags } from '@/utils/keyword';
 import { VFileUpload } from 'vuetify/lib/labs/components.mjs';
+import ImgCard from './ImgCard.vue';
 export default {
     name: 'EditorBar',
     props: {
@@ -131,7 +136,7 @@ export default {
                     type: "",
                     tags: [],//[]/""
                     originLink: "",
-                    coverLink:"",
+                    coverLink:globalProperties.$imgDict['svg']['empty'],
                     sourceUrl:"",
                 }
             },
@@ -162,6 +167,7 @@ export default {
     components: {
         SensitiveTextArea,
         VFileUpload,
+        ImgCard,
     },
     data() {
         var data=this.initData;
@@ -182,10 +188,6 @@ export default {
             input.type = 'file';
             input.accept = 'image/jpeg, image/png, image/gif';
             input.onchange = async (event) => {
-                if(!this.data.coverLink){
-                    //release it
-                    URL.revokeObjectURL(this.data.coverLink);
-                }
                 let image = event.target.files[0];
                 this.data.coverLink = URL.createObjectURL(image);
                 this.tmpCoverImage=image;
@@ -354,6 +356,7 @@ export default {
     align-items: center;
     height: fit-content;
     margin-right: 10px;
+    color: #8a8a8a;
 }
 .column-div{
     display: flex;

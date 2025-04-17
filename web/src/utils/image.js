@@ -119,6 +119,12 @@ const compressWithQuality = (blob, quality) => {
  * @param {String} imgUrl 
  */
 export async function fetchImgAndDeal(imgUrl,type='svg'){
+  if(imgUrl==null){
+    return globalProperties.$imgDict['svg']['empty'];
+  }
+  if(imgUrl==globalProperties.$imgDict['svg']['upload']){
+    return globalProperties.$imgDict['svg']['empty'];
+  }
   let response = await fetch(imgUrl);
   let resultUrl=null;
   if (!response.ok) {
