@@ -293,8 +293,8 @@ export default {
                         time: response.results[i].sent_at,
                         isSelf: response.results[i].is_sender,
                         ifRead: response.results[i].read,
-                        userName: this.receiverName,
-                        userId: this.receiverId,
+                        userName: response.results[i].is_sender?this.selfId:this.receiverName,
+                        userId: response.results[i].is_sender?this.selfId:this.receiverId,
                     })
                     if (!tmp[tmp.length - 1].ifRead&&!tmp[tmp.length-1].isSelf) {
                         this.setLoading(getLoadMsg('正在处理信息...'))
