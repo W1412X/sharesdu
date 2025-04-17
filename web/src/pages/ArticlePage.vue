@@ -109,7 +109,7 @@
                 <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
                     发表帖子
                 </v-btn>
-                <post-item v-for="(item,index) in postItems" :init-data="item" :key="index">
+                <post-item v-for="(item) in postItems" :init-data="item" :key="item.id">
                 </post-item>
                 <v-btn @click="loadMorePost" v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>

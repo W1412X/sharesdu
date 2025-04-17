@@ -45,7 +45,7 @@
                         <v-icon size="30" color="#8a8a8a">mdi-account-cancel</v-icon>
                         <span style="color: #8a8a8a;margin-left: 10px;" class="text-medium-bold">用户列表</span>
                     </div>
-                    <div @click="setUserId(item.id)" v-for="(item,index) in this.userList" :key="index" style="display: flex;flex-direction: row;align-items: center;padding: 10px;">
+                    <div @click="setUserId(item.id)" v-for="(item,index) in this.userList" :key="item.id" style="display: flex;flex-direction: row;align-items: center;padding: 10px;">
                         <avatar-name :init-data="{id:item.id,name:item.name}"></avatar-name>
                         <v-spacer></v-spacer>
                         <div style="margin: 5px;" class="text-small">{{ item.reputation }}</div>
@@ -59,7 +59,7 @@
                         <v-icon size="30" color="#8a8a8a">mdi-account</v-icon>
                         <span style="color: #8a8a8a;margin-left: 10px;" class="text-medium-bold">封禁列表</span>
                     </div>
-                    <div v-for="(item,index) in this.blockUserList" :key="index" style="display: flex;flex-direction: column;align-items: center;padding: 10px;">
+                    <div v-for="(item,index) in this.blockUserList" :key="item.id" style="display: flex;flex-direction: column;align-items: center;padding: 10px;">
                         <avatar-name :init-data="{id:item.id,name:item.username}"></avatar-name>
                         <div>由 {{ item.operator }} 封禁至 {{ item.endTime }}</div>
                     </div>

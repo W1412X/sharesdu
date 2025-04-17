@@ -152,7 +152,7 @@ export default {
             styleImage: null,
             width: 64,
             height: 64,
-            pixelSize: 5,
+            pixelSize: 1,
             oriHeight: 64,
             imgText:null,
             oriWidth: 64,
@@ -160,7 +160,7 @@ export default {
             textRowNum:18,
             ifText,
             ifImage,
-            lineWidth:2,
+            lineWidth:1,
             ifLine,
             itemTypes: this.initItemTypes,
         }
@@ -169,11 +169,11 @@ export default {
         selectImage() {
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = 'image/png, image/jpeg, image/jpg';
+            input.accept = 'image/png, image/jpeg, image/jpg,image/gif';
             input.onchange = (event) => {
                 const file = event.target.files[0];
                 if (file) {
-                    const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                    const validTypes = ['image/png', 'image/jpeg', 'image/jpg','image/gif'];
                     if (validTypes.includes(file.type)) {
                         const objectUrl = URL.createObjectURL(file);
                         const img = new Image();
