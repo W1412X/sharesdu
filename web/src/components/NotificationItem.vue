@@ -153,7 +153,7 @@ export default {
         flex-direction: row;
         align-items: center;
     }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card {
         width: 750px;
         padding: 10px;
@@ -172,7 +172,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card {
         width: 100vw;
         padding: 10px;

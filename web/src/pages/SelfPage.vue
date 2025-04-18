@@ -80,7 +80,7 @@
       <!-- message part  -->
       <div v-if="choose === 'message'">
           <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item" @alert="alert" @set_loading="setLoading" ></notification-item>
-          <v-btn variant="tonal" rounded width="100%">
+          <v-btn @click="getNotificationList" variant="tonal" rounded width="100%">
             加载更多
           </v-btn>
       </div>
@@ -356,7 +356,7 @@ export default {
   border-bottom: solid 1px #8a8a8a;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
   .full-center {
     width: 100%;
     display: flex;
@@ -393,7 +393,7 @@ export default {
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
   .full-center {
     width: 100%;
     display: flex;

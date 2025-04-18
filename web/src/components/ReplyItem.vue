@@ -256,7 +256,7 @@ export default {
     text-overflow: ellipsis;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .container {
         width: 900px;
         display: flex;
@@ -282,7 +282,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .container {
         width: 100%;
         display: flex;

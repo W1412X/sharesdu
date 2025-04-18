@@ -98,14 +98,14 @@ export default {
 };
 </script>
 <style scoped>
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .editor{
         width:980px;
         min-height: 800px;
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .editor{
         width:100%;
         min-height: 60%;

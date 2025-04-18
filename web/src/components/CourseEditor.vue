@@ -253,7 +253,7 @@ export default {
 }
 </script>
 <style scoped>
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card {
         width: 750px;
         border-width: 2px;
@@ -288,7 +288,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card {
         width: 400px;
         border-width: 2px;

@@ -80,7 +80,7 @@ export default {
     margin-bottom: 2px;
     margin-left: 5px;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .container {
         width: 800px;
         border-top: #8a8a8a solid 1px;
@@ -91,7 +91,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .container {
         width: 100vw;
         border-top: #8a8a8a solid 1px;

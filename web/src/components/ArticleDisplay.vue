@@ -44,7 +44,7 @@ export default {
 }
 </script>
 <style scoped>
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .container {
         width: 1000px;
         padding: 5px;
@@ -59,7 +59,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .container {
         width: 100vw;
     }

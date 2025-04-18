@@ -39,10 +39,10 @@ export default{
     min-width:0px;
     color: var(--theme-color);
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
 
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
 }
 </style>

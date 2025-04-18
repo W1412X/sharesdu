@@ -262,7 +262,7 @@ export default{
     display: flex;
     flex-direction: column;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .full-center {
         width: 100%;
         display: flex;
@@ -280,7 +280,7 @@ export default{
         margin: 0px;
     }
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .full-center {
         width: 100%;
         display: flex;

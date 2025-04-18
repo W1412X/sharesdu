@@ -60,10 +60,10 @@ export default {
     padding:5px;
     margin:5px;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
 }
 </style>

@@ -48,7 +48,7 @@ export default{
 }
 </script>
 <style scoped>
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .full-center {
         width: 100%;
         display: flex;
@@ -57,7 +57,7 @@ export default{
         height: 100%;
     }
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .full-center {
         width: 100%;
         display: flex;

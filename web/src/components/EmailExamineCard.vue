@@ -241,7 +241,7 @@ export default {
     display: flex; 
     flex-direction: row-reverse;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card{
         display: flex;
         width: 600px;
@@ -250,7 +250,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card{
         display: flex;
         width: 80vw;

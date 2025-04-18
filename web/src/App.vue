@@ -83,7 +83,7 @@ export default {
      * get the device type
      */
     const deviceType = ref('');
-    if (window.innerWidth <= 600) {
+    if (window.innerWidth <= 1000) {
       deviceType.value = 'mobile';
     } else {
       deviceType.value = 'desktop';
@@ -276,7 +276,7 @@ export default {
 }
 
 /** desktop */
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
   .nav-bar {
     z-index: 99;
     position: fixed;
@@ -298,7 +298,7 @@ export default {
 }
 
 /** mobile */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
   .nav-bar {
     z-index: 99;
     position: fixed;

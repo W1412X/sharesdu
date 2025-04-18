@@ -216,7 +216,7 @@ export default{
     display: flex;
     flex-direction: column;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card {
         width: 750px;
         max-height: 800px;
@@ -232,7 +232,7 @@ export default{
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card {
         width: 100vw;
         max-height: 90vh;

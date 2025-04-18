@@ -86,7 +86,7 @@ export default {
 .btn-container{
     display: flex;flex-direction: row;padding-bottom:5px;padding-right: 5px;flex-direction: row-reverse;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .title-alert{
         margin-left: 10px;
     }
@@ -106,7 +106,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .title-alert{
         margin-left: 10px;
     }

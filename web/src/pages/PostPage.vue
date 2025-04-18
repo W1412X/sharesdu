@@ -524,7 +524,7 @@ export default {
     background-color: white;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .full-center {
         width: 100%;
         display: flex;
@@ -581,7 +581,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .full-center {
         width: 100vw;
         display: flex;

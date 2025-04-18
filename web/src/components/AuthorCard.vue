@@ -242,7 +242,7 @@ export default{
 .margin-right-20px{
     margin-right: 20px;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card {
         margin:20px;
         width: 750px;
@@ -259,7 +259,7 @@ export default{
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card {
         margin:20px;
         width: 90vw;

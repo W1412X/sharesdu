@@ -99,7 +99,7 @@ export default {
         color:grey;
         margin-top:0px;
     }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card {
         padding: 5px;
         width: 100%;
@@ -117,7 +117,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card {
         padding: 3px;
         width: 100%;

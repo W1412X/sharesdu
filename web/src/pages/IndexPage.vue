@@ -329,7 +329,7 @@ export default {
     max-height: 25px;
 }
 /** desktop */
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .full-screen {
         width: 100%;
         height: 100%;
@@ -389,7 +389,7 @@ export default {
 }
 
 /** mobile */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .full-screen {
         width: 100vw;
         height: 100vh;

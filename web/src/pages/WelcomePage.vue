@@ -160,7 +160,7 @@ export default {
     margin: 5px;
 }
 /** desktop */
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .top-btn-div {
         display: flex;
         flex-direction: row-reverse;
@@ -250,7 +250,7 @@ export default {
 }
 
 /** mobile */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .full-center {
         width: 100vw;
         display: grid;

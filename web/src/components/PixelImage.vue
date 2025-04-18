@@ -338,7 +338,7 @@ export default {
     margin: 5px;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card {
         margin: 5px;
         width: 750px;
@@ -353,7 +353,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card {
         margin: 5px;
         padding: 15px;

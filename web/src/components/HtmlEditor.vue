@@ -171,7 +171,7 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .tool-bar{
         border-bottom: 1px solid #ccc;
         width: 980px;
@@ -182,7 +182,7 @@ export default defineComponent({
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .tool-bar{
         border-bottom: 1px solid #ccc;
         width: 100vw;

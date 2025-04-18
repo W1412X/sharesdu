@@ -31,7 +31,7 @@ export default {
 </script>
 <style scoped>
 /** desktop */
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .full-center {
         display: flex;
         flex-direction: row;
@@ -51,7 +51,7 @@ export default {
 }
 
 /** mobile */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .full-center {
         display: flex;
         flex-direction: row;

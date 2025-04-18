@@ -120,7 +120,7 @@ export default {
     overflow-x: scroll;
     width: 100%;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card {
         width: 750px;
         margin-top: 5px;
@@ -183,7 +183,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card {
         border-bottom: #eeeeee 1px solid;
         border-radius: 0px;

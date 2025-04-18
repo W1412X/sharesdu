@@ -97,7 +97,7 @@ export default {
 .padding-left-5 {
     padding: 5px;
 }
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 1000px) {
     .card {
         padding: 5px;
         width: 750px;
@@ -158,7 +158,7 @@ export default {
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     .card {
         width: 100vw;
         margin-top: 5px;
