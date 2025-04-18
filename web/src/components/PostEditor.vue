@@ -13,16 +13,16 @@
                 <img-card :editable="true" @delete_img="removeImage" v-for="(src,index) in imgSrcList" :key="index" :src="src" :width="100" :height="100">
                 </img-card>
             </div>
-            <v-btn @click="triggerFileInput" variant="text" :color="themeColor" prepend-icon="mdi-plus" text="添加图片"></v-btn>
+            <v-btn :loading="loading" :disabled="loading" @click="triggerFileInput" variant="text" :color="themeColor" prepend-icon="mdi-plus" text="添加图片"></v-btn>
             <div class="bottom-btn-div">
-                <v-btn @click="submit" variant="text" class="btn" density="compact">发布</v-btn>
+                <v-btn :loading="loading" :disabled="loading" @click="submit" variant="text" class="btn" density="compact">发布</v-btn>
                 <v-btn variant="text" class="btn" density="compact" @click="close">取消</v-btn>
             </div>
         </div>
     </v-card>
 </template>
 <script>
-import { addLinkToPost, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { addLinkToPost, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import SensitiveTextField from './SensitiveTextField.vue';
 import { createPostInArticle, createPostInCourse } from '@/axios/post';
@@ -78,6 +78,7 @@ export default {
             imgDict:{},
             imgSrcList:[],
             data,
+            loading:false,
         }
     },
     methods: {
@@ -126,10 +127,10 @@ export default {
             if(!this.data.content||this.data.content.length<=2){
                 this.alert(getNormalErrorAlert('内容过短'));
             }
-            this.setLoading(getLoadMsg('正在上传图片'));
+            this.loading=true;
             let imgNum=this.imgSrcList.length;
             for(let i=0;i<imgNum;i++){
-                this.setLoading(getLoadMsg(`正在上传图片 ${i+1}/${imgNum}`));
+                this.loading=true;
                 let img=this.imgSrcList[i];
                 let file=this.imgDict[img];
                 let response=await uploadArticleImage(file);
@@ -142,7 +143,7 @@ export default {
             /** 
              * submit post data
              */
-            this.setLoading(getLoadMsg('正在提交帖子...'));
+            this.loading=true;
             let response=getNetworkErrorResponse();
             if(this.typeMsg.type=="article"){
                 response=await createPostInArticle(this.typeMsg.id,this.data.title,addLinkToPost(this.data.content,this.typeMsg.type,this.typeMsg.id));
@@ -169,7 +170,7 @@ export default {
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
-            this.setLoading(getCancelLoadMsg());
+            this.loading=false;
         }
     }
 }

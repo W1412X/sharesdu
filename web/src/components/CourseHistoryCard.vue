@@ -37,7 +37,7 @@
                         <span>{{ '版本 : ' + course.version }}</span>
                     </div>
                 </v-card>
-                <v-btn @click="loadMore" v-if="this.courses.length>=10" variant="tonal" width="100%" color="grey">加载更多</v-btn>
+                <v-btn :loading="loading.loadMore" :disabled="loading.loadMore" @click="loadMore" v-if="this.courses.length>=10" variant="tonal" width="100%" color="grey">加载更多</v-btn>
             </div>
         </div>
     </v-card>
@@ -69,6 +69,9 @@ export default {
             courses: [
             ],
             page: 1,
+            loading:{
+                loadMore:false,
+            }
         }
     },
     methods: {
@@ -92,9 +95,9 @@ export default {
             }
         },
         async loadMore(){
-            this.setLoading(getLoadMsg('正在加载课程历史记录...'))
+            this.loading.loadMore=true;
             let response = await getCourseHistory(this.id, this.page);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.loadMore = false;
             if (response.status == 200) {
                 this.page++;
                 for (let i = 0; i < response.data.histories.length; i++) {

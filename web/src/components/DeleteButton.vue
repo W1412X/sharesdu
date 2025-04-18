@@ -1,6 +1,6 @@
 <!--alert button-->
 <template>
-    <v-btn elevation="0" @click="click" icon :style="{
+    <v-btn :loading="loading" :disabled="loading" elevation="0" @click="click" icon :style="{
         'width': size+'px',
         'height': size+'px',
         'color': color,
@@ -13,7 +13,7 @@
 import { deleteArticle } from '@/axios/article';
 import { deleteCourse } from '@/axios/course';
 import { deletePostById, deleteReplyById } from '@/axios/post';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 export default {
     props: {
         id: {
@@ -35,6 +35,11 @@ export default {
     },
     setup() {
     },
+    data(){
+        return {
+            loading: false,
+        }
+    },
     methods: {
         setLoading(msg) {
             this.$emit('set_loading', msg)
@@ -43,7 +48,7 @@ export default {
             this.$emit('alert', msg)
         },
         async click() {
-            this.setLoading(getLoadMsg("正在删除..."));
+            this.loading=true;
             let response={status:-1,message:"网络错误"};
             switch(this.type){
                 case 'article':
@@ -62,7 +67,7 @@ export default {
                     this.alert(getNormalErrorAlert("未知的删除类型"));
                     return;
             }
-            this.setLoading(getCancelLoadMsg());
+            this.loading=false;
             if(response.status==200){
                 this.alert(getNormalSuccessAlert('删除成功'));
                 this.$emit('delete');

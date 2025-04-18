@@ -111,7 +111,7 @@
                 </v-btn>
                 <post-item v-for="(item) in postItems" :init-data="item" :key="item.id">
                 </post-item>
-                <v-btn @click="loadMorePost" v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMorePost" :loading="this.loading.post" :disabled="loading.post" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
         </div>
     </v-overlay>
@@ -219,6 +219,9 @@ export default {
                 }
             }),
             loadState:false,
+            loading:{
+                post:false,
+            }
         }
     },
     beforeRouteLeave (to, from, next) {
@@ -261,7 +264,7 @@ export default {
             })
         },
         async loadMorePost(){
-            this.setLoading(getLoadMsg("正在加载帖子..."));
+            this.loading.post=true;
             let response=await getPostListByArticleId(this.article.id,this.postPageNum);
             if(response.status==200){
                 for(let i=0;i<response.post_list.length;i++){
@@ -283,7 +286,7 @@ export default {
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
-            this.setLoading(getCancelLoadMsg());
+            this.loading.post=false;
         },
         closeDialog(){
             this.setPostEditorState(false);

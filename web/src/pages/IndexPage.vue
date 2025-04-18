@@ -39,7 +39,7 @@
                     :key="item.id"
                     :init-data="item">
                 </article-item>
-                <v-btn @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMore('article')" variant="tonal" :loading="loading.article" class="load-btn">加载更多</v-btn>
             </div>
             <div v-if="itemType == 'post'" class="item-container">
                 <post-item
@@ -47,7 +47,7 @@
                     :key="index"
                     :init-data="item">
                 </post-item>
-                <v-btn @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMore('post')" variant="tonal" :loading="loading.post" class="load-btn">加载更多</v-btn>
             </div>
             <div v-if="itemType == 'course'" class="item-container">
                 <course-item
@@ -55,7 +55,7 @@
                     :key="index"
                     :init-data="item">
                 </course-item>
-                <v-btn @click="loadMore('course')" variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMore('course')" variant="tonal" :loading="loading.course" class="load-btn">加载更多</v-btn>
             </div>
         </div>
     </div>
@@ -67,7 +67,7 @@ import ArticleItem from '@/components/ArticleItem.vue';
 import CourseItem from '@/components/CourseItem.vue';
 import PostItem from '@/components/PostItem.vue';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
+import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/axios/article';
 import { getCourseList } from '@/axios/course';
 export default {
@@ -191,6 +191,11 @@ export default {
             coursePageNum:1,
             itemType,
             articleSortMethod:'time',
+            loading:{
+                article:false,
+                course:false,
+                post:false,
+            }
         }
     },
     methods: {
@@ -204,9 +209,9 @@ export default {
         },
         async loadMore(itemType){
             if(itemType=='article'){
-                this.setLoading(getLoadMsg("正在获取..."));
+                this.loading.article=true;
                 let response=await getArticleList(this.articleSortMethod,null,this.articlePageNum[this.articleSortMethod]);
-                this.setLoading(getCancelLoadMsg());
+                this.loading.article=false;
                 if(response.status==200){
                     for(let ind=0;ind<response.article_list.length;ind++){
                         this.articleList[this.articleSortMethod].push({
@@ -231,9 +236,9 @@ export default {
                     this.alert(getNormalErrorAlert(response.message));
                 }
             }else if(itemType=='course'){
-                this.setLoading(getLoadMsg("正在获取..."));
+                this.loading.course=true;
                 let response=await getCourseList(this.coursePageNum);
-                this.setLoading(getCancelLoadMsg());
+                this.loading.course=false;
                 if(response.status==200){
                     for(let ind=0;ind<response.course_list.length;ind++){
                         this.courseList.push({
@@ -260,9 +265,9 @@ export default {
                 }
             }else if(itemType=='post'){
                 //get the article 20 template  
-                this.setLoading(getLoadMsg("正在获取..."));
+                this.loading.post=true;
                 let response=await getPostListByArticleId(20,this.postPageNum);
-                this.setLoading(getCancelLoadMsg());
+                this.loading.post=false;
                 if(response.status==200){
                     for(let i=0;i<response.post_list.length;i++){
                         this.postList.push({

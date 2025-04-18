@@ -10,7 +10,7 @@
                     <emoji-picker @emoji="addEmoji"></emoji-picker>
                 </div>
                 <div class="dialog-bottom-bar">
-                    <v-btn @click="submitComment" class="dialog-bottom-bar-btn" variant="text" >提交</v-btn>
+                    <v-btn :loading="loading.submitEvaluation" :disabled="loading.submitEvaluation" @click="submitComment" class="dialog-bottom-bar-btn" variant="text" >发表</v-btn>
                     <v-btn @click="closeEditor" variant="text" class="dialog-bottom-bar-btn" >取消</v-btn>
                 </div>
             </v-card>
@@ -128,7 +128,7 @@
                         :key="index"    
                     ></course-comment>
                 </div>
-                <v-btn class="load-more-btn" variant="tonal" @click="getCourseCommentList()">加载更多</v-btn>
+                <v-btn :loading="loading.loadEvaluation" :disabled="loading.loadEvaluation" class="load-more-btn" variant="tonal" @click="getCourseCommentList()">加载更多</v-btn>
             </div>
             <div class="bottom-bar">
                 <div class="column-center user-name text-medium">
@@ -163,7 +163,7 @@
                 </v-btn>
                 <post-item v-for="(item,index) in postItems" :init-data="item" :key="index">
                 </post-item>
-                <v-btn @click="loadMorePost" v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMorePost" :loading="loading.post" :disabled="loading.post" v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
         </div>
     </v-overlay>
@@ -300,6 +300,11 @@ export default {
             ifRated:false,
             postItems:[],
             postPageNum:1,
+            loading:{
+                loadEvaluation:false,
+                post:false,
+                submitEvaluation:false,
+            }
         }
     },
     methods: {
@@ -311,7 +316,7 @@ export default {
             this.setPostState(true);
         },
         async loadMorePost(){
-            this.setLoading(getLoadMsg("正在加载帖子..."));
+            this.loading.post=true;
             let response=await getCoursePostList(this.course.id,this.postPageNum);
             if(response.status==200){
                 for(let i=0;i<response.post_list.length;i++){
@@ -333,7 +338,7 @@ export default {
             }else{
                 this.alert(getNormalErrorAlert(response.data.message));
             }
-            this.setLoading(getCancelLoadMsg());
+            this.loading.post=false;
         },
         closeEditor(){
             this.selfComment=copy(this.oriSelfComment);
@@ -349,7 +354,7 @@ export default {
                 })
                 return;
             }
-            this.setLoading(getLoadMsg("正在提交您的评分...",-1));
+            this.loading.submitEvaluation=true;
             let response=null;
             if(this.ifRated){
                 //self evaluated  
@@ -358,7 +363,7 @@ export default {
                     score:this.selfComment.score,
                     comment:this.selfComment.comment
                 })
-                this.setLoading(getCancelLoadMsg());
+                this.loading.submitEvaluation=false;
             }else{
                 //unevaluated  
                 response=await rateCourse({
@@ -366,7 +371,7 @@ export default {
                     score:this.selfComment.score,
                     comment:this.selfComment.comment,
                 })
-                this.setLoading(getCancelLoadMsg());
+                this.loading.submitEvaluation=false;
             }
             if(response.status==200||response.status==201){
                 this.oriSelfComment=copy(this.selfComment);
@@ -401,9 +406,9 @@ export default {
             }
         },
         async getCourseCommentList(){
-            this.setLoading(getLoadMsg("正在获取评分列表...",-1));
+            this.loading.loadEvaluation=true;
             let response=await getCourseScoreList(this.course.id,this.commentPageNum);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.loadEvaluation=false;
             if(response.status==200){
                 /**
                  * add the comment in to the list and add the page  

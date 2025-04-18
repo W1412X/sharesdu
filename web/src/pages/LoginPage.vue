@@ -29,6 +29,7 @@
                                 @click:append-inner="passwdVisible = !passwdVisible"></sensitive-text-field>
                             <v-btn @click="loginByUsername()" class="login-btn" variant="outlined"
                                 :disabled="!(valUserName(loginByUsernameData.userName) && valPassWord(loginByUsernameData.passwd))"
+                                :loading="loading.login"
                                 :color="themeColor">登陆</v-btn>
                         </v-tabs-window-item>
                         <!-- login by email  -->
@@ -153,7 +154,7 @@
                             <v-btn @click="shiftLoginMethod" class="text-small" density="compact" variant="text">{{
                                 loginMethod == 'userName' ? '使用邮箱登陆' : '使用用户名登陆' }}</v-btn>
                             <v-spacer></v-spacer>
-                            <agree-button v-if="loginMethod == 'userName' && deviceType=='mobile'" @click="handleAgree"></agree-button>
+                            <agree-button v-if="loginMethod == 'userName'" @click="handleAgree"></agree-button>
                         </div>
                         <div v-if="nowTab === 'register'" class="bottom-bar">
                             <v-btn @click="shiftRegisterMethod" class="text-small" density="compact" variant="text">{{
@@ -174,7 +175,7 @@ import { computed, ref } from 'vue';
 import { rules } from '@/utils/rules';
 import { validateEmail, validatePassWord, validateUserName } from '@/utils/rules';
 import { /*getRegisterEmailCode*/ loginWithPassword, /*loginWithEmail, register*/ } from '@/axios/account';
-import { getCancelLoadMsg, getLoadMsg, getNormalWarnAlert, openNewPage, setLogin } from '@/utils/other';
+import { getNormalWarnAlert, openNewPage, setLogin } from '@/utils/other';
 import { csLoginByUserName } from '@/axios/api_convert/account';
 import { initTriangleEffect } from '@/utils/animation';
 import AgreeButton from '@/components/AgreeButton.vue';
@@ -280,6 +281,9 @@ export default {
             examineCardInfo,
             passwdVisible: false,
             ifSavePasswd:false,
+            loading:{
+                login:false,
+            }
         }
     },
     methods: {
@@ -287,8 +291,9 @@ export default {
             /**
              * login
              */
-            this.$emit('set_loading', getLoadMsg('正在登陆...', -1));
+            this.loading.login=true;
             const response = await loginWithPassword(csLoginByUserName(this.loginByUsernameData));
+            this.loading.login=true;
             if (response.status == 200) {
                 this.alert({
                     color: 'success',
@@ -314,7 +319,6 @@ export default {
                     content: response.message,
                 })
             }
-            this.$emit('set_loading', getCancelLoadMsg());
         },
         loginByEmail() {
             /**

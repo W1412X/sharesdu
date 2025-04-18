@@ -71,7 +71,7 @@
                 ></v-select>
             </div>
             <div class="bottom-btn-div">
-                <v-btn variant="text" class="btn" density="compact" @click="submit">{{ this.data.id?'提交修改':'发布' }}</v-btn>
+                <v-btn variant="text" :loading="loading" :disabled="loading" class="btn" density="compact" @click="submit">{{ this.data.id?'提交修改':'发布' }}</v-btn>
                 <v-btn variant="text" class="btn" density="compact" @click="close">取消</v-btn>
             </div>
         </div>
@@ -83,7 +83,7 @@ import SensitiveTextArea from './SensitiveTextArea.vue';
 import SensitiveTextField from './SensitiveTextField.vue';
 import { createCourse,/*, getCourseDetail,editCourse*/ 
 editCourse} from '@/axios/course';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 
 export default {
     name: 'CourseEditor',
@@ -126,7 +126,8 @@ export default {
     data(){
         const data=this.initData;
         return {
-            data
+            data,
+            loading:false,
         }
     },
     methods: {
@@ -141,7 +142,7 @@ export default {
             }
         },
         async create(){
-            this.setLoading(getLoadMsg('正在创建课程...',-1));
+            this.loading=true;
             let type=null;
             switch(this.data.type){
                 case "必修课":
@@ -182,7 +183,7 @@ export default {
                 assessment_method:this.data.examineMethod,
                 credits:this.data.credit,
             })
-            this.setLoading(getCancelLoadMsg());
+            this.loading=false;
             if(response.status==200||response.status==201){
                 this.alert(getNormalSuccessAlert("课程创建成功"));
                 this.close();
@@ -191,7 +192,7 @@ export default {
             }
         },
         async edit(){
-            this.setLoading(getLoadMsg('正在提交修改...',-1));
+            this.loading=true;
             let type=null;
             switch(this.data.type){
                 case "必修课":
@@ -233,7 +234,7 @@ export default {
                 assessment_method:this.data.examineMethod,
                 credits:this.data.credit,
             })
-            this.setLoading(getCancelLoadMsg());
+            this.loading=false;
             if(response.status==200||response.status==201){
                 this.alert(getNormalSuccessAlert("课程修改成功"));
                 this.close();

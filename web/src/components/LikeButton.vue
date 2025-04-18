@@ -1,5 +1,5 @@
 <template>
-    <v-btn @click="click" elevation="0" icon :style="{
+    <v-btn :loading="loading" :disabled="loading" @click="click" elevation="0" icon :style="{
         'width': size + 'px',
         'height': size + 'px',
         'border-radius': '100%',
@@ -9,7 +9,7 @@
 </template>
 <script>
 import { likeContent, unlikeContent } from '@/axios/like';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert } from '@/utils/other';
+import { getNormalErrorAlert } from '@/utils/other';
 import { computed } from 'vue';
 export default {
     props: {
@@ -43,6 +43,7 @@ export default {
             ifClicked,
             heart,
             ifClickable: true,
+            loading:false,
         }
     },
     components: {
@@ -69,13 +70,13 @@ export default {
             let response = { status: -1, message: "网络错误" };
             try {
                 if (this.ifClicked) {//liked
-                    this.setLoading(getLoadMsg("正在取消点赞..."));
+                    this.loading=true;
                     response = await unlikeContent(type, this.id);
-                    this.setLoading(getCancelLoadMsg());
+                    this.loading=false;
                 } else {
-                    this.setLoading(getLoadMsg("正在点赞..."));
+                    this.loading=true;
                     response = await likeContent(type, this.id);
-                    this.setLoading(getCancelLoadMsg());
+                    this.loading=false;
                 }
                 if (response.status == 200) {
                     this.ifClicked = !this.ifClicked;
@@ -83,7 +84,7 @@ export default {
                     this.alert(getNormalErrorAlert(response.message));
                 }
             } catch (e) {
-                this.setLoading(getCancelLoadMsg());
+                this.loading=false;
                 this.alert(getNormalErrorAlert("未知错误，请查看控制台"));
             }
             setTimeout(() => {

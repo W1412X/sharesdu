@@ -80,7 +80,7 @@
       <!-- message part  -->
       <div v-if="choose === 'message'">
           <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item" @alert="alert" @set_loading="setLoading" ></notification-item>
-          <v-btn @click="getNotificationList" variant="tonal" rounded width="100%">
+          <v-btn :loading="loading.loadNotification" :disabled="loading.loadNotification" @click="getNotificationList" variant="tonal" rounded width="100%">
             加载更多
           </v-btn>
       </div>
@@ -97,7 +97,7 @@
             text="隐私政策"></v-btn>
           <v-btn @click="toUrl('/#/document/about_us')" prepend-icon="mdi-information-variant" color="grey"
             variant="outlined" text="关于我们"></v-btn>
-          <v-btn @click="getBlockList" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
+          <v-btn :loading="loading.loadBlock" :disabled="loading.loadBlock" @click="getBlockList" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
             text="黑名单"></v-btn>
             <v-btn to="#/welcome" prepend-icon="mdi-application-outline" color="grey" variant="outlined"
             text="下载APP"></v-btn>
@@ -200,6 +200,10 @@ export default {
       notificationList: [],
       notificationPageNum:1,
       blockList: [],
+      loading:{
+        loadNotification:false,
+        loadBlock:false,
+      }
     }
   },
   methods: {
@@ -216,9 +220,9 @@ export default {
       this.$emit("alert", msg);
     },
     async getBlockList() {
-      this.setLoading(getLoadMsg("正在获取黑名单列表..."));
+      this.loading.loadBlock=true;
       let response = await getBlockList();
-      this.setLoading(getCancelLoadMsg());
+      this.loading.loadBlock=false;
       if(response.status==200){
         for(let i=0;i<response.block_list.length;i++){
           this.blockList.push({
@@ -257,9 +261,9 @@ export default {
     },
     async getNotificationList() {
       let ids=[]
-      this.setLoading(getLoadMsg("正在获取通知列表..."));
+      this.loading.loadNotification=true;
       let response=await fetchNotificationsList(this.notificationPageNum);
-      this.setLoading(getCancelLoadMsg());
+      this.loading.loadNotification=false;
       if (response.status == 200) {
         for(let i=0;i<response.notification_list.length;i++){
           ids.push(response.notification_list[i].notification_id);

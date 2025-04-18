@@ -10,7 +10,7 @@
                 <sensitive-text-area v-model="newFolder.description" variant="outlined" rows="3"
                     label="编辑收藏夹描述"></sensitive-text-area>
                 <div class="row-reverse-div">
-                    <v-btn @click="create" :color="themeColor" variant="outlined">确认创建</v-btn>
+                    <v-btn :loading="loading.create" :disabled="loading.create" @click="create" :color="themeColor" variant="outlined">确认创建</v-btn>
                 </div>
             </v-card>
         </div>
@@ -28,9 +28,9 @@
                 <v-expansion-panel expand-icon="mdi-folder-star" v-for="(folder, index) in folders" :key="index"
                     class="with-border" :text="folder.description" :title="folder.name">
                     <div class="row-reverse-div">
-                        <v-btn v-if="type === 'add'" @click="add(folder.id)" :color="themeColor" icon="mdi-star-plus"
+                        <v-btn :loading="loading.add[folder.id]" :disabled="loading.add[folder.id]" v-if="type === 'add'" @click="add(folder.id)" :color="themeColor" icon="mdi-star-plus"
                             class="btn" variant="tonal" size="30"></v-btn>
-                        <v-btn v-if="type === 'show'" @click="load(index)" :color="themeColor"
+                        <v-btn :loading="loading.load[index]" :disabled="loading.load[index]" v-if="type === 'show'" @click="load(index)" :color="themeColor"
                             icon="mdi-chevron-down-circle-outline" class="btn" variant="tonal" size="32"></v-btn>
                         <v-spacer></v-spacer>
                         <div class="row-60-scroll">
@@ -108,14 +108,19 @@ export default {
             newFolder: {
                 name: "",
                 description: "",
+            },
+            loading:{
+                create:false,
+                add:{},
+                load:{},
             }
         }
     },
     methods: {
         async create() {
-            this.setLoading(getLoadMsg("正在创建..."));
+            this.loading.create=true;
             let response = await createStarFolder(this.newFolder.name, this.newFolder.description);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.create=false;
             if (response.status == 200 || response.status == 201) {
                 this.alert(getNormalSuccessAlert("创建成功"));
                 this.folders.unshift({
@@ -138,9 +143,9 @@ export default {
                 this.alert(getNormalInfoAlert("文件夹已加载"))
                 return;
             }
-            this.setLoading(getLoadMsg("正在加载收藏夹列表..."));
+            this.loading.load[index]=true;
             let response = await getStarList(this.folders[index].id);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.load[index]=false;
             if (response.status == 200 || response.status == 201) {
                 try {
                     for (let u = 0; u < response.star_list.length; u++) {
@@ -172,7 +177,7 @@ export default {
             }
         },
         async add(folderId) {
-            this.setLoading(getLoadMsg("正在添加..."));
+            this.loading.add[folderId]=true;
             let type = -1;
             switch (this.msg.type) {
                 case "course":
@@ -189,7 +194,7 @@ export default {
                     break;
             }
             let response = await starContent(type, this.msg.id, folderId);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.add[folderId]=false;
             if (response.status == 200 || response.status == 201) {
                 this.alert(getNormalSuccessAlert("收藏成功"));
                 this.$emit('star_ok');

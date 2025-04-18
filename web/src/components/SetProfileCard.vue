@@ -40,7 +40,7 @@
               margin-top: 20px;
               flex-direction: row;
             ">
-        <v-btn variant="outlined" style="height: 35px" color="#9c0c13" @click="this.submit()">提交</v-btn>
+        <v-btn :loading="loading.submit" :disabled="loading.submit" variant="outlined" style="height: 35px" color="#9c0c13" @click="this.submit()">确认</v-btn>
       </div>
     </div>
   </v-card>
@@ -49,7 +49,7 @@
 import { uploadProfileImage } from '@/axios/image';
 import { getCookie } from '@/utils/cookie';
 import { compressImage } from '@/utils/image';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
 import { computed, ref } from 'vue';
 import PixelImage from './PixelImage.vue';
 export default {
@@ -75,6 +75,9 @@ export default {
     return {
       blob: null,
       nowProfileUrl: this.userProfileUrl,
+      loading:{
+        submit:false,
+      }
     }
   },
   components:{
@@ -101,9 +104,9 @@ export default {
       this.alert(getNormalInfoAlert("上传的头像大小会被自动缩放至64*64大小"))
     },
     async submit() {
-      this.setLoading(getLoadMsg("正在上传头像", -1));
+      this.loading.submit=true;
       const response = await uploadProfileImage(this.blob);
-      this.setLoading(getCancelLoadMsg());
+      this.loading.submit=false;
       if (response.status == 200 || response.status == 201) {
         this.alert(getNormalSuccessAlert(response.message));
         this.$emit("set_profile");
@@ -111,7 +114,6 @@ export default {
       } else {
         this.alert(getNormalErrorAlert(response.message));
       }
-      this.setLoading(getCancelLoadMsg());
     },
     close() {
       this.$emit('close');

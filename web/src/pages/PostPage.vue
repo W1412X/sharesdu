@@ -11,7 +11,7 @@
                 <EmojiPicker @emoji="addEmoji"></EmojiPicker>
             </div>
             <div class="dialog-bottom-btn-bar">
-                <v-btn @click="submitComment" variant="text">发表</v-btn>
+                <v-btn :disabled="loading.submitReply" :loading="loading.submitReply" @click="submitComment" variant="text">发表</v-btn>
                 <v-btn @click="setCommentState(false)" variant="text">取消</v-btn>
             </div>
         </v-card>
@@ -112,7 +112,7 @@
             <div class="column-div">
                 <reply-item v-for="comment in replyList" :init-data="comment" @show_parent="getParentReply" @reply="addReply" :post-id="this.post.id" :key="comment.id" @alert="alert" @set_loading="setLoading">
                 </reply-item>
-                <v-btn variant="tonal" class="load-btn" @click="loadMoreReply">加载更多</v-btn>
+                <v-btn :loading="loading.loadReply" :disabled="loading.loadReply" variant="tonal" class="load-btn" @click="loadMoreReply">加载更多</v-btn>
             </div>
         </div>
         </div>
@@ -224,7 +224,11 @@ export default {
             relativeText,
             replyList: [],
             replyPageNum:1,
-            tmpParentReply:null
+            tmpParentReply:null,
+            loading:{
+                loadReply:false,
+                submitReply:false,
+            }
         }
     },
     methods: {
@@ -239,9 +243,9 @@ export default {
                 this.alert(getNormalWarnAlert("评论内容不能为空"));
                 return;
             }
-            this.setLoading(getLoadMsg("正在提交评论..."));
+            this.loading.submitReply=true;
             let response=await createReplyUnderPost(this.post.id,this.inputingComment);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.submitReply=false;
             if(response.status==200||response.status==201){
                 this.alert(getNormalSuccessAlert("评论成功"));
                 this.replyList.unshift({
@@ -277,9 +281,9 @@ export default {
             openNewPage(this.post.relativeLink);
         },
         async loadMoreReply(){
-            this.setLoading(getLoadMsg("正在加载评论..."));
+            this.loading.loadReply=true;
             let response=await getReplyListByPostId(this.post.id,this.replyPageNum);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.loadReply=false;
             if(response.status==200){
                 for(let i=0;i<response.reply_list.length;i++){
                     let reply={

@@ -42,9 +42,9 @@
             </div>
             <div v-if="deviceType == 'mobile'" id="message-container" class="message-container">
                 <div class="tip-text-btn">
-                    <span v-if="this.receiverId" @click="loadFrontier" class="text-tiny">
+                    <v-btn variant="text" style="max-height: 25px;" :loading="loading.loadFrontier" :disabled="loading.loadFrontier" v-if="this.receiverId" @click="loadFrontier" class="text-tiny">
                         查看更早的消息
-                    </span>
+                    </v-btn>
                 </div>
                 <chat-message @recall="handleRecall" v-for="(message) in messages" :init-data="message" :key="message.id" @alert="alert"
                     @set_loading="setLoading"></chat-message>
@@ -78,9 +78,9 @@
                 <div id="desktop-message-editor-container" style="flex:1;display: flex;flex-direction: column;">
                     <div id="message-container" class="message-container">
                         <div class="tip-text-btn">
-                            <span v-if="this.receiverId" @click="loadFrontier" class="text-tiny">
+                            <v-btn variant="text" style="max-height: 25px;" :loading="loading.loadFrontier" :disabled="loading.loadFrontier" v-if="this.receiverId" @click="loadFrontier" class="text-tiny">
                                 查看更早的消息
-                            </span>
+                            </v-btn>
                         </div>
                         <chat-message @recall="handleRecall" v-for="(message) in messages" :init-data="message" :key="message.id"
                             @alert="alert" @set_loading="setLoading"></chat-message>
@@ -88,7 +88,7 @@
                     <div class="message-editor row-div">
                         <sensitive-text-area rows="1" variant="outlined" density="compact" v-model="editingMessage" />
                         <div class="send-btn-container">
-                            <v-btn @click="send" icon="mdi-send" size="40" :variant="'text'"
+                            <v-btn :loading="loading.send" :disabled="loading.send" @click="send" icon="mdi-send" size="40" :variant="'text'"
                                 :color="themeColor"></v-btn>
                         </div>
                     </div>
@@ -157,6 +157,10 @@ export default {
             },
             chatPageDict: {
 
+            },
+            loading:{
+                send:false,
+                loadFrontier:false,
             }
         }
     },
@@ -253,9 +257,9 @@ export default {
             }
         },
         async send() {
-            this.setLoading(getLoadMsg("正在发送..."));
+            this.loading.send=true;
             let response = await sendPrivateMessage(this.receiverId, this.editingMessage);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.send=false;
             if (response.status == 200) {
                 this.messages.push({
                     id: 'sss',
@@ -284,9 +288,9 @@ export default {
             console.log("chatPageDict",this.chatPageDict);
             console.log("recervierId",this.receiverId);
             console.log("page",this.chatPageDict[this.receiverId]);
-            this.setLoading(getLoadMsg('正在获取...'));
+            this.loading.loadFrontier=true;
             let response = await getChatHistory(this.receiverId, this.chatPageDict[this.receiverId]);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.loadFrontier=false;
             if (response.status == 200) {
                 this.chatPageDict[this.receiverId]++;
                 let tmp=[];

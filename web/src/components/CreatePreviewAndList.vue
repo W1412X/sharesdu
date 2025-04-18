@@ -15,21 +15,21 @@
           <div class="column-div">
             <star-item :if-star-type="false" v-for="(item, index) in this.articleList" :key="index" :init-data="item">
           </star-item>
-          <v-btn v-if="this.type=='all'" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
+          <v-btn :disabled="loading.article" :loading="loading.article" v-if="this.type=='all'" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
           </div>
         </div>
         <div v-if="itemType == 'post'" class="column-div-scroll">
             <div class="column-div">
                 <star-item :if-star-type="false" v-for="(item, index) in this.postList" :key="index" :init-data="item">
           </star-item>
-          <v-btn v-if="this.type=='all'" width="100%"  @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
+          <v-btn :loading="loading.post" :disabled="loading.post" v-if="this.type=='all'" width="100%"  @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
         </div>
         <div v-if="itemType == 'reply'" class="column-div-scroll">
           <div class="column-div">
             <star-item :if-star-type="false" v-for="(item, index) in this.replyList" :key="index" :init-data="item" :postId="item.postId" :if-preview="true">
           </star-item>
-          <v-btn v-if="this.type=='all'" width="100%"  @click="loadMore('reply')" variant="tonal" class="load-btn">加载更多</v-btn>
+          <v-btn :loading="loading.reply" :disabled="loading.reply" v-if="this.type=='all'" width="100%"  @click="loadMore('reply')" variant="tonal" class="load-btn">加载更多</v-btn>
           </div>
         </div>
     </v-card>
@@ -62,6 +62,11 @@ export default{
             articlePageNum: 1,
             postPageNum: 1,
             replyPageNum: 1,
+            loading:{
+                article: false,
+                post: false,
+                reply: false,
+            }
         }
     },
     watch:{
@@ -100,9 +105,9 @@ export default{
             }
             switch(type){
                 case 'article':
-                    this.setLoading(getLoadMsg("正在加载..."));
+                    this.loading.article=true;
                     response=await getUserContent('article', this.userId, this.articlePageNum);
-                    this.setLoading(getCancelLoadMsg());
+                    this.loading.article=false;
                     if(response.status==200){
                         for(let i=0;i<response.results.length;i++){
                             this.articleList.push({
@@ -121,9 +126,9 @@ export default{
                     }
                     break;
                 case 'post':
-                    this.setLoading(getLoadMsg("正在加载..."));
+                    this.loading.post=true;
                     response=await getUserContent('post', this.userId, this.postPageNum);
-                    this.setLoading(getCancelLoadMsg());
+                    this.loading.post=false;
                         if(response.status==200){
                             for(let i=0;i<response.results.length;i++){
                                 this.postList.push({
@@ -140,9 +145,9 @@ export default{
                         }
                     break;
                 case 'reply':
-                    this.setLoading(getLoadMsg("正在加载..."));
+                    this.loading.reply=true;
                     response=await getUserContent('reply', this.userId, this.replyPageNum);
-                    this.setLoading(getCancelLoadMsg());
+                    this.loading.reply=false;
                     if(response.status==200){
                         for(let i=0;i<response.results.length;i++){
                             this.replyList.push({

@@ -21,7 +21,7 @@
             <v-otp-input v-model="data.emailCode" variant="outlined"></v-otp-input>
         </v-sheet>
         <div class="examine-btn-container">
-            <v-btn :color="themeColor" height="40" text="验证" 
+            <v-btn :disabled="loading.examine" :loading="loading.examine" :color="themeColor" height="40" text="验证" 
                 variant="flat" @click="examine()"
                 class="examine-btn"
             ></v-btn>
@@ -69,6 +69,10 @@ export default {
         const data=this.initData;
         return{
             data,
+            loading:{
+                send:false,
+                examine:false,
+            }
         }
     },
     methods: {
@@ -83,7 +87,7 @@ export default {
                 })
                 return;
             }
-            this.setLoading({state:true,progress:-1,text:'正在验证...'});
+            this.loading.examine=true;
             var formToSubmit=this.data;
             var response=null;
             switch(this.data.type){
@@ -141,7 +145,7 @@ export default {
                     content:response.message,
                 })
             }
-            this.setLoading(getCancelLoadMsg())
+            this.loading.examine=false;
         },
         async resend() {//resend the code  
             var response=null;

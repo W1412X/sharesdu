@@ -3,7 +3,7 @@
       <div v-if="ifShowMore" style="width: 100%;height:100%;justify-content: center;display: flex">
         <v-card class="column-div-reverse message-more-card">
             <v-btn density="compact" width="100px" class="text-medium" prepend-icon="mdi-alert-circle-outline" text="举报" variant="text"></v-btn>
-            <v-btn @click="recall" density="compact" width="100px" class="text-medium" prepend-icon="mdi-email-arrow-left-outline" text="撤回" variant="text"></v-btn>
+            <v-btn :loading="loading.recall" :disabled="loading.recall" @click="recall" density="compact" width="100px" class="text-medium" prepend-icon="mdi-email-arrow-left-outline" text="撤回" variant="text"></v-btn>
         </v-card>
       </div>
     </v-dialog>
@@ -61,7 +61,7 @@
 </template>
 <script>
 import { deletePrivateMessage } from '@/axios/chat';
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { extractTime, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { ref } from 'vue';
 import AvatarName from './AvatarName.vue';
 import { globalProperties } from '@/main';
@@ -103,6 +103,9 @@ export default {
         data.time=extractTime(data.time);
         return{
             data,
+            loading:{
+                recall:false,
+            }
         }
     },
     methods: {
@@ -113,9 +116,9 @@ export default {
             this.$emit("set_loading",msg);
         },
         async recall(){
-            this.setLoading(getLoadMsg("正在撤回..."));
+            this.loading.recall=true;
             let response=await deletePrivateMessage(this.data.id);
-            this.setLoading(getCancelLoadMsg());
+            this.loading.recall=false;
             if(response.status==200){
                 this.alert(getNormalSuccessAlert("撤回成功"));
                 this.$emit("recall",this.data.id);
