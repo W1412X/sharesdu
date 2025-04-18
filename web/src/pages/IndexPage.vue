@@ -19,9 +19,24 @@
         </div>
         <div class="row-center">
             <div v-if="itemType == 'article'" class="item-container">
+                <div class="sort-method-bar">
+                        <v-spacer/>
+                        <v-btn variant="tonal" class="text-small sort-btn" @click="articleSortMethod='time'" type="mdi" :color="articleSortMethod=='time'?themeColor:'grey'" prepend-icon="mdi-sort-clock-ascending-outline" :text="'最近发布'">
+                        </v-btn>
+                        <v-spacer/>
+                        <v-btn variant="tonal" class="text-small sort-btn" @click="articleSortMethod='star'" type="mdi" :color="articleSortMethod=='star'?themeColor:'grey'" prepend-icon="mdi-star-check-outline" :text="'最多收藏'">
+                        </v-btn>
+                        <v-spacer/>
+                        <v-btn variant="tonal" class="text-small sort-btn" @click="articleSortMethod='view'" type="mdi" :color="articleSortMethod=='view'?themeColor:'grey'" prepend-icon="mdi-eye-outline" :text="'最多浏览'">
+                        </v-btn>
+                        <v-spacer/>
+                        <v-btn variant="tonal" class="text-small sort-btn" @click="articleSortMethod='hot'" type="mdi" :color="articleSortMethod=='hot'?themeColor:'grey'" prepend-icon="mdi-fire" :text="'最高热度'">
+                        </v-btn>
+                        <v-spacer/>
+                </div>
                 <article-item
-                    v-for="(item,index) in this.articleList"
-                    :key="index"
+                    v-for="item in this.articleList[articleSortMethod]"
+                    :key="item.id"
                     :init-data="item">
                 </article-item>
                 <v-btn @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
@@ -72,6 +87,7 @@ export default {
             text: '加载中...',
             progress: -1
         }
+        const themeColor = globalProperties.$themeColor;
         /**
          * get device type
          */
@@ -96,6 +112,7 @@ export default {
             userId,
             userName,
             userProfileUrl,
+            themeColor,
         }
     },
     watch:{
@@ -104,7 +121,7 @@ export default {
             handler(newVal,oldVal) {
                 switch(newVal){
                     case 'article':
-                        if(this.articleList.length==0){
+                        if(this.articleList[this.articleSortMethod].length==0){
                             this.loadMore('article');
                         }
                         break;
@@ -124,6 +141,17 @@ export default {
                 }
             },
             immediate: false,
+        },
+        articleSortMethod:{
+            handler(newVal,oldVal) {
+                if(newVal==oldVal){
+                    return;
+                }
+                if(this.articleList[this.articleSortMethod].length==0){
+                    this.loadMore(this.itemType);
+                }
+            },
+            immediate: false,
         }
     },
     beforeRouteLeave (to, from, next) {
@@ -138,19 +166,31 @@ export default {
         lastScanMsg.coursePageNum=this.coursePageNum;
         let scrollPosition = document.scrollingElement.scrollTop;
         lastScanMsg.scrollPosition=scrollPosition;
+        lastScanMsg.articleSortMethod=this.articleSortMethod;
         sessionStorage.setItem('indexScanMsg', JSON.stringify(lastScanMsg))
         next()
     },
     data() {
         const itemType = 'article';
         return {
-            articleList:[],
+            articleList:{
+                time:[],
+                star:[],
+                view:[],
+                hot:[],
+            },
             courseList:[],
             postList:[],
-            articlePageNum:1,
+            articlePageNum:{
+                time:1,
+                star:1,
+                view:1,
+                hot:1,
+            },
             postPageNum:1,
             coursePageNum:1,
             itemType,
+            articleSortMethod:'time',
         }
     },
     methods: {
@@ -165,11 +205,11 @@ export default {
         async loadMore(itemType){
             if(itemType=='article'){
                 this.setLoading(getLoadMsg("正在获取..."));
-                let response=await getArticleList('time',null,this.articlePageNum);
+                let response=await getArticleList(this.articleSortMethod,null,this.articlePageNum[this.articleSortMethod]);
                 this.setLoading(getCancelLoadMsg());
                 if(response.status==200){
                     for(let ind=0;ind<response.article_list.length;ind++){
-                        this.articleList.push({
+                        this.articleList[this.articleSortMethod].push({
                             id:response.article_list[ind].article_id,
                             title:response.article_list[ind].article_title,
                             summary:response.article_list[ind].article_summary,
@@ -185,7 +225,7 @@ export default {
                             hotScore:response.article_list[ind].hot_score
                         });
                     }
-                    this.articlePageNum++;
+                    this.articlePageNum[this.articleSortMethod]++;
                     this.alert(getNormalSuccessAlert(response.message));
                 }else{
                     this.alert(getNormalErrorAlert(response.message));
@@ -263,6 +303,7 @@ export default {
             this.itemType=lastScanMsg.itemType;
             this.articleList=lastScanMsg.articleList;
             this.postList=lastScanMsg.postList;
+            this.articleSortMethod=lastScanMsg.articleSortMethod;
             this.courseList=lastScanMsg.courseList;
             this.postPageNum=lastScanMsg.postPageNum;
             this.coursePageNum=lastScanMsg.coursePageNum;
@@ -283,13 +324,25 @@ export default {
     width: 100%;
     margin-top: 5px;
 }
+.sort-btn{
+    margin-left: 10px;
+    max-height: 25px;
+}
 /** desktop */
 @media screen and (min-width: 600px) {
     .full-screen {
         width: 100%;
         height: 100%;
     }
-
+    .sort-method-bar{
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        align-items: center;
+        overflow-x: scroll;
+        padding: 5px;
+    }
     .top-bar {
         z-index: 1000;
         position: fixed;
@@ -329,7 +382,9 @@ export default {
         margin-bottom: 50px;
         margin-top: 40px;
         display: flex;
+        width: 750px;
         flex-direction: column;
+        background-color: white;
     }
 }
 
@@ -339,7 +394,15 @@ export default {
         width: 100vw;
         height: 100vh;
     }
-
+    .sort-method-bar{
+        width: 100vw;
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        align-items: center;
+        overflow-x: scroll;
+        padding: 5px;
+    }
     .top-bar {
         z-index: 1000;
         position: fixed;
@@ -382,6 +445,7 @@ export default {
         margin-top: 40px;
         display: flex;
         flex-direction: column;
+        background-color: white;
     }
 }
 </style>

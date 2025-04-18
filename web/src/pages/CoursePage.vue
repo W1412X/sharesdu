@@ -747,6 +747,7 @@ export default {
         max-width: 800px;
         display: flex;
         flex-direction: column;
+        background-color: white;
     }
 }
 
@@ -875,6 +876,7 @@ export default {
         width: 100vw;
         display: flex;
         flex-direction: column;
+        background-color: white;
     }
     .posts-dialog{
         padding:0px;

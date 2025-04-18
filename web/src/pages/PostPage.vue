@@ -521,6 +521,7 @@ export default {
 .column-div {
     display: flex;
     flex-direction: column;
+    background-color: white;
 }
 
 @media screen and (min-width: 600px) {

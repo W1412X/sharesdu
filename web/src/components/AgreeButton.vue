@@ -16,7 +16,7 @@ export default {
   props: {
     text: {
       type: String,
-      default: '永久保存登陆状态'
+      default: '自动登陆'
     }
   },
   setup(){
