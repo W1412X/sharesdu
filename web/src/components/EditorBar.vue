@@ -130,6 +130,7 @@ import { uploadArticleImage } from '@/axios/image';
 import { extractTags } from '@/utils/keyword';
 import { VFileUpload } from 'vuetify/lib/labs/components.mjs';
 import ImgCard from './ImgCard.vue';
+import { compressImage } from '@/utils/image';
 export default {
     name: 'EditorBar',
     props: {
@@ -194,6 +195,7 @@ export default {
             input.accept = 'image/jpeg, image/png, image/gif';
             input.onchange = async (event) => {
                 let image = event.target.files[0];
+                image=await compressImage(image, 1024 * 4);
                 this.data.coverLink = URL.createObjectURL(image);
                 this.tmpCoverImage=image;
             };

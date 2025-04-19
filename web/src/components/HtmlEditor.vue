@@ -14,6 +14,7 @@ import { Boot } from '@wangeditor/editor'
 import formulaModule from '@wangeditor/plugin-formula'
 import { uploadArticleImage } from '@/axios/image';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other'
+import { compressImage } from '@/utils/image'
 export default defineComponent({
     name: 'HtmlEditor',
     props: {
@@ -67,8 +68,8 @@ export default defineComponent({
             }
         };
         var imageDict={};
-        const customUpload = (file, insertFn) => {
-            const image = file;
+        const customUpload =async (file, insertFn) => {
+            const image =await compressImage(file,1024*4);
             const tmpUrl=URL.createObjectURL(image);
             insertFn(tmpUrl);
             imageDict[tmpUrl]=image;

@@ -5,6 +5,7 @@
 </template>
 <script setup>
 import { uploadArticleImage } from '@/axios/image';
+import { compressImage } from '@/utils/image';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { MdEditor } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
@@ -41,8 +42,8 @@ export default {
         alert(msg){
             this.$emit('alert',msg);
         },
-        handleUploadImage(files, callback) {
-            const image = files[0];
+        async handleUploadImage(files, callback) {
+            const image = await compressImage(files[0],1024*4);
             const tmpUrl=URL.createObjectURL(image);
             callback([tmpUrl]);
             //add the tmp Url to the dict 
