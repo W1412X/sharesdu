@@ -22,7 +22,8 @@
     <div class="full-center">
         <div class="column-div">
             <v-card class="course-card">
-                <div class="row-div">
+                <part-loading-view :state="!loadState.course" :text="'正在加载课程...'"></part-loading-view>
+                <div v-if="loadState.course"  class="row-div">
                     <div class="course-name">
                         {{ course.name }}
                     </div>
@@ -39,7 +40,7 @@
                     </div>
                     -->
                 </div>
-                <div class="msg-container">
+                <div v-if="loadState.course"  class="msg-container">
                     <div class="row-div">
                         <div class="msg-item">
                             课程类型:{{ course.type }}
@@ -66,7 +67,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="time-container">
+                <div v-if="loadState.course"  class="time-container">
                         <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="18"></v-icon>
                         <div class="text-small">
                             {{ course.publishTime }}
@@ -74,7 +75,7 @@
                         <v-spacer></v-spacer>
                         <span class="history-text text-small" @click="showHistory">查看历史版本</span>
                 </div>
-                <div class="visualize-score-card">
+                <div v-if="loadState.course"  class="visualize-score-card">
                     <div class="bar-left-container">
                         <div class="actual-score-text">
                             {{ course.avgScore }}
@@ -97,7 +98,8 @@
                         </v-list-item>
                     </v-list>
                 </div>
-                <v-card class="self-comment-container-card" elevation="0">
+                <part-loading-view :state="!loadState.selfComment" :text="'正在获取用户评论...'"></part-loading-view>
+                <v-card v-if="loadState.selfComment" class="self-comment-container-card" elevation="0">
                     <div class="row-div">
                         <v-rating v-model="selfComment.score" density="compact" :color="selfComment.score===null?'#8a8a8a':themeColor" :disabled="true"></v-rating>
                         <v-spacer />
@@ -175,7 +177,7 @@ import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
 import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList, getCoursePostList } from '@/axios/course';
 import { computed,ref } from 'vue';
-import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { copy, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
 import StarButton from '@/components/StarButton.vue';
 import PostEditor from '@/components/PostEditor.vue';
@@ -185,6 +187,7 @@ import CourseEditor from '@/components/CourseEditor.vue';
 import { addHistory } from '@/utils/history';
 import EmojiPicker from '@/components/EmojiPicker.vue';
 import CourseHistoryCard from '@/components/CourseHistoryCard.vue';
+import PartLoadingView from '@/components/PartLoadingView.vue';
 export default {
     name: 'CoursePage',
     components: {
@@ -197,6 +200,7 @@ export default {
         CourseEditor,
         EmojiPicker,
         CourseHistoryCard,
+        PartLoadingView,
     },
     setup() {
         const userName=getCookie("userName");
@@ -260,6 +264,8 @@ export default {
         scanMsg.oriSelfComment=this.oriSelfComment;
         scanMsg.scrollTop=document.scrollingElement.scrollTop;
         scanMsg.postState=this.ifShowPost;
+        scanMsg.loading=this.loading;
+        scanMsg.loadState=this.loadState;
         if(scanMsg.postState){
             scanMsg.postScrollTop=document.getElementById("post-container").scrollTop;
         }
@@ -304,6 +310,10 @@ export default {
                 loadEvaluation:false,
                 post:false,
                 submitEvaluation:false,
+            },
+            loadState:{
+                course:false,
+                selfComment:false,
             }
         }
     },
@@ -390,9 +400,9 @@ export default {
             this.$emit('set_loading',msg);
         },
         async getSelfComment(){
-            this.setLoading(getLoadMsg("正在加载您的评分...", -1));
+            this.loadState.selfComment=false;
             let response=await getUserCourseEvaluation(getCookie("userId"),this.course.id)
-            this.setLoading(getCancelLoadMsg());
+            this.loadState.selfComment=true;
             if(response.status==200){
                 this.selfComment={
                     score:response.score,
@@ -451,6 +461,8 @@ export default {
             this.selfComment=scanMsg.selfComment;
             this.oriSelfComment=scanMsg.oriSelfComment;
             this.ifRated=scanMsg.ifRated;
+            this.loading=scanMsg.loading;
+            this.loadState=scanMsg.loadState;
             this.setPostState(scanMsg.postState);
             await addHistory("course",this.course.id,this.course.name);
             document.getElementById('web-title').innerText='课程 | '+this.course.name;
@@ -462,7 +474,6 @@ export default {
             },10);
             return;
         }
-        this.setLoading(getCancelLoadMsg());
         /**
          * get the course id from the url
          */
@@ -470,9 +481,9 @@ export default {
          * get course detail
          */
         this.course.id = this.$route.params.id;
-        this.setLoading(getLoadMsg('正在获取课程信息...',-1))
+        this.loadState.course=false;
         let response=await getCourseDetail(this.course.id);
-        this.setLoading(getCancelLoadMsg());
+        this.loadState.course=true;
         if(response.status==200){
             let avgScore=0;
             if(response.course_detail.all_people!=0){

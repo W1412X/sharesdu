@@ -1,4 +1,5 @@
 <template>
+    <part-loading-view class="card" :state="!loadState" :text="'正在加载信息...'"></part-loading-view>
     <v-card v-if="loadState" class="card" elevation="1">
         <!-- Avatar and Name Section -->
         <div class="row-no-margin">
@@ -61,6 +62,7 @@ import AvatarName from './AvatarName.vue';
 import { getAuthorInfo } from '@/axios/account';
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
 import { blockUser, unblockUser } from '@/axios/block';
+import PartLoadingView from './PartLoadingView.vue';
 
 export default{
     props:{
@@ -81,6 +83,7 @@ export default{
     },
     components:{
         AvatarName,
+        PartLoadingView,
     },
     data(){
         return {
@@ -143,10 +146,7 @@ export default{
     },
     async mounted(){
     try {
-
-        this.setLoading(getLoadMsg("正在获取用户信息..."));
         let response = await getAuthorInfo(this.id);
-        this.setLoading(getCancelLoadMsg());
         if (response.status == 200) {
             this.data = {
                 id: response.data.user_id,

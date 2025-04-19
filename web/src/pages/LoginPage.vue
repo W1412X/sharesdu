@@ -10,7 +10,7 @@
             </v-dialog>
             <div class="full-center">
                 <v-card class="card">
-                    <v-tabs v-model="nowTab" bg-color="indigo-darken-2" fixed-tabs>
+                    <v-tabs v-model="nowTab" :bg-color="themeColor" fixed-tabs>
                         <v-tab :style="{ background: themeColor, 'font-size': '18px' }" value="login" text="登陆"></v-tab>
                         <v-tab :style="{ background: themeColor, 'font-size': '18px' }" value="register"
                             text="注册"></v-tab>

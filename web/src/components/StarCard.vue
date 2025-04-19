@@ -15,8 +15,8 @@
             </v-card>
         </div>
     </v-dialog>
-
-    <v-card class="card" elevation="1">
+    <part-loading-view :state="!loadState"></part-loading-view>
+    <v-card v-if="loadState" class="card" elevation="1">
         <div class="row-reverse-div">
             <v-btn v-if="type === 'add'" size="20" style="margin-bottom: 10px;" color="#8a8a8a" variant="text"
                 icon="mdi-close" @click="close"></v-btn>
@@ -60,11 +60,12 @@
 <script>
 import { globalProperties } from '@/main';
 import StarItem from './StarItem.vue';
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
+import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
 import { createStarFolder, getStarFolders, getStarList, starContent } from '@/axios/star';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from './SensitiveTextArea.vue';
 import SensitiveTextField from './SensitiveTextField.vue';
+import PartLoadingView from './PartLoadingView.vue';
 export default {
     props: {
         type: {
@@ -84,7 +85,8 @@ export default {
     components: {
         StarItem,
         SensitiveTextArea,
-        SensitiveTextField
+        SensitiveTextField,
+        PartLoadingView,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -113,7 +115,8 @@ export default {
                 create:false,
                 add:{},
                 load:{},
-            }
+            },
+            loadState:false,
         }
     },
     methods: {
@@ -216,9 +219,9 @@ export default {
         }
     },
     async mounted() {
-        this.setLoading(getLoadMsg('正在获取收藏夹信息...'));
+        this.loadState=false;
         let response = await getStarFolders();
-        this.setLoading(getCancelLoadMsg());
+        this.loadState=true;
         if (response.status == 200) {
             for (let i = 0; i < response.folders.length; i++) {
                 this.folders.push({

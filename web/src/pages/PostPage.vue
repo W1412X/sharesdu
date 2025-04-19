@@ -1,5 +1,4 @@
 <template>
-    <LoadingView :initial-data="loadingMsg"></LoadingView>
     <v-dialog v-model="ifShowDialog" style="width: 100%;height:100%;justify-content: center;">
       <div v-if="ifShowComment" style="width: 100%;height:100%;justify-content: center;display: flex">
         <v-card class="dialog-card">
@@ -29,7 +28,8 @@
     </v-dialog>
     <div class="full-center">
         <div>
-            <div class="top-bar">
+            <part-loading-view :state="!loadState.post" class="top-bar" :text="'正在加载帖子信息...'"></part-loading-view>
+            <div v-if="loadState.post" class="top-bar">
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium name-font">
                         <avatar-name v-if="this.post.authorId" :init-data="{id:this.post.authorId,name:post.authorName}"></avatar-name>
@@ -134,6 +134,7 @@ import DeleteButton from '@/components/DeleteButton.vue';
 import { addHistory } from '@/utils/history';
 import EmojiPicker from '@/components/EmojiPicker.vue';
 import ImgCard from '@/components/ImgCard.vue';
+import PartLoadingView from '@/components/PartLoadingView.vue';
 export default {
     name: 'PostPage',
     components: {
@@ -146,6 +147,7 @@ export default {
         DeleteButton,
         EmojiPicker,
         ImgCard,
+        PartLoadingView,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -195,6 +197,8 @@ export default {
         scanMsg.replyList=this.replyList;
         scanMsg.replyPageNum=this.replyPageNum;
         scanMsg.scrollTop=document.scrollingElement.scrollTop;
+        scanMsg.loadState=this.loadState;
+        scanMsg.loading=this.loading;
         let key='postScanMsg|'+this.post.id;
         sessionStorage.setItem(key,JSON.stringify(scanMsg));
         console.log(scanMsg);
@@ -228,7 +232,10 @@ export default {
             loading:{
                 loadReply:false,
                 submitReply:false,
-            }
+            },
+            loadState:{
+                post:false,
+            },
         }
     },
     methods: {
@@ -344,10 +351,12 @@ export default {
             this.post=scanMsg.post;
             this.replyList=scanMsg.replyList;
             this.replyPageNum=scanMsg.replyPageNum;
+            this.loadState=scanMsg.loadState;
+            this.loading=scanMsg.loading;
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },10);
-            document.getElementById('web-title').innerText='帖子 | '+this.course.name;
+            document.getElementById('web-title').innerText='帖子 | '+this.post.title;
             await addHistory("post",this.post.id,this.post.title);
             return;
         }
@@ -364,9 +373,9 @@ export default {
             })
             return;
         }
-        this.setLoading(getLoadMsg("正在加载帖子信息..."));
+        this.loadState.post=false;
         let response=await getPostDetailById(this.$route.params.id);
-        this.setLoading(getCancelLoadMsg());
+        this.loadState.post=true;
         if(response.status==200){
             this.post.authorId=response.post_detail.poster_id;
             this.post.authorName=response.post_detail.poster_name;

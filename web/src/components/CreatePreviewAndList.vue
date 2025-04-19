@@ -1,6 +1,7 @@
 <template>
     <v-card class="card">
-        <v-tabs v-model="itemType" fixed-tabs class="select-bar">
+        <part-loading-view :state="!loadState" :text="'正在获取创作信息...'"></part-loading-view>
+        <v-tabs v-if="loadState" v-model="itemType" fixed-tabs class="select-bar">
           <v-tab class="tab"
             :style="{ background: 'rgba(255,255,255,1)', 'color': this.itemType == 'article' ? '#000000' : '#8a8a8a' }"
             height="40px" value="article" text="文章"></v-tab>
@@ -35,9 +36,10 @@
     </v-card>
 </template>
 <script>
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalInfoAlert } from '@/utils/other';
+import { extractTime, getNormalInfoAlert } from '@/utils/other';
 import { getUserContent, getUserPreview } from '@/axios/account';
 import StarItem from './StarItem.vue';
+import PartLoadingView from './PartLoadingView.vue';
 
 export default{
     props:{
@@ -52,6 +54,7 @@ export default{
     },
     components:{
         StarItem,
+        PartLoadingView,
     },
     data() {
         return {
@@ -66,7 +69,8 @@ export default{
                 article: false,
                 post: false,
                 reply: false,
-            }
+            },
+            loadState:false,
         }
     },
     watch:{
@@ -176,9 +180,7 @@ export default{
     },
     async mounted(){
         if(this.type=='preview'){
-            this.setLoading(getLoadMsg("正在加载..."));
             let response=await getUserPreview(this.userId);
-            this.setLoading(getCancelLoadMsg());
             if(response.status==200){
                 for(let i=0;i<response.articles.length;i++){
                     this.articleList.push({
@@ -211,8 +213,9 @@ export default{
                 }
             }
         }else{
-            this.loadMore();
+            await this.loadMore();
         }
+        this.loadState=true;
     }
 }
 </script>
