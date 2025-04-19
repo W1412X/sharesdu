@@ -3,7 +3,6 @@
  */
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
-import { compressImage } from "@/utils/image.js";
 import { waitForLock } from "@/utils/lock.js";
 /**
  * Upload user profile image
@@ -13,14 +12,6 @@ import { waitForLock } from "@/utils/lock.js";
 export const uploadProfileImage = async (image) => {
     try {
         await waitForLock('token');
-        try{
-            image=await compressImage(image,'profile');
-        }catch(error){
-            return {
-                status: -1,
-                message: '图片过大无法压缩，请压缩后重试 '
-            };
-        }
         const data = new FormData();
         data.append('image', image);
         const response = await getaxiosInstance().post('/image/profile', data);
@@ -42,14 +33,6 @@ export const uploadProfileImage = async (image) => {
 export const uploadArticleImage = async (image) => {
     try {
         await waitForLock('token');
-        try{
-            image=await compressImage(image,'other');
-        }catch(error){
-            return {
-                status: -1,
-                message: '图片过大无法压缩，请压缩后重试 '
-            };
-        }
         const formData = new FormData();
         formData.append('image', image);
         const response = await getaxiosInstance().post('/image/article', formData);

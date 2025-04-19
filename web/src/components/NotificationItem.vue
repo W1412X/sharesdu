@@ -21,7 +21,7 @@
 <script>
 import { markAsReadNotification } from '@/axios/notification';
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
+import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
 import { computed } from 'vue';
 
 export default {
@@ -51,7 +51,7 @@ export default {
         }
     },
     data() {
-        var data=this.initData;
+        var data=copy(this.initData);
         const color=computed(()=>{
             if(this.data.state){
                 return "grey";
@@ -108,6 +108,7 @@ export default {
         },
     },
     mounted() {
+        console.log(this.data);
         switch(this.data.type){
             case "post_for_your_article":
                 this.data.type="文章有新帖子";

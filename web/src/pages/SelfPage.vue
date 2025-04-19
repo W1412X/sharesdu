@@ -27,8 +27,11 @@
         <!--
         <v-list-item @click="choose = 'follow'" prepend-icon="mdi-account-plus" title="关注" value="follow"></v-list-item>
         -->
-        <v-list-item @click="choose = 'message'" prepend-icon="mdi-email" title="信息" value="message"></v-list-item>
-        <v-list-item @click="choose = 'account'" prepend-icon="mdi-account-edit" title="账户" value="account"></v-list-item>
+        <v-list-item @click="choose = 'notification'" prepend-icon="mdi-bell" title="通知"
+          value="notification"></v-list-item>
+        <v-list-item @click="choose = 'chat'" prepend-icon="mdi-chat" title="私信" value="chat"></v-list-item>
+        <v-list-item @click="choose = 'account'" prepend-icon="mdi-account-edit" title="账户"
+          value="account"></v-list-item>
         <v-list-item @click="choose = 'setting'" prepend-icon="mdi-cog" title="设置" value="setting"></v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -46,7 +49,9 @@
         <!--
         <v-list-item @click="choose = 'follow'" prepend-icon="mdi-account-plus" title="关注" value="follow"></v-list-item>
         -->
-        <v-list-item @click="choose = 'message'" prepend-icon="mdi-email" title="信息" value="message"></v-list-item>
+        <v-list-item @click="choose = 'notification'" prepend-icon="mdi-bell" title="通知"
+          value="notification"></v-list-item>
+        <v-list-item @click="choose = 'chat'" prepend-icon="mdi-chat" title="私信" value="chat"></v-list-item>
         <v-list-item @click="choose = 'account'" prepend-icon="mdi-account" title="账户" value="account"></v-list-item>
         <v-list-item @click="choose = 'setting'" prepend-icon="mdi-cog" title="设置" value="setting"></v-list-item>
       </v-list>
@@ -55,15 +60,17 @@
     <div class="view-container">
       <!-- write part -->
       <div v-if="choose === 'write'">
-        <create-preview-and-list :type="'all'" @alert="alert" @set_loading="setLoading" :user-id="this.user.id"></create-preview-and-list>
+        <create-preview-and-list :type="'all'" @alert="alert" @set_loading="setLoading"
+          :user-id="this.user.id"></create-preview-and-list>
       </div>
       <!-- init part -->
       <div v-if="choose === 'info'">
-        <author-card v-if="this.user.id != null" :type="'self'" :id="this.user.id" @alert="alert" @set_loading="setLoading"></author-card>
+        <author-card v-if="this.user.id != null" :type="'self'" :id="this.user.id" @alert="alert"
+          @set_loading="setLoading"></author-card>
       </div>
       <!-- star part -->
       <div v-if="choose === 'star'">
-          <star-card @alert="alert" @set_loading="setLoading" :type="'show'"></star-card>
+        <star-card @alert="alert" @set_loading="setLoading" :type="'show'"></star-card>
       </div>
       <!-- follow part
       <div v-if="choose === 'follow'">
@@ -78,11 +85,24 @@
       </div>
         -->
       <!-- message part  -->
-      <div v-if="choose === 'message'">
-          <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item" @alert="alert" @set_loading="setLoading" ></notification-item>
-          <v-btn :loading="loading.loadNotification" :disabled="loading.loadNotification" @click="getNotificationList" variant="tonal" rounded width="100%">
-            加载更多
-          </v-btn>
+      <div v-if="choose === 'chat'">
+        <part-loading-view :state="!loadState.message" :text="'正在加载聊天列表...'"></part-loading-view>
+        <div v-if="loadState.message">
+          <chat-item v-for="(item, index) in this.chatList" :init-data="item" :key="index" style="margin: 5px;"
+            @alert="alert"></chat-item>
+        </div>
+      </div>
+      <div v-if="choose === 'notification'">
+        <div style="width: 100%;display: flex;flex-direction: row;">
+          <v-spacer></v-spacer>
+          <v-btn :loading="loading.clearNotification" :disabled="loading.clearNotification" @click="clearNotification" prepend-icon="mdi-delete" color="grey" class="text-small" variant="text" text="清空此页通知"></v-btn>
+        </div>
+        <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item" @alert="alert"
+          @set_loading="setLoading"></notification-item>
+        <v-btn :loading="loading.loadNotification" :disabled="loading.loadNotification" @click="getNotificationList"
+          variant="tonal" rounded width="100%">
+          加载更多
+        </v-btn>
       </div>
       <!-- account part  -->
       <div v-if="choose === 'account'">
@@ -91,17 +111,17 @@
       <!-- setting part -->
       <div v-if="choose === 'setting'">
         <div class="column-list">
-          <v-btn @click="toUrl('/#/document/to_know')" prepend-icon="mdi-bulletin-board" color="grey"
-            variant="outlined" text="入站须知"></v-btn>
+          <v-btn @click="toUrl('/#/document/to_know')" prepend-icon="mdi-bulletin-board" color="grey" variant="outlined"
+            text="入站须知"></v-btn>
           <v-btn @click="toUrl('/#/document/privacy')" prepend-icon="mdi-lock-outline" color="grey" variant="outlined"
             text="隐私政策"></v-btn>
           <v-btn @click="toUrl('/#/document/about_us')" prepend-icon="mdi-information-variant" color="grey"
             variant="outlined" text="关于我们"></v-btn>
-          <v-btn :loading="loading.loadBlock" :disabled="loading.loadBlock" @click="getBlockList" prepend-icon="mdi-account-cancel" color="grey" variant="outlined"
-            text="黑名单"></v-btn>
-            <v-btn to="#/welcome" prepend-icon="mdi-application-outline" color="grey" variant="outlined"
+          <v-btn :loading="loading.loadBlock" :disabled="loading.loadBlock" @click="getBlockList"
+            prepend-icon="mdi-account-cancel" color="grey" variant="outlined" text="黑名单"></v-btn>
+          <v-btn @click="toUrl('/#/welcome')" prepend-icon="mdi-application-outline" color="grey" variant="outlined"
             text="下载APP"></v-btn>
-            <v-btn @click="setColorSelectorCardState(true)" prepend-icon="mdi-account-box" color="grey" variant="outlined"
+          <v-btn @click="setColorSelectorCardState(true)" prepend-icon="mdi-account-box" color="grey" variant="outlined"
             text="个性化主题"></v-btn>
         </div>
       </div>
@@ -110,18 +130,21 @@
 </template>
 <script>
 import { getBlockList, unblockUser } from '@/axios/block';
-import { fetchNotificationsList } from '@/axios/notification';
+import { getChatUsers } from '@/axios/chat';
+import { fetchNotificationsList, markAsReadNotification } from '@/axios/notification';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 import AuthorCard from '@/components/AuthorCard.vue';
 import AvatarName from '@/components/AvatarName.vue';
+import ChatItem from '@/components/ChatItem.vue';
 import ColorSelectorCard from '@/components/ColorSelectorCard.vue';
 import CreatePreviewAndList from '@/components/CreatePreviewAndList.vue';
 import NotificationItem from '@/components/NotificationItem.vue';
+import PartLoadingView from '@/components/PartLoadingView.vue';
 import StarCard from '@/components/StarCard.vue';
 import UserMessageEditorCard from '@/components/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
+import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
 import { ref, computed } from 'vue';
 export default {
   name: 'SelfPage',
@@ -134,7 +157,7 @@ export default {
     const navVisible = ref(false);
     const selfItemType = ref('article');
     var ifShowBlockList = ref(false);
-    var ifShowColorSelectorCard=ref(false);
+    var ifShowColorSelectorCard = ref(false);
     var ifShowDialog = computed(() => {
       return ifShowBlockList.value || ifShowColorSelectorCard.value;
     });
@@ -162,12 +185,16 @@ export default {
   watch: {
     choose: {
       // eslint-disable-next-line
-      handler(newVal, oldVal) {
+      async handler(newVal, oldVal) {
         switch (newVal) {
-          case 'message':
-            if(this.notificationPageNum==1)
-            this.getNotificationList();
-            break; 
+          case 'notification':
+            if (this.notificationPageNum == 1)
+              await this.getNotificationList();
+            break;
+          case "chat":
+            if(this.chatList.length == 0)
+            await this.getChatList();
+            break;
           default:
             return;
         }
@@ -181,6 +208,9 @@ export default {
     scanMsg.notificationPageNum = this.notificationPageNum;
     scanMsg.scrollTop = document.scrollingElement.scrollTop;
     scanMsg.choose = this.choose;
+    scanMsg.loadState = this.loadState;
+    scanMsg.loading = this.loading;
+    scanMsg.chatList = this.chatList;
     let key = 'selfScanMsg';
     sessionStorage.setItem(key, JSON.stringify(scanMsg));
     next()
@@ -193,16 +223,23 @@ export default {
     NotificationItem,
     AuthorCard,
     CreatePreviewAndList,
+    ChatItem,
+    PartLoadingView,
   },
   data() {
     return {
       user: {},
       notificationList: [],
-      notificationPageNum:1,
+      notificationPageNum: 1,
       blockList: [],
-      loading:{
-        loadNotification:false,
-        loadBlock:false,
+      loading: {
+        loadNotification: false,
+        loadBlock: false,
+        clearNotification: false,
+      },
+      chatList: [],
+      loadState: {
+        message: false,
       }
     }
   },
@@ -220,19 +257,19 @@ export default {
       this.$emit("alert", msg);
     },
     async getBlockList() {
-      this.loading.loadBlock=true;
+      this.loading.loadBlock = true;
       let response = await getBlockList();
-      this.loading.loadBlock=false;
-      if(response.status==200){
-        for(let i=0;i<response.block_list.length;i++){
+      this.loading.loadBlock = false;
+      if (response.status == 200) {
+        for (let i = 0; i < response.block_list.length; i++) {
           this.blockList.push({
-            id:response.block_list[i].to_user_id,
-            name:response.block_list[i].to_user_name,
+            id: response.block_list[i].to_user_id,
+            name: response.block_list[i].to_user_name,
           })
         }
         this.alert(getNormalSuccessAlert("加载成功"));
         this.setBlockListState(true);
-      }else{
+      } else {
         this.alert(getNormalErrorAlert(response.message));
       }
     },
@@ -252,59 +289,101 @@ export default {
       }
       this.setLoading(getCancelLoadMsg());
     },
-    setColor(){
+    setColor() {
       this.setColorSelectorCardState(false);
       window.location.reload();
+    },
+    async getChatList() {
+      this.loadState.message = false;
+      let response = await getChatUsers();
+      this.loadState.message = true;
+      if (response.status == 200) {
+        for (let i = 0; i < response.chat_users.length; i++) {
+          this.chatList.push({
+            id: response.chat_users[i].user_id,
+            name: response.chat_users[i].username,
+            msgNum: response.chat_users[i].unread_count,
+            lastMsg: {
+              content: response.chat_users[i].last_message.content,
+              time: extractTime(response.chat_users[i].last_message.sent_at),
+              isSelf: response.chat_users[i].last_message.is_sender
+            }
+          })
+        }
+
+      }
     },
     closeDialog() {
       this.setBlockListState(false);
     },
-    toUrl(url){
+    toUrl(url) {
       openNewPage(url);
     },
+    async clearNotification(){
+      if(this.notificationList.length==0){
+        this.alert(getNormalWarnAlert("无通知"));
+        return;
+      }
+      let ids=[];
+      for(let i=0;i<this.notificationList.length;i++){
+        ids.push(this.notificationList[i].id);
+      }
+      this.loading.clearNotification=true;
+      let response=await markAsReadNotification(ids);
+      this.loading.clearNotification=false;
+      if(response.status==200){
+        this.notificationList=[];
+      }else{
+        this.alert(getNormalErrorAlert(response.message));
+      }
+    },
     async getNotificationList() {
-      let ids=[]
-      this.loading.loadNotification=true;
-      let response=await fetchNotificationsList(this.notificationPageNum);
-      this.loading.loadNotification=false;
+      let ids = []
+      this.loading.loadNotification = true;
+      let response = await fetchNotificationsList(this.notificationPageNum);
+      this.loading.loadNotification = false;
       if (response.status == 200) {
-        for(let i=0;i<response.notification_list.length;i++){
+        for (let i = 0; i < response.notification_list.length; i++) {
           ids.push(response.notification_list[i].notification_id);
           this.notificationList.push({
-            id:response.notification_list[i].notification_id,
-            type:response.notification_list[i].type,
-            message:response.notification_list[i].message,
-            time:response.notification_list[i].created_at,
-            state:response.notification_list[i].is_read,
-            relatedItem:response.notification_list[i].related_object,
+            id: response.notification_list[i].notification_id,
+            type: response.notification_list[i].type,
+            message: response.notification_list[i].message,
+            time: response.notification_list[i].created_at,
+            state: response.notification_list[i].is_read,
+            relatedItem: response.notification_list[i].related_object,
           })
         }
         this.notificationPageNum++;
         this.alert(getNormalSuccessAlert("获取成功"));
-      }else{
+      } else {
         this.alert(getNormalErrorAlert(response.message));
       }
     }
   },
   async mounted() {
     this.setLoading(getCancelLoadMsg());
-    this.user={
+    this.user = {
       id: getCookie("userId"),
-      name:getCookie("userName"),
-      email:getCookie("userEmail"),
-      passwd:"********",
-      profileUrl:getCookie('userProfileUrl'),
+      name: getCookie("userName"),
+      email: getCookie("userEmail"),
+      passwd: "********",
+      profileUrl: getCookie('userProfileUrl'),
     }
-    document.getElementById('web-title').innerText="我的";
-    if(sessionStorage.getItem('selfScanMsg')){
+    document.getElementById('web-title').innerText = "我的";
+    if (sessionStorage.getItem('selfScanMsg')) {
       let scanMsg = JSON.parse(sessionStorage.getItem('selfScanMsg'));
-      this.notificationList=scanMsg.notificationList;
-      this.notificationPageNum=scanMsg.notificationPageNum;
-      setTimeout(()=>{
-        document.scrollingElement.scrollTop=scanMsg.scrollTop;
-      },10);
+      this.notificationList = scanMsg.notificationList;
+      this.notificationPageNum = scanMsg.notificationPageNum;
+      this.loading=scanMsg.loading;
+      this.loadState=scanMsg.loadState;
+      this.chatList=scanMsg.chatList;
       this.choose=scanMsg.choose;
-      
+      setTimeout(() => {
+        document.scrollingElement.scrollTop = scanMsg.scrollTop;
+      }, 10);
+      this.choose = scanMsg.choose;
+
     }
   }
   /**
@@ -342,6 +421,7 @@ export default {
   left: 0px;
   z-index: 100;
 }
+
 .follow-bar {
   padding: 10px;
   display: flex;

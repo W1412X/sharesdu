@@ -23,7 +23,7 @@
                             </div>
                         </div>
                     </div>
-                    <template v-if="user.msgNum != 0" v-slot:append>
+                    <template v-if="user.msgNum > 0" v-slot:append>
                         <v-badge color="error" :content="user.msgNum" inline></v-badge>
                     </template>
                 </v-list-item>
@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <template v-if="user.msgNum != 0" v-slot:append>
+                            <template v-if="user.msgNum > 0" v-slot:append>
                                 <v-badge color="error" :content="user.msgNum" inline></v-badge>
                             </template>
                         </v-list-item>
@@ -85,7 +85,7 @@
                         <chat-message @recall="handleRecall" v-for="(message) in messages" :init-data="message" :key="message.id"
                             @alert="alert" @set_loading="setLoading"></chat-message>
                     </div>
-                    <div class="message-editor row-div">
+                    <div v-if="this.receiverId" class="message-editor row-div">
                         <sensitive-text-area rows="1" variant="outlined" density="compact" v-model="editingMessage" />
                         <div class="send-btn-container">
                             <v-btn :loading="loading.send" :disabled="loading.send" @click="send" icon="mdi-send" size="40" :variant="'text'"
@@ -94,7 +94,7 @@
                     </div>
                 </div>
             </div>
-            <div v-if="deviceType == 'mobile'" class="message-editor row-div">
+            <div v-if="deviceType == 'mobile'&&this.receiverId" class="message-editor row-div">
                 <sensitive-text-area rows="1" variant="outlined" density="compact" v-model="editingMessage" />
                 <div class="send-btn-container">
                     <v-btn @click="send" icon="mdi-send" size="40" :variant="'text'" :color="themeColor"></v-btn>
@@ -178,7 +178,7 @@ export default {
                         if (response.status == 200) {
                             this.messages = [];
                             response.results = response.results.reverse();
-                            this.chatPageDict[this.receiverId] = 2;
+                            this.chatPageDict[newValue] = 2;
                             for (let i = 0; i < response.results.length; i++) {
                                 this.messages.push({
                                     id: response.results[i].message_id,
@@ -190,7 +190,6 @@ export default {
                                 if (!this.messages[this.messages.length - 1].ifRead&&!this.messages[this.messages.length - 1].isSelf) {
                                     this.setLoading(getLoadMsg('正在处理信息...'))
                                     await markMessageAsRead(this.messages[this.messages.length - 1].id);
-                                    this.chatUsers[newValue].msgNum--;
                                     this.messages[this.messages.length - 1].ifRead=true;
                                     this.setLoading(getCancelLoadMsg());
                                 }
@@ -257,12 +256,16 @@ export default {
             }
         },
         async send() {
+            if(!this.editingMessage){
+                this.alert(getNormalInfoAlert("发送信息不可为空"));
+                return;
+            }
             this.loading.send=true;
             let response = await sendPrivateMessage(this.receiverId, this.editingMessage);
             this.loading.send=false;
             if (response.status == 200) {
                 this.messages.push({
-                    id: 'sss',
+                    id: response.message_id,
                     content: this.editingMessage,
                     time: new Date().toISOString(),
                     isSelf: true,
@@ -270,10 +273,15 @@ export default {
                     userName: this.selfName,
                     userId: this.selfId,
                 })
-                this.chatUsers[this.receiverId].lastMsg={
-                    content:this.editingMessage,
-                    time:extractTime(new Date().toISOString()),
-                    isSelf:true,
+                for(let i=0;i<this.chatUsers.length;i++){
+                    if(this.chatUsers[i].id==this.receiverId){
+                        this.chatUsers[i].lastMsg={
+                            content:this.editingMessage,
+                            time:extractTime(new Date().toISOString()),
+                            isSelf:true,
+                        }
+                        break;
+                    }
                 }
                 this.editingMessage = "";
                 this.scrollToBottom();
@@ -308,8 +316,6 @@ export default {
                     if (!tmp[tmp.length - 1].ifRead&&!tmp[tmp.length-1].isSelf) {
                         this.setLoading(getLoadMsg('正在处理信息...'))
                         await markMessageAsRead(tmp[tmp.length - 1]);
-                        //sub the msgNum  
-                        this.chatUsers[this.receiverId].msgNum--;
                         this.messages[this.messages.length - 1].ifRead=true;
                         this.setLoading(getCancelLoadMsg());
                     }

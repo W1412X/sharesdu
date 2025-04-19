@@ -10,6 +10,10 @@
             <v-btn v-if="type=='author'" @click="toSend" variant="text" icon="mdi-send" size="30" color="#8a8a8a" rounded="true">
             </v-btn>
         </div>
+        <div v-if="(data.master || data.superMaster) &&  type=='author'" class="row-div">
+                <v-icon size="20">mdi-shield-account</v-icon>
+                <div class="text-small-bold margin-left-10px">{{ data.superMaster?"此用户为超级管理员":"此用户为管理员" }}</div>
+        </div>
         <!-- Registration Time Section -->
         <div class="row-div text-small">
             <v-icon size="20" class="icon-left-10px">mdi-calendar-clock</v-icon>
@@ -22,7 +26,6 @@
             <span v-if="type=='self'" class="margin-left-10px">{{ "LV." + data.reputation }}</span>
             <v-chip class="margin-left-10px" density="compact" style="margin-left: 5px;" variant="tonal" :color="themeColor" :text="data.reputationLevel"></v-chip>
         </div>
-
         <!-- Campus, College, Major Section -->
         <div class="row-div text-medium">
             <v-icon size="20" class="icon-left-10px">mdi-school</v-icon>
@@ -47,7 +50,6 @@
         <!-- Management Section -->
         <div class="row-div text-medium">
             <v-spacer></v-spacer>
-            <v-icon v-if="(data.master || data.superMaster) &&  type=='author'">mdi-shield-account</v-icon>
             <v-btn v-if="(data.master || data.superMaster) && this.type==='self'" @click="toManage"  variant="outlined" :color="'#8a8a8a'" prepend-icon="mdi-shield-account">管理网站</v-btn>
         </div>
         <div v-if="type==='author'" class="row-div text-small">

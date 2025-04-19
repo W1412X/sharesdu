@@ -293,7 +293,7 @@ export default {
              */
             this.loading.login=true;
             const response = await loginWithPassword(csLoginByUserName(this.loginByUsernameData));
-            this.loading.login=true;
+            this.loading.login=false;
             if (response.status == 200) {
                 this.alert({
                     color: 'success',
