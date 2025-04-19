@@ -140,7 +140,7 @@ export default {
                         this.alert(getNormalErrorAlert('未知错误(页面切换)'));
                 }
             },
-            immediate: false,
+            immediate: true,
         },
         articleSortMethod:{
             handler(newVal,oldVal) {

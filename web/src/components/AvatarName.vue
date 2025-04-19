@@ -1,7 +1,7 @@
 <!--  -->
 <template>
     <div class="avatar-name" @click="toAuthorPage">
-        <v-icon v-if="this.profileUrl==null" icon="mdi-account-circle-outline" :size="size" color='#8a8a8a'></v-icon>
+        <v-icon v-if="this.profileUrl==null" icon="mdi-account-circle" :size="size" color='#bbbbbb'></v-icon>
         <v-avatar v-if="this.profileUrl!=null" :size="size" :image="this.profileUrl"></v-avatar>
         <div v-if="ifShowName"   :style="{color:color,'font-size':nameSize+'px'}">
             {{initData.name}}
@@ -84,13 +84,13 @@ export default {
             }
         },
         async getProfileRecursion(){
-            if(this.initData.id){
+            if(this.initData.id&&getCookie('accessToken')){
                 await this.getProfile();
             }else{
                 setTimeout(()=>{
                     this.getProfileRecursion();
                     this.time=this.time*2;
-                },1000);
+                },this.time);
             }
         }
     },

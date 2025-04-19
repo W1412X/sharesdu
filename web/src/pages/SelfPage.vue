@@ -11,7 +11,7 @@
           <v-btn @click="cancelBlock(index)" variant="text">取消拉黑</v-btn>
         </div>
       </div>
-      <color-selector-card v-if="ifShowColorSelectorCard" @set_color="closeDialog()"></color-selector-card>
+      <color-selector-card v-if="ifShowColorSelectorCard" @set_color="setColor()"></color-selector-card>
     </div>
   </v-dialog>
   <div class="full-center">
@@ -252,9 +252,12 @@ export default {
       }
       this.setLoading(getCancelLoadMsg());
     },
+    setColor(){
+      this.setColorSelectorCardState(false);
+      window.location.reload();
+    },
     closeDialog() {
       this.setBlockListState(false);
-      this.setColorSelectorCardState(false);
     },
     toUrl(url){
       openNewPage(url);
