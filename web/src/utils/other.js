@@ -124,10 +124,10 @@ export async function dealAxiosError(error) {
                                 } else {
                                     clearTokenCookies();
                                     window.alert("自动登陆失败，请手动登陆");
-                                    setTimeout(()=>{
+                                    setTimeout(() => {
                                         window.open("/#/login", "_self")
                                         location.reload();
-                                    },1000)
+                                    }, 1000)
                                     return {
                                         status: -1,
                                         message: "自动登陆失败，请手动登陆",
@@ -136,10 +136,10 @@ export async function dealAxiosError(error) {
                             } else {
                                 clearTokenCookies();
                                 window.alert("令牌已过期，请重新登录");
-                                setTimeout(()=>{
+                                setTimeout(() => {
                                     window.open("/#/login", "_self")
                                     location.reload();
-                                },1000)
+                                }, 1000)
                                 return {
                                     status: -1,
                                     message: "获取access失败，请重新登陆",
@@ -149,10 +149,10 @@ export async function dealAxiosError(error) {
                     } catch (error) {
                         clearTokenCookies();
                         window.alert("令牌已过期，请重新登录");
-                        setTimeout(()=>{
+                        setTimeout(() => {
                             window.open("/#/login", "_self")
                             location.reload();
-                        },1000)
+                        }, 1000)
                         return {
                             status: -1,
                             message: "重新登陆，令牌无效"
@@ -175,10 +175,10 @@ export async function dealAxiosError(error) {
                         } else {
                             clearTokenCookies();
                             window.alert("自动登陆失败，请手动登陆");
-                            setTimeout(()=>{
+                            setTimeout(() => {
                                 window.open("/#/login", "_self")
                                 location.reload();
-                            },1000)
+                            }, 1000)
                             return {
                                 status: -1,
                                 message: "自动登陆失败，请手动登陆",
@@ -192,10 +192,10 @@ export async function dealAxiosError(error) {
  */
                         clearTokenCookies();
                         window.alert("令牌已过期，请重新登录");
-                        setTimeout(()=>{
+                        setTimeout(() => {
                             window.open("/#/login", "_self")
                             location.reload();
-                        },1000)
+                        }, 1000)
                         return {
                             status: -1,
                             message: "重新登陆"
@@ -219,10 +219,10 @@ export async function dealAxiosError(error) {
         } else {
             clearTokenCookies();
             window.alert("令牌已过期，请重新登录");
-            setTimeout(()=>{
+            setTimeout(() => {
                 window.open("/#/login", "_self")
                 location.reload();
-            },1000)
+            }, 1000)
             return {
                 status: -1,
                 message: "重新登陆"
@@ -231,10 +231,10 @@ export async function dealAxiosError(error) {
     } catch (error) {
         clearTokenCookies();
         window.alert("令牌已过期，请重新登录");
-        setTimeout(()=>{
+        setTimeout(() => {
             window.open("/#/login", "_self")
             location.reload();
-        },1000)
+        }, 1000)
         return {
             status: -1,
             message: "重新登陆"
@@ -523,48 +523,57 @@ export function extractImageLinks(inputString) {
 }
 
 
-  export async function formatImageLinkInArticle(content){
-    let imgs=extractImageLinks(content);
-    let formattedImgs=[];
-    for(let i=0;i<imgs.length;i++){
-        formattedImgs.push(await fetchImgAndDeal(imgs[i],'png'));
+export async function formatImageLinkInArticle(content) {
+    let imgs = extractImageLinks(content);
+    let formattedImgs = [];
+    for (let i = 0; i < imgs.length; i++) {
+        formattedImgs.push(await fetchImgAndDeal(imgs[i], 'png'));
     }
-    for(let i=0;i<imgs.length;i++){
-        content=content.replace(imgs[i],formattedImgs[i]);
+    for (let i = 0; i < imgs.length; i++) {
+        content = content.replace(imgs[i], formattedImgs[i]);
     }
     return content;
-  }
+}
 
-  /**
-   * 
-   * @param {JSON} response 
-   * @returns 
-   */
-  export async function responseToArticle(response){
-    let article={};
-    article.id=response.article_detail.article_id;
-    article.title=response.article_detail.article_title;
-    article.summary=response.article_detail.article_summary;
-    article.type=response.article_detail.article_type;
-    article.tags=response.article_detail.article_tags;
-    article.originLink=response.article_detail.origin_link;
-    article.coverLink=response.article_detail.article_cover_link;
-    article.content=getContentWithoutEditorType(response.article_detail.article_content);
+/**
+ * 
+ * @param {JSON} response 
+ * @returns 
+ */
+export async function responseToArticle(response) {
+    let article = {};
+    article.id = response.article_detail.article_id;
+    article.title = response.article_detail.article_title;
+    article.summary = response.article_detail.article_summary;
+    article.type = response.article_detail.article_type;
+    article.tags = response.article_detail.article_tags;
+    article.originLink = response.article_detail.origin_link;
+    article.coverLink = response.article_detail.article_cover_link;
+    article.content = getContentWithoutEditorType(response.article_detail.article_content);
     //check the image data  
-    article.content=await formatImageLinkInArticle(article.content);
-    let editorType=extractEditorType(response.article_detail.article_content);
-    article.likeCount=response.article_detail.like_count;
-    article.replyCount=response.article_detail.reply_count;
-    article.viewCount=response.article_detail.view_count;
-    article.starCount=response.article_detail.star_count;
-    article.authorName=response.article_detail.author_name;
-    article.authorId=response.article_detail.author_id;
-    article.sourceUrl=response.article_detail.source_url;
-    article.publishTime=response.article_detail.publish_time;
-    article.ifLike=response.article_detail.if_like;
-    article.ifStar=response.article_detail.if_star;
+    article.content = await formatImageLinkInArticle(article.content);
+    let editorType = extractEditorType(response.article_detail.article_content);
+    article.likeCount = response.article_detail.like_count;
+    article.replyCount = response.article_detail.reply_count;
+    article.viewCount = response.article_detail.view_count;
+    article.starCount = response.article_detail.star_count;
+    article.authorName = response.article_detail.author_name;
+    article.authorId = response.article_detail.author_id;
+    article.sourceUrl = response.article_detail.source_url;
+    article.publishTime = response.article_detail.publish_time;
+    article.ifLike = response.article_detail.if_like;
+    article.ifStar = response.article_detail.if_star;
     return [
         article,
         editorType,
     ]
-  }
+}
+
+/**
+ * 
+ * @param {Array} arr 
+ * @returns unique array
+ */
+export function uniqueArray(arr) {
+    return [...new Set(arr)];
+}

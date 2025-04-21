@@ -1,4 +1,5 @@
 import { Segment, useDefault } from 'segmentit';
+import { uniqueArray } from './other';
 const segmentit = useDefault(new Segment());
 let stopwords=[
     "——", "）", "÷", "（", "１", "”，", "）", "、", "＝", "：", "→", "℃", "&", "*", "一一", "~~~~", "’", ".",
@@ -151,7 +152,7 @@ export function extractWords(content){
                 result.push(result1[i]['w']);
             }
         }
-        return result;
+        return uniqueArray(result);
     }catch(e){
         return [];
     }

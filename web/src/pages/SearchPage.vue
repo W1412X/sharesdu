@@ -60,7 +60,7 @@
                             </v-btn>
                         </v-btn>
                         <div style="display: flex;flex-direction: row;align-items: center;">
-                            <sensitive-text-field style="margin-left: 10px;margin-right: 10px;" hide-details variant="outlined" v-model="editingArticleFiltTag" density="compact" :max-width="'150px'" label="输入筛选标签"></sensitive-text-field>
+                            <sensitive-text-field style="margin-left: 10px;margin-right: 10px;min-width: 100px;" hide-details variant="outlined" v-model="editingArticleFiltTag" density="compact" :max-width="'150px'" label="输入筛选标签"></sensitive-text-field>
                             <!--add btn-->
                             <v-btn :color="themeColor" @click="addTag" variant="tonal">
                                 添加筛选标签
@@ -128,6 +128,28 @@ export default {
             colleges
         }
     },
+    beforeRouteLeave (to, from, next) {
+        //use session storage to save memory now  
+        let scanMsg={};
+        scanMsg.editingArticleFiltTag=this.editingArticleFiltTag;
+        scanMsg.courseCollege=this.courseCollege;
+        scanMsg.courseMethod=this.courseMethod;
+        scanMsg.courseType=this.courseType;
+        scanMsg.searchType=this.searchType;
+        scanMsg.ifCourseFilter=this.ifCourseFilter;
+        scanMsg.ifArticleFilter=this.ifArticleFilter;
+        scanMsg.filtArticleTags=this.filtArticleTags;
+        scanMsg.sortType=this.sortType;
+        scanMsg.searchList=this.searchList;
+        scanMsg.searchPage=this.searchPage;
+        scanMsg.searchResultNum=this.searchResultNum;
+        scanMsg.loading=this.loading;
+        scanMsg.articleType=this.articleType;
+        scanMsg.scrollTop=document.scrollingElement.scrollTop;
+        let key='searchScanMsg|'+this.query.join(',');
+        sessionStorage.setItem(key,JSON.stringify(scanMsg));
+        next()
+    },
     components: {
         SearchItem,
         HybridSearchItem,
@@ -137,6 +159,9 @@ export default {
         courseCollege:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
+                if(!this.ifMounted){
+                    return;
+                }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
                 await this.load();
@@ -146,6 +171,9 @@ export default {
         courseMethod:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
+                if(!this.ifMounted){
+                    return;
+                }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
                 await this.load();
@@ -155,6 +183,9 @@ export default {
         courseType:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
+                if(!this.ifMounted){
+                    return;
+                }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
                 await this.load();
@@ -168,6 +199,9 @@ export default {
              */
             //eslint-disable-next-line
             async handler(newVal, oldVal) {
+                if(!this.ifMounted){
+                    return;
+                }
                 this.$emit("search_type_changed",newVal);
                 //set sort type  
                 if (this.searchType!="全部"&&this.searchType!="回复") {
@@ -219,6 +253,7 @@ export default {
     },
     data() {
         return {
+            ifMounted:false,//use to prevent the first load
             editingArticleFiltTag:"",
             courseCollege:"全部",
             courseMethod:"全部",
@@ -716,6 +751,29 @@ export default {
     mounted() {
         //get the sessionStorage  
         document.getElementById('web-title').innerText='搜索結果';
+        let sessionKey='searchScanMsg|'+this.query.join(',');
+        let scanMsg=sessionStorage.getItem(sessionKey);
+        if(scanMsg){
+            scanMsg=JSON.parse(scanMsg);
+            this.editingArticleFiltTag=scanMsg.editingArticleFiltTag;
+            this.courseCollege=scanMsg.courseCollege;
+            this.courseMethod=scanMsg.courseMethod;
+            this.courseType=scanMsg.courseType;
+            this.searchType=scanMsg.searchType;
+            this.ifCourseFilter=scanMsg.ifCourseFilter;
+            this.ifArticleFilter=scanMsg.ifArticleFilter;
+            this.filtArticleTags=scanMsg.filtArticleTags;
+            this.sortType=scanMsg.sortType;
+            this.searchList=scanMsg.searchList;
+            this.searchPage=scanMsg.searchPage;
+            this.searchResultNum=scanMsg.searchResultNum;
+            this.loading=scanMsg.loading;
+            this.articleType=scanMsg.articleType;
+            setTimeout(()=>{
+                document.scrollingElement.scrollTop=scanMsg.scrollTop;
+            },100);
+            return;
+        }
         if (!this.type || this.query.length > 0) {
             switch (this.type) {
                 case 'article':
@@ -744,6 +802,7 @@ export default {
                 }
             })
         }
+        this.ifMounted=true;
     }
 }
 </script>

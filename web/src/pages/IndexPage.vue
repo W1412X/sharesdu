@@ -125,6 +125,9 @@ export default {
         itemType: {
             // eslint-disable-next-line
             handler(newVal, oldVal) {
+                if(!this.ifMounted){
+                    return;
+                }
                 switch (newVal) {
                     case 'article':
                         if (this.articleList[this.articleSortMethod].length == 0) {
@@ -178,6 +181,7 @@ export default {
     data() {
         const itemType = 'article';
         return {
+            ifMounted: false,
             articleList: {
                 time: [],
                 star: [],
@@ -406,7 +410,9 @@ export default {
             }, 10)
             document.getElementById('web-title').innerText = 'ShareSDU | 首页';
         } catch (e) {
-            await this.loadMore(this.itemType)
+            //eslint-diable-next-line
+        }finally{
+            this.ifMounted=true;
         }
     }
 }

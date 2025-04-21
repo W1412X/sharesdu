@@ -145,6 +145,7 @@ export default {
     data() {
         let receiverId = null;
         return {
+            ifMounted:false,
             receiverId,
             receiverName: 'null',
             editingMessage: null,
@@ -167,6 +168,9 @@ export default {
         receiverId: {
             //eslint-disable-next-line
             async handler(newValue, oldValue) {
+                if(!this.ifMounted){
+                    return;
+                }
                 if (newValue) {
                     if (this.chatHistoryDict[newValue] == null) {
                         //get history  
@@ -392,6 +396,7 @@ export default {
             })
         }
         document.getElementById('web-title').innerText = '聊天 | ' + this.receiverName;
+        this.ifMounted=true;
     }
 }
 </script>

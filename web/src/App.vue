@@ -30,7 +30,7 @@
         :items="['文章', '帖子', '课程', '全部', '回复']" :item-color="themeColor">
       </v-select>
       <sensitive-text-field id="search-box-listen" :style="{ color: navIconColor }" :color="navIconColor" :base-color="navIconColor"
-        v-model="searchContent" style="min-width: 200px;" density="compact" label="搜索文章/帖子/课程"
+        v-model="searchContent" style="min-width: 200px;" density="compact" label="搜索 文章/帖子/课程/回复"
         variant="outlined">
       </sensitive-text-field>
       <div class="search-btn-container">
@@ -50,7 +50,7 @@
     </div>
     <div
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': routerMarginBottom }">
-      <router-view :key="$route.fullPath" class="router-view" @alert="alert" @set_loading="setLoading"
+      <router-view id="router-view" :key="$route.fullPath" class="router-view" @alert="alert" @set_loading="setLoading"
         @search_type_changed="handleSearchTypeChanged" />
     </div>
     <div v-if="ifShowBottomNav" class="bottom-nav-container">
@@ -135,7 +135,7 @@ export default {
       }
     });
     const ifShowHomeBtn = computed(() => {
-      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || page.value == "ManagePage";
+      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || page.value == "ManagePage" || page.value == "SearchPage";
     })
     const ifShowAvatar = computed(() => {
       if (page.value == "SelfPage") {
@@ -319,7 +319,7 @@ export default {
     this.setLoadState(true);
     try {
       let searchBox = document.getElementById('search-box-listen');
-      searchBox.addEventListener('keyup', function (event) {
+      searchBox.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' || event.keyCode == 13) {
           event.preventDefault();
           document.getElementById('search-btn').click();
