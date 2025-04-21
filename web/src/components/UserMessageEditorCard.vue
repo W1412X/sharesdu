@@ -81,7 +81,7 @@ import SensitiveTextArea from './SensitiveTextArea.vue';
 import { logout } from '@/axios/account';
 import { copy, getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { rules, validatePassWord } from '@/utils/rules';
-import { getCookie } from '@/utils/cookie';
+import { clearTokenCookies, getCookie } from '@/utils/cookie';
 import { globalProperties } from '@/main';
 export default {
   props: {
@@ -269,10 +269,10 @@ export default {
     },
     async logout() {
       //logout from current device  
+      clearTokenCookies();
       this.setLoading(getLoadMsg("正在退出登录...", -1));
       const response = await logout();
       if (response.status == 200) {
-        this.
           this.$router.push('/login');
       } else {
         this.alert({

@@ -39,7 +39,6 @@ export default{
     async mounted(){
         this.setLoading(getCancelLoadMsg());
         if(this.$route.params.id==getCookie("userId")){
-            console.log("from author to self");
             this.$router.push({name:'SelfPage',params:{id:getCookie("userId")}})
             return;
         }

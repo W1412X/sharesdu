@@ -53,12 +53,9 @@ export default defineComponent({
         },
         handleCompositionStart() {
             this.ifTyping = true
-            console.log("中文输入开始");
-            console.log(this.internalValue);
         },
         handleCompositionEnd() {
             this.ifTyping = false;
-            console.log("中文输入完成");
             this.handleInput();
         },
         sensitiveHint(){

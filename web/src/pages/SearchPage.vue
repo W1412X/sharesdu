@@ -15,11 +15,13 @@
                 </div>
             </div>
             <div class="control-bar">
-                <v-autocomplete v-model="courseCollege" style="margin-left: 10px;" :min-width="'150px'" :label="'开设学院'" v-if="searchType=='课程'" density="compact" :items="colleges" variant="outlined"></v-autocomplete>
-                <v-select v-model="courseType" style="margin-left: 10px;" :min-width="'100px'" :label="'课程类型'" v-if="searchType=='课程'" density="compact" variant="outlined" :items="['无','必修','选修','限选']"></v-select>
-                <v-select v-model="courseMethod" style="margin-left: 10px;" :min-width="'100px'" :label="'教学类型'" v-if="searchType=='课程'" density="compact" variant="outlined" :items="['无','线上','线下','混合']"></v-select>
+                <div class="course-select-container">
+                    <v-autocomplete v-model="courseCollege" style="margin-left: 10px;" :min-width="'150px'" :label="'开设学院'" v-if="searchType=='课程'" density="compact" :items="colleges" variant="outlined"></v-autocomplete>
+                    <v-select v-model="courseType" style="margin-left: 10px;" :min-width="'100px'" :label="'课程类型'" v-if="searchType=='课程'" density="compact" variant="outlined" :items="['无','必修','选修','限选']"></v-select>
+                    <v-select v-model="courseMethod" style="margin-left: 10px;" :min-width="'100px'" :label="'教学类型'" v-if="searchType=='课程'" density="compact" variant="outlined" :items="['无','线上','线下','混合']"></v-select>
+                </div>
                 <v-spacer/>
-                <div class="text-small-bold" style="color: grey;">共搜索到
+                <div class="text-small-bold" style="color: grey;">共
                     <span :style="{color:themeColor}">{{ searchResultNum }}</span>
                     条结果
                 </div>
@@ -82,26 +84,28 @@ export default {
     watch: {
         courseCollege:{
             //eslint-disable-next-line
-            handler(newVal,oldVal){
+            async handler(newVal,oldVal){
                 this.searchList['课程'][this.sortType]=[];
-                console.log("college changed")
-                this.load();
+                this.searchPage['课程'][this.sortType]=1;
+                await this.load();
             },
             immediate:false,
         },
         courseMethod:{
             //eslint-disable-next-line
-            handler(newVal,oldVal){
+            async handler(newVal,oldVal){
                 this.searchList['课程'][this.sortType]=[];
-                this.load();
+                this.searchPage['课程'][this.sortType]=1;
+                await this.load();
             },
             immediate:false,
         },
         courseType:{
             //eslint-disable-next-line
-            handler(newVal,oldVal){
+            async handler(newVal,oldVal){
                 this.searchList['课程'][this.sortType]=[];
-                this.load();
+                this.searchPage['课程'][this.sortType]=1;
+                await this.load();
             },
             immediate:false,
         },
@@ -112,7 +116,6 @@ export default {
              */
             //eslint-disable-next-line
             async handler(newVal, oldVal) {
-                console.log("load"+newVal);
                 //set sort type  
                 if (this.searchType!="全部"&&this.searchType!="回复") {
                     this.sortType = this.sortOptionsToShow[this.searchType][0].value;
@@ -340,7 +343,6 @@ export default {
                         hotScore: response.results[i].hot_score
                     })
                 }
-                console.log(this.searchList[this.searchType][this.sortType]);
                 this.searchPage['文章'][this.sortType]++;
             } else {
                 this.alert(getNormalErrorAlert(response.message));
@@ -384,16 +386,40 @@ export default {
             if (response.status == 200) {
                 this.searchResultNum=response.count;
                 for (let i = 0; i < response.results.length; i++) {
+                    let tmpType="";
+                    switch(response.results[i].course_type){
+                        case 'compulsory':
+                            tmpType='必修';
+                            break;
+                        case 'elective':
+                            tmpType='选修';
+                            break;
+                        case 'restricted_elective':
+                            tmpType='限选';
+                            break;
+                    }
+                    let tmpMethod="";
+                    switch(response.results[i].course_method){
+                        case 'online':
+                            tmpMethod='线上';
+                            break;
+                        case 'offline':
+                            tmpMethod='线下';
+                            break;
+                        case 'hybrid':
+                            tmpMethod='混合';
+                            break;
+                    }
                     this.searchList["课程"][this.sortType].push({
                         itemType:"course",
                         id: response.results[i].course_id,
                         name: response.results[i].course_name,
-                        type: response.results[i].course_type,
+                        type: tmpType,
                         college: response.results[i].college,
                         credit: response.results[i].credits,
                         campus: response.results[i].campus,
                         teacher: response.results[i].teacher,
-                        attendMethod: response.results[i].course_method,
+                        attendMethod: tmpMethod,
                         examineMethod: response.results[i].assessment_method,
                         score: response.results[i].score,
                         scoreSum: response.results[i].all_score,
@@ -460,7 +486,6 @@ export default {
             this.loading.item = true;
             let response=await globalSearch(this.queryTosubmit,this.searchPage["全部"]);
             this.loading.item = false;
-            console.log(response);
             if(response.status==200||response.results){
                 this.searchResultNum=response.count;
                 for(let i=0;i<response.results.length;i++){
@@ -490,7 +515,6 @@ export default {
                             tmp['courseTeacher']=response.results[i].teacher;
                             break;
                     }
-                    console.log(tmp)
                     this.searchList["全部"].push(tmp);
                 }
                 this.searchPage["全部"]++;
@@ -521,14 +545,11 @@ export default {
         },
         setSortType(sortValue) {
             this.sortType = sortValue;
-            console.log(this.sortType);
-            console.log(this.searchType);
             if(this.searchList[this.searchType][this.sortType].length>0){
                 return;
             }else{
                 this.load();
             }
-            console.log(this.sortType);
         },
     },
     mounted() {
@@ -582,7 +603,11 @@ export default {
         width: 100%;
         height: 100%;
     }
-
+    .course-select-container{
+        display: flex;
+        flex-direction: row;
+        overflow-x: scroll;
+    }
     .item-container {
         display: flex;
         width: 750px;
@@ -626,7 +651,12 @@ export default {
         flex-direction: column;
         background-color: white;
     }
-
+    .course-select-container{
+        display: flex;
+        flex-direction: row;
+        max-width: 60vw;
+        overflow-x: scroll;
+    }
     .control-bar {
         display: flex;
         flex-direction: row;

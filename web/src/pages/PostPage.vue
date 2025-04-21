@@ -201,7 +201,6 @@ export default {
         scanMsg.loading=this.loading;
         let key='postScanMsg|'+this.post.id;
         sessionStorage.setItem(key,JSON.stringify(scanMsg));
-        console.log(scanMsg);
         next()
     },
     data() {
@@ -346,7 +345,6 @@ export default {
     },
     async mounted() {
         if(sessionStorage.getItem('postScanMsg|'+this.$route.params.id)){
-            console.log("scan msg")
             let scanMsg=JSON.parse(sessionStorage.getItem('postScanMsg|'+this.$route.params.id));
             this.post=scanMsg.post;
             this.replyList=scanMsg.replyList;

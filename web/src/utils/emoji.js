@@ -5,15 +5,12 @@ export async function fetchEmojis() {
     try {
         //ensure the localstorage canbe use
         if (localStorage.getItem('emojis')) {
-            console.log(localStorage.getItem('emojis'));
             return JSON.parse(localStorage.getItem('emojis'));
         }
         const url = `/resource/emojis.json`;
         const response = await fetch(url);
-        console.log('response',response);
         if (response.ok) {
             const emojisData = await response.json();
-            console.log(emojisData);
             try{
                 localStorage.setItem('emojis', JSON.stringify(emojisData));
             }catch(e){

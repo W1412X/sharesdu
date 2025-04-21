@@ -346,7 +346,6 @@ export default {
             this.$router.push({name:"ErrorPage",params:{reason:"缺少参数"}})
         }
         this.setLoading(getCancelLoadMsg());
-        console.log(this.article);
     },
 }
 </script>

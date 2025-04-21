@@ -186,7 +186,6 @@ export default{
         }
     }catch(e){
         this.alert(getNormalErrorAlert("获取用户信息失败"));
-        console.log(e);
     }
     }
 };

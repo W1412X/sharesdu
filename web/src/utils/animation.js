@@ -76,7 +76,6 @@ export function initBubbleEffect(document,id='bubble_canvas',color=globalPropert
         }
 
         this.draw = function () {
-            console.log("alpha:"+_this.alpha);
             if (_this.alpha <= 0.1) {
                 _this.alpha_change=-_this.alpha_change;                
             }else if (_this.alpha >= 0.8) {
@@ -269,6 +268,5 @@ export function initTriangleEffect(document,color=globalProperties.$themeColor) 
       document.onmouseout = mouseOut
       document.onclick = mouseClick
     }
-    console.log(getDeviceTypeByAgent());
     window.onresize = addCanvasSize
 }

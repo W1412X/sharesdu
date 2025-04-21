@@ -112,7 +112,6 @@ export const getChatHistory = async (userId, page,page_size=10) => {
     try {
         await waitForLock('token');
         let response=null;
-        console.log(page)
         if(page==null||page==undefined||page==1){
             response = await getaxiosInstance().get(`/messages/history/${userId}`);
         }else{

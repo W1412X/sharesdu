@@ -124,7 +124,6 @@ export default {
         const selfName = getCookie('userName');
         const themeColor = globalProperties.$themeColor;
         const deviceType = globalProperties.$deviceType;
-        console.log(deviceType);
         const navVisible = ref(false);
         const drawer = ref(true);
         const rail = ref(false);
@@ -168,7 +167,6 @@ export default {
         receiverId: {
             //eslint-disable-next-line
             async handler(newValue, oldValue) {
-                console.log(newValue);
                 if (newValue) {
                     if (this.chatHistoryDict[newValue] == null) {
                         //get history  
@@ -218,7 +216,6 @@ export default {
         receiverName: {
             //eslint-disable-next-line
             handler(newVal, oldVal) {
-                console.log(newVal);
                 document.getElementById('web-title').innerText = '聊天 | ' + newVal;
             },
             immediate: true,
@@ -293,9 +290,6 @@ export default {
             this.alert("待实现");
         },
         async loadFrontier() {
-            console.log("chatPageDict",this.chatPageDict);
-            console.log("recervierId",this.receiverId);
-            console.log("page",this.chatPageDict[this.receiverId]);
             this.loading.loadFrontier=true;
             let response = await getChatHistory(this.receiverId, this.chatPageDict[this.receiverId]);
             this.loading.loadFrontier=false;

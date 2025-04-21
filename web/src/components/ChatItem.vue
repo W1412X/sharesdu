@@ -55,9 +55,6 @@ export default {
     },
     methods: {
         click() {
-            console.log(this.data);
-            console.log(this.initData);
-            console.log(this.data.id,this.data.name);
             if (this.data.id && this.data.name) {
                 this.$router.push({
                     name: "ChatPage",

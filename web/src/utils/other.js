@@ -98,36 +98,30 @@ export async function dealAxiosError(error) {
                             }
                         }
                         setLock("token", true);
-                        console.log("refresh token存在，尝试获取access token");
                         const response = await getAccessToken(refreshToken);
                         if (response.status == 999) {
-                            console.log("成功获取access token");
                             setCookie("accessToken", response.access, 5);
                             return {
                                 status: 1412,
                                 message: "已更新access token，重新请求"
                             }
                         } else {
-                            console.log("获取access token失败，尝试自动登陆");
                             /**
                              * here the refresh token expired
                              * so we try login by passwd if savepasswd
                              */
                             if (getCookie("passwd")) {
-                                console.log("保存了密码，尝试自动登陆");
                                 let response = await loginWithPassword({
                                     user_name: getCookie("userName"),
                                     pass_word: getCookie("passwd")
                                 })
                                 if (response.status == 200) {
-                                    console.log("自动登陆成功");
                                     setLogin(response.user_name, response.user_id, response.email, response.refresh, globalProperties.$apiUrl + "/image/user?user_id=" + response.user_id, getCookie("passwd"))
                                     return {
                                         status: 1412,
                                         message: "已更新access token，重新请求"
                                     }
                                 } else {
-                                    console.log("自动登陆失败，手动登陆");
                                     clearTokenCookies();
                                     window.alert("自动登陆失败，请手动登陆");
                                     setTimeout(()=>{
@@ -140,7 +134,6 @@ export async function dealAxiosError(error) {
                                     }
                                 }
                             } else {
-                                console.log("没有保存密码，手动登陆");
                                 clearTokenCookies();
                                 window.alert("令牌已过期，请重新登录");
                                 setTimeout(()=>{
@@ -168,22 +161,18 @@ export async function dealAxiosError(error) {
                         setLock("token", false);
                     }
                 } else {
-                    console.log("refresh token不存在");
                     if (getCookie("passwd")) {
-                        console.log("保存了密码，尝试自动登陆");
                         let response = await loginWithPassword({
                             user_name: getCookie("userName"),
                             pass_word: getCookie("passwd")
                         })
                         if (response.status == 200) {
-                            console.log("自动登陆成功");
                             setLogin(response.user_name, response.user_id, response.email, response.refresh, globalProperties.$apiUrl + "/image/user?user_id=" + response.user_id, getCookie("passwd"))
                             return {
                                 status: 1412,
                                 message: "已更新access token，重新请求"
                             }
                         } else {
-                            console.log("自动登陆失败，手动登陆");
                             clearTokenCookies();
                             window.alert("自动登陆失败，请手动登陆");
                             setTimeout(()=>{
@@ -196,7 +185,6 @@ export async function dealAxiosError(error) {
                             }
                         }
                     } else {
-                        console.log("没有保存密码，手动登陆");
                         /**
  * if the refresh key not exists too
  * then delete all the user message
@@ -537,7 +525,6 @@ export function extractImageLinks(inputString) {
 
   export async function formatImageLinkInArticle(content){
     let imgs=extractImageLinks(content);
-    console.log(imgs);
     let formattedImgs=[];
     for(let i=0;i<imgs.length;i++){
         formattedImgs.push(await fetchImgAndDeal(imgs[i],'png'));

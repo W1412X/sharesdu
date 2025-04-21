@@ -49,7 +49,6 @@ export default{
     },
     methods:{
         clickReply(){
-            console.log(this.data);
             if(this.data.itemType=="reply"){
                 this.$router.push({
                     name:'PostPage',

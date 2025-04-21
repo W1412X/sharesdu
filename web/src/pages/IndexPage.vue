@@ -142,7 +142,6 @@ export default {
                         }
                         break;
                     default:
-                        console.log(newVal);
                         this.alert(getNormalErrorAlert('未知错误(页面切换)'));
                 }
             },

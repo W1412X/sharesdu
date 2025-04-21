@@ -108,7 +108,6 @@ export default {
         },
     },
     mounted() {
-        console.log(this.data);
         switch(this.data.type){
             case "post_for_your_article":
                 this.data.type="文章有新帖子";

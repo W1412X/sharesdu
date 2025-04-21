@@ -36,7 +36,7 @@ export default defineComponent({
         try{
             Boot.registerModule(formulaModule);
         }catch(e){
-            console.log(e);
+            // eslint-diable-next-line
         }
         //use shallowRef
         const editorRef = shallowRef();
@@ -60,7 +60,6 @@ export default defineComponent({
 
         const handleCreated = (editor) => {
             editorRef.value = editor; // record the editor instance
-            console.log(props);
             if(props.type=="edit"){
                 return;
             }else{
