@@ -25,8 +25,11 @@
       <avatar-name id="avatar-name" v-if="ifAvatarState&&ifShowAvatar" :init-data="{ id: userId, name: ifMobile ? '' : userName }"
         :color="'#ffffff'"></avatar-name>
       <v-spacer></v-spacer>
+      <v-select :color="'grey'" v-model="searchType" label="类型" style="max-width: 60px;min-width: 50px;margin-right: 5px;" density="compact" variant="outlined"
+        :items="['文章','帖子','课程','全部','回复']">
+      </v-select>
       <sensitive-text-field :color="navIconColor" v-model="searchContent" style="min-width: 200px;" density="compact"
-        label="搜索文章/帖子/课程" :items="['平台使用说明']" variant="outlined">
+        label="搜索文章/帖子/课程" variant="outlined">
       </sensitive-text-field>
       <div class="search-btn-container">
         <v-btn @click="search" icon="mdi-magnify" variant="text" :color="navIconColor" size="40"></v-btn>
@@ -45,7 +48,7 @@
     </div>
     <div 
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background:'#ffffff','margin-bottom': routerMarginBottom}">
-      <router-view class="router-view" @alert="alert" @set_loading="setLoading" />
+      <router-view :key="$route.fullPath" class="router-view" @alert="alert" @set_loading="setLoading" />
     </div>
     <div v-if="ifShowBottomNav" class="bottom-nav-container">
       <v-spacer />
@@ -77,6 +80,7 @@ import HistoryCard from './components/HistoryCard.vue';
 import SensitiveTextField from './components/SensitiveTextField.vue';
 import PostEditor from './components/PostEditor.vue';
 import CourseEditor from './components/CourseEditor.vue';
+import { extractWords } from './utils/keyword';
 export default {
   setup() {
     /**
@@ -162,7 +166,7 @@ export default {
       ifShowHistory.value = state;
     }
     const ifShowBottomNav = computed(() => {
-      return ['SelfPage', 'IndexPage'].includes(page.value) && deviceType.value == 'mobile';
+      return ['SelfPage', 'IndexPage','SearchPage'].includes(page.value) && deviceType.value == 'mobile';
     })
     const routerMarginBottom = computed(() => {
       return ifShowBottomNav.value ? '50px' : '10px';
@@ -223,6 +227,7 @@ export default {
         progress: -1,
       },
       searchContent: "",
+      searchType:"全部",
     }
   },
   methods: {
@@ -233,7 +238,53 @@ export default {
       this.loadMsg = msg;
     },
     search() {
-      this.alert(getNormalInfoAlert("功能未开放..."));
+      let keyworkds=extractWords(this.searchContent);
+      if(this.searchContent.length==0){
+        this.alert(getNormalInfoAlert("内容不可为空"));
+        return;
+      }
+      if(keyworkds.length==0){
+        this.alert(getNormalInfoAlert("关键词无效，换一个试试吧 >_<"));
+        return;
+      }
+      if(this.searchContent.length>=25){
+        this.alert(getNormalInfoAlert("搜索内容不得超过25字"));
+        return;
+      }
+      let s="";
+      for(let i=0;i<keyworkds.length;i++){
+        s+=keyworkds[i];
+        if(i!=keyworkds.length-1){
+          s+=',';
+        }
+      }
+      let type=null;
+      switch(this.searchType){
+        case '文章':
+          type='article';
+          break;
+        case '帖子':
+          type='post';
+          break;
+        case '课程':
+          type='course';
+          break;
+        case '全部':
+          type='all';
+          break;
+        case '回复':
+          type='reply';
+          break;
+        default:
+          type='all';
+      }
+      this.$router.push({
+        path: '/search',
+        query: {
+          type: type,
+          query: s
+        }
+      });
     },
     toHomePage() {
       this.$router.push({

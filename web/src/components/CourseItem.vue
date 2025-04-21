@@ -2,23 +2,23 @@
     <v-card class="card" @click="click()">
         <div class="row-div">
             <div class="name-container">
-                <div class="name title">
+                <div class="name title key-text">
                     {{ data.name }}
                 </div>
                 <div class="row-div">
                     <div class="text-medium msg">
-                        课程类型:{{ data.type }}
+                        课程类型:<span class="key-text">{{ data.type }}</span>
                     </div>
                     <div class="text-medium msg">
-                            开设学院:{{ data.college }}
+                            开设学院:<span class="key-text">{{ data.college }}</span>
                     </div>
                 </div>
                 <div class="row-div">
                     <div class="text-medium msg">
-                        上课方式:{{ data.attendMethod }}
+                        上课方式:<span class="key-text">{{ data.attendMethod }}</span>
                     </div>
                     <div class="text-medium msg">
-                        考核方式:{{ data.examineMethod }}
+                        考核方式:<span class="key-text">{{ data.examineMethod }}</span>
                     </div>
                 </div>
                 <div class="text-small time">
@@ -177,6 +177,9 @@ export default {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         width: 80vw;
         height: 100%;
     }

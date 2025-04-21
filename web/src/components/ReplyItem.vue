@@ -19,14 +19,15 @@
         </div>
 
     </v-dialog>
-    <v-card elevation="1" v-if="!ifDeleted" class="container">
+    <v-card elevation="0" v-if="!ifDeleted" class="container">
+        <div v-if="data.postTitle" class="text-medium-bold post-title-div"> {{ '回复帖子: '+data.postTitle }}</div>
         <div v-if="!ifPreview" class="name text-medium">
             <avatar-name v-if="data.authorId" :initData="{ id: data.authorId, name: data.authorName }"></avatar-name>
         </div>
         <div @click="click" class="comment text-medium content">
             <span v-if="this.ifChild == true" @click="showParent" class="text-medium-bold"
                 :style="{ 'color': themeColor }">{{ parentAuthorName + '： ' }}</span>
-            {{ data.content }}
+            <span class="key-text">{{ data.content }}</span>
         </div>
         <div class="bottom-bar">
             <div class="time text-small">
@@ -97,7 +98,7 @@ export default {
         ifPreview:{
             type: Boolean,
             default: false,
-        }
+        },
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -257,13 +258,25 @@ export default {
 }
 
 @media screen and (min-width: 1000px) {
+    .post-title-div{
+        color:grey;
+        max-width: 80%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: fit-content;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     .container {
-        width: 900px;
+        width: 100%;
         display: flex;
         flex-direction: column;
-        padding-top: 15px;
-        padding-left: 15px;
-        padding-right: 15px;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-bottom: 0.5px #dddddd solid;
+        border-radius: 0px;
     }
 
     .name {
@@ -290,8 +303,19 @@ export default {
         padding-top: 10px;
         padding-left: 10px;
         padding-right: 10px;
+        border-bottom: 0.5px #dddddd solid;
+        border-radius: 0px;
     }
-
+    .post-title-div{
+        color:grey;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        max-width: 80vw;
+        width: fit-content;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     .name {
         width: 100%;
         display: flex;

@@ -4,24 +4,24 @@
             <div class="text-small bottom-bar avatar-name-column-center">
                 <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
                 <v-spacer></v-spacer>
-                <div v-if="data.likeNum!=null" class="bottom-item">
+                <div @click="click()" v-if="data.likeNum!=null" class="bottom-item">
                     <v-icon icon="mdi-heart" size="19"></v-icon>
                     <div>{{ data.likeNum }}</div>
                 </div>
-                <div v-if="data.viewNum!=null" class="bottom-item">
+                <div @click="click()" v-if="data.viewNum!=null" class="bottom-item">
                     <v-icon icon="mdi-eye" size="20"></v-icon>
                     <div>{{ data.viewNum }}</div>
                 </div>
-                <div v-if="data.replyNum!=null" class="bottom-item">
+                <div @click="click()" v-if="data.replyNum!=null" class="bottom-item">
                     <v-icon icon="mdi-comment" size="18" style="margin-top: 2px;"></v-icon>
                     <div>{{ data.replyNum }}</div>
                 </div>
             </div>
-            <div @click="click()" class="title title-container">{{ data.title }}</div>
+            <div @click="click()" class="title title-container key-text">{{ data.title }}</div>
             <!--
              <div class="text-small detail-container">{{ data.content }}</div>
             -->
-            <div @click="click()" class="text-medium detail-expand">{{ data.content }}</div>
+            <div @click="click()" class="text-medium detail-expand key-text">{{ data.content }}</div>
             <div class="row-div-scroll">
                 <img-card v-for="(img,index) in data.imgList" :height="100" :width="100" :src="img" :key="index"></img-card>
             </div>
@@ -138,7 +138,7 @@ export default {
     .title-container {
         max-width: 700px;
         height: 27px;
-        white-space: pre-line;
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
@@ -202,7 +202,7 @@ export default {
     .title-container {
         max-width: 90vw;
         height: 27px;
-        white-space: pre-line;
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }

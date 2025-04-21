@@ -2,7 +2,7 @@
     <v-btn
         @click="toTagPage()"
         :color=themeColor
-        variant="tonal"
+        :variant="variant"
         density="compact"
         class="tag text-small">
             {{ data }}
@@ -15,6 +15,10 @@ export default{
         data:{//tag string
             type:String,
             required: true 
+        },
+        variant:{
+            type:String,
+            default:"tonal"
         }
     },
     setup(){
@@ -25,7 +29,13 @@ export default{
     },
     methods:{
         toTagPage(){//need a search page 
-            window.alert("搜索标签"+this.data);
+            this.$router.push({
+                path: '/search',
+                query: {
+                    type: 'all',
+                    query: this.data
+                }
+            });
         }
     }
 }
@@ -37,6 +47,7 @@ export default{
     padding-left:5px;
     padding-right:5px;
     min-width:0px;
+    line-height: 0%;
     color: var(--theme-color);
 }
 @media screen and (min-width: 1000px) {

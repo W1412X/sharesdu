@@ -99,10 +99,22 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/search',
+    name: 'SearchPage',
+    component: (() => import('@/pages/SearchPage.vue')),
+    meta: { requiresAuth: true },
+    props: route => ({
+      type: route.query.type || 'all',
+      sort: route.query.sort || null,
+      query: route.query.query ? route.query.query.split(',') : [],
+    }),
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/error/找不到此资源',
     meta: { requiresAuth: false },
   },
+  
 ];
 
 const router = createRouter({

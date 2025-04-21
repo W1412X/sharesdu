@@ -9,7 +9,6 @@
                 v-model="inputingTag"
                 label="输入标签"
                 rows="1"
-                :items="this.recommendTags"
                 density="compact"
                 variant="outlined"
             ></sensitive-text-area>
@@ -127,7 +126,6 @@ import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalWarnAlert } from '@/utils/other';
 import { uploadArticleImage } from '@/axios/image';
-import { extractTags } from '@/utils/keyword';
 import { VFileUpload } from 'vuetify/lib/labs/components.mjs';
 import ImgCard from './ImgCard.vue';
 import { compressImage } from '@/utils/image';
@@ -178,14 +176,10 @@ export default {
     data() {
         var data=this.initData;
         const file=null;
-        const recommendTags=computed(()=>{
-            return extractTags(this.title);
-        })
         return{
             data,
             file,
             tmpCoverImage:null,
-            recommendTags,
         }
     },
     methods: {

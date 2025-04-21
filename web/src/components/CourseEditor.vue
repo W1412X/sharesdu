@@ -35,14 +35,14 @@
                 ></sensitive-text-area>
             </div>
             <div class="item-div">
-                <v-select
+                <v-autocomplete
                     v-model="data.college"
                     variant="outlined"
                     density="compact"
                     class="item"
                     :items="colleges"
                     label="开设学院"
-                ></v-select>
+                ></v-autocomplete>
                 <v-select
                     v-model="data.campus"
                     variant="outlined"

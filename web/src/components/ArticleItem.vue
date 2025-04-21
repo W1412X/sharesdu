@@ -4,8 +4,8 @@
             <img-card :width="deviceType === 'desktop'?140:95" :height="deviceType === 'desktop'?130:95" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
                 cover aspect-ratio="7/6"></img-card>
             <div class="row-div padding-left-5">
-                <div class="title title-container">{{ data.title }}</div>
-                <div class="text-small summary-container">{{ data.summary }}</div>
+                <div class="title title-container key-text">{{ data.title }}</div>
+                <div class="text-small summary-container key-text">{{ data.summary }}</div>
                 <v-spacer></v-spacer>
                 <div class="text-small bottom-bar">
                     <div v-if="data.authorName != null" class="bottom-item">
