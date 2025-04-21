@@ -7,22 +7,70 @@
                     :hide-details="true"></v-select>
                 <v-spacer></v-spacer>
                 <div id="type-container" class="type-bar">
-                    <v-btn v-for="(sortOption, index) in sortOptionsToShow[searchType]" :key="index" variant="tonal"
-                        class="text-small sort-btn" @click="setSortType(sortOption.value)"
-                        :color="sortType === sortOption.value ? themeColor : 'grey'" :prepend-icon="sortOption.icon"
-                        :text="sortOption.label">
-                    </v-btn>
+                    <v-btn
+                        variant="tonal"
+                        :prepend-icon="sortIconNow"
+                        :color="themeColor"
+                        :slim="true"
+                        >
+                        {{ sortTypeLabelNow }}
+                    <v-menu activator="parent">
+                        <v-list style="padding-right:10px;">
+                            <v-list-item v-for="(sortOption, index) in sortOptionsToShow[searchType]" :key="index"
+                                :variant="sortType === sortOption.value ? 'tonal' : ''"
+                                :slim="true"
+                                density="compact"
+                                :rounded="true"
+                                :active-color="themeColor"
+                                base-color="grey"
+                                class="text-small sort-btn" @click="setSortType(sortOption.value)"
+                                :active="sortType === sortOption.value"
+                                :prepend-icon="sortOption.icon"
+                                :title="sortOption.label">
+                                <v-list-item-title></v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-btn>
                 </div>
             </div>
             <div class="control-bar">
-                <div class="course-select-container">
-                    <v-autocomplete v-model="courseCollege" style="margin-left: 10px;" :min-width="'150px'" :label="'开设学院'" v-if="searchType=='课程'" density="compact" :items="colleges" variant="outlined"></v-autocomplete>
-                    <v-select v-model="courseType" style="margin-left: 10px;" :min-width="'100px'" :label="'课程类型'" v-if="searchType=='课程'" density="compact" variant="outlined" :items="['无','必修','选修','限选']"></v-select>
-                    <v-select v-model="courseMethod" style="margin-left: 10px;" :min-width="'100px'" :label="'教学类型'" v-if="searchType=='课程'" density="compact" variant="outlined" :items="['无','线上','线下','混合']"></v-select>
+                <div v-if="searchType=='课程'" class="course-select-container">
+                    <v-btn variant="outlined" :color="ifCourseFilter?themeColor:'grey'" @click="()=>{ifCourseFilter=!ifCourseFilter}" prepend-icon="mdi-filter-menu-outline">筛选</v-btn>
+                    <v-autocomplete v-if="ifCourseFilter" hide-details v-model="courseCollege" style="margin-left: 10px;" :min-width="'150px'"
+                        :label="'开设学院'"  density="compact" :items="colleges"
+                        variant="outlined"></v-autocomplete>
+                    <v-select v-if="ifCourseFilter" hide-details v-model="courseType" style="margin-left: 10px;" :min-width="'100px'" :label="'课程类型'"
+                        density="compact" variant="outlined"
+                        :items="['全部','必修','选修','限选']"></v-select>
+                    <v-select v-if="ifCourseFilter" hide-details v-model="courseMethod" style="margin-left: 10px;" :min-width="'100px'" :label="'教学类型'"
+                        density="compact" variant="outlined"
+                        :items="['全部','线上','线下','混合']"></v-select>
                 </div>
-                <v-spacer/>
+                <div v-if="searchType=='文章'" class="course-select-container">
+                    <v-btn variant="outlined" :color="ifArticleFilter?themeColor:'grey'" @click="()=>{ifArticleFilter=!ifArticleFilter}" prepend-icon="mdi-filter-menu-outline">筛选</v-btn>
+                    <span></span>
+                    <div v-if="ifArticleFilter" class="article-tag-container">
+                        <!--delete btn-->
+                        <v-btn v-for="tag in filtArticleTags" :key="tag" :color="themeColor" :text="tag" variant="tonal"
+                            class="tag-btn">{{ tag }}
+                            <v-spacer></v-spacer>
+                            <v-btn @click="deleteTag(tag)" size="15" density="compact" variant="tonal" class="delete-tag-btn">
+                                ✕
+                            </v-btn>
+                        </v-btn>
+                        <div style="display: flex;flex-direction: row;align-items: center;">
+                            <sensitive-text-field style="margin-left: 10px;margin-right: 10px;" hide-details variant="outlined" v-model="editingArticleFiltTag" density="compact" :max-width="'150px'" label="输入筛选标签"></sensitive-text-field>
+                            <!--add btn-->
+                            <v-btn :color="themeColor" @click="addTag" variant="tonal">
+                                添加筛选标签
+                            </v-btn>
+                        </div>
+                    </div>
+                </div>
+                <v-spacer v-if="searchType!='课程'&&searchType!='文章'"/>
                 <div class="text-small-bold" style="color: grey;">共
-                    <span :style="{color:themeColor}">{{ searchResultNum }}</span>
+                    <span :style="{color:themeColor}">{{ searchResultNum[searchType][sortType] }}</span>
                     条结果
                 </div>
             </div>
@@ -33,12 +81,14 @@
                     :color="themeColor" @click="load" text="加载更多"></v-btn>
             </div>
             <div v-if="searchType=='回复'" class="item-container">
-                <search-item v-for="item in searchList[searchType]" :key="item.id" :init-data="item" :query="query"></search-item>
+                <search-item v-for="item in searchList[searchType][sortType]" :key="item.id" :init-data="item"
+                    :query="query"></search-item>
                 <v-btn :loading="loading.item" :disabled="loading.item" style="width: 100%;" variant="tonal"
                     :color="themeColor" @click="load" text="加载更多"></v-btn>
             </div>
             <div v-if="searchType=='全部'" class="item-container">
-                <hybrid-search-item v-for="item in searchList[searchType]" :key="item.id" :init-data="item" :query="query"></hybrid-search-item>
+                <hybrid-search-item v-for="item in searchList[searchType][sortType]" :key="item.id" :init-data="item"
+                    :query="query"></hybrid-search-item>
                 <v-btn :loading="loading.item" :disabled="loading.item" style="width: 100%;" variant="tonal"
                     :color="themeColor" @click="load" text="加载更多"></v-btn>
             </div>
@@ -49,8 +99,9 @@
 import { globalSearch, searchArticles, searchCourses, searchPosts, searchReplies } from '@/axios/search';
 import HybridSearchItem from '@/components/HybridSearchItem.vue';
 import SearchItem from '@/components/SearchItem.vue';
+import SensitiveTextField from '@/components/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
-import { extractTime, getNormalErrorAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets } from '@/utils/other';
+import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets } from '@/utils/other';
 import { computed } from 'vue';
 export default {
     props: {
@@ -70,8 +121,8 @@ export default {
         }
     },
     setup() {
-        let colleges=globalProperties.$colleges;
-        colleges.unshift("无");
+        let colleges=Array.from(globalProperties.$colleges);
+        colleges.unshift('全部');
         return {
             themeColor: globalProperties.$themeColor,
             colleges
@@ -80,6 +131,7 @@ export default {
     components: {
         SearchItem,
         HybridSearchItem,
+        SensitiveTextField,
     },
     watch: {
         courseCollege:{
@@ -116,6 +168,7 @@ export default {
              */
             //eslint-disable-next-line
             async handler(newVal, oldVal) {
+                this.$emit("search_type_changed",newVal);
                 //set sort type  
                 if (this.searchType!="全部"&&this.searchType!="回复") {
                     this.sortType = this.sortOptionsToShow[this.searchType][0].value;
@@ -123,7 +176,7 @@ export default {
                 switch (newVal) {
                     case "全部":
                         this.sortType = null;
-                        if(this.searchList["全部"].length>0){
+                        if(this.searchList["全部"][this.sortType].length>0){
                             return;
                         }else{
                             await this.load();
@@ -152,7 +205,7 @@ export default {
                         break;
                     case "回复":
                         this.sortType = null;
-                        if(this.searchList["回复"].length>0){
+                        if(this.searchList["回复"][this.sortType].length>0){
                             return;
                         }else{
                             await this.load();
@@ -166,11 +219,28 @@ export default {
     },
     data() {
         return {
-            courseCollege:null,
-            courseMethod:null,
-            courseType:null,
+            editingArticleFiltTag:"",
+            courseCollege:"全部",
+            courseMethod:"全部",
+            courseType:"全部",
             searchType: "全部",//
+            ifCourseFilter:false,
+            ifArticleFilter:false,
+            filtArticleTags:[],
+            filtArticleTagsToSubmit:computed(()=>{
+                if(this.filtArticleTags.length==0){
+                    return null;
+                }else{
+                    return this.filtArticleTags.join(",");
+                }
+            }),
             sortType: null,
+            sortIconNow:computed(()=>{
+                return this.sortTypeIconDict[this.sortType];
+            }),
+            sortTypeLabelNow:computed(()=>{
+                return this.sortTypeLabelDict[this.sortType];
+            }),
             searchList: {
                 "文章": {
                     "publish_time": [],
@@ -194,8 +264,12 @@ export default {
                     "stars": [],
                     "-stars": []
                 },
-                "全部": [],
-                "回复": []
+                "全部": {
+                    null:[]
+                },
+                "回复": {
+                    null:[]
+                }
             },
             searchPage: {
                 "文章": {
@@ -220,10 +294,43 @@ export default {
                     "stars": 1,
                     "-stars": 1
                 },
-                "全部": 1,
-                "回复": 1
+                "全部": {
+                    null:1
+                },
+                "回复": {
+                    null:1
+                }
             },
-            searchResultNum:" ",
+            searchResultNum:{
+                "文章": {
+                    "publish_time": 0,
+                    "-publish_time": 0,
+                    "hot_score": 0,
+                    "-hot_score": 0,
+                    "likes_count": 0,
+                    "-likes_count": 0,
+                },
+                "帖子": {
+                    "publish_time": 0,
+                    "-publish_time": 0,
+                    "hot_score": 0,
+                    "-hot_score": 0,
+                    "views": 0,
+                    "-views": 0
+                },
+                "课程": {
+                    "publish_time": 0,
+                    "-publish_time": 0,
+                    "stars": 0,
+                    "-stars": 0
+                },
+                "全部": {
+                    null:0
+                },
+                "回复": {
+                    null:0
+                }
+            },
             loading: {
                 item: false,
             },
@@ -302,6 +409,32 @@ export default {
                 '回复': [],
                 '全部': []
             },
+            sortTypeIconDict:{
+                'publish_time': 'mdi-sort-clock-ascending-outline',
+                '-publish_time': 'mdi-sort-clock-descending-outline',
+                '-hot_score': 'mdi-fire-alert',
+                'hot_score': 'mdi-fire',
+                '-likes_count': 'mdi-heart',
+                'likes_count': 'mdi-heart-outline',
+                'views': 'mdi-eye-off-outline',
+                '-views': 'mdi-eye-outline',
+                '-stars': 'mdi-star-check-outline',
+                'stars': 'mdi-star-outline',
+                null:"mdi-circle-off-outline"
+            },
+            sortTypeLabelDict:{
+                'publish_time': '最近发布',
+                '-publish_time': '最早发布',
+                '-hot_score': '最高热度',
+                'hot_score': '最低热度',
+                '-likes_count': '最多点赞',
+                'likes_count': '最少点赞',
+                'views': '最少浏览',
+                '-views': '最多浏览',
+                '-stars': '最多收藏',
+                'stars': '最少收藏',
+                null:"默认排序"
+            },
             articleType: null,
             queryTosubmit: computed(() => {
                 let tmp = "";
@@ -316,15 +449,43 @@ export default {
         }
     },
     methods: {
+        deleteTag(text) {
+            var tmp=[];
+            var arr=Array.from(this.filtArticleTags);
+            for (let i=0;i<arr.length;i++) {
+                if(arr[i]!=text){
+                    tmp.push(arr[i]);
+                }
+            }
+            this.filtArticleTags = tmp;
+            this.searchList['文章'][this.sortType] = [];
+            this.searchPage['文章'][this.sortType] = 1;
+            this.load();
+        },
+        async addTag(){
+            if(!this.editingArticleFiltTag){
+                this.alert(getNormalInfoAlert("标签不可为空"));
+                return;
+            }
+            if(this.filtArticleTags.includes(this.editingArticleFiltTag)){
+                this.alert(getNormalInfoAlert("标签已存在"));
+                return;
+            }
+            this.filtArticleTags.push(this.editingArticleFiltTag);
+            this.searchList['文章'][this.sortType] = [];
+            this.searchPage['文章'][this.sortType] = 1;
+            this.load();
+            this.editingArticleFiltTag="";
+        },
         alert(msg) {
             this.$emit('alert', msg);
         },
         async loadArticle() {
             this.loading.item = true;
-            let response = await searchArticles(this.queryTosubmit, null, this.articleType, this.sortType, this.searchPage['文章'][this.sortType]);
+            let response = await searchArticles(this.queryTosubmit, this.filtArticleTagsToSubmit, this.articleType, this.sortType, this.searchPage['文章'][this.sortType]);
             this.loading.item = false;
             if (response.status == 200) {
-                this.searchResultNum=response.count;
+                this.searchResultNum[this.searchType][this.sortType]=response.count;
                 for (let i = 0; i < response.results.length; i++) {
                     this.searchList['文章'][this.sortType].push({
                         itemType: "article",
@@ -377,14 +538,14 @@ export default {
                 default:
                     tmpAttendMethod = null;
             }
-            if(this.courseCollege=='无'){
+            if(this.courseCollege=='全部'){
                 this.courseCollege=null;
             }
             this.loading.item = true;
             let response = await searchCourses(this.queryTosubmit, tmpType, this.courseCollege,tmpAttendMethod, this.sortType, this.searchPage["课程"][this.sortType]);
             this.loading.item = false;
             if (response.status == 200) {
-                this.searchResultNum=response.count;
+                this.searchResultNum[this.searchType][this.sortType]=response.count;
                 for (let i = 0; i < response.results.length; i++) {
                     let tmpType="";
                     switch(response.results[i].course_type){
@@ -437,7 +598,7 @@ export default {
             let response = await searchPosts(this.queryTosubmit,this.sortType,this.searchPage['帖子'][this.sortType]);
             this.loading.item = false;
             if(response.status==200){
-                this.searchResultNum=response.count;
+                this.searchResultNum[this.searchType][this.sortType]=response.count;
                 for(let i=0;i<response.results.length;i++){
                     this.searchList["帖子"][this.sortType].push({
                         itemType:"post",
@@ -461,12 +622,12 @@ export default {
         },
         async loadReply() {
             this.loading.item = true;
-            let response=await searchReplies(this.queryTosubmit,this.searchPage["回复"]);
+            let response=await searchReplies(this.queryTosubmit,this.searchPage["回复"][this.sortType]);
             this.loading.item=false;
             if(response.status==200){
-                this.searchResultNum=response.count;
+                this.searchResultNum["回复"][null]=response.count;
                 for(let i=0;i<response.results.length;i++){
-                    this.searchList['回复'].push({
+                    this.searchList['回复'][this.sortType].push({
                         itemType:"reply",
                         id:response.results[i].reply_id,
                         content:response.results[i].reply_content,
@@ -477,17 +638,17 @@ export default {
                         publishTime:extractTime(response.results[i].reply_time),
                     })
                 }
-                this.searchPage['回复']++;
+                this.searchPage['回复'][this.sortType]++;
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
         },
         async loadAll() {
             this.loading.item = true;
-            let response=await globalSearch(this.queryTosubmit,this.searchPage["全部"]);
+            let response=await globalSearch(this.queryTosubmit,this.searchPage["全部"][this.sortType]);
             this.loading.item = false;
             if(response.status==200||response.results){
-                this.searchResultNum=response.count;
+                this.searchResultNum['全部'][null]=response.count;
                 for(let i=0;i<response.results.length;i++){
                     let tmp={
                         type:response.results[i].type,
@@ -515,9 +676,9 @@ export default {
                             tmp['courseTeacher']=response.results[i].teacher;
                             break;
                     }
-                    this.searchList["全部"].push(tmp);
+                    this.searchList["全部"][this.sortType].push(tmp);
                 }
-                this.searchPage["全部"]++;
+                this.searchPage["全部"][this.sortType]++;
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
@@ -596,7 +757,27 @@ export default {
     display: flex;
     flex-direction: column;
 }
-
+.tag-btn {
+    min-width: 0px;
+    padding-top: 0px;
+    padding-right: 3px;
+    padding-bottom: 1px;
+    margin-bottom: 5px;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+.delete-tag-btn {
+    border-radius: 50px;
+    height: 15px;
+    margin: 5px;
+    font-size: 12px;
+    color: #8a8a8a;
+    font-weight: 600;
+    padding-top: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    margin-left: 10px;
+}
 /** desktop */
 @media screen and (min-width: 1000px) {
     .full-screen {
@@ -607,6 +788,11 @@ export default {
         display: flex;
         flex-direction: row;
         overflow-x: scroll;
+        padding: 6px;
+        margin-right: 30px;
+        max-width: none;
+        flex:1;
+        align-items: center;
     }
     .item-container {
         display: flex;
@@ -633,8 +819,16 @@ export default {
         height: 100%;
         align-items: center;
         max-width: 400px;
+        margin-right: 10px;
         width: fit-content;
         overflow-x: scroll;
+    }
+    .article-tag-container{
+        padding: 6px;
+        margin-right: 30px;
+        max-width: none;
+        flex:1;
+        align-items: center;
     }
 }
 
@@ -654,8 +848,19 @@ export default {
     .course-select-container{
         display: flex;
         flex-direction: row;
-        max-width: 60vw;
         overflow-x: scroll;
+        flex:1;
+        margin-right: 30px;
+        max-width: none;
+        align-items: center;
+        padding: 6px;
+    }
+    .article-tag-container{
+        padding: 6px;
+        margin-right: 30px;
+        max-width: none;
+        flex:1;
+        align-items: center;
     }
     .control-bar {
         display: flex;
@@ -673,6 +878,7 @@ export default {
         height: 100%;
         width: fit-content;
         align-items: center;
+        margin-right: 10px;
         max-width: 60vw;
         overflow-x: scroll;
     }

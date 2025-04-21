@@ -48,7 +48,7 @@
     </div>
     <div 
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background:'#ffffff','margin-bottom': routerMarginBottom}">
-      <router-view :key="$route.fullPath" class="router-view" @alert="alert" @set_loading="setLoading" />
+      <router-view :key="$route.fullPath" class="router-view" @alert="alert" @set_loading="setLoading" @search_type_changed="handleSearchTypeChanged"/>
     </div>
     <div v-if="ifShowBottomNav" class="bottom-nav-container">
       <v-spacer />
@@ -236,6 +236,9 @@ export default {
     },
     setLoading(msg) {
       this.loadMsg = msg;
+    },
+    handleSearchTypeChanged(type){
+      this.searchType=type;
     },
     search() {
       let keyworkds=extractWords(this.searchContent);
