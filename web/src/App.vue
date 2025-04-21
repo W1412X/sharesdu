@@ -25,10 +25,10 @@
       <avatar-name id="avatar-name" v-if="ifAvatarState&&ifShowAvatar" :init-data="{ id: userId, name: ifMobile ? '' : userName }"
         :color="'#ffffff'"></avatar-name>
       <v-spacer></v-spacer>
-      <v-select :color="'grey'" v-model="searchType" label="类型" style="max-width: 60px;min-width: 50px;margin-right: 5px;" density="compact" variant="outlined"
-        :items="['文章','帖子','课程','全部','回复']">
+      <v-select :color="navIconColor" :base-color="navIconColor" v-model="searchType" label="类型" style="max-width: 60px;min-width: 50px;margin-right: 5px;" density="compact" variant="outlined"
+        :items="['文章','帖子','课程','全部','回复']" :item-color="themeColor">
       </v-select>
-      <sensitive-text-field :color="navIconColor" :base-color="navIconColor" v-model="searchContent" style="min-width: 200px;" density="compact"
+      <sensitive-text-field :style="{color:navIconColor}" :color="navIconColor" :base-color="navIconColor" v-model="searchContent" style="min-width: 200px;" density="compact"
         label="搜索文章/帖子/课程" variant="outlined">
       </sensitive-text-field>
       <div class="search-btn-container">
