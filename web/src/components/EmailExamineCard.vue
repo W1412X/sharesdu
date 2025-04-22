@@ -39,8 +39,8 @@
 import { getRegisterEmailCode,getDeleteAccountEmailCode,getLoginEmailCode,getResetPasswordEmailCode, registerByEmail } from '@/axios/account';
 import { loginWithEmail,deleteAccount,resetPassword } from '@/axios/account';
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg, getLoadMsg, getNormalInfoAlert } from '@/utils/other';
-import { setCookie, clearTokenCookies } from '@/utils/cookie';
+import { getCancelLoadMsg, getLoadMsg, getNormalInfoAlert, setLogin } from '@/utils/other';
+import { clearTokenCookies } from '@/utils/cookie';
 import { csDeleteAccount, csLoginByEmail, csRegisterByEmail, csResetPassword } from '@/axios/api_convert/account';
 export default {
     props: {
@@ -116,11 +116,7 @@ export default {
                         /**
                          * save the user message
                          */
-                        setCookie('userName',response.user_name,7*24);
-                        setCookie('userId',response.user_id,7*24);
-                        setCookie('email',response.email,7*24);
-                        setCookie('refreshToken',response.refresh,7*24);
-                        setCookie('userProfileUrl',this.apiUrl+"/image/user?user_id="+response.user_id,7*24);
+                        setLogin(response.user_name,response.user_id,response.email,response.refresh,this.apiUrl + "/image/user?user_id=" + response.user_id, response.is_master, response.is_super_master ,this.ifSavePasswd?this.loginByUsernameData.passwd:null);
                         this.$router.push({ name: 'IndexPage' });
                         break;
                     case 'delete_account':

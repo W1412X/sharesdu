@@ -36,7 +36,11 @@ const routes = [
     path:'/manage',
     name:"ManagePage",
     component:(()=>import("@/pages/ManagePage.vue")),
-    meta:{requiresAuth:true}
+    meta:{requiresAuth:true},
+    props: route => ({
+      init_id: route.query.init_id || null,
+      init_type: route.query.init_type || null,
+    }),
   },
   {
     path:'/course/:id/:post?',

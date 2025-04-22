@@ -28,6 +28,7 @@
                         {{ course.name }}
                     </div>
                     <v-spacer></v-spacer>
+                    <manage-button :id="this.course.id" :type="'course'" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"></manage-button>
                     <v-btn @click="setCourseEditorState(true)" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;" elevation="0" icon variant="text">
                         <v-icon icon="mdi-book-edit-outline" size="22" :color="'#8a8a8a'"></v-icon>
                         <v-tooltip activator="parent">如课程信息有误，您可以提交修改</v-tooltip>
@@ -163,7 +164,9 @@
                 <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
                     发表帖子
                 </v-btn>
-                <post-item v-for="item in postItems" :init-data="item" :key="item.id">
+                <post-item v-for="item in postItems" :init-data="item" :key="item.id" :if-parent-author="ifMaster" @alert="alert" 
+                    @set_post_top="setPostTop"
+                >
                 </post-item>
                 <v-btn @click="loadMorePost" :loading="loading.post" :disabled="loading.post" v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
@@ -188,6 +191,7 @@ import { addHistory } from '@/utils/history';
 import EmojiPicker from '@/components/EmojiPicker.vue';
 import CourseHistoryCard from '@/components/CourseHistoryCard.vue';
 import PartLoadingView from '@/components/PartLoadingView.vue';
+import ManageButton from '@/components/ManageButton.vue';
 export default {
     name: 'CoursePage',
     components: {
@@ -201,6 +205,7 @@ export default {
         EmojiPicker,
         CourseHistoryCard,
         PartLoadingView,
+        ManageButton,
     },
     setup() {
         const userName=getCookie("userName");
@@ -214,6 +219,7 @@ export default {
         const ifShowPost=ref(false);
         const ifShowCourseEditor=ref(false);
         const ifShowHistory=ref(false);
+        const ifMaster=getCookie("ifMaster");
         const setPostEditorState=(state)=>{
             ifShowPostEditor.value=state;
         };
@@ -250,6 +256,7 @@ export default {
             setCourseEditorState,
             ifShowHistory,
             setHistoryState,
+            ifMaster,
         }
     },
     beforeRouteLeave (to, from, next) {
@@ -341,7 +348,8 @@ export default {
                         replyNum:response.post_list[i].reply_count,
                         publishTime:response.post_list[i].publish_time,
                         ifLike:response.post_list[i].if_like,
-                        ifStar:response.post_list[i].if_star
+                        ifStar:response.post_list[i].if_star,
+                        ifTop:response.post_list[i].if_top,
                     });
                 }
                 this.postPageNum++;
@@ -448,7 +456,47 @@ export default {
         },
         closePostEditor(){
             this.setPostEditorState(false);
-        }
+        },
+
+        setPostTop(msg){//{id state}  
+            console.log(msg)
+            /**
+             * no need to copy
+             */
+            let toOpPost=null;
+            let index=-1;
+            for(let i=0;i<this.postItems.length;i++){
+                if(this.postItems[i].id==msg.id){
+                    toOpPost=copy(this.postItems[i]);
+                    index=i;
+                    break;
+                }
+            }
+            console.log(toOpPost)
+            if(toOpPost){
+                toOpPost.ifTop=msg.top;
+                console.log(toOpPost);
+                this.postItems.splice(index,1);
+                if(msg.top){
+                    this.postItems.unshift(toOpPost);
+                }else{
+                    //set the first behind top
+                    let ifAdd=false;
+                    for(let i=0;i<this.postItems.length;i++){
+                        if(!this.postItems[i].ifTop){
+                            this.postItems.splice(i,0,toOpPost);
+                            ifAdd=true;
+                            break;
+                        }
+                    }
+                    if(!ifAdd){
+                        this.postItems.push(toOpPost);
+                    }
+                }
+                console.log(toOpPost);
+            }
+
+        },
     },
     async mounted() {
         if(sessionStorage.getItem('courseScanMsg|'+this.$route.params.id)){

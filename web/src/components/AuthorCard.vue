@@ -5,10 +5,20 @@
         <div class="row-no-margin">
             <avatar-name :size="40" :color="'#8a8a8a'" :init-data="{id:data.id,name:data.name}"></avatar-name>
             <v-spacer></v-spacer>
-            <v-btn v-if="type=='author'" @click="block" style="margin-right: 10px;" variant="text" icon="mdi-cancel" size="30" color="#8a8a8a" rounded="true">
+            <v-btn v-if="type=='author'" @click="block" variant="text" icon color="#8a8a8a">
+                <v-icon size="28">mdi-cancel</v-icon>
+                <v-tooltip activator="parent">
+                    拉黑{{ data.name }}
+                </v-tooltip>
             </v-btn>
-            <v-btn v-if="type=='author'" @click="toSend" variant="text" icon="mdi-send" size="30" color="#8a8a8a" rounded="true">
+            <v-btn v-if="type=='author'" @click="toSend" variant="text" icon color="#8a8a8a" rounded="true">
+                <v-icon icon="mdi-send" size="28"></v-icon>
+                <v-tooltip activator="parent">
+                    给{{ data.name }}发送私信
+                </v-tooltip>
             </v-btn>
+            <manage-button v-if="type=='author'" size="28" style="margin-left: 5px;" :id="data.id" :type="'user'">
+            </manage-button>
         </div>
         <div v-if="(data.master || data.superMaster) &&  type=='author'" class="row-div">
                 <v-icon size="20">mdi-shield-account</v-icon>
@@ -65,6 +75,7 @@ import { getAuthorInfo } from '@/axios/account';
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
 import { blockUser, unblockUser } from '@/axios/block';
 import PartLoadingView from './PartLoadingView.vue';
+import ManageButton from './ManageButton.vue';
 
 export default{
     props:{
@@ -86,6 +97,7 @@ export default{
     components:{
         AvatarName,
         PartLoadingView,
+        ManageButton,
     },
     data(){
         return {

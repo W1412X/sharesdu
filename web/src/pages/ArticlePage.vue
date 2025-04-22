@@ -8,6 +8,16 @@
     </v-dialog>
     <div class="full-center">
         <div>
+            <v-chip v-if="article.ifTop&&!ifMaster" width="100%" variant="tonal" :color="themeColor" style="border-radius: 0px;max-height: 28px;width: 100%;justify-content: center;">
+                    <v-icon size="20">mdi-format-vertical-align-top</v-icon>
+                    <span style="margin-left: 10px;" class="text-small-bold">置顶文章</span>
+                    <v-tooltip activator="parent">此文章为网站置顶文章</v-tooltip>
+            </v-chip>
+            <v-btn @click="setArticleTop" :loading="loading.top" :disabled="loading.top" v-if="ifMaster" width="100%" variant="tonal" :color="article.ifTop?'grey':themeColor" style="max-height: 28px;width: 100%;justify-content: center;">
+                <v-icon size="20">mdi-format-vertical-align-top</v-icon>
+                <span style="margin-left: 10px;" class="text-small-bold">{{ article.ifTop?'取消置顶':'置顶此文章' }}</span>
+                <v-tooltip activator="parent">作为管理员，您可以设置是否置顶此文章</v-tooltip>
+            </v-btn>
             <div class="top-bar">
                 <div class="title-container">
                     <div class="title">
@@ -75,6 +85,10 @@
                 </div>
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
+
+                    <div v-if="ifMaster"  class="column-center padding-right-5px">
+                        <manage-button :id="this.article.id" :type="'article'" size="23"></manage-button>
+                    </div>
                     <div v-if="userId!=article.authorId" class="column-center padding-right-5px">
                         <alert-button :id="this.article.id" :type="'article'"></alert-button>
                     </div>
@@ -109,7 +123,7 @@
                 <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
                     发表帖子
                 </v-btn>
-                <post-item v-for="(item) in postItems" :init-data="item" :key="item.id">
+                <post-item v-for="(item) in postItems" :init-data="item" :key="item.id" :if-parent-author="userId==article.authorId" @alert="alert" @set_post_top="setPostTop">
                 </post-item>
                 <v-btn @click="loadMorePost" :loading="this.loading.post" :disabled="loading.post" variant="tonal" class="load-btn">加载更多</v-btn>
             </div>
@@ -128,11 +142,13 @@ import { computed, ref } from 'vue';
 import PostItem from '@/components/PostItem.vue';
 import PostEditor from '@/components/PostEditor.vue';
 import AvatarName from '@/components/AvatarName.vue';
-import { formatImageLinkInArticle, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, openNewPage, responseToArticle } from '@/utils/other';
+import { copy, formatImageLinkInArticle, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage, responseToArticle } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 import LikeButton from '@/components/LikeButton.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
 import { addHistory } from '@/utils/history';
+import ManageButton from '@/components/ManageButton.vue';
+import { setArticleTop } from '@/axios/top';
 export default {
     name: 'ArticlePage',
     components: {
@@ -145,7 +161,8 @@ export default {
         PostEditor,
         AvatarName,
         DeleteButton,
-        LikeButton
+        LikeButton,
+        ManageButton,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
@@ -154,6 +171,7 @@ export default {
             text: '加载中...',
             progress: -1
         }
+        const ifMaster=getCookie('ifMaster');
         /**
          * get user msg
          */
@@ -183,6 +201,7 @@ export default {
             ifShowDialog,
             ifShowPostEditor,
             setCommentState,
+            ifMaster,
         }
     },
     data() {
@@ -221,6 +240,7 @@ export default {
             loadState:false,
             loading:{
                 post:false,
+                top:false,
             }
         }
     },
@@ -228,6 +248,7 @@ export default {
             //use session storage to save memory now  
             let scanMsg={};
             scanMsg.articleResponse=this.articleResponse;
+            scanMsg.articleResponse.article_detail.if_top=this.article.ifTop;
             scanMsg.postItems=this.postItems;
             scanMsg.postPageNum=this.postPageNum;
             scanMsg.commentState=this.ifShowComment;
@@ -279,7 +300,8 @@ export default {
                         replyNum:response.post_list[i].reply_count,
                         publishTime:response.post_list[i].publish_time,
                         ifLike:response.post_list[i].if_like,
-                        ifStar:response.post_list[i].if_star
+                        ifStar:response.post_list[i].if_star,
+                        ifTop:response.post_list[i].if_top,
                     });
                 }
                 this.postPageNum++;
@@ -299,7 +321,65 @@ export default {
         },
         toOriginLink(){
             openNewPage(this.article.originLink);
-        }
+        },
+        async setArticleTop(){
+            if (!this.ifMaster) {
+                this.alert(getNormalErrorAlert("您不是管理员，无法执行此操作"));
+                return;
+            }
+            this.loading.top = true;
+            let response = await setArticleTop(this.article.id, !this.article.ifTop);
+            this.loading.top = false;
+            if (response.status == 200) {
+                this.article.ifTop = !this.article.ifTop;
+                //update
+                sessionStorage.removeItem('indexScanMsg');
+                let key='articleScanMsg|'+this.article.id;
+                sessionStorage.removeItem(key);
+                this.alert(getNormalSuccessAlert(this.article.ifTop ? "置顶成功" : "取消置顶成功"));
+            } else {
+                this.alert(getNormalErrorAlert(response.message));
+            }
+        },
+        setPostTop(msg){//{id state}  
+            console.log(msg)
+            /**
+             * no need to copy
+             */
+            let toOpPost=null;
+            let index=-1;
+            for(let i=0;i<this.postItems.length;i++){
+                if(this.postItems[i].id==msg.id){
+                    toOpPost=copy(this.postItems[i]);
+                    index=i;
+                    break;
+                }
+            }
+            console.log(toOpPost)
+            if(toOpPost){
+                toOpPost.ifTop=msg.top;
+                console.log(toOpPost);
+                this.postItems.splice(index,1);
+                if(msg.top){
+                    this.postItems.unshift(toOpPost);
+                }else{
+                    //set the first behind top
+                    let ifAdd=false;
+                    for(let i=0;i<this.postItems.length;i++){
+                        if(!this.postItems[i].ifTop){
+                            this.postItems.splice(i,0,toOpPost);
+                            ifAdd=true;
+                            break;
+                        }
+                    }
+                    if(!ifAdd){
+                        this.postItems.push(toOpPost);
+                    }
+                }
+                console.log(toOpPost);
+            }
+
+        },
     },
     async mounted() {
         if(sessionStorage.getItem('articleScanMsg|'+this.$route.params.id)){

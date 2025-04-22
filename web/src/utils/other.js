@@ -499,12 +499,14 @@ export function removeStringsInBrackets(inputString) {
     return inputString.replace(regex, '');
 }
 
-export function setLogin(userName, user_id, email, refresh, profile, passwd = null) {
+export function setLogin(userName, user_id, email, refresh, profile, ifMaster =false, ifSuperMaster=false ,passwd = null) {
     setCookie('userName', userName, 7 * 24);
     setCookie('userId', user_id, 7 * 24);
     setCookie('email', email, 7 * 24);
     setCookie('refreshToken', refresh, 7 * 24);
     setCookie('userProfileUrl', profile, 7 * 24);
+    setCookie('ifMaster', ifMaster, 7 * 24);
+    setCookie('ifSuperMaster', ifSuperMaster, 7 * 24);
     if (passwd) {
         setCookie('passwd', passwd, 9999 * 24);
         setCookie('userName', userName, 9999 * 24);
@@ -563,6 +565,7 @@ export async function responseToArticle(response) {
     article.publishTime = response.article_detail.publish_time;
     article.ifLike = response.article_detail.if_like;
     article.ifStar = response.article_detail.if_star;
+    article.ifTop = response.article_detail.if_top;
     return [
         article,
         editorType,

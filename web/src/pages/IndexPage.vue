@@ -233,7 +233,8 @@ export default {
                                 authorId: response.article_list[ind].author_id,
                                 coverLink: response.article_list[ind].cover_link,
                                 type: response.article_list[ind].article_type,
-                                hotScore: response.article_list[ind].hot_score
+                                hotScore: response.article_list[ind].hot_score,
+                                ifTop: response.article_list[ind].if_top,
                             });
                         }
                     } else {
@@ -319,7 +320,8 @@ export default {
                             authorId: response.article_list[ind].author_id,
                             coverLink: response.article_list[ind].cover_link,
                             type: response.article_list[ind].article_type,
-                            hotScore: response.article_list[ind].hot_score
+                            hotScore: response.article_list[ind].hot_score,
+                            ifTop:response.article_list[ind].if_top,
                         });
                     }
                     this.articlePageNum[this.articleSortMethod]++;
@@ -394,9 +396,9 @@ export default {
         }
     },
     async mounted() {
-        //use session storage to save memory now  
-        try {
-            let lastScanMsg = JSON.parse(sessionStorage.getItem("indexScanMsg"))
+        //use session storage to save memory now
+        let lastScanMsg = JSON.parse(sessionStorage.getItem("indexScanMsg"));
+        if(lastScanMsg){
             this.itemType = lastScanMsg.itemType;
             this.articleList = lastScanMsg.articleList;
             this.postList = lastScanMsg.postList;
@@ -409,11 +411,12 @@ export default {
                 document.scrollingElement.scrollTop = lastScanMsg.scrollPosition;
             }, 10)
             document.getElementById('web-title').innerText = 'ShareSDU | 首页';
-        } catch (e) {
-            //eslint-diable-next-line
-        }finally{
-            this.ifMounted=true;
+            console.log("get session finish");
+        }else{
+            //eslint-disable-next-line
+            await this.loadMore(this.itemType);
         }
+        this.ifMounted=true;
     }
 }
 </script>

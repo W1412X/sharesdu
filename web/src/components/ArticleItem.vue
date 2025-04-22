@@ -1,6 +1,10 @@
 <template>
-    <v-card class="card" @click="click()">
-        <div class="column-div">
+    <v-card class="card" :variant="data.ifTop?'variant':'none'" :color="data.ifTop?themeColor:'none'" @click="click()">
+        <v-chip v-if="data.ifTop" width="100%" variant="tonal" :color="themeColor" class="text-tiny-bold" style="border-radius: 0px;max-height: 28px;width: 100%;justify-content: center;">
+            <v-icon size="20">mdi-format-vertical-align-top</v-icon>
+            <span style="margin-left: 10px;" class="text-small-bold">置顶</span>
+        </v-chip>
+        <div class="container">
             <img-card :width="deviceType === 'desktop'?140:95" :height="deviceType === 'desktop'?130:95" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
                 cover aspect-ratio="7/6"></img-card>
             <div class="row-div padding-left-5">
@@ -66,8 +70,10 @@ export default {
     setup() {
         const lazyImgUrl = globalProperties.$lazyImgUrl;
         const deviceType = globalProperties.$deviceType;
+        const themeColor=globalProperties.$themeColor;
         return {
             deviceType,
+            themeColor,
             lazyImgUrl,
         }
     },
@@ -99,12 +105,12 @@ export default {
 }
 @media screen and (min-width: 1000px) {
     .card {
-        padding: 5px;
         width: 750px;
         margin-top: 5px;
     }
 
-    .column-div {
+    .container {
+        padding: 5px;
         display: flex;
         flex-direction: row;
         height: 130px;
@@ -164,7 +170,7 @@ export default {
         margin-top: 5px;
     }
 
-    .column-div {
+    .container {
         display: flex;
         flex-direction: row;
         padding: 5px;

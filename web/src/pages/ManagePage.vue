@@ -79,6 +79,16 @@ import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, 
 import { computed, ref } from 'vue';
 
 export default{
+    props:{
+        init_id:{
+            type:String,
+            default:null,
+        },
+        init_type:{
+            type:String,
+            default:null,//article,user,course
+        }
+    },
     setup(){
         const themeColor=globalProperties.$themeColor;
         const ifShowWebCard=ref(false);
@@ -295,6 +305,10 @@ export default{
             this.loadBlockUser();
         },
 
+    },
+    mounted(){
+        this.itemType=this.init_type;
+        this.itemId=this.init_id;
     }
 }
 </script>

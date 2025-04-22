@@ -170,7 +170,7 @@ export default {
                 let tmp={
                     id: response.post_id,
                     title: this.data.title,
-                    content: this.data.content,
+                    content: addLinkToPost(this.data.content,this.typeMsg.type,this.typeMsg.id),
                     viewNum: 0,
                     replyNum: 0,
                     likeNum:0,
