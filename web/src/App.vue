@@ -114,7 +114,7 @@ export default {
       }
     })
     const navColor = computed(() => {
-      if (page.value == "SelfPage") {
+      if (page.value == "SelfPage" || page.value=='ManagePage') {
         return '#ffffff';
       } else {
         return themeColor;
@@ -128,17 +128,17 @@ export default {
       }
     })
     const navIconColor = computed(() => {
-      if (page.value == "SelfPage") {
+      if (page.value == "SelfPage" || page.value=='ManagePage') {
         return themeColor;
       } else {
         return "#ffffff";
       }
     });
     const ifShowHomeBtn = computed(() => {
-      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || page.value == "ManagePage" || page.value == "SearchPage";
+      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "ManagePage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || page.value == "SearchPage";
     })
     const ifShowAvatar = computed(() => {
-      if (page.value == "SelfPage") {
+      if (page.value == "SelfPage" || page.value=='ManagePage') {
         return false;
       } else {
         return true;

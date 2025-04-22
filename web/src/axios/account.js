@@ -27,10 +27,10 @@ export const registerByEmail = async (data) => {
  * @param {String} email 
  * @returns 
  */
-export const getRegisterEmailCode = async (email) => {
+export const getRegisterEmailCode = async (email,inviteCode) => {
   try {
     await waitForLock('token');
-    const response = await getNoHeaderAxiosInstance().get(`/register?send_code=1&email=${email}`);
+    const response = await getNoHeaderAxiosInstance().get(`/register?send_code=1&email=${email}&invitation_code=${inviteCode}`);
     return response.data;
   } catch (error) {
     return error.response.data;

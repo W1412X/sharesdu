@@ -110,6 +110,7 @@ export default {
                 switch(this.data.type){
                     case 'register':  
                         this.alert(getNormalInfoAlert("登陆之后，在个人主页可以修改个人信息"))
+                        sessionStorage.removeItem("loginMsg");
                         window.location.reload();
                         break;
                     case 'login':
@@ -148,7 +149,7 @@ export default {
             this.setLoading(getLoadMsg('正在发送验证码...',-1));
             switch(this.data.type){
                 case 'register':
-                    response=await getRegisterEmailCode(this.data.email);
+                    response=await getRegisterEmailCode(this.data.email,this.data.inviteCode);
                     break;
                 case 'login':
                     response=await getLoginEmailCode(this.data.email);

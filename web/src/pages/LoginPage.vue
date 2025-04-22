@@ -138,7 +138,7 @@
                             <sensitive-text-field v-model="registerByInviteData.email"
                                 prepend-inner-icon="mdi-email" class="input"
                                 :density="inputType" variant="solo-filled" label="绑定邮箱"></sensitive-text-field>
-                            <sensitive-text-field v-model="registerByInviteData.code" class="input" :density="inputType"
+                            <sensitive-text-field v-model="registerByInviteData.inviteCode" class="input" :density="inputType"
                                 variant="solo-filled" label="输入邀请码"></sensitive-text-field>
                             <div class="text-small agreement-text-container">
                                 注册即代表您已阅读并同意
