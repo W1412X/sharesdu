@@ -80,15 +80,15 @@ export default {
             if (response.status == 200) {
                 this.alert(getNormalSuccessAlert("创建成功"));
                 this.inviteCodeList.unshift({
-                    code: response.code,
-                    creator: getCookie("userName"),
-                    capacity: response.capacity,
-                    used_count: 0,
-                    remaining_capacity: response.remaining_capacity,
-                    created_at: extractTime(new Date().toDateString()),
-                    expires_at: response.expires_at,
-                    is_active: true,
-                    is_usable: true,
+                    '邀请码': response.data.code,
+                    '是否可用': true,
+                    '激活状态': true,
+                    '创建者': getCookie("userName"),
+                    '总容量': response.data.capacity,
+                    '已使用': 0,
+                    '剩余': response.data.remaining_capacity,
+                    '创建时间': extractTime(new Date().toISOString()),
+                    '过期时间': extractTime(response.data.expires_at),
                 })
                 this.alert(getNormalSuccessAlert("创建成功"));
             } else {

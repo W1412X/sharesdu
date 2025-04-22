@@ -28,7 +28,7 @@
                         {{ course.name }}
                     </div>
                     <v-spacer></v-spacer>
-                    <manage-button :id="this.course.id" :type="'course'" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"></manage-button>
+                    <manage-button v-if="ifMaster" :id="this.course.id" :type="'course'" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"></manage-button>
                     <v-btn @click="setCourseEditorState(true)" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;" elevation="0" icon variant="text">
                         <v-icon icon="mdi-book-edit-outline" size="22" :color="'#8a8a8a'"></v-icon>
                         <v-tooltip activator="parent">如课程信息有误，您可以提交修改</v-tooltip>

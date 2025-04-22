@@ -505,8 +505,12 @@ export function setLogin(userName, user_id, email, refresh, profile, ifMaster =f
     setCookie('email', email, 7 * 24);
     setCookie('refreshToken', refresh, 7 * 24);
     setCookie('userProfileUrl', profile, 7 * 24);
-    setCookie('ifMaster', ifMaster, 7 * 24);
-    setCookie('ifSuperMaster', ifSuperMaster, 7 * 24);
+    if(ifMaster){
+        setCookie('ifMaster', ifMaster, 7 * 24);
+    }
+    if(ifSuperMaster){
+        setCookie('ifSuperMaster', ifSuperMaster, 7 * 24);
+    }
     if (passwd) {
         setCookie('passwd', passwd, 9999 * 24);
         setCookie('userName', userName, 9999 * 24);

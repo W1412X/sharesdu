@@ -1,7 +1,7 @@
 // src/main.js
 import { createApp } from 'vue';
 import App from './App.vue';
-import { getCookie } from './utils/cookie';
+import { clearTokenCookies, getCookie, setCookie } from './utils/cookie';
 import router from './router';
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
@@ -173,6 +173,15 @@ app.config.globalProperties.$themeColor=themeColor;
  * export global attributes  
  */
 export const globalProperties=app.config.globalProperties;
+
+//add version control  
+const globalVersion="-0.0.1";
+if(getCookie("version")!=globalVersion){
+  clearTokenCookies();
+  sessionStorage.clear();
+  localStorage.clear();
+}
+setCookie("version",globalVersion);
 
 app.provide(store);
 app.use(router)
