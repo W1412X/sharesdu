@@ -1,23 +1,24 @@
 <template>
-    <div v-if="data.state" class="overlay">
-        <v-card class="card">
-            <div class="card-container">
-                <v-progress-circular v-if="data.progress >= 0" v-model="data.progress" :rotate="360" :size="50"
-                    :width="5" :color="themeColor" class="text-tiny">
-                    {{ data.progress }}%
-                </v-progress-circular>
-                <v-progress-circular v-if="data.progress < 0" :rotate="360" :size="50" :width="5" :color="themeColor"
-                    class="text-medium-bold" indeterminate>
-                </v-progress-circular>
-            </div>
-            <div style="
+    <v-dialog v-model="ifShow" style="width: 100%;height:100%;justify-content: center;">
+        <div style="width: 100%;height:100%;justify-content: center;display: flex">
+            <v-card class="card">
+                <div class="card-container">
+                    <v-progress-circular v-if="data.progress >= 0" v-model="data.progress" :rotate="360" :size="50"
+                        :width="5" :color="themeColor" class="text-tiny">
+                        {{ data.progress }}%
+                    </v-progress-circular>
+                    <v-progress-circular v-if="data.progress < 0" :rotate="360" :size="50" :width="5"
+                        :color="themeColor" class="text-medium-bold" indeterminate>
+                    </v-progress-circular>
+                </div>
+                <div style="
             width: 100%;
             display: flex;
             justify-content: center;
             color: #8a8a8a;
             font-weight: bold;
           ">
-                <v-card-text style="
+                    <v-card-text style="
               max-width: 200px;
               margin-top: 15px;
               padding-top: 0px;
@@ -25,11 +26,12 @@
               padding-bottom: 0px;
               font-weight: 600;
             ">
-                    {{ data.text }}
-                </v-card-text>
-            </div>
-        </v-card>
-    </div>
+                        {{ data.text }}
+                    </v-card-text>
+                </div>
+            </v-card>
+        </div>
+    </v-dialog>
 </template>
 <script>
 import { globalProperties } from '@/main';
@@ -63,8 +65,12 @@ export default {
         const data = computed(() => {
             return this.initData;
         })
+        const ifShow=computed(()=>{
+            return this.initData.state;
+        })
         return {
-            data
+            data,
+            ifShow
         }
     },
     methods: {}
@@ -86,11 +92,13 @@ export default {
         align-items: center;
         z-index: 9999;
     }
-    .card-container{
+
+    .card-container {
         display: grid;
         justify-content: center;
         align-items: center;
     }
+
     .card {
         padding: 10px;
         width: fit-content;
@@ -113,11 +121,13 @@ export default {
         align-items: center;
         z-index: 9999;
     }
-    .card-container{
+
+    .card-container {
         display: grid;
         justify-content: center;
         align-items: center;
     }
+
     .card {
         padding: 10px;
         width: fit-content;
