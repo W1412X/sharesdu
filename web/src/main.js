@@ -174,7 +174,6 @@ app.config.globalProperties.$themeColor=themeColor;
  */
 export const globalProperties=app.config.globalProperties;
 
-
 app.provide(store);
 app.use(router)
   .use(vuetify)

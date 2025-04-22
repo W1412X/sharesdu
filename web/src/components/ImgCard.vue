@@ -41,6 +41,7 @@
   
   <script>
   import { globalProperties } from '@/main';
+import { globalImageCacher } from '@/utils/global_img_cache';
 import { fetchImgAndDeal } from '@/utils/image';
 import { computed, ref } from 'vue';
   
@@ -102,7 +103,16 @@ import { computed, ref } from 'vue';
         //eslint-disable-next-line
         async handler(newValue,oldValue){
             if(this.ifNeedDeal){
+              /**
+               * try get from the cache first  
+               */
+              if(globalImageCacher.getImage(newValue)){
+                console.log("get from cache");
+                this.imgUrl=globalImageCacher.getImage(newValue);
+                return;
+              }
               this.imgUrl=await fetchImgAndDeal(newValue);
+              globalImageCacher.addImage(newValue,this.imgUrl);
             }
         },
         immdiate:false,
@@ -119,10 +129,21 @@ import { computed, ref } from 'vue';
         }
     },
     async mounted() {
-      if(this.ifNeedDeal){
-        this.imgUrl=await fetchImgAndDeal(this.imgUrl);
+      if (this.ifNeedDeal) {
+        /**
+         * try get from the cache first  
+         */
+        if (globalImageCacher.getImage(this.imgUrl)) {
+          console.log("get from cache");
+          this.imgUrl = globalImageCacher.getImage(this.imgUrl);
+          return;
+        }
+        let tmp=await fetchImgAndDeal(this.imgUrl);
+        globalImageCacher.addImage(this.imgUrl, tmp);
+        this.imgUrl=tmp;
+        
       }
-      this.loadState=true;
+      this.loadState = true;
     }
   }
   </script>

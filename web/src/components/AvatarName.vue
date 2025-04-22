@@ -9,8 +9,9 @@
     </div>
 </template>
 <script>
-import { getUserProfileImageUpdateInfo } from '@/axios/image'
+import { globalProperties } from '@/main'
 import { getCookie } from '@/utils/cookie'
+import { globalProfileCacher } from '@/utils/global_img_cache'
 import { getProfileUrlInDB } from '@/utils/profile'
 
 export default {
@@ -73,14 +74,17 @@ export default {
             }
         },
         async getProfile(){
-            try {
-                let response = await getUserProfileImageUpdateInfo([this.initData.id]);
-                if (response.status == 200 && !response.time_list[0].error) {
-                    let time = response.time_list[0].created_at;
-                    this.profileUrl = await getProfileUrlInDB(this.initData.id, time);
-                }
-            } catch (e) {
-                // eslint-disable-next-line
+            /**
+             * check global cache first  
+             */
+            let tmp=globalProfileCacher.getImage(globalProperties.$apiUrl+'/image/user?user_id='+this.initData.id);
+            if(tmp){
+                this.profileUrl=tmp;
+                return;
+            }else{
+                let url=await getProfileUrlInDB(this.initData.id);
+                globalProfileCacher.addImage(globalProperties.$apiUrl+'/image/user?user_id='+this.initData.id,url);
+                this.profileUrl=url;
             }
         },
         async getProfileRecursion(){
