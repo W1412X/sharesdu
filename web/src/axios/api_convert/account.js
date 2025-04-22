@@ -9,7 +9,8 @@ export function csRegisterByEmail(data){
         email_code:data.emailCode,
         campus:data.campus,
         college:data.college,
-        major:data.major
+        major:data.major,
+        invitation_code:data.inviteCode,
     }
 }
 

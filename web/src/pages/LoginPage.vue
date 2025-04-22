@@ -44,7 +44,7 @@
                         <v-tabs-window-item v-if="registerMethod === 'email' && registerByEmailStep === 0" title="注册"
                             value="register">
                             <div class="text-small tip-text-container">
-                                <span>团体/组织注册(如社团等)请联系管理员以添加认证</span>
+                                <span>团体/组织/毕业生请联系管理员获取验证码</span>
                             </div>
                             <sensitive-text-field v-model="registerByEmailData.userName"
                                 prepend-inner-icon="mdi-account" class="input" :rules="[loginRules.userName]"
@@ -73,8 +73,8 @@
                             <div class="row-center-div">
                                 <v-select class="select-input" v-model="registerByEmailData.campus"
                                     variant="solo-filled" density="compact" :items="campusList" label="校区"></v-select>
-                                <v-select class="select-input" v-model="registerByEmailData.college"
-                                    variant="solo-filled" density="compact" :items="collegeList" label="学院"></v-select>
+                                <v-autocomplete class="select-input" v-model="registerByEmailData.college"
+                                    variant="solo-filled" density="compact" :items="collegeList" label="学院"></v-autocomplete>
                                 <sensitive-text-field class="select-input" v-model="registerByEmailData.major"
                                     :density="inputType" variant="solo-filled" label="专业"></sensitive-text-field>
                             </div>
@@ -100,6 +100,9 @@
                         <!-- register by invite STEP 1 -->
                         <v-tabs-window-item v-if="registerMethod === 'invite' && registerByInviteStep === 0" title="注册"
                             value="register">
+                            <div class="text-small tip-text-container">
+                                <span>团体/组织/毕业生请联系管理员获取验证码</span>
+                            </div>
                             <sensitive-text-field v-model="registerByInviteData.userName" class="input"
                                 :rules="[loginRules.userName]" prepend-inner-icon="mdi-account" :density="inputType"
                                 variant="solo-filled" label="用户名"></sensitive-text-field>
@@ -127,11 +130,14 @@
                             <div class="row-center-div">
                                 <v-select class="select-input" v-model="registerByInviteData.campus"
                                     variant="solo-filled" density="compact" :items="campusList" label="校区"></v-select>
-                                <v-select class="select-input" v-model="registerByInviteData.college"
-                                    variant="solo-filled" density="compact" :items="collegeList" label="学院"></v-select>
+                                <v-autocomplete class="select-input" v-model="registerByInviteData.college"
+                                    variant="solo-filled" density="compact" :items="collegeList" label="学院"></v-autocomplete>
                                 <sensitive-text-field class="select-input" v-model="registerByInviteData.major"
                                     :density="inputType" variant="solo-filled" label="专业"></sensitive-text-field>
                             </div>
+                            <sensitive-text-field v-model="registerByInviteData.email"
+                                prepend-inner-icon="mdi-email" class="input"
+                                :density="inputType" variant="solo-filled" label="绑定邮箱"></sensitive-text-field>
                             <sensitive-text-field v-model="registerByInviteData.code" class="input" :density="inputType"
                                 variant="solo-filled" label="输入邀请码"></sensitive-text-field>
                             <div class="text-small agreement-text-container">
@@ -193,7 +199,6 @@ export default {
         const setEmailExamineCardState = (state) => {
             ifShowEmailExamineCard.value = state;
         }
-        const nowTab = ref('login');
         const deviceType = globalProperties.$deviceType;
         const inputType = deviceType == 'desktop' ? 'compact' : 'comfortable';
         return {
@@ -201,7 +206,6 @@ export default {
             ifShowEmailExamineCard,
             ifShowDialog,
             setEmailExamineCardState,
-            nowTab,
             deviceType,
             inputType,
             campusList,
@@ -234,13 +238,15 @@ export default {
             emailCode: null,
         }
         const registerByInviteData = {
-            userName: null,
-            emailCode: null,
+            email: null,
+            passwd: "",
+            passwdConfirm: "",
+            userName: "",
             campus: null,
             major: null,
             college: null,
-            passwd: null,
-            passwdConfirm: null,
+            emailCode: null,
+            inviteCode: null,
         }
         /**
          * card message card 
@@ -252,14 +258,27 @@ export default {
                     email: this.loginByEmailData.email,
                 }
             } else {
-                return {
-                    type: 'register',
-                    email: this.registerByEmailData.email,
-                    campus: this.registerByEmailData.campus,
-                    college: this.registerByEmailData.college,
-                    major: this.registerByEmailData.major,
-                    userName: this.registerByEmailData.userName,
-                    passwd: this.registerByEmailData.passwd,
+                if(this.registerMethod=='email'){
+                    return {
+                        type: 'register',
+                        email: this.registerByEmailData.email,
+                        campus: this.registerByEmailData.campus,
+                        college: this.registerByEmailData.college,
+                        major: this.registerByEmailData.major,
+                        userName: this.registerByEmailData.userName,
+                        passwd: this.registerByEmailData.passwd,
+                    }
+                }else{
+                    return {
+                        type: 'register',
+                        email: this.registerByInviteData.email,
+                        campus: this.registerByInviteData.campus,
+                        college: this.registerByInviteData.college,
+                        major: this.registerByInviteData.major,
+                        userName: this.registerByInviteData.userName,
+                        passwd: this.registerByInviteData.passwd,
+                        inviteCode:this.registerByInviteData.inviteCode,
+                    }
                 }
             }
         })
@@ -283,8 +302,24 @@ export default {
             ifSavePasswd:false,
             loading:{
                 login:false,
-            }
+            },
+            nowTab:'login',
         }
+    },
+    beforeRouteLeave (to, from, next) {
+        let msg={};
+        msg.loginByUsernameData=this.loginByUsernameData;
+        msg.loginByEmailData=this.loginByEmailData;
+        msg.registerByEmailData=this.registerByEmailData;
+        msg.registerByInviteData=this.registerByInviteData;
+        msg.loginMethod=this.loginMethod;
+        msg.registerMethod=this.registerMethod;
+        msg.registerByEmailStep=this.registerByEmailStep;
+        msg.registerByInviteStep=this.registerByInviteStep;
+        msg.ifShowEmailExamineCard=this.ifShowEmailExamineCard;
+        msg.nowTab=this.nowTab;
+        sessionStorage.setItem('loginMsg',JSON.stringify(msg));
+        next();
     },
     methods: {
         async loginByUsername() {
@@ -336,6 +371,7 @@ export default {
             /**
              * temporarily do nothing
              */
+            this.setEmailExamineCardState(true);
         },
         step() {
             if (this.registerMethod == 'email') {
@@ -363,16 +399,7 @@ export default {
             this.loginMethod = this.loginMethod === 'userName' ? 'email' : 'userName'
         },
         shiftRegisterMethod() {
-            /**
-            * temprorarily disable register by invite
-            */
-            this.alert({
-                color: 'warning',
-                title: null,
-                state: true,
-                content: '暂不支持使用邀请码注册'
-            })
-            //this.registerMethod = this.registerMethod === 'email' ? 'invite' : 'email';
+            this.registerMethod = this.registerMethod === 'email' ? 'invite' : 'email';
         },
         valEmail(email) {
             return validateEmail(email);
@@ -397,6 +424,21 @@ export default {
         }
     },
     mounted() {
+        //get last edit msg  
+        let msg=sessionStorage.getItem("loginMsg");
+        if(msg){
+            msg=JSON.parse(msg);
+            this.loginByUsernameData=msg.loginByUsernameData;
+            this.loginByEmailData=msg.loginByEmailData;
+            this.registerByEmailData=msg.registerByEmailData;
+            this.registerByInviteData=msg.registerByInviteData;
+            this.loginMethod=msg.loginMethod;
+            this.registerMethod=msg.registerMethod;
+            this.registerByEmailStep=msg.registerByEmailStep;
+            this.registerByInviteStep=msg.registerByInviteStep;
+            this.nowTab=msg.nowTab;
+            this.setEmailExamineCardState(msg.ifShowEmailExamineCard);
+        }
         initTriangleEffect(document);
     },
     created() {
