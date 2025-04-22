@@ -94,7 +94,7 @@ export default {
         async handleFileChange(event) {
             const files = Array.from(event.target.files);
             for(let i=0;i<files.length;i++){
-                files[i]=await compressImage(files[i],1024*4);
+                files[i]=await compressImage(files[i],1024*4);             
                 let tmp=URL.createObjectURL(files[i]);
                 this.imgSrcList.push(tmp);
                 this.imgDict[tmp]=files[i];
@@ -170,7 +170,7 @@ export default {
                 let tmp={
                     id: response.post_id,
                     title: this.data.title,
-                    content: addLinkToPost(this.data.content,this.typeMsg.type,this.typeMsg.id),
+                    content: this.data.content,
                     viewNum: 0,
                     replyNum: 0,
                     likeNum:0,

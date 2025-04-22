@@ -1,5 +1,11 @@
 import { globalProperties } from "@/main";
 
+export function createFileFromBlob(blob, mimeType) {
+  const type = mimeType || blob.type;
+  let fileName=new Date().toISOString()+'.'+type.split("/")[1];
+  return new File([blob], fileName, { type });
+}
+
 export function compressImage(blob, maxSizeKB) {
   return new Promise((resolve, reject) => {
     if (maxSizeKB <= 0) {
@@ -33,7 +39,7 @@ export function compressImage(blob, maxSizeKB) {
         canvas.toBlob((compressedBlob) => {
           currentSize = compressedBlob.size / 1024;
           if (currentSize <= maxSizeKB || Math.abs(lastSize - currentSize) < maxSizeKB / 10) {
-            resolve(compressedBlob);
+            resolve(createFileFromBlob(compressedBlob));
           } else {
             lastSize = currentSize;
             quality *= 0.5;
@@ -75,7 +81,7 @@ export async function resizeImage(blob, width, height) {
       ctx.drawImage(img, 0, 0, width, height);
 
       canvas.toBlob(resizedBlob => {
-        resolve(resizedBlob);
+        resolve(createFileFromBlob(resizedBlob));
       }, blob.type);
     };
     img.onerror = (error) => {

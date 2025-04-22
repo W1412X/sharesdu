@@ -10,7 +10,7 @@
         设置头像
       </div>
       <div class="center-little-text">
-        默认使用随机的头像，上传一个图片作为你的头像，上传的头像大小会被自动缩放至128*128大小
+        默认使用随机的头像，上传一个图片作为你的头像，上传的头像大小会被自动缩放至64*64大小
       </div>
       <div style="
               justify-content: center;
@@ -28,13 +28,19 @@
               margin-top: 20px;
               flex-direction: row;
             ">
-        <v-btn :loading="loading" :disabled="loading" variant="outlined" style="height: 35px" color="#9c0c13" @click="this.submit()">确认</v-btn>
+        <v-btn :color="themeColor" variant="outlined" style="margin: 5px;height: 35px;" @click="selectImage">
+          {{ ifSelected? '重新选择' : '选择图片' }}
+        </v-btn>
+        <v-btn v-if="ifSelected" :loading="loading" :disabled="loading||compressing" variant="outlined" style="height: 35px;margin: 5px;" :color="themeColor" @click="this.submit()">
+          {{ compressing? '正在压缩' : '确认上传' }}
+        </v-btn>
       </div>
     </div>
   </v-card>
 </template>
 <script>
 import { uploadProfileImage } from '@/axios/image';
+import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
 import { compressImage, resizeImage } from '@/utils/image';
 import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
@@ -42,9 +48,11 @@ export default {
   setup() {
     const userName = getCookie('userName');
     const userProfileUrl = getCookie('userProfileUrl');
+    const themeColor=globalProperties.$themeColor;
     return {
       userName,
       userProfileUrl,
+      themeColor,
     }
   },
   data() {
@@ -52,6 +60,8 @@ export default {
       blob: null,
       nowProfileUrl: this.userProfileUrl,
       loading: false,
+      ifSelected:false,
+      compressing:false,
     }
   },
   methods: {
@@ -60,9 +70,12 @@ export default {
     },
     async handleSelectedImage(event) {//完成选取图片，压缩图片，上传图片的逻辑 
       let file = event.target.files[0];
+      this.compressing=true;
       this.blob = await compressImage(file,5);
       this.blob = await resizeImage(this.blob, 64, 64);
       this.nowProfileUrl = URL.createObjectURL(this.blob);
+      this.compressing=false;
+      this.ifSelected=true;
       this.alert(getNormalInfoAlert("上传的头像大小会被自动缩放至64*64大小"))
     },
     async submit() {//关闭此窗口的逻辑，点击此按钮开始上传
