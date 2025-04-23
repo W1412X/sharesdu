@@ -122,7 +122,7 @@ export default {
     setup() {
 
         var drawer = ref(true);
-        var choose = ref('info');
+        var choose = ref('item');
         const rail = ref(true);
         const deviceType = globalProperties.$deviceType;
         const navVisible = ref(false);

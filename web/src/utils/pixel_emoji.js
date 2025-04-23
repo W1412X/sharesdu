@@ -210,10 +210,11 @@ export async function getImageDimensions(blob) {
     const img = new Image();
     const url = URL.createObjectURL(blob);
     img.src = url;
-
     return new Promise((resolve, reject) => {
         img.onload = () => {
-            resolve([img.width, img.height]);
+            let [width,height]=[img.width,img.height]
+            URL.revokeObjectURL(url);
+            resolve([width,height]);
         };
         img.onerror = reject;
     });
