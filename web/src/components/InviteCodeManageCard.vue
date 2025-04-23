@@ -158,7 +158,7 @@ export default {
 @media screen and (min-width: 1000px) {
     .card {
         margin: 20px;
-        width: 750px;
+        width: 1000px;
         max-height: 800px;
         padding: 20px;
     }
