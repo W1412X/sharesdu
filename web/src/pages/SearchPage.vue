@@ -805,6 +805,7 @@ export default {
                     }
                 })
             }
+            //first load here,or will appear bug
             this.load();
         }
         this.ifMounted=true;
