@@ -125,6 +125,7 @@ export default {
                          * delete the user message
                          */
                         clearTokenCookies();
+                        sessionStorage.removeItem("loginMsg");
                         this.$router.push({name:"WelcomePage"});
                         break;
                     case 'reset_passwd':

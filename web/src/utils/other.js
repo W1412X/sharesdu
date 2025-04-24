@@ -123,6 +123,7 @@ export async function dealAxiosError(error) {
                                     }
                                 } else {
                                     clearTokenCookies();
+                                    sessionStorage.clear();
                                     window.alert("自动登陆失败，请手动登陆");
                                     setTimeout(() => {
                                         window.open("/#/login", "_self")
@@ -135,6 +136,7 @@ export async function dealAxiosError(error) {
                                 }
                             } else {
                                 clearTokenCookies();
+                                sessionStorage.clear();
                                 window.alert("令牌已过期，请重新登录");
                                 setTimeout(() => {
                                     window.open("/#/login", "_self")
@@ -148,6 +150,7 @@ export async function dealAxiosError(error) {
                         }
                     } catch (error) {
                         clearTokenCookies();
+                        sessionStorage.clear();
                         window.alert("令牌已过期，请重新登录");
                         setTimeout(() => {
                             window.open("/#/login", "_self")
@@ -174,6 +177,7 @@ export async function dealAxiosError(error) {
                             }
                         } else {
                             clearTokenCookies();
+                            sessionStorage.clear();
                             window.alert("自动登陆失败，请手动登陆");
                             setTimeout(() => {
                                 window.open("/#/login", "_self")
@@ -191,6 +195,7 @@ export async function dealAxiosError(error) {
  * and redirect to login page
  */
                         clearTokenCookies();
+                        sessionStorage.clear();
                         window.alert("令牌已过期，请重新登录");
                         setTimeout(() => {
                             window.open("/#/login", "_self")
@@ -218,6 +223,7 @@ export async function dealAxiosError(error) {
             }
         } else {
             clearTokenCookies();
+            sessionStorage.clear();
             window.alert("令牌已过期，请重新登录");
             setTimeout(() => {
                 window.open("/#/login", "_self")
@@ -230,6 +236,7 @@ export async function dealAxiosError(error) {
         }
     } catch (error) {
         clearTokenCookies();
+        sessionStorage.clear();
         window.alert("令牌已过期，请重新登录");
         setTimeout(() => {
             window.open("/#/login", "_self")
