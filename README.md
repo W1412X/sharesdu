@@ -1,9 +1,3 @@
-### web 
-### android  
-- webview 
-### harmony  
-- webview  
-
 ### 功能示意  
 
 ```mermaid
