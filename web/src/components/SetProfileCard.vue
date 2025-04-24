@@ -121,7 +121,6 @@ export default {
       },1500);
     },
     async update(){
-      console.log("update");
       let [width,height]=await getImageDimensions(this.blob);
       if(Math.min(width,height)<32){
         this.alert(getNormalWarnAlert("图片尺寸过小，请选择大于32*32的图片"));
@@ -129,7 +128,6 @@ export default {
       }
       let containerWidth=window.getComputedStyle(document.getElementById("profile-cropper")).width.slice(0,-2);
       let containerHeight=window.getComputedStyle(document.getElementById("profile-cropper")).height.slice(0,-2);
-      console.log(containerWidth,containerHeight);
       let containerAspectRatio=containerWidth/containerHeight;
       let imgRatio=width/height;
       if(imgRatio>containerAspectRatio){

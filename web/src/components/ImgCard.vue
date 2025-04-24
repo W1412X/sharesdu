@@ -107,7 +107,6 @@ import { computed, ref } from 'vue';
                * try get from the cache first  
                */
               if(globalImageCacher.getImage(newValue)){
-                console.log("get from cache");
                 this.imgUrl=globalImageCacher.getImage(newValue);
                 return;
               }
@@ -134,7 +133,6 @@ import { computed, ref } from 'vue';
          * try get from the cache first  
          */
         if (globalImageCacher.getImage(this.imgUrl)) {
-          console.log("get from cache");
           this.imgUrl = globalImageCacher.getImage(this.imgUrl);
           return;
         }

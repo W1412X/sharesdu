@@ -210,12 +210,10 @@ export default {
                     await waitSecond(0.1);
                 }
                 this.$emit("search_type_changed",newVal);
-                console.log(`search type ${this.searchType} sort ${this.sortType}`);
                 //set sort type  
                 if (this.searchType!="全部"&&this.searchType!="回复") {
                     this.sortType = this.sortOptionsToShow[this.searchType][0].value;
                 }
-                console.log(`searchType changed from ${oldVal} to ${newVal}`)
                 switch (newVal) {
                     case "全部":
                         this.sortType = null;
@@ -770,7 +768,6 @@ export default {
         document.getElementById('web-title').innerText='搜索結果';
         let sessionKey='searchScanMsg|'+this.query.join(',');
         let scanMsg=sessionStorage.getItem(sessionKey);
-        console.log(scanMsg);
         if(scanMsg!=null){
             scanMsg=JSON.parse(scanMsg);
             this.editingArticleFiltTag=scanMsg.editingArticleFiltTag;

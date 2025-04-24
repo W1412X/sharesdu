@@ -463,7 +463,6 @@ export default {
         },
 
         setPostTop(msg){//{id state}  
-            console.log(msg)
             /**
              * no need to copy
              */
@@ -476,10 +475,8 @@ export default {
                     break;
                 }
             }
-            console.log(toOpPost)
             if(toOpPost){
                 toOpPost.ifTop=msg.top;
-                console.log(toOpPost);
                 this.postItems.splice(index,1);
                 if(msg.top){
                     this.postItems.unshift(toOpPost);
@@ -497,7 +494,6 @@ export default {
                         this.postItems.push(toOpPost);
                     }
                 }
-                console.log(toOpPost);
             }
 
         },

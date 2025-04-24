@@ -123,17 +123,14 @@ export default {
             /**
              * submit img first  
              */
-            console.log(1)
             if(!this.data.title||this.data.title.length<=2){
                 this.alert(getNormalErrorAlert('标题过短'));
                 return;
             }
-            console.log(2)
             if(!this.data.content||this.data.content.length<=2){
                 this.alert(getNormalErrorAlert('内容过短'));
                 return;
             }
-            console.log(3)
             this.loading=true;
             let imgNum=this.imgSrcList.length;
             for(let i=0;i<imgNum;i++){
@@ -141,9 +138,7 @@ export default {
                 let img=this.imgSrcList[i];
                 let file=this.imgDict[img];
                 file=await compressImage(file,4*1024);
-                console.log(4)
                 let response=await uploadArticleImage(file);
-                console.log(5)
                 if(response.status!=200&&response.status!=201){
                     this.alert(getNormalErrorAlert(response.message));
                     this.loading=false;
@@ -151,7 +146,6 @@ export default {
                 }
                 this.data.content+=`[${this.apiUrl+response.data.image_url}]`;
             }
-            console.log(6)
             /** 
              * submit post data
              */

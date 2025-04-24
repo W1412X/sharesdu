@@ -415,7 +415,6 @@ export default {
                 document.scrollingElement.scrollTop = lastScanMsg.scrollPosition;
             }, 10)
             document.getElementById('web-title').innerText = 'ShareSDU | 首页';
-            console.log("get session finish");
         }else{
             //eslint-disable-next-line
             await this.loadMore(this.itemType);

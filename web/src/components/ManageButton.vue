@@ -38,7 +38,6 @@ export default {
     },
     methods: {
         click() {
-            console.log(this.id);
             this.$router.push({
                 name:'ManagePage',
                 query:{
