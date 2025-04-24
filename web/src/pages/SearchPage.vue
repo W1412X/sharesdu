@@ -206,6 +206,7 @@ export default {
                     await waitSecond(0.1);
                 }
                 this.$emit("search_type_changed",newVal);
+                console.log(`search type ${this.searchType} sort ${this.sortType}`);
                 //set sort type  
                 if (this.searchType!="全部"&&this.searchType!="回复") {
                     this.sortType = this.sortOptionsToShow[this.searchType][0].value;
@@ -445,8 +446,16 @@ export default {
                         icon: 'mdi-star-outline',
                     },
                 ],
-                '回复': [],
-                '全部': []
+                '回复': [
+                    {
+                        value: null,
+                    }
+                ],
+                '全部': [
+                    {
+                        value: null,
+                    }
+                ]
             },
             sortTypeIconDict:{
                 'publish_time': 'mdi-sort-clock-ascending-outline',
@@ -757,7 +766,8 @@ export default {
         document.getElementById('web-title').innerText='搜索結果';
         let sessionKey='searchScanMsg|'+this.query.join(',');
         let scanMsg=sessionStorage.getItem(sessionKey);
-        if(scanMsg){
+        console.log(scanMsg);
+        if(scanMsg!=null){
             scanMsg=JSON.parse(scanMsg);
             this.editingArticleFiltTag=scanMsg.editingArticleFiltTag;
             this.courseCollege=scanMsg.courseCollege;
@@ -773,6 +783,7 @@ export default {
             this.searchResultNum=scanMsg.searchResultNum;
             this.loading=scanMsg.loading;
             this.articleType=scanMsg.articleType;
+            this.setSortType(this.sortType);
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },100);
@@ -806,7 +817,10 @@ export default {
                 })
             }
             //first load here,or will appear bug
-            this.load();
+            this.sortType=this.sortOptionsToShow[this.searchType][0].value;
+            if(this.searchList[this.searchType][this.sortType].length==0){
+                await this.load();
+            }
         }
         this.ifMounted=true;
     }
