@@ -6,7 +6,6 @@
 </template>
 <script>
 import ArticleDisplay from '@/components/ArticleDisplay.vue'
-import {mdContent} from '@/utils/data'
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { useRoute } from 'vue-router';
 export default {
@@ -17,7 +16,7 @@ export default {
     data() {
         var data={
             type:'md',
-            content:mdContent,
+            content:"## Loading...",
         }
         return {
             data,
