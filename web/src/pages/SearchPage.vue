@@ -101,7 +101,7 @@ import HybridSearchItem from '@/components/HybridSearchItem.vue';
 import SearchItem from '@/components/SearchItem.vue';
 import SensitiveTextField from '@/components/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
-import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets } from '@/utils/other';
+import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets, waitSecond } from '@/utils/other';
 import { computed } from 'vue';
 export default {
     props: {
@@ -199,8 +199,11 @@ export default {
              */
             //eslint-disable-next-line
             async handler(newVal, oldVal) {
-                if(!this.ifMounted){
-                    return;
+                /**
+                 * which fix the bug when the page first load,can not get the data 
+                 */
+                while(!this.ifMounted){
+                    await waitSecond(0.5);
                 }
                 this.$emit("search_type_changed",newVal);
                 //set sort type  

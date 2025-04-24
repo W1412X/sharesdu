@@ -591,3 +591,9 @@ export async function responseToArticle(response) {
 export function uniqueArray(arr) {
     return [...new Set(arr)];
 }
+
+export function waitSecond(second) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, second * 1000);
+    });
+}
