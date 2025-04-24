@@ -159,8 +159,8 @@ export default {
         courseCollege:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
-                if(!this.ifMounted){
-                    return;
+                while(!this.ifMounted){
+                    await waitSecond(0.1);
                 }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
@@ -171,8 +171,8 @@ export default {
         courseMethod:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
-                if(!this.ifMounted){
-                    return;
+                while(!this.ifMounted){
+                    await waitSecond(0.1);
                 }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
@@ -183,8 +183,8 @@ export default {
         courseType:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
-                if(!this.ifMounted){
-                    return;
+                while(!this.ifMounted){
+                    await waitSecond(0.1);
                 }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
@@ -203,13 +203,14 @@ export default {
                  * which fix the bug when the page first load,can not get the data 
                  */
                 while(!this.ifMounted){
-                    await waitSecond(0.5);
+                    await waitSecond(0.1);
                 }
                 this.$emit("search_type_changed",newVal);
                 //set sort type  
                 if (this.searchType!="全部"&&this.searchType!="回复") {
                     this.sortType = this.sortOptionsToShow[this.searchType][0].value;
                 }
+                console.log(`searchType changed from ${oldVal} to ${newVal}`)
                 switch (newVal) {
                     case "全部":
                         this.sortType = null;
@@ -251,7 +252,7 @@ export default {
                     default:
                 }
             },
-            immediate: true,
+            immediate: false,
         },
     },
     data() {
@@ -751,7 +752,7 @@ export default {
             }
         },
     },
-    mounted() {
+    async mounted() {
         //get the sessionStorage  
         document.getElementById('web-title').innerText='搜索結果';
         let sessionKey='searchScanMsg|'+this.query.join(',');
@@ -775,35 +776,36 @@ export default {
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },100);
-            return;
-        }
-        if (!this.type || this.query.length > 0) {
-            switch (this.type) {
-                case 'article':
-                    this.searchType = "文章";
-                    break;
-                case 'course':
-                    this.searchType = "课程";
-                    break;
-                case 'post':
-                    this.searchType = "帖子";
-                    break;
-                case 'reply':
-                    this.searchType = "回复";
-                    break;
-                case 'all':
-                    this.searchType = "全部";
-                    break;
-                default:
-                    this.searchType = "全部";
-            }
-        } else {
-            this.$router.push({
-                name: "ErrorPage",
-                params: {
-                    reason: "缺少必要参数 >_< "
+        }else{
+            if (!this.type || this.query.length > 0) {
+                switch (this.type) {
+                    case 'article':
+                        this.searchType = "文章";
+                        break;
+                    case 'course':
+                        this.searchType = "课程";
+                        break;
+                    case 'post':
+                        this.searchType = "帖子";
+                        break;
+                    case 'reply':
+                        this.searchType = "回复";
+                        break;
+                    case 'all':
+                        this.searchType = "全部";
+                        break;
+                    default:
+                        this.searchType = "全部";
                 }
-            })
+            } else {
+                this.$router.push({
+                    name: "ErrorPage",
+                    params: {
+                        reason: "缺少必要参数 >_< "
+                    }
+                })
+            }
+            this.load();
         }
         this.ifMounted=true;
     }
