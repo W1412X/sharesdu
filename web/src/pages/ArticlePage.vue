@@ -1,21 +1,23 @@
 <template>
     <v-dialog v-model="ifShowDialog" class="full-screen dialog">
         <div class="dialog-card-container">
-            <post-editor v-if="ifShowPostEditor" 
-            @close="closeDialog" @add_post="addPost" @set_loading="setLoading" @alert="alert" 
-            :type-msg="{type:'article',id:this.article.id}"></post-editor>
+            <post-editor v-if="ifShowPostEditor" @close="closeDialog" @add_post="addPost" @set_loading="setLoading"
+                @alert="alert" :type-msg="{ type: 'article', id: this.article.id }"></post-editor>
         </div>
     </v-dialog>
     <div class="full-center">
         <div>
-            <v-chip v-if="article.ifTop&&!ifMaster" width="100%" variant="tonal" :color="themeColor" style="border-radius: 0px;max-height: 28px;width: 100%;justify-content: center;">
-                    <v-icon size="20">mdi-format-vertical-align-top</v-icon>
-                    <span style="margin-left: 10px;" class="text-small-bold">置顶文章</span>
-                    <v-tooltip activator="parent">此文章为网站置顶文章</v-tooltip>
-            </v-chip>
-            <v-btn @click="setArticleTop" :loading="loading.top" :disabled="loading.top" v-if="ifMaster" width="100%" variant="tonal" :color="article.ifTop?'grey':themeColor" style="max-height: 28px;width: 100%;justify-content: center;">
+            <v-chip v-if="article.ifTop && !ifMaster" width="100%" variant="tonal" :color="themeColor"
+                style="border-radius: 0px;max-height: 28px;width: 100%;justify-content: center;">
                 <v-icon size="20">mdi-format-vertical-align-top</v-icon>
-                <span style="margin-left: 10px;" class="text-small-bold">{{ article.ifTop?'取消置顶':'置顶此文章' }}</span>
+                <span style="margin-left: 10px;" class="text-small-bold">置顶文章</span>
+                <v-tooltip activator="parent">此文章为网站置顶文章</v-tooltip>
+            </v-chip>
+            <v-btn @click="setArticleTop" :loading="loading.top" :disabled="loading.top" v-if="ifMaster" width="100%"
+                variant="tonal" :color="article.ifTop ? 'grey' : themeColor"
+                style="max-height: 28px;width: 100%;justify-content: center;">
+                <v-icon size="20">mdi-format-vertical-align-top</v-icon>
+                <span style="margin-left: 10px;" class="text-small-bold">{{ article.ifTop ? '取消置顶' : '置顶此文章' }}</span>
                 <v-tooltip activator="parent">作为管理员，您可以设置是否置顶此文章</v-tooltip>
             </v-btn>
             <div class="top-bar">
@@ -33,7 +35,7 @@
                 </div>
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium grey-font">
-                        <avatar-name v-if="article.authorId" :init-data="{id:article.authorId,name:article.authorName}">
+                        <avatar-name v-if="article.authorId" :init-data="{ id: article.authorId, name: article.authorName }">
                         </avatar-name>
                     </div>
                     <v-spacer></v-spacer>
@@ -64,7 +66,7 @@
                     <div class="row-right-20px" style="margin: 2px;">
                         <div class="column-center text-small grey-font">
                             {{ article.publishTime }}
-                        </div> 
+                        </div>
                         <v-icon class="icon-left-5px" color="#8a8a8a" icon="mdi-clock-outline" size="17"></v-icon>
                     </div>
                 </div>
@@ -86,20 +88,21 @@
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
 
-                    <div v-if="ifMaster"  class="column-center padding-right-5px">
+                    <div v-if="ifMaster" class="column-center padding-right-5px">
                         <manage-button :id="this.article.id" :type="'article'" size="23"></manage-button>
                     </div>
-                    <div v-if="userId!=article.authorId" class="column-center padding-right-5px">
+                    <div v-if="userId != article.authorId" class="column-center padding-right-5px">
                         <alert-button :id="this.article.id" :type="'article'"></alert-button>
                     </div>
                     <div v-else class="row-div">
-                        <div  class="column-center padding-right-5px">
+                        <div class="column-center padding-right-5px">
                             <v-btn elevation="0" @click="edit" icon class="bottom-btn">
                                 <v-icon icon="mdi-pencil-outline" size="23"></v-icon>
                             </v-btn>
                         </div>
-                        <div  class="column-center padding-right-5px">
-                            <delete-button @delete="deleteSelf" :id="this.article.id" :type="'article'" :size="24" @alert="alert" @set_loading="setLoading"></delete-button>
+                        <div class="column-center padding-right-5px">
+                            <delete-button @delete="deleteSelf" :id="this.article.id" :type="'article'" :size="24"
+                                @alert="alert" @set_loading="setLoading"></delete-button>
                         </div>
                     </div>
                     <div class="column-center padding-right-10px">
@@ -108,10 +111,12 @@
                         </v-btn>
                     </div>
                     <div class="column-center padding-right-10px">
-                        <star-button v-if="article.id!==null" @alert="alert" @set_loading="setLoading" :type="'article'" :id="article.id" :state="article.ifStar"></star-button>
+                        <star-button v-if="article.id !== null" @alert="alert" @set_loading="setLoading" :type="'article'"
+                            :id="article.id" :state="article.ifStar"></star-button>
                     </div>
                     <div class="column-center padding-right-5px">
-                        <like-button v-if="article.id!==null" @alert="alert" @set_loading="setLoading" :id="this.article.id" :type="'article'" :state="article.ifLike"></like-button>
+                        <like-button v-if="article.id !== null" @alert="alert" @set_loading="setLoading"
+                            :id="this.article.id" :type="'article'" :state="article.ifLike"></like-button>
                     </div>
                 </div>
             </div>
@@ -123,9 +128,11 @@
                 <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
                     发表帖子
                 </v-btn>
-                <post-item v-for="(item) in postItems" :init-data="item" :key="item.id" :if-parent-author="userId==article.authorId" @alert="alert" @set_post_top="setPostTop">
+                <post-item v-for="(item) in postItems" :init-data="item" :key="item.id"
+                    :if-parent-author="userId == article.authorId" @alert="alert" @set_post_top="setPostTop">
                 </post-item>
-                <v-btn @click="loadMorePost" :loading="this.loading.post" :disabled="loading.post" variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMorePost" :loading="this.loading.post" :disabled="loading.post" variant="tonal"
+                    class="load-btn">加载更多</v-btn>
             </div>
         </div>
     </v-overlay>
@@ -171,25 +178,25 @@ export default {
             text: '加载中...',
             progress: -1
         }
-        const ifMaster=getCookie('ifMaster');
+        const ifMaster = getCookie('ifMaster');
         /**
          * get user msg
          */
         var userName = getCookie('userName');
-        const userId=getCookie('userId');
+        const userId = getCookie('userId');
         /**
          * posts list visibility control here
          */
-        const ifShowComment= ref(false);
-        const ifShowPostEditor=ref(false);
-        const ifShowDialog=computed(()=>{
+        const ifShowComment = ref(false);
+        const ifShowPostEditor = ref(false);
+        const ifShowDialog = computed(() => {
             return ifShowPostEditor.value;
         })
-        const setPostEditorState=(state)=>{
-            ifShowPostEditor.value=state;
+        const setPostEditorState = (state) => {
+            ifShowPostEditor.value = state;
         }
-        const setCommentState=(state)=>{
-            ifShowComment.value=state;
+        const setCommentState = (state) => {
+            ifShowComment.value = state;
         }
         return {
             userId,
@@ -206,123 +213,127 @@ export default {
     },
     data() {
         return {
-            articleResponse:null,
+            articleResponse: null,
             article: {
                 id: "",
                 title: "",
-                content:"",
+                content: "",
                 summary: "",
-                coverLink:"",
-                originLink:"",
-                tags:"",
-                type:"",
-                authorName:"",
-                authorId:"",
-                likeCount:"",
-                starCount:"",
-                viewCount:"",
-                replyCount:"",
-                hotScore:"",
-                sourceUrl:"",
-                publishTime:"",
-                ifLike:false,
-                ifStar:false,
+                coverLink: "",
+                originLink: "",
+                tags: "",
+                type: "",
+                authorName: "",
+                authorId: "",
+                likeCount: "",
+                starCount: "",
+                viewCount: "",
+                replyCount: "",
+                hotScore: "",
+                sourceUrl: "",
+                publishTime: "",
+                ifLike: false,
+                ifStar: false,
             },
-            editorType:"html",
-            postItems:[],
-            postPageNum:1,
-            displayMsg:computed(()=>{
+            editorType: "html",
+            postItems: [],
+            postPageNum: 1,
+            displayMsg: computed(() => {
                 return {
-                    type:this.editorType,
-                    content:this.article.content,
+                    type: this.editorType,
+                    content: this.article.content,
                 }
             }),
-            loadState:false,
-            loading:{
-                post:false,
-                top:false,
+            loadState: false,
+            loading: {
+                post: false,
+                top: false,
             }
         }
     },
-    beforeRouteLeave (to, from, next) {
-            //use session storage to save memory now  
-            let scanMsg={};
-            scanMsg.articleResponse=this.articleResponse;
-            scanMsg.articleResponse.article_detail.if_top=this.article.ifTop;
-            scanMsg.postItems=this.postItems;
-            scanMsg.postPageNum=this.postPageNum;
-            scanMsg.commentState=this.ifShowComment;
-            let key='articleScanMsg|'+this.article.id;
-            if(scanMsg.commentState){
-                let postScrollTop=document.getElementById("post-container").scrollTop;
-                scanMsg.postScrollTop=postScrollTop;
-            }
-            sessionStorage.setItem(key,JSON.stringify(scanMsg));
+    beforeRouteLeave(to, from, next) {
+        if (!getCookie("userName")) {
             next();
+            return;
+        }
+        //use session storage to save memory now  
+        let scanMsg = {};
+        scanMsg.articleResponse = this.articleResponse;
+        scanMsg.articleResponse.article_detail.if_top = this.article.ifTop;
+        scanMsg.postItems = this.postItems;
+        scanMsg.postPageNum = this.postPageNum;
+        scanMsg.commentState = this.ifShowComment;
+        let key = 'articleScanMsg|' + this.article.id;
+        if (scanMsg.commentState) {
+            let postScrollTop = document.getElementById("post-container").scrollTop;
+            scanMsg.postScrollTop = postScrollTop;
+        }
+        sessionStorage.setItem(key, JSON.stringify(scanMsg));
+        next();
     },
     methods: {
-        addPost(item){
+        addPost(item) {
             this.postItems.unshift(item);
         },
-        comment(){
+        comment() {
             this.setCommentState(true);
-            if(this.postPageNum==1){
+            if (this.postPageNum == 1) {
                 this.loadMorePost();
             }
         },
-        deleteSelf(){
+        deleteSelf() {
             this.$router.push({
-                name:"IndexPage",
+                name: "IndexPage",
             })
         },
-        edit(){
+        edit() {
             this.setLoading(getLoadMsg("正在加载编辑器..."))
             this.$router.push({
-                name:"EditorPage",
-                params:{
-                    id:this.article.id,
+                name: "EditorPage",
+                params: {
+                    id: this.article.id,
                 }
             })
         },
-        async loadMorePost(){
-            this.loading.post=true;
-            let response=await getPostListByArticleId(this.article.id,this.postPageNum);
-            if(response.status==200){
-                for(let i=0;i<response.post_list.length;i++){
+        async loadMorePost() {
+            this.loading.post = true;
+            let response = await getPostListByArticleId(this.article.id, this.postPageNum);
+            if (response.status == 200) {
+                for (let i = 0; i < response.post_list.length; i++) {
                     this.postItems.push({
-                        id:response.post_list[i].post_id,
-                        title:response.post_list[i].post_title,
-                        content:response.post_list[i].post_content,
-                        authorId:response.post_list[i].poster_id,
-                        authorName:response.post_list[i].poster_name,
-                        viewNum:response.post_list[i].view_count,
-                        likeNum:response.post_list[i].like_count,
-                        replyNum:response.post_list[i].reply_count,
-                        publishTime:response.post_list[i].publish_time,
-                        ifLike:response.post_list[i].if_like,
-                        ifStar:response.post_list[i].if_star,
-                        ifTop:response.post_list[i].if_top,
+                        id: response.post_list[i].post_id,
+                        title: response.post_list[i].post_title,
+                        content: response.post_list[i].post_content,
+                        authorId: response.post_list[i].poster_id,
+                        authorName: response.post_list[i].poster_name,
+                        viewNum: response.post_list[i].view_count,
+                        likeNum: response.post_list[i].like_count,
+                        replyNum: response.post_list[i].reply_count,
+                        publishTime: response.post_list[i].publish_time,
+                        ifLike: response.post_list[i].if_like,
+                        ifStar: response.post_list[i].if_star,
+                        ifTop: response.post_list[i].if_top,
                     });
                 }
                 this.postPageNum++;
-            }else{
+            } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
-            this.loading.post=false;
+            this.loading.post = false;
         },
-        closeDialog(){
+        closeDialog() {
             this.setPostEditorState(false);
         },
-        alert(msg){
-            this.$emit("alert",msg);
+        alert(msg) {
+            this.$emit("alert", msg);
         },
-        setLoading(msg){
-            this.$emit("set_loading",msg);
+        setLoading(msg) {
+            this.$emit("set_loading", msg);
         },
-        toOriginLink(){
+        toOriginLink() {
             openNewPage(this.article.originLink);
         },
-        async setArticleTop(){
+        async setArticleTop() {
             if (!this.ifMaster) {
                 this.alert(getNormalErrorAlert("您不是管理员，无法执行此操作"));
                 return;
@@ -334,45 +345,45 @@ export default {
                 this.article.ifTop = !this.article.ifTop;
                 //update
                 sessionStorage.removeItem('indexScanMsg');
-                let key='articleScanMsg|'+this.article.id;
+                let key = 'articleScanMsg|' + this.article.id;
                 sessionStorage.removeItem(key);
                 this.alert(getNormalSuccessAlert(this.article.ifTop ? "置顶成功" : "取消置顶成功"));
             } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
         },
-        setPostTop(msg){//{id state}  
+        setPostTop(msg) {//{id state}  
             console.log(msg)
             /**
              * no need to copy
              */
-            let toOpPost=null;
-            let index=-1;
-            for(let i=0;i<this.postItems.length;i++){
-                if(this.postItems[i].id==msg.id){
-                    toOpPost=copy(this.postItems[i]);
-                    index=i;
+            let toOpPost = null;
+            let index = -1;
+            for (let i = 0; i < this.postItems.length; i++) {
+                if (this.postItems[i].id == msg.id) {
+                    toOpPost = copy(this.postItems[i]);
+                    index = i;
                     break;
                 }
             }
             console.log(toOpPost)
-            if(toOpPost){
-                toOpPost.ifTop=msg.top;
+            if (toOpPost) {
+                toOpPost.ifTop = msg.top;
                 console.log(toOpPost);
-                this.postItems.splice(index,1);
-                if(msg.top){
+                this.postItems.splice(index, 1);
+                if (msg.top) {
                     this.postItems.unshift(toOpPost);
-                }else{
+                } else {
                     //set the first behind top
-                    let ifAdd=false;
-                    for(let i=0;i<this.postItems.length;i++){
-                        if(!this.postItems[i].ifTop){
-                            this.postItems.splice(i,0,toOpPost);
-                            ifAdd=true;
+                    let ifAdd = false;
+                    for (let i = 0; i < this.postItems.length; i++) {
+                        if (!this.postItems[i].ifTop) {
+                            this.postItems.splice(i, 0, toOpPost);
+                            ifAdd = true;
                             break;
                         }
                     }
-                    if(!ifAdd){
+                    if (!ifAdd) {
                         this.postItems.push(toOpPost);
                     }
                 }
@@ -382,57 +393,58 @@ export default {
         },
     },
     async mounted() {
-        if(sessionStorage.getItem('articleScanMsg|'+this.$route.params.id)){
-            let scanMsg=JSON.parse(sessionStorage.getItem('articleScanMsg|'+this.$route.params.id));
-            this.articleResponse=scanMsg.articleResponse;
-            [this.article,this.editorType]=await responseToArticle(scanMsg.articleResponse);
+        if (sessionStorage.getItem('articleScanMsg|' + this.$route.params.id)) {
+            let scanMsg = JSON.parse(sessionStorage.getItem('articleScanMsg|' + this.$route.params.id));
+            this.articleResponse = scanMsg.articleResponse;
+            [this.article, this.editorType] = await responseToArticle(scanMsg.articleResponse);
             this.setLoading(getLoadMsg("正在获取文章图片..."));
-            this.article.content=await formatImageLinkInArticle(this.article.content);
+            this.article.content = await formatImageLinkInArticle(this.article.content);
             this.setLoading(getCancelLoadMsg());
-            this.postItems=scanMsg.postItems;
-            this.postPageNum=scanMsg.postPageNum;
+            this.postItems = scanMsg.postItems;
+            this.postPageNum = scanMsg.postPageNum;
             this.setCommentState(scanMsg.commentState);
-            this.loadState=true;
-            setTimeout(()=>{
-                if(scanMsg.commentState){
-                    document.getElementById("post-container").scrollTop=scanMsg.postScrollTop;
+            this.loadState = true;
+            setTimeout(() => {
+                if (scanMsg.commentState) {
+                    document.getElementById("post-container").scrollTop = scanMsg.postScrollTop;
                 }
-            },10)
+            }, 10)
             //add to history
-            document.getElementById('web-title').innerText='文章 | '+this.article.title;
-            await addHistory("article",this.article.id,this.article.title);
+            document.getElementById('web-title').innerText = '文章 | ' + this.article.title;
+            await addHistory("article", this.article.id, this.article.title);
             return;
         }
         this.setLoading(getCancelLoadMsg());
         /**
          * get the route params and fetch data
          */
-        if(this.$route.params.id){
+        if (this.$route.params.id) {
             this.setLoading(getLoadMsg("正在加载文章信息..."));
-            let response=await getArticleDetail(this.$route.params.id);
+            let response = await getArticleDetail(this.$route.params.id);
             this.setLoading(getCancelLoadMsg());
-            if(response.status==200){
-                this.articleResponse=response;
-                [this.article,this.editorType]=await responseToArticle(response);
-                this.loadState=true;
+            if (response.status == 200) {
+                this.articleResponse = response;
+                [this.article, this.editorType] = await responseToArticle(response);
+                this.loadState = true;
                 //add to history
-                await addHistory("article",this.article.id,this.article.title);
-                document.getElementById('web-title').innerText='文章 | '+this.article.title;
-            }else{
+                await addHistory("article", this.article.id, this.article.title);
+                document.getElementById('web-title').innerText = '文章 | ' + this.article.title;
+            } else {
                 this.alert(getNormalErrorAlert(response.message));
-                this.$router.push({name:"ErrorPage",params:{reason:response.message}})
+                this.$router.push({ name: "ErrorPage", params: { reason: response.message } })
             }
-        }else{
-            this.$router.push({name:"ErrorPage",params:{reason:"缺少参数"}})
+        } else {
+            this.$router.push({ name: "ErrorPage", params: { reason: "缺少参数" } })
         }
         this.setLoading(getCancelLoadMsg());
     },
 }
 </script>
 <style scoped>
-.show-post-btn{
+.show-post-btn {
     width: 100%;
 }
+
 .column-center {
     display: flex;
     flex-direction: column;
@@ -444,36 +456,42 @@ export default {
     margin-bottom: 40px;
 }
 
-.bottom-btn{
+.bottom-btn {
     width: 23px;
     height: 23px;
-    color:#8a8a8a;
-    background-color:rgba(0, 0, 0,0);
+    color: #8a8a8a;
+    background-color: rgba(0, 0, 0, 0);
 }
+
 .row-right-20px {
     display: flex;
     flex-direction: row;
     margin-right: 20px;
     align-items: center;
 }
-.load-btn{
+
+.load-btn {
     width: 100%;
 }
+
 .icon-right-5px {
     margin-right: 5px;
 }
+
 .icon-left-5px {
     margin-left: 5px;
 }
-.row-div-reverse{
+
+.row-div-reverse {
     overflow-x: scroll;
     max-width: 100%;
     display: flex;
     flex-direction: row-reverse;
 }
+
 .dialog-card-container {
-        display: flex;
-        justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
 .top-bar-msg-div {
@@ -492,9 +510,11 @@ export default {
 .padding-right-5px {
     padding-right: 5px;
 }
+
 .padding-right-10px {
     padding-right: 10px;
 }
+
 .full-column-center {
     display: flex;
     height: 100%;
@@ -527,10 +547,11 @@ export default {
     color: var(--theme-color)
 }
 
-.column-div{
+.column-div {
     display: flex;
     flex-direction: column;
 }
+
 @media screen and (min-width: 1000px) {
     .full-center {
         width: 100%;
@@ -539,6 +560,7 @@ export default {
         align-items: flex-start;
         height: 100%;
     }
+
     .bottom-bar {
         display: flex;
         width: 1000px;
@@ -546,10 +568,11 @@ export default {
         position: fixed;
         bottom: 0;
         height: 40px;
-        z-index:99;
+        z-index: 99;
         border: #8a8a8a 1px solid;
         background-color: #ffffff;
     }
+
     .top-bar {
         border: grey 1px solid;
         width: 1000px;
@@ -564,37 +587,43 @@ export default {
         display: flex;
         flex-direction: row;
     }
-    .title{
-        width:750px;
+
+    .title {
+        width: 750px;
         white-space: normal;
         word-break: break-all;
         overflow: hidden;
     }
-    .title-right-type{
+
+    .title-right-type {
         margin-right: 30px;
         font-size: 20px;
-        color:var(--theme-color);
+        color: var(--theme-color);
         font-weight: bold;
     }
+
     .user-name {
         margin-left: 10px;
         max-width: 300px;
         color: var(--theme-color);
     }
+
     .row-reverse {
         display: flex;
         flex-direction: row-reverse;
     }
-    .posts-dialog{
-        padding:0px;
+
+    .posts-dialog {
+        padding: 0px;
         display: flex;
         flex-direction: row-reverse;
     }
-    .posts-container{
+
+    .posts-container {
         background-color: #ffffff;
         border-top: #8a8a8a 1px solid;
         width: 752px;
-        padding:1px;
+        padding: 1px;
         height: 100vh;
         overflow-y: scroll;
     }
@@ -608,6 +637,7 @@ export default {
         align-items: flex-start;
         height: 100vh;
     }
+
     .bottom-bar {
         display: flex;
         width: 100vw;
@@ -615,10 +645,11 @@ export default {
         position: fixed;
         bottom: 0;
         height: 40px;
-        z-index:99;
+        z-index: 99;
         border: #8a8a8a 1px solid;
         background-color: #ffffff;
     }
+
     .top-bar {
         border: grey 1px solid;
         width: 100vw;
@@ -633,18 +664,21 @@ export default {
         display: flex;
         flex-direction: row;
     }
-    .title{
+
+    .title {
         width: 75vw;
         white-space: normal;
         word-break: break-all;
-        overflow:hidden;
+        overflow: hidden;
     }
-    .title-right-type{
+
+    .title-right-type {
         margin-right: 3vw;
         font-size: 20px;
-        color:var(--theme-color);
+        color: var(--theme-color);
         font-weight: bold;
     }
+
     .user-name {
         margin-left: 2vw;
         width: 30vw;
@@ -655,17 +689,20 @@ export default {
         max-width: 30vw;
         font-size: 0px;
     }
+
     .row-reverse {
         display: flex;
         flex-direction: row-reverse;
         width: 40vw;
     }
-    .posts-dialog{
-        padding:0px;
+
+    .posts-dialog {
+        padding: 0px;
         display: flex;
         flex-direction: column-reverse;
     }
-    .posts-container{
+
+    .posts-container {
         background-color: #ffffff;
         border-top: #8a8a8a 1px solid;
         width: 100vw;

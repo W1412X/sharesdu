@@ -95,7 +95,8 @@
       <div v-if="choose === 'notification'">
         <div style="width: 100%;display: flex;flex-direction: row;">
           <v-spacer></v-spacer>
-          <v-btn :loading="loading.clearNotification" :disabled="loading.clearNotification" @click="clearNotification" prepend-icon="mdi-delete" color="grey" class="text-small" variant="text" text="清空此页通知"></v-btn>
+          <v-btn :loading="loading.clearNotification" :disabled="loading.clearNotification" @click="clearNotification"
+            prepend-icon="mdi-delete" color="grey" class="text-small" variant="text" text="清空此页通知"></v-btn>
         </div>
         <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item" @alert="alert"
           @set_loading="setLoading"></notification-item>
@@ -192,8 +193,8 @@ export default {
               await this.getNotificationList();
             break;
           case "chat":
-            if(this.chatList.length == 0)
-            await this.getChatList();
+            if (this.chatList.length == 0)
+              await this.getChatList();
             break;
           default:
             return;
@@ -203,6 +204,10 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
+    if (!getCookie("userName")) {
+      next();
+      return;
+    }
     let scanMsg = {};
     scanMsg.notificationList = this.notificationList;
     scanMsg.notificationPageNum = this.notificationPageNum;
@@ -319,21 +324,21 @@ export default {
     toUrl(url) {
       openNewPage(url);
     },
-    async clearNotification(){
-      if(this.notificationList.length==0){
+    async clearNotification() {
+      if (this.notificationList.length == 0) {
         this.alert(getNormalWarnAlert("无通知"));
         return;
       }
-      let ids=[];
-      for(let i=0;i<this.notificationList.length;i++){
+      let ids = [];
+      for (let i = 0; i < this.notificationList.length; i++) {
         ids.push(this.notificationList[i].id);
       }
-      this.loading.clearNotification=true;
-      let response=await markAsReadNotification(ids);
-      this.loading.clearNotification=false;
-      if(response.status==200){
-        this.notificationList=[];
-      }else{
+      this.loading.clearNotification = true;
+      let response = await markAsReadNotification(ids);
+      this.loading.clearNotification = false;
+      if (response.status == 200) {
+        this.notificationList = [];
+      } else {
         this.alert(getNormalErrorAlert(response.message));
       }
     },
@@ -375,10 +380,10 @@ export default {
       let scanMsg = JSON.parse(sessionStorage.getItem('selfScanMsg'));
       this.notificationList = scanMsg.notificationList;
       this.notificationPageNum = scanMsg.notificationPageNum;
-      this.loading=scanMsg.loading;
-      this.loadState=scanMsg.loadState;
-      this.chatList=scanMsg.chatList;
-      this.choose=scanMsg.choose;
+      this.loading = scanMsg.loading;
+      this.loadState = scanMsg.loadState;
+      this.chatList = scanMsg.chatList;
+      this.choose = scanMsg.choose;
       setTimeout(() => {
         document.scrollingElement.scrollTop = scanMsg.scrollTop;
       }, 10);

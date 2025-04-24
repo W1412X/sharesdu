@@ -129,6 +129,10 @@ export default {
         }
     },
     beforeRouteLeave (to, from, next) {
+        if(!getCookie("userName")){
+            next();
+            return;
+        }
         //use session storage to save memory now  
         let scanMsg={};
         scanMsg.editingArticleFiltTag=this.editingArticleFiltTag;

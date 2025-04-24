@@ -261,6 +261,10 @@ export default {
     },
     beforeRouteLeave (to, from, next) {
         //use session storage to save memory now  
+        if(!getCookie("userName")){
+            next();
+            return;
+        }
         let scanMsg={};
         scanMsg.course=this.course;
         scanMsg.commentList=this.commentList;

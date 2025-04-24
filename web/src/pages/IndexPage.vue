@@ -164,6 +164,10 @@ export default {
     },
     beforeRouteLeave(to, from, next) {
         //use session storage to save memory now  
+        if(!getCookie("userName")){
+            next();
+            return;
+        }
         let lastScanMsg = {}
         lastScanMsg.itemType = this.itemType;
         lastScanMsg.articleList = this.articleList;
