@@ -828,7 +828,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .sort-btn {
     margin-left: 10px;
     max-height: 25px;

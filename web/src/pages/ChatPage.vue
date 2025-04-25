@@ -400,7 +400,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .total-container {
     display: flex;
     flex-direction: column;

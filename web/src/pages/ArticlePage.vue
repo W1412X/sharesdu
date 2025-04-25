@@ -6,7 +6,7 @@
         </div>
     </v-dialog>
     <div class="full-center">
-        <div>
+        <div class="column-div">
             <v-chip v-if="article.ifTop && !ifMaster" width="100%" variant="tonal" :color="themeColor"
                 style="border-radius: 0px;max-height: 28px;width: 100%;justify-content: center;">
                 <v-icon size="20">mdi-format-vertical-align-top</v-icon>

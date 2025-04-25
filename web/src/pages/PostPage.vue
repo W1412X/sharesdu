@@ -27,7 +27,7 @@
       </div>
     </v-dialog>
     <div class="full-center">
-        <div>
+        <div class="column-div">
             <part-loading-view :state="!loadState.post" class="top-bar" :text="'正在加载帖子信息...'"></part-loading-view>
             <div v-if="loadState.post" class="top-bar">
                 <div class="top-bar-msg-div">
