@@ -156,7 +156,6 @@ export default {
             }else if(this.typeMsg.type=="course"){
                 response=await createPostInCourse(this.typeMsg.id,this.data.title,addLinkToPost(this.data.content,this.typeMsg.type,this.typeMsg.id));
             }else{
-                //test
                 response=await createPostInArticle(20,this.data.title,this.data.content);
             }
             if(response.status==200||response.status==201){
@@ -164,7 +163,7 @@ export default {
                 let tmp={
                     id: response.post_id,
                     title: this.data.title,
-                    content: this.data.content,
+                    content: this.typeMsg?addLinkToPost(this.data.content,this.typeMsg.type,this.typeMsg.id):this.data.content,
                     viewNum: 0,
                     replyNum: 0,
                     likeNum:0,
