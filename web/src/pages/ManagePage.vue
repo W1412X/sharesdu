@@ -65,20 +65,18 @@
             </div>
             <v-card v-if="ifShowUserList" variant="outlined" class="column-div-scroll user-list-card"
                 style="margin-top: 10px;">
-                <div style="display: flex;flex-direction: row;align-items: center;">
-                    <v-icon size="30" color="#8a8a8a">mdi-account-cancel</v-icon>
-                    <span style="color: #8a8a8a;margin-left: 10px;" class="text-medium-bold">用户列表</span>
-                </div>
-                <div @click="setUserId(item.id)" v-for="(item, index) in this.userList" :key="index"
-                    style="display: flex;flex-direction: row;align-items: center;padding: 10px;">
-                    <avatar-name :init-data="{ id: item.id, name: item.name }"></avatar-name>
-                    <v-spacer></v-spacer>
-                    <div style="margin: 5px;" class="text-small">{{ item.reputation }}</div>
-                    <v-spacer></v-spacer>
-                    <div style="margin: 5px;" class="text-small">{{ item.ifSuper ? "超级管理员" : (item.ifMaster ? "管理员" : "普通用户") }}
-                    </div>
-                </div>
-                <v-btn @click="loadUser" variant="tonal" style="width: 100%;">加载更多</v-btn>
+                <v-data-table :items="userList" fixed-header hover>
+                    <!-- bug but can run -->
+                    <template v-slot:[`item.用户`]="{ item }">
+                        <avatar-name :init-data="{id:item.ID,name:item.用户}"> </avatar-name>
+                    </template>
+                    <template v-slot:[`item.是否为管理员`]="{ item }">
+                        <v-icon :icon="item.是否为管理员?'mdi-check-bold':'mdi-close-thick'" :color="item.是否为管理员?'success':'error'"></v-icon>
+                    </template>
+                    <template v-slot:[`item.是否为超级管理员`]="{ item }">
+                        <v-icon :icon="item.是否为超级管理员?'mdi-check-bold':'mdi-close-thick'" :color="item.是否为超级管理员?'success':'error'"></v-icon>
+                    </template>
+                </v-data-table>
             </v-card>
             <v-card v-if="ifShowBlockUserList" variant="outlined" class="column-div-scroll user-list-card"
                 style="margin-top: 10px;">
@@ -296,13 +294,13 @@ export default {
             if (response.status == 200 || response.status == 201) {
                 for (let i = 0; i < response.user_list.length; i++) {
                     this.userList.push({
-                        id: response.user_list[i].user_id,
-                        name: response.user_list[i].user_name,
-                        reputation: response.user_list[i].reputation_level,
-                        likeNum: response.user_list[i].all_likes,
-                        articleNum: response.all_articles,
-                        ifMaster: response.user_list[i].master,
-                        ifSuper: response.user_list[i].super_master,
+                        ID: response.user_list[i].user_id,
+                        用户: response.user_list[i].user_name,
+                        荣誉水平: response.user_list[i].reputation_level,
+                        点赞数: response.user_list[i].all_likes,
+                        文章数: response.user_list[i].all_articles,
+                        是否为管理员: response.user_list[i].master,
+                        是否为超级管理员: response.user_list[i].super_master,
                     });
                 }
             }
@@ -390,7 +388,7 @@ export default {
 
     .card {
         margin: 20px;
-        width: 750px;
+        width: 1000px;
         max-height: 800px;
         padding: 20px;
     }
@@ -405,6 +403,7 @@ export default {
 }
 
 @media screen and (max-width: 1000px) {
+
     .full-center {
         width: 100vw;
         display: flex;
