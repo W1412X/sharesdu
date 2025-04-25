@@ -103,6 +103,7 @@ import SensitiveTextField from '@/components/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
 import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets, waitSecond } from '@/utils/other';
 import { computed } from 'vue';
+import { getCookie } from '@/utils/cookie';
 export default {
     props: {
         type: {
