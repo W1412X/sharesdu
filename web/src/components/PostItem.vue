@@ -178,7 +178,7 @@ export default {
             this.loading.untop=false;
         }
     },
-    mounted(){
+    beforeMount(){
         this.data =copy(this.initData);
         let link=getLinkInPost(this.data.content);
         let content=getPostWithoutLink(this.data.content);

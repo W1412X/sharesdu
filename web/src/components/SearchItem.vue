@@ -64,10 +64,11 @@ export default{
         for(let i=0;i<this.query.length;i++){
             styledQuery.push(`<span style="font-weight:bold;color:`+adjustAlpha(this.themeColor,0.9)+`">${this.query[i]}</span>`);
         }
-        let elements=document.getElementsByClassName("key-text");
+        let elements=this.$el.getElementsByClassName("key-text");
         for(let i=0;i<this.query.length;i++){
             for(let u=0;u<elements.length;u++){
                 elements[u].innerHTML=elements[u].innerHTML.replaceAll(this.query[i],styledQuery[i]);
+                console.log(styledQuery[i]);
             }
         }
     }
