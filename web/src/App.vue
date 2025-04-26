@@ -394,7 +394,7 @@ export default {
   }
 
   .absolute-position {
-    position: absolute;
+    position: fixed;
   }
 
   .bottom-nav-container {

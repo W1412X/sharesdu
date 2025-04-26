@@ -68,7 +68,6 @@ export default{
         for(let i=0;i<this.query.length;i++){
             for(let u=0;u<elements.length;u++){
                 elements[u].innerHTML=elements[u].innerHTML.replaceAll(this.query[i],styledQuery[i]);
-                console.log(styledQuery[i]);
             }
         }
     }

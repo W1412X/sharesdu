@@ -299,7 +299,6 @@ export default {
         },
         toNextPage(){
             this.ifComfirmLeave=true;
-            console.log(this.nextPage);
             this.$router.push(this.nextPage);
         },
         handleBeforeUnload(event){
