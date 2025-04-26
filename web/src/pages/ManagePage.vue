@@ -77,6 +77,7 @@
                         <v-icon :icon="item.是否为超级管理员?'mdi-check-bold':'mdi-close-thick'" :color="item.是否为超级管理员?'success':'error'"></v-icon>
                     </template>
                 </v-data-table>
+                <v-btn @click="loadUser" variant="tonal" style="width: 100%;">加载更多</v-btn>
             </v-card>
             <v-card v-if="ifShowBlockUserList" variant="outlined" class="column-div-scroll user-list-card"
                 style="margin-top: 10px;">
@@ -89,7 +90,6 @@
                     <avatar-name :init-data="{ id: item.id, name: item.username }"></avatar-name>
                     <div>由 {{ item.operator }} 封禁至 {{ item.endTime }}</div>
                 </div>
-                <v-btn variant="tonal" style="width: 100%;">加载更多</v-btn>
             </v-card>
         </v-card>
         <invite-code-manage-card v-if="choose == 'invite'" @alert="alert" @set_loading="setLoading"></invite-code-manage-card>
@@ -164,6 +164,8 @@ export default {
             blockReason: "",
             blockUserList: [],
             userList: [],
+            maxUserPageNum: null,
+            userPageNum:1,
             ifShowUserList: false,
             ifShowBlockUserList: false,
             nowShowUrl: null,
@@ -284,12 +286,12 @@ export default {
             this.itemId = id;
         },
         async loadUser() {
-            if (this.userList.length > 0) {
-                this.alert(getNormalInfoAlert("没有更多用户了"));
+            if(this.maxUserPageNum&&this.userPageNum>this.maxUserPageNum){
+                this.alert(getNormalInfoAlert("无更多用户"));
                 return;
             }
             this.setLoading(getLoadMsg("正在加载用户列表..."));
-            let response = await getUserList();
+            let response = await getUserList(this.userPageNum);
             this.setLoading(getCancelLoadMsg());
             if (response.status == 200 || response.status == 201) {
                 for (let i = 0; i < response.user_list.length; i++) {
@@ -303,6 +305,8 @@ export default {
                         是否为超级管理员: response.user_list[i].super_master,
                     });
                 }
+                this.maxUserPageNum=response.pagination.total_pages;
+                this.userPageNum++;
             }
         },
         async loadBlockUser() {

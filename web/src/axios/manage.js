@@ -7,20 +7,20 @@ import { waitForLock } from "@/utils/lock";
  * 获取用户列表
  * @returns 
  */
-export const getUserList = async () => {
+export const getUserList = async (page_index=1,page_size=20) => {
     try {
         await waitForLock('token');
         let cacheResponse = getResponseFromCache('/user/list');
         if (cacheResponse) {
             return cacheResponse.data;
         }
-        const response = await getaxiosInstance().get('/user/list');
+        const response = await getaxiosInstance().get('/user/list',{ params: { page_index: page_index, page_size: page_size } });
         saveResponseToCache('/user/list', response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
         if (dealResult.status == 1412) {
-            return await getUserList();
+            return await getUserList(page_index,page_size);
         }
         return dealResult;
     }
