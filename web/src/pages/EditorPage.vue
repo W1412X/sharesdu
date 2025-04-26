@@ -279,6 +279,7 @@ export default {
                                 this.alert(getNormalErrorAlert("资源上传失败"));
                             }
                         }else{
+                            this.ifSubmit=true;
                             this.setEditFinishCardState(true);
                         }
                     }else{
@@ -300,6 +301,12 @@ export default {
         toNextPage(){
             this.ifComfirmLeave=true;
             this.$router.push(this.nextPage);
+        },
+        toPage(pageName,params=null){
+            this.$router.push({
+                name:pageName,
+                params:params
+            })
         },
         handleBeforeUnload(event){
             event.preventDefault();
