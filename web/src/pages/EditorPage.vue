@@ -140,6 +140,7 @@ export default {
         if(this.ifSubmit||this.ifComfirmLeave){
             next();
         }else{
+            next(false);
             this.nextPage=to;
             this.setConfirmLeaveState(true);
         }
@@ -296,12 +297,6 @@ export default {
         setLoading(msg){
             this.$emit('set_loading',msg);
         },
-        toPage(pageName,params=null){
-            this.$router.push({
-                name:pageName,
-                params:params
-            })
-        },
         toNextPage(){
             this.ifComfirmLeave=true;
             console.log(this.nextPage);
@@ -310,7 +305,7 @@ export default {
         handleBeforeUnload(event){
             event.preventDefault();
             event.returnValue = '离开此页面编辑的内容将会丢失';
-        }
+        },
     },
     async mounted() {
         window.addEventListener('beforeunload', this.handleBeforeUnload);
