@@ -9,6 +9,14 @@
                     <v-btn @click="toPage('ArticlePage',{id:this.articleId})" class="dialog-bottom-bar-btn" :color="themeColor" variant="outlined" >查看文章</v-btn>
                 </div>
             </v-card>
+            <v-card v-if="ifShowConfirmLeave" class="edit-finish-card">
+                <div class="title-bold row-center">提示</div>
+                <div class="text-medium row-center">离开此页面后您编辑的内容将不会保存！</div>
+                <div class="row-center">
+                    <v-btn @click="toNextPage()" variant="outlined" :color="themeColor" class="dialog-bottom-bar-btn" >确认离开</v-btn>
+                    <v-btn @click="setConfirmLeaveState(false)" class="dialog-bottom-bar-btn" :color="themeColor" variant="outlined" >留在此页</v-btn>
+                </div>
+            </v-card>
         </div>
     </v-dialog>
     <div class="full-center">
@@ -70,11 +78,15 @@ export default {
         const editorBarRef=ref(null);
         const apiUrl=globalProperties.$apiUrl;
         const ifShowEditFinishCard=ref(false);
+        const ifShowConfirmLeave=ref(false);
         const ifShowDialog=computed(()=>{
-            return ifShowEditFinishCard.value;
+            return ifShowEditFinishCard.value || ifShowConfirmLeave.value;
         })
         const setEditFinishCardState=(state)=>{
             ifShowEditFinishCard.value=state;
+        }
+        const setConfirmLeaveState=(state)=>{
+            ifShowConfirmLeave.value=state;
         }
         return{
             deviceType,
@@ -87,7 +99,9 @@ export default {
             apiUrl,
             editorBarRef,
             mdEditorRef,
-            htmlEditorRef
+            htmlEditorRef,
+            ifShowConfirmLeave,
+            setConfirmLeaveState,
         }
     },
     components:{
@@ -117,6 +131,17 @@ export default {
             mdData:{
                 content:"",
             },
+            nextPage:null,
+            ifComfirmLeave:false,
+            ifSubmit:false,
+        }
+    },
+    beforeRouteLeave (to, from, next) {
+        if(this.ifSubmit||this.ifComfirmLeave){
+            next();
+        }else{
+            this.nextPage=to;
+            this.setConfirmLeaveState(true);
         }
     },
     methods: {
@@ -231,6 +256,7 @@ export default {
                             title:'创建成功',
                             content:response.message,
                         })
+                        this.ifSubmit=true;
                         this.setEditFinishCardState(true);
                     }else{
                         this.alert(getNormalErrorAlert(response.message));
@@ -246,6 +272,7 @@ export default {
                             let response=await uploadResource(this.editorBarRef.$data.file,this.articleId);
                             if(response.status==200||response.status==201){
                                 this.alert(getNormalSuccessAlert("资源上传成功"));
+                                this.ifSubmit=true;
                                 this.setEditFinishCardState(true);
                             }else{
                                 this.alert(getNormalErrorAlert("资源上传失败"));
@@ -274,9 +301,19 @@ export default {
                 name:pageName,
                 params:params
             })
+        },
+        toNextPage(){
+            this.ifComfirmLeave=true;
+            console.log(this.nextPage);
+            this.$router.push(this.nextPage);
+        },
+        handleBeforeUnload(event){
+            event.preventDefault();
+            event.returnValue = '离开此页面编辑的内容将会丢失';
         }
     },
     async mounted() {
+        window.addEventListener('beforeunload', this.handleBeforeUnload);
         this.setLoading(getCancelLoadMsg());
         /**
          * check if with id
@@ -325,6 +362,9 @@ export default {
             })
         }
         this.setLoading(getCancelLoadMsg());
+    },
+    beforeUnmount(){
+        window.removeEventListener('beforeunload', this.handleBeforeUnload);
     }
 }
 </script>
