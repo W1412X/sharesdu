@@ -415,7 +415,6 @@ export default {
 .menu-btn {
     position: fixed;
     bottom: 50%;
-    right: -15px;
     z-index: 100;
 }
 
@@ -486,7 +485,7 @@ export default {
 
 @media screen and (min-width: 1000px) {
     .full-center {
-        width: 800px;
+        width: 100vw;
         display: flex;
         justify-content: center;
         align-items: flex-start;
