@@ -57,10 +57,10 @@
 import { createArticle, editArticle, getArticleDetail } from '@/axios/article';
 import { uploadArticleImage } from '@/axios/image';
 import { uploadResource } from '@/axios/resource';
-import EditorBar from '@/components/EditorBar.vue';
-import HtmlEditor from '@/components/HtmlEditor.vue';
-import MdEditor from '@/components/MdEditor.vue';
-import SensitiveTextField from '@/components/SensitiveTextField.vue';
+import EditorBar from '@/components/article/EditorBar.vue';
+import HtmlEditor from '@/components/article/HtmlEditor.vue';
+import MdEditor from '@/components/article/MdEditor.vue';
+import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
 import { addEditorType, arrToString, extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { computed,ref } from 'vue';

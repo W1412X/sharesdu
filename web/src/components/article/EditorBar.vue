@@ -121,13 +121,13 @@
 /**
  * this component doesn't involved any network request
  */
-import SensitiveTextArea from './SensitiveTextArea.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalWarnAlert } from '@/utils/other';
 import { uploadArticleImage } from '@/axios/image';
 import { VFileUpload } from 'vuetify/lib/labs/components.mjs';
-import ImgCard from './ImgCard.vue';
+import ImgCard from '@/components/common/ImgCard.vue';
 import { compressImage } from '@/utils/image';
 export default {
     name: 'EditorBar',

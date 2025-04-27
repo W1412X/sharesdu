@@ -40,7 +40,7 @@
 <script>
 import { globalProperties } from '@/main';
 import { openNewPage } from '@/utils/other';
-import ImgCard from './ImgCard.vue';
+import ImgCard from '@/components/common/ImgCard.vue';
 export default {
     name: 'ArticleItem',
     props: {

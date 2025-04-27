@@ -16,7 +16,7 @@ import { globalProperties } from '@/main';
 import { getCancelLoadMsg, getLoadMsg} from '@/utils/other';
 import { computed, ref } from 'vue';
 import { getHistory } from '@/utils/history';
-import HistoryItem from './HistoryItem.vue';
+import HistoryItem from '@/components/history/HistoryItem.vue';
 export default {
     props: {
     },

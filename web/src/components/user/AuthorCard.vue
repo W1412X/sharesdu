@@ -70,12 +70,12 @@
 
 <script>
 import { globalProperties } from '@/main';
-import AvatarName from './AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { getAuthorInfo } from '@/axios/account';
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
 import { blockUser, unblockUser } from '@/axios/block';
-import PartLoadingView from './PartLoadingView.vue';
-import ManageButton from './ManageButton.vue';
+import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import ManageButton from '@/components/manage/ManageButton.vue';
 
 export default{
     props:{

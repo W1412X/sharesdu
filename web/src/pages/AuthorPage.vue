@@ -7,8 +7,8 @@
     </div>
 </template>
 <script>
-import AuthorCard from '@/components/AuthorCard.vue';
-import CreatePreviewAndList from '@/components/CreatePreviewAndList.vue';
+import AuthorCard from '@/components/user/AuthorCard.vue';
+import CreatePreviewAndList from '@/components/user/CreatePreviewAndList.vue';
 import { getCookie } from '@/utils/cookie';
 import { getCancelLoadMsg } from '@/utils/other';
 

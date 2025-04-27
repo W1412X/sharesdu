@@ -45,7 +45,7 @@ export default {
         const setRepordCardState = (state) => {
             ifShowReportCard.value = state;
         }
-        const AsyncReportCard = defineAsyncComponent(() => import('@/components/ReportCard.vue'))
+        const AsyncReportCard = defineAsyncComponent(() => import('@/components/report/ReportCard.vue'))
         return {
             ifShowDialog,
             ifShowReportCard,

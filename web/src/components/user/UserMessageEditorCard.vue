@@ -74,10 +74,10 @@
   </v-card>
 </template>
 <script>
-import SetProfileCard from '@/components/SetProfileCard.vue';
-import EmailExamineCard from './EmailExamineCard.vue';
+import SetProfileCard from '@/components/user/SetProfileCard.vue';
+import EmailExamineCard from '@/components/user/EmailExamineCard.vue';
 import { computed, ref } from 'vue';
-import SensitiveTextArea from './SensitiveTextArea.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { logout } from '@/axios/account';
 import { copy, getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { rules, validatePassWord } from '@/utils/rules';

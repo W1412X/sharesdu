@@ -44,7 +44,7 @@
 </template>
 <script>
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
-import AvatarName from './AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { getCourseHistory, rollbackCourse } from '@/axios/course';
 
 export default {

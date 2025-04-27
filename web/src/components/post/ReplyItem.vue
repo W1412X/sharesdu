@@ -64,17 +64,17 @@
     </v-card>
 </template>
 <script>
-import AlertButton from './AlertButton.vue';
-import LikeButton from './LikeButton.vue';
-import AvatarName from './AvatarName.vue';
+import AlertButton from '@/components/report/AlertButton.vue';
+import LikeButton from '@/components/common/LikeButton.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { getCookie } from '@/utils/cookie';
-import DeleteButton from './DeleteButton.vue';
+import DeleteButton from '@/components/common/DeleteButton.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
-import SensitiveTextArea from './SensitiveTextArea.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { addHeaderToReply, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader } from '@/utils/other';
 import { createReplyUnderPost } from '@/axios/post';
-import EmojiPicker from './EmojiPicker.vue';
+import EmojiPicker from '@/components/common/EmojiPicker.vue';
 export default {
     name: 'ReplyItem',
     props: {

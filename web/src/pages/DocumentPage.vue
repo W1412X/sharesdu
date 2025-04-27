@@ -5,7 +5,7 @@
     </div>
 </template>
 <script>
-import ArticleDisplay from '@/components/ArticleDisplay.vue'
+import ArticleDisplay from '@/components/article/ArticleDisplay.vue'
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { useRoute } from 'vue-router';
 export default {

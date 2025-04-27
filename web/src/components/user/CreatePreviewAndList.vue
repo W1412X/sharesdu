@@ -38,8 +38,8 @@
 <script>
 import { extractTime, getNormalInfoAlert } from '@/utils/other';
 import { getUserContent, getUserPreview } from '@/axios/account';
-import StarItem from './StarItem.vue';
-import PartLoadingView from './PartLoadingView.vue';
+import StarItem from '@/components/star/StarItem.vue';
+import PartLoadingView from '@/components/common/PartLoadingView.vue';
 
 export default{
     props:{

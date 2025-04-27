@@ -175,8 +175,8 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
-import EmailExamineCard from '@/components/EmailExamineCard.vue';
-import SensitiveTextField from '@/components/SensitiveTextField.vue';
+import EmailExamineCard from '@/components/user/EmailExamineCard.vue';
+import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { computed, ref } from 'vue';
 import { rules } from '@/utils/rules';
 import { validateEmail, validatePassWord, validateUserName } from '@/utils/rules';
@@ -184,7 +184,7 @@ import { /*getRegisterEmailCode*/ loginWithPassword, /*loginWithEmail, register*
 import { getNormalWarnAlert, openNewPage, setLogin } from '@/utils/other';
 import { csLoginByUserName } from '@/axios/api_convert/account';
 import { initTriangleEffect } from '@/utils/animation';
-import AgreeButton from '@/components/AgreeButton.vue';
+import AgreeButton from '@/components/common/AgreeButton.vue';
 export default {
     name: 'LoginPage',
     setup() {

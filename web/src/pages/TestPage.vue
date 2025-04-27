@@ -8,9 +8,9 @@
 </template>
 
 <script>
-import AgreeButton from '@/components/AgreeButton.vue';
-import EmojiPicker from '@/components/EmojiPicker.vue';
-import ImgCard from '@/components/ImgCard.vue';
+import AgreeButton from '@/components/common/AgreeButton.vue';
+import EmojiPicker from '@/components/common/EmojiPicker.vue';
+import ImgCard from '@/components/common/ImgCard.vue';
 
 
 export default {

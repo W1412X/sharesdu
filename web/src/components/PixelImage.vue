@@ -80,7 +80,7 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
-import ImgCard from './ImgCard.vue';
+import ImgCard from '@/components/common/ImgCard.vue';
 import { convertImageToText, convertToPixelatedBW, convertToPixelatedColor, imageToSketch } from '@/utils/pixel_emoji.js';
 import { computed, ref } from 'vue';
 

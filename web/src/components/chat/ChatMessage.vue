@@ -63,7 +63,7 @@
 import { deletePrivateMessage } from '@/axios/chat';
 import { extractTime, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { ref } from 'vue';
-import AvatarName from './AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { globalProperties } from '@/main';
 export default {
     name: 'ChatMessage',

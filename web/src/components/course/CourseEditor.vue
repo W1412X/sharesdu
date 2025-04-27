@@ -79,8 +79,8 @@
 </template>
 <script>
 import { getCurrentInstance } from 'vue';
-import SensitiveTextArea from './SensitiveTextArea.vue';
-import SensitiveTextField from './SensitiveTextField.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
+import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { createCourse,/*, getCourseDetail,editCourse*/ 
 editCourse} from '@/axios/course';
 import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';

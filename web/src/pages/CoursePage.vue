@@ -174,24 +174,24 @@
     </v-overlay>
 </template>
 <script>
-import CourseComment from '@/components/CourseComment.vue';
-import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
+import CourseComment from '@/components/course/CourseComment.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
 import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList, getCoursePostList } from '@/axios/course';
 import { computed,ref } from 'vue';
 import { copy, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
-import StarButton from '@/components/StarButton.vue';
-import PostEditor from '@/components/PostEditor.vue';
-import PostItem from '@/components/PostItem.vue';
-import AlertButton from '@/components/AlertButton.vue';
-import CourseEditor from '@/components/CourseEditor.vue';
+import StarButton from '@/components/star/StarButton.vue';
+import PostEditor from '@/components/post/PostEditor.vue';
+import PostItem from '@/components/post/PostItem.vue';
+import AlertButton from '@/components/report/AlertButton.vue';
+import CourseEditor from '@/components/course/CourseEditor.vue';
 import { addHistory } from '@/utils/history';
-import EmojiPicker from '@/components/EmojiPicker.vue';
-import CourseHistoryCard from '@/components/CourseHistoryCard.vue';
-import PartLoadingView from '@/components/PartLoadingView.vue';
-import ManageButton from '@/components/ManageButton.vue';
+import EmojiPicker from '@/components/common/EmojiPicker.vue';
+import CourseHistoryCard from '@/components/course/CourseHistoryCard.vue';
+import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import ManageButton from '@/components/manage/ManageButton.vue';
 export default {
     name: 'CoursePage',
     components: {

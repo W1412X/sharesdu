@@ -23,7 +23,7 @@
     </v-card>
 </template>
 <script>
-import SensitiveTextArea from './SensitiveTextArea.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 export default {
     props: {
         report: {

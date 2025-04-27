@@ -98,10 +98,10 @@
 <script>
 import { freezeUnfreezeCourse } from '@/axios/course';
 import { blockArticle, blockUser, getBlockedUserList, getUserList, unblockArticle, unblockUser } from '@/axios/manage';
-import AvatarName from '@/components/AvatarName.vue';
-import CourseHistoryCard from '@/components/CourseHistoryCard.vue';
-import InviteCodeManageCard from '@/components/InviteCodeManageCard.vue';
-import WebCard from '@/components/WebCard.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
+import CourseHistoryCard from '@/components/course/CourseHistoryCard.vue';
+import InviteCodeManageCard from '@/components/manage/InviteCodeManageCard.vue';
+import WebCard from '@/components/manage/WebCard.vue';
 import { globalProperties } from '@/main';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert } from '@/utils/other';
 import { computed, ref } from 'vue';

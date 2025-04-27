@@ -24,7 +24,7 @@
 </template>
 <script>
 import { copy, getNormalWarnAlert } from '@/utils/other';
-import AvatarName from './AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 
 export default {
     props: {

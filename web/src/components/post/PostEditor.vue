@@ -23,14 +23,14 @@
 </template>
 <script>
 import { addLinkToPost, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
-import SensitiveTextArea from './SensitiveTextArea.vue';
-import SensitiveTextField from './SensitiveTextField.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
+import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { createPostInArticle, createPostInCourse } from '@/axios/post';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 import { getCookie } from '@/utils/cookie';
-import EmojiPicker from './EmojiPicker.vue';
+import EmojiPicker from '@/components/PixelImage.vue';
 import { globalProperties } from '@/main';
-import ImgCard from './ImgCard.vue';
+import ImgCard from '@/components/common/ImgCard.vue';
 import { uploadArticleImage } from '@/axios/image';
 import { compressImage } from '@/utils/image';
 export default {

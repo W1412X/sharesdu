@@ -75,16 +75,16 @@
 </template>
 <script>
 import { computed, getCurrentInstance, ref, watch } from 'vue';
-import LoadingView from './components/LoadingView.vue';
+import LoadingView from '@/components/common/LoadingView.vue';
 import { useRoute } from 'vue-router';
 import { globalProperties } from './main';
-import AvatarName from './components/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { getCookie } from './utils/cookie';
 import { getNormalInfoAlert, openNewPage } from './utils/other';
-import HistoryCard from './components/HistoryCard.vue';
-import SensitiveTextField from './components/SensitiveTextField.vue';
-import PostEditor from './components/PostEditor.vue';
-import CourseEditor from './components/CourseEditor.vue';
+import HistoryCard from '@/components/history/HistoryCard.vue';
+import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
+import PostEditor from '@/components/post/PostEditor.vue';
+import CourseEditor from '@/components/course/CourseEditor.vue';
 import { extractWords } from './utils/keyword';
 export default {
   setup() {

@@ -121,20 +121,20 @@
 <script>
 import { globalProperties } from '@/main.js';
 import { getCookie } from '@/utils/cookie';
-import StarButton from '@/components/StarButton.vue';
-import AlertButton from '@/components/AlertButton.vue';
+import StarButton from '@/components/star/StarButton.vue';
+import AlertButton from '@/components/report/AlertButton.vue';
 import { computed, ref } from 'vue';
-import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
-import AvatarName from '@/components/AvatarName.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { extractStringsInBrackets, getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
 import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyListByPostId } from '@/axios/post';
-import LikeButton from '@/components/LikeButton.vue';
-import ReplyItem from '@/components/ReplyItem.vue';
-import DeleteButton from '@/components/DeleteButton.vue';
+import LikeButton from '@/components/common/LikeButton.vue';
+import ReplyItem from '@/components/post/ReplyItem.vue';
+import DeleteButton from '@/components/common/DeleteButton.vue';
 import { addHistory } from '@/utils/history';
-import EmojiPicker from '@/components/EmojiPicker.vue';
-import ImgCard from '@/components/ImgCard.vue';
-import PartLoadingView from '@/components/PartLoadingView.vue';
+import EmojiPicker from '@/components/common/EmojiPicker.vue';
+import ImgCard from '@/components/common/ImgCard.vue';
+import PartLoadingView from '@/components/common/PartLoadingView.vue';
 export default {
     name: 'PostPage',
     components: {

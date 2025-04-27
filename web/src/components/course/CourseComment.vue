@@ -25,8 +25,8 @@
     </div>
 </template>
 <script>
-import AlertButton from './AlertButton.vue';
-import AvatarName from './AvatarName.vue';
+import AlertButton from '@/components/report/AlertButton.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { globalProperties } from '@/main';
 export default {
     props: {

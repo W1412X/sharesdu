@@ -97,9 +97,9 @@
 </template>
 <script>
 import { globalSearch, searchArticles, searchCourses, searchPosts, searchReplies } from '@/axios/search';
-import HybridSearchItem from '@/components/HybridSearchItem.vue';
-import SearchItem from '@/components/SearchItem.vue';
-import SensitiveTextField from '@/components/SensitiveTextField.vue';
+import HybridSearchItem from '@/components/search/HybridSearchItem.vue';
+import SearchItem from '@/components/search/SearchItem.vue';
+import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
 import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets, waitSecond } from '@/utils/other';
 import { computed } from 'vue';

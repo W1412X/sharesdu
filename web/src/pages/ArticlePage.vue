@@ -138,23 +138,23 @@
     </v-overlay>
 </template>
 <script>
-import TagButton from '@/components/TagButton.vue';
+import TagButton from '@/components/article/TagButton.vue';
 import { globalProperties } from '@/main.js';
-import SourceBar from '@/components/SourceBar.vue';
-import ArticleDisplay from '@/components/ArticleDisplay.vue';
+import SourceBar from '@/components/article/SourceBar.vue';
+import ArticleDisplay from '@/components/article/ArticleDisplay.vue';
 import { getCookie } from '@/utils/cookie';
-import StarButton from '@/components/StarButton.vue';
-import AlertButton from '@/components/AlertButton.vue';
+import StarButton from '@/components/star/StarButton.vue';
+import AlertButton from '@/components/report/AlertButton.vue';
 import { computed, ref } from 'vue';
-import PostItem from '@/components/PostItem.vue';
-import PostEditor from '@/components/PostEditor.vue';
-import AvatarName from '@/components/AvatarName.vue';
+import PostItem from '@/components/post/PostItem.vue';
+import PostEditor from '@/components/post/PostEditor.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { copy, formatImageLinkInArticle, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage, responseToArticle } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
-import LikeButton from '@/components/LikeButton.vue';
-import DeleteButton from '@/components/DeleteButton.vue';
+import LikeButton from '@/components/common/LikeButton.vue';
+import DeleteButton from '@/components/common/DeleteButton.vue';
 import { addHistory } from '@/utils/history';
-import ManageButton from '@/components/ManageButton.vue';
+import ManageButton from '@/components/manage/ManageButton.vue';
 import { setArticleTop } from '@/axios/top';
 export default {
     name: 'ArticlePage',

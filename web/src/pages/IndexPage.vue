@@ -67,9 +67,9 @@
 <script>
 import { globalProperties } from '@/main';
 import { ref, computed } from 'vue';
-import ArticleItem from '@/components/ArticleItem.vue';
-import CourseItem from '@/components/CourseItem.vue';
-import PostItem from '@/components/PostItem.vue';
+import ArticleItem from '@/components/article/ArticleItem.vue';
+import CourseItem from '@/components/course/CourseItem.vue';
+import PostItem from '@/components/post/PostItem.vue';
 import { getCookie } from '@/utils/cookie';
 import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/axios/article';

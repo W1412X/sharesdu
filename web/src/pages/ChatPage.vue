@@ -107,14 +107,14 @@
     </div>
 </template>
 <script>
-import ChatMessage from '@/components/ChatMessage.vue';
+import ChatMessage from '@/components/chat/ChatMessage.vue';
 import { getCookie } from '@/utils/cookie';
 import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, extractTime, getNormalInfoAlert, copy } from '@/utils/other';
 import { globalProperties } from '@/main';
 import { getChatHistory, getChatUsers, markMessageAsRead, sendPrivateMessage } from '@/axios/chat';
 import { ref } from 'vue';
-import AvatarName from '@/components/AvatarName.vue';
-import SensitiveTextArea from '@/components/SensitiveTextArea.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 export default {
     setup() {
         /**

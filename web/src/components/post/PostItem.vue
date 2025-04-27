@@ -38,10 +38,10 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
-import AvatarName from '@/components/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName.vue';
 import { ref } from 'vue';
 import { copy, extractStringsInBrackets, getLinkInPost, getNormalErrorAlert, getNormalWarnAlert, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
-import ImgCard from './ImgCard.vue';
+import ImgCard from '@/components/common/ImgCard.vue';
 import { setPostTopInArticle, setPostTopInCourse } from '@/axios/top';
 export default {
     name: 'PostItem',

@@ -39,7 +39,7 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
-import SensitiveTextField from './SensitiveTextField.vue';
+import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { createInvitationCode, getInvitationCodeList, updateInvitationCodeStatus } from '@/axios/invite';
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';

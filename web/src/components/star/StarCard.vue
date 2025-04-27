@@ -59,13 +59,13 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
-import StarItem from './StarItem.vue';
+import StarItem from '@/components/star/StarItem.vue';
 import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
 import { createStarFolder, getStarFolders, getStarList, starContent } from '@/axios/star';
 import { computed, ref } from 'vue';
-import SensitiveTextArea from './SensitiveTextArea.vue';
-import SensitiveTextField from './SensitiveTextField.vue';
-import PartLoadingView from './PartLoadingView.vue';
+import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
+import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
+import PartLoadingView from '@/components/common/PartLoadingView.vue';
 export default {
     props: {
         type: {
