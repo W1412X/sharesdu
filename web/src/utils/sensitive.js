@@ -39,6 +39,11 @@ const root = trie.root
 var nodeNow = root
 var return_word = ''
 var count=0
+function toLowerCase(str) {
+    return str.replace(/[A-Z]/g, function(match) {
+        return match.toLowerCase();
+    });
+}
 export const detect =(text)=>{//
     nodeNow = root
     for (let ind = 0; ind < text.length; ind++) {
@@ -84,6 +89,7 @@ function if_can_expand (node,text,ind){
     return false;
 }
 export const replaceAll=(text)=> {
+    text=toLowerCase(text)
     var nodeNow = root
     var return_word = ''
     var count = 0;
