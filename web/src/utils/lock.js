@@ -2,7 +2,7 @@
  * do to avoid much requests try to get the access token  
  */
 let locks={
-    isFetchingToken:false,
+    token:false,
 };
 
 export function setLock(name,value) {
