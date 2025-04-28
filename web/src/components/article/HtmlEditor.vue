@@ -2,8 +2,10 @@
     <div style="border: 1px solid #ccc">
         <Toolbar v-if="type=='edit'" class="tool-bar" :editor="editorRef" :defaultConfig="toolbarConfig"
             :mode="mode" />
-        <Editor class="editor" v-model="data.content" :defaultConfig="editorConfig" :mode="mode"
+        <div class="editor-container">
+            <Editor class="editor" v-model="data.content" :defaultConfig="editorConfig" :mode="mode"
             @onCreated="handleCreated" />
+        </div>
     </div>
 </template>
 <script>
@@ -171,6 +173,7 @@ export default defineComponent({
 });
 </script>
 <style scoped>
+
 @media screen and (min-width: 1000px) {
     .tool-bar{
         border-bottom: 1px solid #ccc;
@@ -178,7 +181,11 @@ export default defineComponent({
     }
     .editor{
         width:980px;
-        min-height: 800px;
+        min-height: 65vh;
+    }
+    .editor-container{
+        overflow-y: scroll;
+        max-height: 65vh;
     }
 }
 
@@ -189,7 +196,11 @@ export default defineComponent({
     }
     .editor{
         width:100vw;
-        min-height: 600px;
+        min-height: 75vh;
+    }
+    .editor-container{
+        overflow-y: scroll;
+        max-height: 75vh;
     }
 }
 </style>

@@ -37,6 +37,11 @@
             <div class="control-bar">
                 <div v-if="searchType=='课程'" class="course-select-container">
                     <v-btn variant="outlined" :color="ifCourseFilter?themeColor:'grey'" @click="()=>{ifCourseFilter=!ifCourseFilter}" prepend-icon="mdi-filter-menu-outline">筛选</v-btn>
+                    <span v-if="!ifCourseFilter" :style="{color:themeColor,'margin-left':'20px'}" class="text-medium">
+                        通过
+                        <span class="text-medium-bold">学院/类型</span>
+                        筛选课程
+                    </span>
                     <v-autocomplete v-if="ifCourseFilter" hide-details v-model="courseCollege" style="margin-left: 10px;" :min-width="'150px'"
                         :label="'开设学院'"  density="compact" :items="colleges"
                         variant="outlined"></v-autocomplete>
@@ -49,7 +54,11 @@
                 </div>
                 <div v-if="searchType=='文章'" class="course-select-container">
                     <v-btn variant="outlined" :color="ifArticleFilter?themeColor:'grey'" @click="()=>{ifArticleFilter=!ifArticleFilter}" prepend-icon="mdi-filter-menu-outline">筛选</v-btn>
-                    <span></span>
+                    <span v-if="!ifArticleFilter" :style="{color:themeColor,'margin-left':'20px'}" class="text-medium">
+                        通过
+                        <span class="text-medium-bold">标签</span>
+                        筛选文章
+                    </span>
                     <div v-if="ifArticleFilter" class="article-tag-container">
                         <!--delete btn-->
                         <v-btn v-for="tag in filtArticleTags" :key="tag" :color="themeColor" :text="tag" variant="tonal"
