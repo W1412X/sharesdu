@@ -307,19 +307,23 @@ export default {
         }
     },
     beforeRouteLeave (to, from, next) {
-        let msg={};
-        msg.loginByUsernameData=this.loginByUsernameData;
-        msg.loginByEmailData=this.loginByEmailData;
-        msg.registerByEmailData=this.registerByEmailData;
-        msg.registerByInviteData=this.registerByInviteData;
-        msg.loginMethod=this.loginMethod;
-        msg.registerMethod=this.registerMethod;
-        msg.registerByEmailStep=this.registerByEmailStep;
-        msg.registerByInviteStep=this.registerByInviteStep;
-        msg.ifShowEmailExamineCard=this.ifShowEmailExamineCard;
-        msg.nowTab=this.nowTab;
-        sessionStorage.setItem('loginMsg',JSON.stringify(msg));
-        next();
+        try{
+            let msg={};
+            msg.loginByUsernameData=this.loginByUsernameData;
+            msg.loginByEmailData=this.loginByEmailData;
+            msg.registerByEmailData=this.registerByEmailData;
+            msg.registerByInviteData=this.registerByInviteData;
+            msg.loginMethod=this.loginMethod;
+            msg.registerMethod=this.registerMethod;
+            msg.registerByEmailStep=this.registerByEmailStep;
+            msg.registerByInviteStep=this.registerByInviteStep;
+            msg.ifShowEmailExamineCard=this.ifShowEmailExamineCard;
+            msg.nowTab=this.nowTab;
+            sessionStorage.setItem('loginMsg',JSON.stringify(msg));
+            next();
+        }catch(e){
+            next();
+        }
     },
     methods: {
         async loginByUsername() {

@@ -40,6 +40,9 @@ var nodeNow = root
 var return_word = ''
 var count=0
 function toLowerCase(str) {
+    if(!str){
+        return "";
+    }
     return str.replace(/[A-Z]/g, function(match) {
         return match.toLowerCase();
     });
@@ -89,6 +92,9 @@ function if_can_expand (node,text,ind){
     return false;
 }
 export const replaceAll=(text)=> {
+    if(!text){
+        return [];
+    }
     text=toLowerCase(text)
     var nodeNow = root
     var return_word = ''

@@ -7,7 +7,6 @@
                 density="compact" rows="1" variant="outlined"></sensitive-text-field>
             <div class="row-div">
                 <sensitive-text-area v-model="data.content" variant="outlined" rows="3" label="编辑帖子详述"></sensitive-text-area>
-                <emoji-picker @emoji="addEmoji"></emoji-picker>
             </div>
             <div class="row-div-scroll">
                 <img-card :editable="true" @delete_img="removeImage" v-for="(src,index) in imgSrcList" :key="index" :src="src" :width="100" :height="100">
@@ -28,7 +27,6 @@ import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { createPostInArticle, createPostInCourse } from '@/axios/post';
 import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
 import { getCookie } from '@/utils/cookie';
-import EmojiPicker from '@/components/PixelImage.vue';
 import { globalProperties } from '@/main';
 import ImgCard from '@/components/common/ImgCard.vue';
 import { uploadArticleImage } from '@/axios/image';
@@ -67,7 +65,6 @@ export default {
     components: {
         SensitiveTextField,
         SensitiveTextArea,
-        EmojiPicker,
         ImgCard,
     },
     data() {

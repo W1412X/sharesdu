@@ -137,12 +137,16 @@ export default {
         }
     },
     beforeRouteLeave (to, from, next) {
-        if(this.ifSubmit||this.ifComfirmLeave){
+        try{
+            if(this.ifSubmit||this.ifComfirmLeave){
+                next();
+            }else{
+                next(false);
+                this.nextPage=to;
+                this.setConfirmLeaveState(true);
+            }
+        }catch(e){
             next();
-        }else{
-            next(false);
-            this.nextPage=to;
-            this.setConfirmLeaveState(true);
         }
     },
     methods: {

@@ -204,21 +204,25 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (!getCookie("userName")) {
+    try{
+      if (!getCookie("userName")) {
+        next();
+        return;
+      }
+      let scanMsg = {};
+      scanMsg.notificationList = this.notificationList;
+      scanMsg.notificationPageNum = this.notificationPageNum;
+      scanMsg.scrollTop = document.scrollingElement.scrollTop;
+      scanMsg.choose = this.choose;
+      scanMsg.loadState = this.loadState;
+      scanMsg.loading = this.loading;
+      scanMsg.chatList = this.chatList;
+      let key = 'selfScanMsg';
+      sessionStorage.setItem(key, JSON.stringify(scanMsg));
+      next()
+    }catch(e){
       next();
-      return;
     }
-    let scanMsg = {};
-    scanMsg.notificationList = this.notificationList;
-    scanMsg.notificationPageNum = this.notificationPageNum;
-    scanMsg.scrollTop = document.scrollingElement.scrollTop;
-    scanMsg.choose = this.choose;
-    scanMsg.loadState = this.loadState;
-    scanMsg.loading = this.loading;
-    scanMsg.chatList = this.chatList;
-    let key = 'selfScanMsg';
-    sessionStorage.setItem(key, JSON.stringify(scanMsg));
-    next()
   },
   components: {
     AvatarName,

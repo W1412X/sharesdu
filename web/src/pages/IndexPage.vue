@@ -163,24 +163,28 @@ export default {
         }
     },
     beforeRouteLeave(to, from, next) {
-        //use session storage to save memory now  
-        if(!getCookie("userName")){
+        try{
+            //use session storage to save memory now  
+            if(!getCookie("userName")){
+                next();
+                return;
+            }
+            let lastScanMsg = {}
+            lastScanMsg.itemType = this.itemType;
+            lastScanMsg.articleList = this.articleList;
+            lastScanMsg.postList = this.postList;
+            lastScanMsg.courseList = this.courseList;
+            lastScanMsg.articlePageNum = this.articlePageNum;
+            lastScanMsg.postPageNum = this.postPageNum;
+            lastScanMsg.coursePageNum = this.coursePageNum;
+            let scrollPosition = document.scrollingElement.scrollTop;
+            lastScanMsg.scrollPosition = scrollPosition;
+            lastScanMsg.articleSortMethod = this.articleSortMethod;
+            sessionStorage.setItem('indexScanMsg', JSON.stringify(lastScanMsg))
+            next()
+        }catch(e){
             next();
-            return;
         }
-        let lastScanMsg = {}
-        lastScanMsg.itemType = this.itemType;
-        lastScanMsg.articleList = this.articleList;
-        lastScanMsg.postList = this.postList;
-        lastScanMsg.courseList = this.courseList;
-        lastScanMsg.articlePageNum = this.articlePageNum;
-        lastScanMsg.postPageNum = this.postPageNum;
-        lastScanMsg.coursePageNum = this.coursePageNum;
-        let scrollPosition = document.scrollingElement.scrollTop;
-        lastScanMsg.scrollPosition = scrollPosition;
-        lastScanMsg.articleSortMethod = this.articleSortMethod;
-        sessionStorage.setItem('indexScanMsg', JSON.stringify(lastScanMsg))
-        next()
     },
     data() {
         const itemType = 'article';

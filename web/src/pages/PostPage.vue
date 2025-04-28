@@ -191,21 +191,25 @@ export default {
         }
     },
     beforeRouteLeave (to, from, next) {
-        if(!getCookie("userName")){
+        try{
+            if(!getCookie("userName")){
+                next();
+                return;
+            }
+            //use session storage to save memory now  
+            let scanMsg={};
+            scanMsg.post=this.post;
+            scanMsg.replyList=this.replyList;
+            scanMsg.replyPageNum=this.replyPageNum;
+            scanMsg.scrollTop=document.scrollingElement.scrollTop;
+            scanMsg.loadState=this.loadState;
+            scanMsg.loading=this.loading;
+            let key='postScanMsg|'+this.post.id;
+            sessionStorage.setItem(key,JSON.stringify(scanMsg));
+            next()
+        }catch(e){
             next();
-            return;
         }
-        //use session storage to save memory now  
-        let scanMsg={};
-        scanMsg.post=this.post;
-        scanMsg.replyList=this.replyList;
-        scanMsg.replyPageNum=this.replyPageNum;
-        scanMsg.scrollTop=document.scrollingElement.scrollTop;
-        scanMsg.loadState=this.loadState;
-        scanMsg.loading=this.loading;
-        let key='postScanMsg|'+this.post.id;
-        sessionStorage.setItem(key,JSON.stringify(scanMsg));
-        next()
     },
     data() {
         const relativeText=computed(()=>{

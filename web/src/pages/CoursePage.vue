@@ -260,30 +260,34 @@ export default {
         }
     },
     beforeRouteLeave (to, from, next) {
-        //use session storage to save memory now  
-        if(!getCookie("userName")){
+        try{
+            //use session storage to save memory now  
+            if(!getCookie("userName")){
+                next();
+                return;
+            }
+            let scanMsg={};
+            scanMsg.course=this.course;
+            scanMsg.commentList=this.commentList;
+            scanMsg.commentPageNum=this.commentPageNum;
+            scanMsg.postItems=this.postItems;
+            scanMsg.postPageNum=this.postPageNum;
+            scanMsg.selfComment=this.selfComment;
+            scanMsg.oriSelfComment=this.oriSelfComment;
+            scanMsg.scrollTop=document.scrollingElement.scrollTop;
+            scanMsg.postState=this.ifShowPost;
+            scanMsg.loading=this.loading;
+            scanMsg.loadState=this.loadState;
+            if(scanMsg.postState){
+                scanMsg.postScrollTop=document.getElementById("post-container").scrollTop;
+            }
+            let key='courseScanMsg|'+this.course.id;
+            scanMsg.ifRated=this.ifRated;
+            sessionStorage.setItem(key,JSON.stringify(scanMsg));
+            next()
+        }catch(e){
             next();
-            return;
         }
-        let scanMsg={};
-        scanMsg.course=this.course;
-        scanMsg.commentList=this.commentList;
-        scanMsg.commentPageNum=this.commentPageNum;
-        scanMsg.postItems=this.postItems;
-        scanMsg.postPageNum=this.postPageNum;
-        scanMsg.selfComment=this.selfComment;
-        scanMsg.oriSelfComment=this.oriSelfComment;
-        scanMsg.scrollTop=document.scrollingElement.scrollTop;
-        scanMsg.postState=this.ifShowPost;
-        scanMsg.loading=this.loading;
-        scanMsg.loadState=this.loadState;
-        if(scanMsg.postState){
-            scanMsg.postScrollTop=document.getElementById("post-container").scrollTop;
-        }
-        let key='courseScanMsg|'+this.course.id;
-        scanMsg.ifRated=this.ifRated;
-        sessionStorage.setItem(key,JSON.stringify(scanMsg));
-        next()
     },
     data() {
         return {

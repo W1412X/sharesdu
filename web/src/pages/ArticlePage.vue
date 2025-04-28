@@ -252,24 +252,28 @@ export default {
         }
     },
     beforeRouteLeave(to, from, next) {
-        if (!getCookie("userName")) {
+        try{
+            if (!getCookie("userName")) {
+                next();
+                return;
+            }
+            //use session storage to save memory now  
+            let scanMsg = {};
+            scanMsg.articleResponse = this.articleResponse;
+            scanMsg.articleResponse.article_detail.if_top = this.article.ifTop;
+            scanMsg.postItems = this.postItems;
+            scanMsg.postPageNum = this.postPageNum;
+            scanMsg.commentState = this.ifShowComment;
+            let key = 'articleScanMsg|' + this.article.id;
+            if (scanMsg.commentState) {
+                let postScrollTop = document.getElementById("post-container").scrollTop;
+                scanMsg.postScrollTop = postScrollTop;
+            }
+            sessionStorage.setItem(key, JSON.stringify(scanMsg));
             next();
-            return;
+        }catch(e){
+            next();
         }
-        //use session storage to save memory now  
-        let scanMsg = {};
-        scanMsg.articleResponse = this.articleResponse;
-        scanMsg.articleResponse.article_detail.if_top = this.article.ifTop;
-        scanMsg.postItems = this.postItems;
-        scanMsg.postPageNum = this.postPageNum;
-        scanMsg.commentState = this.ifShowComment;
-        let key = 'articleScanMsg|' + this.article.id;
-        if (scanMsg.commentState) {
-            let postScrollTop = document.getElementById("post-container").scrollTop;
-            scanMsg.postScrollTop = postScrollTop;
-        }
-        sessionStorage.setItem(key, JSON.stringify(scanMsg));
-        next();
     },
     methods: {
         addPost(item) {

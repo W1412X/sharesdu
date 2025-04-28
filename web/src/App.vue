@@ -107,7 +107,7 @@ export default {
       loadState.value = state;
     }
     const ifShowNav = computed(() => {
-      if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage', undefined, null].includes(page.value)) {
+      if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage','DocumentPage', undefined, null].includes(page.value)) {
         return false;
       } else {
         return true;

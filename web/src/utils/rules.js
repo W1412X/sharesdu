@@ -2,12 +2,18 @@
  * user name rules
  */
 export function validateUserName(str) {
+    /*
     const regex = /^[A-Za-z\u4e00-\u9fa50-9]{3,20}$/;
     if (regex.test(str)) {
         return true;
     } else {
         return false;
-    }
+    }*/
+   if(str&&str.length>=1&&str.length<=20){
+    return true;
+   }else{
+    return false;
+   }
 }
 /**
  * password rules
@@ -48,7 +54,7 @@ export function validateUrl(str) {
  * login rules
  */
 export const rules={
-    userName: value => validateUserName(value) || "用户名仅能包含中文字符/英文字符/数字，且长度在3到20之间。",
+    userName: value => validateUserName(value) || "用户名应在1到20之间。",
     password: value => validatePassWord(value) || "密码必须同时包含字母、数字和符号（*/@/#/$/./!），且长度在8到16之间。",
     email: value => validateEmail(value) || '请输入山东大学邮箱',
     url: value => validateUrl(value) || '请输入正确的网址'

@@ -130,30 +130,34 @@ export default {
         }
     },
     beforeRouteLeave (to, from, next) {
-        if(!getCookie("userName")){
+        try{
+            if(!getCookie("userName")){
+                next();
+                return;
+            }
+            //use session storage to save memory now  
+            let scanMsg={};
+            scanMsg.editingArticleFiltTag=this.editingArticleFiltTag;
+            scanMsg.courseCollege=this.courseCollege;
+            scanMsg.courseMethod=this.courseMethod;
+            scanMsg.courseType=this.courseType;
+            scanMsg.searchType=this.searchType;
+            scanMsg.ifCourseFilter=this.ifCourseFilter;
+            scanMsg.ifArticleFilter=this.ifArticleFilter;
+            scanMsg.filtArticleTags=this.filtArticleTags;
+            scanMsg.sortType=this.sortType;
+            scanMsg.searchList=this.searchList;
+            scanMsg.searchPage=this.searchPage;
+            scanMsg.searchResultNum=this.searchResultNum;
+            scanMsg.loading=this.loading;
+            scanMsg.articleType=this.articleType;
+            scanMsg.scrollTop=document.scrollingElement.scrollTop;
+            let key='searchScanMsg|'+this.query.join(',');
+            sessionStorage.setItem(key,JSON.stringify(scanMsg));
+            next()
+        }catch(e){
             next();
-            return;
         }
-        //use session storage to save memory now  
-        let scanMsg={};
-        scanMsg.editingArticleFiltTag=this.editingArticleFiltTag;
-        scanMsg.courseCollege=this.courseCollege;
-        scanMsg.courseMethod=this.courseMethod;
-        scanMsg.courseType=this.courseType;
-        scanMsg.searchType=this.searchType;
-        scanMsg.ifCourseFilter=this.ifCourseFilter;
-        scanMsg.ifArticleFilter=this.ifArticleFilter;
-        scanMsg.filtArticleTags=this.filtArticleTags;
-        scanMsg.sortType=this.sortType;
-        scanMsg.searchList=this.searchList;
-        scanMsg.searchPage=this.searchPage;
-        scanMsg.searchResultNum=this.searchResultNum;
-        scanMsg.loading=this.loading;
-        scanMsg.articleType=this.articleType;
-        scanMsg.scrollTop=document.scrollingElement.scrollTop;
-        let key='searchScanMsg|'+this.query.join(',');
-        sessionStorage.setItem(key,JSON.stringify(scanMsg));
-        next()
     },
     components: {
         SearchItem,
