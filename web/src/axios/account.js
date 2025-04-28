@@ -6,7 +6,7 @@
  */
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance, getNoHeaderAxiosInstance} from "./axios.js";
-import { waitForLock } from "@/utils/lock.js";
+import { setLock, waitForLock } from "@/utils/lock.js";
 /**
  * registe by Email
  * @param {JSON} data 
@@ -44,7 +44,11 @@ export const getRegisterEmailCode = async (email,inviteCode) => {
  */
 export const loginWithPassword = async (data) => {
   try {
+    setLock('token',true);
     const response = await getNoHeaderAxiosInstance().post('/login_passwd', data);
+    setTimeout(()=>{
+      setLock('token',false);
+    },1000);
     return response.data;
   } catch (error) {
     return error.response.data;
