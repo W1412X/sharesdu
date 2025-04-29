@@ -6,7 +6,6 @@
  */
 import { dealAxiosError } from "@/utils/other";
 import { getaxiosInstance } from "./axios";
-import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
 import { waitForLock } from "@/utils/lock";
 
 /**
@@ -132,12 +131,7 @@ export const getUserCourseEvaluation = async (userId, courseId) => {
 export const getCourseDetail = async (courseId) => {
     try {
         await waitForLock('token');
-        let cacheResponse=getResponseFromCache('/course/detail?course_id=' + courseId);
-        if(cacheResponse){
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/course/detail', { params: { course_id: courseId } });
-        saveResponseToCache('/course/detail?course_id=' + courseId,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -158,12 +152,7 @@ export const getCourseDetail = async (courseId) => {
 export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        let cacheResponse=getResponseFromCache('/course/post_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize);
-        if(cacheResponse){
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/course/post_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
-        saveResponseToCache('/course/post_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -184,12 +173,7 @@ export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) 
 export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        let cacheResponse=getResponseFromCache('/course/score_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize);
-        if(cacheResponse){
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/course/score_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
-        saveResponseToCache('/course/score_list?course_id=' + courseId + '&page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -209,12 +193,7 @@ export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20)
 export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        let cacheResponse=getResponseFromCache('/course/list?page_index=' + pageIndex + '&page_size=' + pageSize);
-        if(cacheResponse){
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/course/list', { params: { page_index: pageIndex, page_size: pageSize } });
-        saveResponseToCache('/course/list?page_index=' + pageIndex + '&page_size=' + pageSize,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -275,12 +254,7 @@ export const rollbackCourse = async (courseId, targetVersion) => {
 export const getCourseHistory = async (courseId, pageIndex = 1, pageSize = 10) => {
     try {
         await waitForLock('token');
-        let cacheResponse=getResponseFromCache(`/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`);
-        if(cacheResponse){
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get(`/admin/courses/${courseId}/history`, { params: { page_index: pageIndex, page_size: pageSize } });
-        saveResponseToCache(`/admin/courses/${courseId}/history?page_index=${pageIndex}&page_size=${pageSize}`,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

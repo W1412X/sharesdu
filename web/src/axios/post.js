@@ -1,6 +1,5 @@
 import { dealAxiosError } from "@/utils/other";
 import { getaxiosInstance } from "./axios";
-import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
 import { waitForLock } from "@/utils/lock";
 
 /**
@@ -58,12 +57,7 @@ export const createPostInCourse = async (courseId,postTitle, postContent) => {
 export const getPostDetailById = async (postId) => {
     try {
         await waitForLock('token');
-        let cacheResponse=getResponseFromCache(`/post/detail?post_id=${postId}`);
-        if(cacheResponse){
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/post/detail', { params: { post_id: postId } });
-        saveResponseToCache(`/post/detail?post_id=${postId}`,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -83,12 +77,7 @@ export const getPostDetailById = async (postId) => {
 export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        let cacheResponse=getResponseFromCache(`/post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`);
-        if(cacheResponse){
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/post/reply_list', { params: { post_id: postId, page_index: pageIndex, page_size: pageSize } });
-        saveResponseToCache(`/post/reply_list?post_id=${postId}&page_index=${pageIndex}&page_size=${pageSize}`,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -174,12 +163,7 @@ export const deleteReplyById = async (replyId) => {
 export const getReplyDetailById = async (replyId) => {
     try {
         await waitForLock('token');
-        let cacheResponse = getResponseFromCache(`/reply/detail?reply_id=${replyId}`);
-        if(cacheResponse){
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/reply/detail', { params: { reply_id: replyId } });
-        saveResponseToCache(`/reply/detail?reply_id=${replyId}`,response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

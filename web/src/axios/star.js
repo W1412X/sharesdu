@@ -1,6 +1,5 @@
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
-import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
 import { waitForLock } from "@/utils/lock.js";
 
 /**
@@ -56,12 +55,7 @@ export const getStarList = async (folder_id=null) => {
     await waitForLock('token');
     let url = '/star/list';
     if(folder_id !== null) url += `?folder_id=${folder_id}`;
-    let cacheResponse=getResponseFromCache(url);
-    if(cacheResponse){
-      return cacheResponse.data;
-    }
     const response = await getaxiosInstance().get(url);
-    saveResponseToCache(url,response);
     return response.data;
   } catch (error) {
     let dealResult=await dealAxiosError(error);
@@ -100,12 +94,7 @@ export const unstarContent = async (content_type, content_id) => {
 export const getStarFolders = async () => {
   try {
     await waitForLock('token');
-    let cacheResponse=getResponseFromCache('/star/folder/list');
-    if(cacheResponse){
-      return cacheResponse.data;
-    }
     const response = await getaxiosInstance().get('/star/folder/list');
-    saveResponseToCache('/star/folder/list',response);
     return response.data;
   } catch (error) {
     let dealResult=await dealAxiosError(error);

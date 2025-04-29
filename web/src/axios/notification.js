@@ -1,6 +1,5 @@
 import { dealAxiosError } from "@/utils/other.js";
 import {getaxiosInstance} from "./axios.js";
-import { getResponseFromCache, saveResponseToCache } from "@/utils/session.js";
 import { waitForLock } from "@/utils/lock.js";
 /**
  * Fetch notifications list
@@ -11,14 +10,9 @@ import { waitForLock } from "@/utils/lock.js";
 export const fetchNotificationsList = async (page_index = 1,page_size = 10) => {
     try {
       await waitForLock('token');
-      let cacheResponse=getResponseFromCache(`/notifications/list?page_size=${page_size}&page_index=${page_index}`);
-      if(cacheResponse){
-          return cacheResponse.data;
-      }
       const response = await getaxiosInstance().get('/notifications/list', {
         params: { page_size, page_index }
       });
-      saveResponseToCache(`/notifications/list?page_size=${page_size}&page_index=${page_index}`,response);
       return response.data;
     } catch (error) {
       let dealResult = await dealAxiosError(error);

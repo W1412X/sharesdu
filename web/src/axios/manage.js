@@ -1,4 +1,4 @@
-import { getResponseFromCache, saveResponseToCache } from "@/utils/session";
+
 import { getaxiosInstance } from "./axios";
 import { dealAxiosError } from "@/utils/other";
 import { waitForLock } from "@/utils/lock";
@@ -10,12 +10,7 @@ import { waitForLock } from "@/utils/lock";
 export const getUserList = async (page_index=1,page_size=20) => {
     try {
         await waitForLock('token');
-        let cacheResponse = getResponseFromCache('/user/list');
-        if (cacheResponse) {
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/user/list',{ params: { page_index: page_index, page_size: page_size } });
-        saveResponseToCache('/user/list', response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -117,12 +112,7 @@ export const unblockArticle = async (articleId, reason) => {
 export const getBlockedUserList = async (pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        let cacheResponse = getResponseFromCache('/admin/blocked-users?page_index=' + pageIndex + '&page_size=' + pageSize);
-        if (cacheResponse) {
-            return cacheResponse.data;
-        }
         const response = await getaxiosInstance().get('/admin/blocked-users', { params: { page_index: pageIndex, page_size: pageSize } });
-        saveResponseToCache('/admin/blocked-users?page_index=' + pageIndex + '&page_size=' + pageSize, response);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
