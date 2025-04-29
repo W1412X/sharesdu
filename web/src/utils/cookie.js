@@ -7,8 +7,13 @@
  *  
  * themeColor
  */
+export function base64Encode(str) {
+  return window.btoa(str);
+}
 
-import { base64Decode, base64Encode } from "./other";
+export function base64Decode(str) {
+  return window.atob(str);
+}
 
 /**
  * get the given name's value

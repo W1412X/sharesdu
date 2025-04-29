@@ -1,6 +1,6 @@
 import { dealAxiosError } from "@/utils/other";
-import { getaxiosInstance } from "./axios";
 import { waitForLock } from "@/utils/lock";
+import axiosInstance from "./axios";
 
 /**
  * Like content (article/post/reply)
@@ -11,7 +11,7 @@ import { waitForLock } from "@/utils/lock";
 export const likeContent = async (content_type, content_id) => {
     try {
       await waitForLock('token');
-      const response = await getaxiosInstance().post('/like', { content_type, content_id });
+      const response = await axiosInstance.post('/like', { content_type, content_id });
       return response.data;
     } catch (error) {
       let dealResult = await dealAxiosError(error);
@@ -31,7 +31,7 @@ export const likeContent = async (content_type, content_id) => {
   export const unlikeContent = async (content_type, content_id) => {
     try {
       await waitForLock('token');
-      const response = await getaxiosInstance().post('/unlike', { content_type, content_id });
+      const response = await axiosInstance.post('/unlike', { content_type, content_id });
       return response.data;
     } catch (error) {
       let dealResult = await dealAxiosError(error);
@@ -51,7 +51,7 @@ export const likeContent = async (content_type, content_id) => {
   export const getContentLikeCount = async (content_type, content_id) => {
     try {
       await waitForLock('token');
-      const response = await getaxiosInstance().get('/like/count', {
+      const response = await axiosInstance.get('/like/count', {
         params: { content_type, content_id }
       });
       return response.data;
@@ -74,7 +74,7 @@ export const likeContent = async (content_type, content_id) => {
   export const fetchUserLikedContents = async (user_id, page_size = 20, page_index = 1) => {
     try {
       await waitForLock('token');
-      const response = await getaxiosInstance().get('/like/user', {
+      const response = await axiosInstance.get('/like/user', {
         params: { user_id, page_size, page_index }
       });
       return response.data;

@@ -8,14 +8,14 @@
  * 同时在控制台输出错误信息  
  */
 import { dealAxiosError } from "@/utils/other.js";
-import {getaxiosInstance} from "./axios.js";
 import { waitForLock } from "@/utils/lock.js";
+import axiosInstance from "./axios";
 
 // 创建文章函数
 export const createArticle = async (data) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/article/create', data);
+        const response = await axiosInstance.post('/article/create', data);
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);
@@ -31,7 +31,7 @@ export const createArticle = async (data) => {
 export const editArticle = async (data) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/article/edit', data);
+        const response = await axiosInstance.post('/article/edit', data);
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);
@@ -48,7 +48,7 @@ export const editArticle = async (data) => {
 export const deleteArticle = async (articleId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/article/delete', {article_id: articleId});
+        const response = await axiosInstance.post('/article/delete', {article_id: articleId});
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);
@@ -64,7 +64,7 @@ export const deleteArticle = async (articleId) => {
 export const getArticleDetail = async (id) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/article/detail', { params: { article_id:id } });
+        const response = await axiosInstance.get('/article/detail', { params: { article_id:id } });
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);
@@ -80,7 +80,7 @@ export const getArticleDetail = async (id) => {
 export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/article/post_list', { params: { article_id:id, page_index: pageIndex, page_size: pageSize } });
+        const response = await axiosInstance.get('/article/post_list', { params: { article_id:id, page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);
@@ -96,7 +96,7 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
 export const getArticleList = async (sort='time',tags=null,pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/article/list', { params: { page_index: pageIndex, page_size: pageSize,tags:tags,sort:sort } });
+        const response = await axiosInstance.get('/article/list', { params: { page_index: pageIndex, page_size: pageSize,tags:tags,sort:sort } });
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);

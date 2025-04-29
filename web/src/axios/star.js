@@ -1,6 +1,6 @@
 import { dealAxiosError } from "@/utils/other.js";
-import {getaxiosInstance} from "./axios.js";
 import { waitForLock } from "@/utils/lock.js";
+import axiosInstance from "./axios";
 
 /**
  * 收藏课程、文章或帖子
@@ -13,7 +13,7 @@ export const starContent = async (content_type, content_id, folder_id=null) => {
   try {
     await waitForLock('token');
     const data = {content_type, content_id, folder_id};
-    const response = await getaxiosInstance().post('/star', data);
+    const response = await axiosInstance.post('/star', data);
     return response.data;
   } catch (error) {
     let dealResult=await dealAxiosError(error);
@@ -34,7 +34,7 @@ export const createStarFolder = async (folder_name, description=null) => {
   try {
     await waitForLock('token');
     const data = {folder_name, description};
-    const response = await getaxiosInstance().post('/star/create', data);
+    const response = await axiosInstance.post('/star/create', data);
     return response.data;
   } catch (error) {
     let dealResult=await dealAxiosError(error);
@@ -55,7 +55,7 @@ export const getStarList = async (folder_id=null) => {
     await waitForLock('token');
     let url = '/star/list';
     if(folder_id !== null) url += `?folder_id=${folder_id}`;
-    const response = await getaxiosInstance().get(url);
+    const response = await axiosInstance.get(url);
     return response.data;
   } catch (error) {
     let dealResult=await dealAxiosError(error);
@@ -76,7 +76,7 @@ export const unstarContent = async (content_type, content_id) => {
   try {
     await waitForLock('token');
     const data = {content_type, content_id};
-    const response = await getaxiosInstance().post('/unstar', data);
+    const response = await axiosInstance.post('/unstar', data);
     return response.data;
   } catch (error) {
     let dealResult=await dealAxiosError(error);
@@ -94,7 +94,7 @@ export const unstarContent = async (content_type, content_id) => {
 export const getStarFolders = async () => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().get('/star/folder/list');
+    const response = await axiosInstance.get('/star/folder/list');
     return response.data;
   } catch (error) {
     let dealResult=await dealAxiosError(error);

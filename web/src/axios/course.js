@@ -5,8 +5,8 @@
  * every function return a json with status code and message
  */
 import { dealAxiosError } from "@/utils/other";
-import { getaxiosInstance } from "./axios";
 import { waitForLock } from "@/utils/lock";
+import axiosInstance from "./axios";
 
 /**
  * 创建新的课程
@@ -16,7 +16,7 @@ import { waitForLock } from "@/utils/lock";
 export const createCourse = async (data) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/course/create', data);
+        const response = await axiosInstance.post('/course/create', data);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -35,7 +35,7 @@ export const createCourse = async (data) => {
 export const editCourse = async (data) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/course/edit', data);
+        const response = await axiosInstance.post('/course/edit', data);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -54,7 +54,7 @@ export const editCourse = async (data) => {
 export const deleteCourse = async (courseId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/course/delete', { course_id: courseId });
+        const response = await axiosInstance.post('/course/delete', { course_id: courseId });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -73,7 +73,7 @@ export const deleteCourse = async (courseId) => {
 export const rateCourse = async (data) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/course/rate', data);
+        const response = await axiosInstance.post('/course/rate', data);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -92,7 +92,7 @@ export const rateCourse = async (data) => {
 export const editRating = async (data) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/course/edit_rating', data);
+        const response = await axiosInstance.post('/course/edit_rating', data);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -112,7 +112,7 @@ export const editRating = async (data) => {
 export const getUserCourseEvaluation = async (userId, courseId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/course/user_evaluation', { user_id: userId, course_id: courseId });
+        const response = await axiosInstance.post('/course/user_evaluation', { user_id: userId, course_id: courseId });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -131,7 +131,7 @@ export const getUserCourseEvaluation = async (userId, courseId) => {
 export const getCourseDetail = async (courseId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/course/detail', { params: { course_id: courseId } });
+        const response = await axiosInstance.get('/course/detail', { params: { course_id: courseId } });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -152,7 +152,7 @@ export const getCourseDetail = async (courseId) => {
 export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/course/post_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
+        const response = await axiosInstance.get('/course/post_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -173,7 +173,7 @@ export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) 
 export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/course/score_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
+        const response = await axiosInstance.get('/course/score_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -193,7 +193,7 @@ export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20)
 export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/course/list', { params: { page_index: pageIndex, page_size: pageSize } });
+        const response = await axiosInstance.get('/course/list', { params: { page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -213,7 +213,7 @@ export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
 export const freezeUnfreezeCourse = async (courseId, action) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/admin/courses/freeze', { course_id: courseId, action: action });
+        const response = await axiosInstance.post('/admin/courses/freeze', { course_id: courseId, action: action });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -233,7 +233,7 @@ export const freezeUnfreezeCourse = async (courseId, action) => {
 export const rollbackCourse = async (courseId, targetVersion) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/admin/courses/rollback', { course_id: courseId, target_version: targetVersion });
+        const response = await axiosInstance.post('/admin/courses/rollback', { course_id: courseId, target_version: targetVersion });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -254,7 +254,7 @@ export const rollbackCourse = async (courseId, targetVersion) => {
 export const getCourseHistory = async (courseId, pageIndex = 1, pageSize = 10) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get(`/admin/courses/${courseId}/history`, { params: { page_index: pageIndex, page_size: pageSize } });
+        const response = await axiosInstance.get(`/admin/courses/${courseId}/history`, { params: { page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

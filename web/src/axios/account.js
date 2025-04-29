@@ -5,8 +5,8 @@
  * every function return a json with status code and message
  */
 import { dealAxiosError } from "@/utils/other.js";
-import {getaxiosInstance, getNoHeaderAxiosInstance} from "./axios.js";
 import { setLock, waitForLock } from "@/utils/lock.js";
+import axiosInstance, { axiosInstanceNoHeader } from "./axios";
 /**
  * registe by Email
  * @param {JSON} data 
@@ -15,7 +15,7 @@ import { setLock, waitForLock } from "@/utils/lock.js";
 export const registerByEmail = async (data) => {
   try {
     await waitForLock('token');
-    const response = await getNoHeaderAxiosInstance().post('/register', data);
+    const response = await axiosInstanceNoHeader.post('/register', data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -30,7 +30,7 @@ export const registerByEmail = async (data) => {
 export const getRegisterEmailCode = async (email,inviteCode) => {
   try {
     await waitForLock('token');
-    const response = await getNoHeaderAxiosInstance().get(`/register?send_code=1&email=${email}&invitation_code=${inviteCode}`);
+    const response = await axiosInstanceNoHeader.get(`/register?send_code=1&email=${email}&invitation_code=${inviteCode}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -45,7 +45,7 @@ export const getRegisterEmailCode = async (email,inviteCode) => {
 export const loginWithPassword = async (data) => {
   try {
     setLock('token',true);
-    const response = await getNoHeaderAxiosInstance().post('/login_passwd', data);
+    const response = await axiosInstanceNoHeader.post('/login_passwd', data);
     setTimeout(()=>{
       setLock('token',false);
     },1000);
@@ -63,7 +63,7 @@ export const loginWithPassword = async (data) => {
 export const getLoginEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    const response = await getNoHeaderAxiosInstance().get(`/login_email?send_code=1&email=${email}`);
+    const response = await axiosInstanceNoHeader.get(`/login_email?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -78,7 +78,7 @@ export const getLoginEmailCode = async (email) => {
 export const loginWithEmail = async (data) => {
   try {
     await waitForLock('token');
-    const response = await getNoHeaderAxiosInstance().post('/login_email', data);
+    const response = await axiosInstanceNoHeader.post('/login_email', data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -92,7 +92,7 @@ export const loginWithEmail = async (data) => {
 export const logout = async () => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().post('/logout');
+    const response = await axiosInstance.post('/logout');
     return response.data;
   } catch (error) {
     let dealResult = await dealAxiosError(error);
@@ -111,7 +111,7 @@ export const logout = async () => {
 export const deleteAccount = async (data) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().post('/delete_account', data);
+    const response = await axiosInstance.post('/delete_account', data);
     return response.data;
   } catch (error) {
     let dealResult = await dealAxiosError(error);
@@ -130,7 +130,7 @@ export const deleteAccount = async (data) => {
 export const getDeleteAccountEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().get(`/delete_account?send_code=1&email=${email}`);
+    const response = await axiosInstance.get(`/delete_account?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
     let dealResult = await dealAxiosError(error);
@@ -149,7 +149,7 @@ export const getDeleteAccountEmailCode = async (email) => {
 export const resetPassword = async (data) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().post('/reset_password', data);
+    const response = await axiosInstance.post('/reset_password', data);
     return response.data;
   } catch (error) {
     let dealResult = await dealAxiosError(error);
@@ -168,7 +168,7 @@ export const resetPassword = async (data) => {
 export const getResetPasswordEmailCode = async (email) => {
   try {
     await waitForLock('token');
-    const response = await getaxiosInstance().get(`/reset_password?send_code=1&email=${email}`);
+    const response = await axiosInstance.get(`/reset_password?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
     let dealResult = await dealAxiosError(error);
@@ -187,7 +187,7 @@ export const getResetPasswordEmailCode = async (email) => {
 export const getAuthorInfo=async(userId)=>{
   try{
     await waitForLock('token');
-    const response=await getaxiosInstance().get(`/user/homepage?user_id=${userId}`);
+    const response=await axiosInstance.get(`/user/homepage?user_id=${userId}`);
     return response.data;
   }catch(error){
     let dealResult = await dealAxiosError(error);
@@ -205,7 +205,7 @@ export const getAuthorInfo=async(userId)=>{
  */
 export const getUserPreview = async (userId) => {
   try {
-      const response = await getaxiosInstance().get(`/user/preview?user_id=${userId}`);
+      const response = await axiosInstance.get(`/user/preview?user_id=${userId}`);
       return response.data;
   } catch (error) {
       let dealResult = await dealAxiosError(error);
@@ -226,7 +226,7 @@ export const getUserPreview = async (userId) => {
  */
 export const getUserContent = async (contentType, userId, page = 1, pageSize = 10) => {
   try {
-      const response = await getaxiosInstance().get(`/user/content?type=${contentType}&user_id=${userId}&page=${page}&page_size=${pageSize}`);
+      const response = await axiosInstance.get(`/user/content?type=${contentType}&user_id=${userId}&page=${page}&page_size=${pageSize}`);
       return response.data;
   } catch (error) {
       let dealResult = await dealAxiosError(error);

@@ -1,6 +1,6 @@
 import { dealAxiosError } from "@/utils/other";
-import { getaxiosInstance } from "./axios";
 import { waitForLock } from "@/utils/lock";
+import axiosInstance from "./axios";
 
 /**
  * 
@@ -12,7 +12,7 @@ import { waitForLock } from "@/utils/lock";
 export const createPostInArticle = async (articleId, postTitle, postContent) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/post/article_post', { 
+        const response = await axiosInstance.post('/post/article_post', { 
             article_id: articleId,
             post_title: postTitle,
             post_content: postContent 
@@ -35,7 +35,7 @@ export const createPostInArticle = async (articleId, postTitle, postContent) => 
 export const createPostInCourse = async (courseId,postTitle, postContent) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/post/course_post', { 
+        const response = await axiosInstance.post('/post/course_post', { 
             course_id:courseId,
             post_title: postTitle,
             post_content: postContent 
@@ -57,7 +57,7 @@ export const createPostInCourse = async (courseId,postTitle, postContent) => {
 export const getPostDetailById = async (postId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/post/detail', { params: { post_id: postId } });
+        const response = await axiosInstance.get('/post/detail', { params: { post_id: postId } });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -77,7 +77,7 @@ export const getPostDetailById = async (postId) => {
 export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/post/reply_list', { params: { post_id: postId, page_index: pageIndex, page_size: pageSize } });
+        const response = await axiosInstance.get('/post/reply_list', { params: { post_id: postId, page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -95,7 +95,7 @@ export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20)
 export const deletePostById = async (postId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/post/delete', { post_id: postId });
+        const response = await axiosInstance.post('/post/delete', { post_id: postId });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -117,13 +117,13 @@ export const createReplyUnderPost = async (postId, replyContent, parentReplyId =
         await waitForLock('token');
         let response=null;
         if(parentReplyId){
-            response = await getaxiosInstance().post('/reply/create', { 
+            response = await axiosInstance.post('/reply/create', { 
                 post_id: postId,
                 reply_content: replyContent,
                 parent_reply_id: parentReplyId 
             });
         }else{
-            response = await getaxiosInstance().post('/reply/create', { 
+            response = await axiosInstance.post('/reply/create', { 
                 post_id: postId,
                 reply_content: replyContent
             });
@@ -145,7 +145,7 @@ export const createReplyUnderPost = async (postId, replyContent, parentReplyId =
 export const deleteReplyById = async (replyId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/reply/delete', { reply_id: replyId });
+        const response = await axiosInstance.post('/reply/delete', { reply_id: replyId });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -163,7 +163,7 @@ export const deleteReplyById = async (replyId) => {
 export const getReplyDetailById = async (replyId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/reply/detail', { params: { reply_id: replyId } });
+        const response = await axiosInstance.get('/reply/detail', { params: { reply_id: replyId } });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

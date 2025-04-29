@@ -2,8 +2,8 @@
  * this document provide all the image relevent request  
  */
 import { dealAxiosError } from "@/utils/other.js";
-import {getaxiosInstance} from "./axios.js";
 import { waitForLock } from "@/utils/lock.js";
+import axiosInstance from "./axios";
 /**
  * Upload user profile image
  * @param {File} image - The image file to upload
@@ -14,7 +14,7 @@ export const uploadProfileImage = async (image) => {
         await waitForLock('token');
         const data = new FormData();
         data.append('image', image);
-        const response = await getaxiosInstance().post('/image/profile', data);
+        const response = await axiosInstance.post('/image/profile', data);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -35,7 +35,7 @@ export const uploadArticleImage = async (image) => {
         await waitForLock('token');
         const formData = new FormData();
         formData.append('image', image);
-        const response = await getaxiosInstance().post('/image/article', formData);
+        const response = await axiosInstance.post('/image/article', formData);
 
         return response.data;
     } catch (error) {
@@ -64,7 +64,7 @@ export const getUserProfileImageUpdateInfo = async (userIds) => {
         }
         const userIdsString = userIds.join(',');
         const requestUrl = `/image/profile/time?user_ids=${userIdsString}`;
-        const response = await getaxiosInstance().get(requestUrl);
+        const response = await axiosInstance.get(requestUrl);
         return response.data;
 
     } catch (error) {

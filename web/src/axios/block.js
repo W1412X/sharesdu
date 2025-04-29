@@ -5,8 +5,8 @@
  * every function return a json with status code and message
  */
 import { waitForLock } from "@/utils/lock.js";
-import { getaxiosInstance } from "./axios.js";
 import { dealAxiosError } from "@/utils/other.js";
+import axiosInstance from "./axios";
 /**
  * 
  * @param {block user id} toUserId 
@@ -15,7 +15,7 @@ import { dealAxiosError } from "@/utils/other.js";
 export const blockUser = async (toUserId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/block', { to_user_id: toUserId });
+        const response = await axiosInstance.post('/block', { to_user_id: toUserId });
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);
@@ -34,7 +34,7 @@ export const blockUser = async (toUserId) => {
 export const unblockUser = async (toUserId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/unblock', { to_user_id: toUserId });
+        const response = await axiosInstance.post('/unblock', { to_user_id: toUserId });
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);
@@ -54,7 +54,7 @@ export const unblockUser = async (toUserId) => {
 export const getBlockList = async (userId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/blocklist', { params: { user_id: userId } });
+        const response = await axiosInstance.get('/blocklist', { params: { user_id: userId } });
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);

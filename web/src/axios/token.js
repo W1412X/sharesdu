@@ -1,7 +1,9 @@
 /**
  * some token operation
  */
-import { getaxiosInstance } from "./axios";
+
+import axiosInstance from "./axios";
+
 /**
  * get the access token through the refresh token  
  * @param {String} refreshToken 
@@ -12,7 +14,7 @@ export const getAccessToken=async (refreshToken)=>{
         var data={
             refresh:refreshToken,
         }
-        const response = await getaxiosInstance().post('/token/refresh',data);
+        const response = await axiosInstance.post('/token/refresh',data);
         /**
          * the status's standard here as same as the other
          * so we don't deal it here   

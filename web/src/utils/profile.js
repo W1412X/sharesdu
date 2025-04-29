@@ -1,7 +1,7 @@
-import { getaxiosInstance } from "@/axios/axios";
 import { globalProperties } from "@/main";
 import { waitForLock } from "./lock";
 import { globalProfileCacher } from "./global_img_cache";
+import axiosInstance from "@/axios/axios";
 /**
  * get the profile by userId
  * check the state first,if can be the server version as same as the local version  
@@ -12,7 +12,7 @@ import { globalProfileCacher } from "./global_img_cache";
  */
 export async function getProfileUrl(userId){
     await waitForLock("token");
-    let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
+    let response=await axiosInstance.get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
     let url=URL.createObjectURL(response.data);
     globalProfileCacher.addImage(globalProperties.$apiUrl+'/image/user?user_id='+userId,url);
     return url;
@@ -39,7 +39,7 @@ export async function getProfileUrlInDB(userId,lastUpdateTime,times=0){
              * and do this function again  
              */
             await waitForLock("token");
-            let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
+            let response=await axiosIns.get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
             await db.profile.put({
                 userId:userId,
                 updateTime:lastUpdateTime,
@@ -51,7 +51,7 @@ export async function getProfileUrlInDB(userId,lastUpdateTime,times=0){
         }
     }else{
         await waitForLock("token");
-        let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
+        let response=await axiosIns.get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
         if(response.status==1412){
             return null;
         }

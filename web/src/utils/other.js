@@ -262,14 +262,6 @@ export function getNormalErrorAlert(content) {
         content: content
     }
 }
-
-export function base64Encode(str) {
-    return window.btoa(str);
-}
-
-export function base64Decode(str) {
-    return window.atob(str);
-}
 /**
  * convert a string array to string
  * @param {Array} arr 

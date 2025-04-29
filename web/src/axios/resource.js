@@ -1,8 +1,8 @@
 import { waitForLock } from "@/utils/lock";
-import { getaxiosInstance } from "./axios";
 import { dealAxiosError } from "@/utils/other";
 import { getCookie } from "@/utils/cookie";
 import { globalProperties } from "@/main";
+import axiosInstance from "./axios";
 
 /**
  * Upload resource file for article
@@ -17,7 +17,7 @@ export const uploadResource = async (file, articleId) => {
         formData.append('file', file);
         formData.append('article_id', articleId);
 
-        const response = await getaxiosInstance().post('/resource/upload', formData);
+        const response = await axiosInstance.post('/resource/upload', formData);
 
         return response.data;
     } catch (error) {

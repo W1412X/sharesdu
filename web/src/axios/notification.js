@@ -1,6 +1,6 @@
 import { dealAxiosError } from "@/utils/other.js";
-import {getaxiosInstance} from "./axios.js";
 import { waitForLock } from "@/utils/lock.js";
+import axiosInstance from "./axios";
 /**
  * Fetch notifications list
  * @param {int} [page_size=10] Number of notifications per page, default is 10
@@ -10,7 +10,7 @@ import { waitForLock } from "@/utils/lock.js";
 export const fetchNotificationsList = async (page_index = 1,page_size = 10) => {
     try {
       await waitForLock('token');
-      const response = await getaxiosInstance().get('/notifications/list', {
+      const response = await axiosInstance.get('/notifications/list', {
         params: { page_size, page_index }
       });
       return response.data;
@@ -31,7 +31,7 @@ export const fetchNotificationsList = async (page_index = 1,page_size = 10) => {
   export const markAsReadNotification = async (notification_ids) => {
     try {
       await waitForLock('token');
-      const response = await getaxiosInstance().post('/notifications/read', { notification_ids:notification_ids });
+      const response = await axiosInstance.post('/notifications/read', { notification_ids:notification_ids });
       return response.data;
     } catch (error) {
       let dealResult = await dealAxiosError(error);

@@ -1,6 +1,6 @@
 import { dealAxiosError } from "@/utils/other";
-import { getaxiosInstance } from "./axios";
 import { waitForLock } from "@/utils/lock";
+import axiosInstance from "./axios";
 
 /**
  * 
@@ -15,7 +15,7 @@ export const sendPrivateMessage = async (receriver_id,content) => {
             receiver_id: receriver_id,
             content: content
         };
-        const response = await getaxiosInstance().post('/messages/send', data);
+        const response = await axiosInstance.post('/messages/send', data);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -35,7 +35,7 @@ export const sendPrivateMessage = async (receriver_id,content) => {
 export const getMessageList = async (page_index=1,page_size=10) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/messages/list', { page_index: page_index, page_size: page_size });
+        const response = await axiosInstance.get('/messages/list', { page_index: page_index, page_size: page_size });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -54,7 +54,7 @@ export const getMessageList = async (page_index=1,page_size=10) => {
 export const markMessageAsRead = async (messageId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/messages/read', { message_id: messageId });
+        const response = await axiosInstance.post('/messages/read', { message_id: messageId });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -73,7 +73,7 @@ export const markMessageAsRead = async (messageId) => {
 export const deletePrivateMessage = async (messageId) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post('/messages/delete', { message_id: messageId });
+        const response = await axiosInstance.post('/messages/delete', { message_id: messageId });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -91,7 +91,7 @@ export const deletePrivateMessage = async (messageId) => {
 export const getChatUsers = async () => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().get('/messages/chat-users');
+        const response = await axiosInstance.get('/messages/chat-users');
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -113,9 +113,9 @@ export const getChatHistory = async (userId, page,page_size=10) => {
         await waitForLock('token');
         let response=null;
         if(page==null||page==undefined||page==1){
-            response = await getaxiosInstance().get(`/messages/history/${userId}`);
+            response = await axiosInstance.get(`/messages/history/${userId}`);
         }else{
-            response= await getaxiosInstance().get(`/messages/history/${userId}?page=${page}`);
+            response= await axiosInstance.get(`/messages/history/${userId}?page=${page}`);
         }
         return response.data;
     } catch (error) {

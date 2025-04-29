@@ -1,6 +1,6 @@
 import { waitForLock } from "@/utils/lock";
-import { getaxiosInstance } from "./axios";
 import { dealAxiosError } from "@/utils/other";
+import axiosInstance from "./axios";
 
 /**
  * Set or cancel the article top status.
@@ -13,7 +13,7 @@ import { dealAxiosError } from "@/utils/other";
 export const setArticleTop = async (articleId, top) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post(`/articles/${articleId}/top`, { top });
+        const response = await axiosInstance.post(`/articles/${articleId}/top`, { top });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -36,7 +36,7 @@ export const setArticleTop = async (articleId, top) => {
 export const setPostTopInArticle = async (postId, top) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post(`/article-posts/${postId}/top`, { top });
+        const response = await axiosInstance.post(`/article-posts/${postId}/top`, { top });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -58,7 +58,7 @@ export const setPostTopInArticle = async (postId, top) => {
 export const setPostTopInCourse = async (postId, top) => {
     try {
         await waitForLock('token');
-        const response = await getaxiosInstance().post(`/course-posts/${postId}/top`, { top });
+        const response = await axiosInstance.post(`/course-posts/${postId}/top`, { top });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

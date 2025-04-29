@@ -1,6 +1,6 @@
 import { dealAxiosError } from "@/utils/other";
-import { getaxiosInstance } from "./axios";
 import { waitForLock } from "@/utils/lock";
+import axiosInstance from "./axios";
 
 /**
  * 文章搜索
@@ -17,7 +17,7 @@ export const searchArticles = async (query, tag, type, sort, page = 1, page_size
     try {
         await waitForLock('token');
         const params = { q: query, tag: tag, type: type, sort: sort, page: page, page_size: page_size };
-        const response = await getaxiosInstance().get('/search/articles', { params });
+        const response = await axiosInstance.get('/search/articles', { params });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -41,7 +41,7 @@ export const searchPosts = async (query, sort, page = 1, page_size = 10) => {
     try {
         await waitForLock('token');
         const params = { q: query, sort: sort, page: page, page_size: page_size };
-        const response = await getaxiosInstance().get('/search/posts', { params });
+        const response = await axiosInstance.get('/search/posts', { params });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -64,7 +64,7 @@ export const searchReplies = async (query, page = 1, page_size = 10) => {
     try {
         await waitForLock('token');
         const params = { q: query, page: page, page_size: page_size };
-        const response = await getaxiosInstance().get('/search/replies', { params });
+        const response = await axiosInstance.get('/search/replies', { params });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -91,7 +91,7 @@ export const searchCourses = async (query, type, college, method, sort, page = 1
     try {
         await waitForLock('token');
         const params = { q: query, type: type, college: college, method: method, sort: sort, page: page, page_size: page_size };
-        const response = await getaxiosInstance().get('/search/courses', { params });
+        const response = await axiosInstance.get('/search/courses', { params });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
@@ -114,7 +114,7 @@ export const globalSearch = async (query, page = 1, page_size = 10) => {
     try {
         await waitForLock('token');
         const params = { q: query, page: page, page_size: page_size };
-        const response = await getaxiosInstance().get('/search', { params });
+        const response = await axiosInstance.get('/search', { params });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);
