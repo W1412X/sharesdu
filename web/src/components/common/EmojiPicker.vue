@@ -51,9 +51,8 @@
  */
 import { globalProperties } from '@/main';
 import { addSelfEmoji, addUsedEmoji, fetchEmojis } from '@/utils/emoji';
-import { computed, ref } from 'vue';
+import { computed, defineAsyncComponent, ref } from 'vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
-import PixelImage from '@/components/PixelImage.vue';
 export default {
     setup() {
         const toggle = ref(0);
@@ -81,7 +80,7 @@ export default {
     },
     components: {
         SensitiveTextField,
-        PixelImage,
+        PixelImage:defineAsyncComponent(() => import('@/components/PixelImage.vue')),
     },
     data() {
         return {

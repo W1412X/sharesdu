@@ -40,7 +40,7 @@
 <script>
 import { globalProperties } from '@/main';
 import { openNewPage } from '@/utils/other';
-import ImgCard from '@/components/common/ImgCard.vue';
+import { defineAsyncComponent } from 'vue';
 export default {
     name: 'ArticleItem',
     props: {
@@ -84,7 +84,7 @@ export default {
         }
     },
     components:{
-        ImgCard,
+        ImgCard:defineAsyncComponent(() => import('@/components/common/ImgCard.vue')),
     },
     methods:{
         click(){

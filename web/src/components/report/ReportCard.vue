@@ -23,7 +23,8 @@
     </v-card>
 </template>
 <script>
-import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
+import { defineAsyncComponent } from 'vue'
+
 export default {
     props: {
         report: {
@@ -37,7 +38,7 @@ export default {
         },
     },
     components: {
-        SensitiveTextArea
+        SensitiveTextArea: defineAsyncComponent(() => import('@/components/common/SensitiveTextArea.vue'))
     },
     data() {
         const reason = ''
