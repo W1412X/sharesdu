@@ -131,8 +131,22 @@ const router = createRouter({
  * so we just check if the cookie exsits here  
  */
 router.beforeEach((to, from, next) => {
-  if(to.name!="ErrorPage"){
-    sessionStorage.setItem("lastTwoRouter",JSON.stringify({to:to,from:from}));
+  try{
+    if(to.name!="ErrorPage"){
+      let tmpTo={
+        name: to.name,
+        params: to.params,
+        query: to.query,
+      }
+      let tmpFrom={
+        name: from.name,
+        params: from.params,
+        query: from.query,
+      }
+      sessionStorage.setItem("lastTwoRouter",JSON.stringify({to:tmpTo,from:tmpFrom}));
+    }
+  }catch(e){
+    console.error(e);
   }
   if(to.matched.some(record => record.meta.requiresAuth)){
     //if need login,do nothing here,in the request part will do 

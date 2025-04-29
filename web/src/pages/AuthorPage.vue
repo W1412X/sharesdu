@@ -1,7 +1,7 @@
 <template>
     <div class="full-center">
         <div style="display: grid;flex-direction: column;place-items:center;">
-            <author-card v-if="this.id" @set_loading="setLoading" @alert="alert" @author_name="handleName" :id="id"></author-card>
+            <author-card v-if="this.id" @set_loading="setLoading" @alert="alert" @author_name="handleName" :if-master="ifMaster" :id="id"></author-card>
             <create-preview-and-list v-if="this.id" :type="'preview'" @alert="alert" @set_loading="setLoading" :user-id="id"></create-preview-and-list>
         </div>
     </div>
@@ -15,6 +15,10 @@ import { getCancelLoadMsg } from '@/utils/other';
 export default{
     name:'AuthorPage',
     setup(){
+        const ifMaster=getCookie('ifMaster');
+        return {
+            ifMaster,
+        }
     },
     components:{
         AuthorCard,

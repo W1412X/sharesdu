@@ -17,7 +17,7 @@
                     给{{ data.name }}发送私信
                 </v-tooltip>
             </v-btn>
-            <manage-button v-if="type=='author'" size="28" style="margin-left: 5px;" :id="data.id" :type="'user'">
+            <manage-button v-if="type=='author'&&ifMaster" size="28" style="margin-left: 5px;" :id="data.id" :type="'user'">
             </manage-button>
         </div>
         <div v-if="(data.master || data.superMaster) &&  type=='author'" class="row-div">
@@ -73,7 +73,7 @@ import { globalProperties } from '@/main';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { getAuthorInfo } from '@/axios/account';
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
-import { blockUser, unblockUser } from '@/axios/block';
+import { blockUser } from '@/axios/block';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
 
@@ -86,6 +86,10 @@ export default{
         type:{
             type:String,
             default:"author",
+        },
+        ifMaster:{
+            type:Boolean,
+            default:false,
         }
     },
     setup(){
@@ -129,18 +133,19 @@ export default{
                  * set block state
                  */
                 let response;
-                if(this.blockState){//already block  
-                    response=await unblockUser(this.id);
-                    
-                }else{
+                if(!this.blockState){
                     response=await blockUser(this.id);
+                }else{
+                    response={
+                        status:-1,
+                    }
                 }
                 if(response.status==200){
-                    this.alert(getNormalSuccessAlert('设置成功'));
+                    this.alert(getNormalSuccessAlert('拉黑成功'));
                     this.blockState=!this.blockState;
                 }else{
                     this.blockState=!this.blockState;
-                    this.alert(getNormalErrorAlert(response.message))
+                    this.alert(getNormalErrorAlert('已拉黑此用户'));
                 }
             }else{
                 this.alert(getNormalWarnAlert("请勿频繁点击"));
