@@ -12,7 +12,7 @@
 import { globalProperties } from '@/main'
 import { getCookie } from '@/utils/cookie'
 import { globalProfileCacher } from '@/utils/global_img_cache'
-import { getProfileUrlInDB } from '@/utils/profile'
+import { getProfileUrl } from '@/utils/profile'
 
 export default {
     props:{
@@ -82,7 +82,7 @@ export default {
                 this.profileUrl=tmp;
                 return;
             }else{
-                let url=await getProfileUrlInDB(this.initData.id);
+                let url=await getProfileUrl(this.initData.id);
                 globalProfileCacher.addImage(globalProperties.$apiUrl+'/image/user?user_id='+this.initData.id,url);
                 this.profileUrl=url;
             }

@@ -1,12 +1,7 @@
 import { getaxiosInstance } from "@/axios/axios";
 import { globalProperties } from "@/main";
-import Dexie from "dexie";
 import { waitForLock } from "./lock";
 import { globalProfileCacher } from "./global_img_cache";
-const db=new Dexie("sharesdu");
-db.version(1).stores({
-    profile:'&userId,updateTime,blob'
-})
 /**
  * get the profile by userId
  * check the state first,if can be the server version as same as the local version  
@@ -15,7 +10,7 @@ db.version(1).stores({
  * @param {String} userId 
  * @param {Boolean} state to avoid the recursion deeply
  */
-export async function getProfileUrlInDB(userId){
+export async function getProfileUrl(userId){
     await waitForLock("token");
     let response=await getaxiosInstance().get(globalProperties.$apiUrl+'/image/user?user_id='+userId,{responseType:'blob'});
     let url=URL.createObjectURL(response.data);
