@@ -155,10 +155,6 @@ export default {
             scanMsg.ifArticleFilter=this.ifArticleFilter;
             scanMsg.filtArticleTags=this.filtArticleTags;
             scanMsg.sortType=this.sortType;
-            scanMsg.searchList=this.searchList;
-            scanMsg.searchPage=this.searchPage;
-            scanMsg.searchResultNum=this.searchResultNum;
-            scanMsg.loading=this.loading;
             scanMsg.articleType=this.articleType;
             scanMsg.scrollTop=document.scrollingElement.scrollTop;
             let key='searchScanMsg|'+this.query.join(',');
@@ -793,15 +789,14 @@ export default {
             this.ifArticleFilter=scanMsg.ifArticleFilter;
             this.filtArticleTags=scanMsg.filtArticleTags;
             this.sortType=scanMsg.sortType;
-            this.searchList=scanMsg.searchList;
-            this.searchPage=scanMsg.searchPage;
-            this.searchResultNum=scanMsg.searchResultNum;
-            this.loading=scanMsg.loading;
             this.articleType=scanMsg.articleType;
             this.setSortType(this.sortType);
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },100);
+            if(this.searchList[this.searchType][this.sortType].length==0){
+                await this.load();
+            }
         }else{
             if (!this.type || this.query.length > 0) {
                 switch (this.type) {

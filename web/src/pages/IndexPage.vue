@@ -171,12 +171,6 @@ export default {
             }
             let lastScanMsg = {}
             lastScanMsg.itemType = this.itemType;
-            lastScanMsg.articleList = this.articleList;
-            lastScanMsg.postList = this.postList;
-            lastScanMsg.courseList = this.courseList;
-            lastScanMsg.articlePageNum = this.articlePageNum;
-            lastScanMsg.postPageNum = this.postPageNum;
-            lastScanMsg.coursePageNum = this.coursePageNum;
             let scrollPosition = document.scrollingElement.scrollTop;
             lastScanMsg.scrollPosition = scrollPosition;
             lastScanMsg.articleSortMethod = this.articleSortMethod;
@@ -404,25 +398,18 @@ export default {
         }
     },
     async mounted() {
+        await this.loadMore(this.itemType);
+
         //use session storage to save memory now
         let lastScanMsg = JSON.parse(sessionStorage.getItem("indexScanMsg"));
         if(lastScanMsg){
             this.itemType = lastScanMsg.itemType;
-            this.articleList = lastScanMsg.articleList;
-            this.postList = lastScanMsg.postList;
             this.articleSortMethod = lastScanMsg.articleSortMethod;
-            this.courseList = lastScanMsg.courseList;
-            this.postPageNum = lastScanMsg.postPageNum;
-            this.coursePageNum = lastScanMsg.coursePageNum;
-            this.articlePageNum = lastScanMsg.articlePageNum;
             setTimeout(() => {
                 document.scrollingElement.scrollTop = lastScanMsg.scrollPosition;
             }, 10)
-            document.getElementById('web-title').innerText = 'ShareSDU | 首页';
-        }else{
-            //eslint-disable-next-line
-            await this.loadMore(this.itemType);
         }
+        document.getElementById('web-title').innerText = 'ShareSDU | 首页';
         this.ifMounted=true;
     }
 }

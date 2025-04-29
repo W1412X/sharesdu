@@ -2,7 +2,7 @@
     <div style="border: 1px solid #ccc">
         <Toolbar v-if="type=='edit'" class="tool-bar" :editor="editorRef" :defaultConfig="toolbarConfig"
             :mode="mode" />
-        <div class="editor-container">
+        <div id="html-editor-container" class="editor-container">
             <Editor class="editor" v-model="data.content" :defaultConfig="editorConfig" :mode="mode"
             @onCreated="handleCreated" />
         </div>
@@ -169,6 +169,9 @@ export default defineComponent({
         this.data=this.initData;
     },
     mounted() {
+        if(this.type=='preview'){
+            document.getElementById('html-editor-container').style.maxHeight='none'
+        }
     }
 });
 </script>

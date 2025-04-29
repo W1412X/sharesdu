@@ -210,13 +210,8 @@ export default {
         return;
       }
       let scanMsg = {};
-      scanMsg.notificationList = this.notificationList;
-      scanMsg.notificationPageNum = this.notificationPageNum;
       scanMsg.scrollTop = document.scrollingElement.scrollTop;
       scanMsg.choose = this.choose;
-      scanMsg.loadState = this.loadState;
-      scanMsg.loading = this.loading;
-      scanMsg.chatList = this.chatList;
       let key = 'selfScanMsg';
       sessionStorage.setItem(key, JSON.stringify(scanMsg));
       next()
@@ -382,12 +377,6 @@ export default {
     document.getElementById('web-title').innerText = "我的";
     if (sessionStorage.getItem('selfScanMsg')) {
       let scanMsg = JSON.parse(sessionStorage.getItem('selfScanMsg'));
-      this.notificationList = scanMsg.notificationList;
-      this.notificationPageNum = scanMsg.notificationPageNum;
-      this.loading = scanMsg.loading;
-      this.loadState = scanMsg.loadState;
-      this.chatList = scanMsg.chatList;
-      this.choose = scanMsg.choose;
       setTimeout(() => {
         document.scrollingElement.scrollTop = scanMsg.scrollTop;
       }, 10);

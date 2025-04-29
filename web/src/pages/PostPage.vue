@@ -196,14 +196,8 @@ export default {
                 next();
                 return;
             }
-            //use session storage to save memory now  
             let scanMsg={};
-            scanMsg.post=this.post;
-            scanMsg.replyList=this.replyList;
-            scanMsg.replyPageNum=this.replyPageNum;
             scanMsg.scrollTop=document.scrollingElement.scrollTop;
-            scanMsg.loadState=this.loadState;
-            scanMsg.loading=this.loading;
             let key='postScanMsg|'+this.post.id;
             sessionStorage.setItem(key,JSON.stringify(scanMsg));
             next()
@@ -352,20 +346,6 @@ export default {
         },
     },
     async mounted() {
-        if(sessionStorage.getItem('postScanMsg|'+this.$route.params.id)){
-            let scanMsg=JSON.parse(sessionStorage.getItem('postScanMsg|'+this.$route.params.id));
-            this.post=scanMsg.post;
-            this.replyList=scanMsg.replyList;
-            this.replyPageNum=scanMsg.replyPageNum;
-            this.loadState=scanMsg.loadState;
-            this.loading=scanMsg.loading;
-            setTimeout(()=>{
-                document.scrollingElement.scrollTop=scanMsg.scrollTop;
-            },10);
-            document.getElementById('web-title').innerText='帖子 | '+this.post.title;
-            await addHistory("post",this.post.id,this.post.title);
-            return;
-        }
         this.setLoading(getCancelLoadMsg());
         /**
          * get the route params and fetch data
@@ -408,7 +388,17 @@ export default {
             });
             return;
         }
-        this.loadMoreReply();
+        await this.loadMoreReply();
+        /**
+         * restore scan state
+         */
+        if(sessionStorage.getItem('postScanMsg|'+this.$route.params.id)){
+            let scanMsg=JSON.parse(sessionStorage.getItem('postScanMsg|'+this.$route.params.id));
+            setTimeout(()=>{
+                document.scrollingElement.scrollTop=scanMsg.scrollTop;
+            },10);
+            return;
+        }
     },
 }
 </script>

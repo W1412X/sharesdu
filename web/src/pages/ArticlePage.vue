@@ -149,7 +149,7 @@ import { computed, ref } from 'vue';
 import PostItem from '@/components/post/PostItem.vue';
 import PostEditor from '@/components/post/PostEditor.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
-import { copy, formatImageLinkInArticle, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage, responseToArticle } from '@/utils/other';
+import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage, responseToArticle } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 import LikeButton from '@/components/common/LikeButton.vue';
 import DeleteButton from '@/components/common/DeleteButton.vue';
@@ -259,11 +259,8 @@ export default {
             }
             //use session storage to save memory now  
             let scanMsg = {};
-            scanMsg.articleResponse = this.articleResponse;
-            scanMsg.articleResponse.article_detail.if_top = this.article.ifTop;
-            scanMsg.postItems = this.postItems;
-            scanMsg.postPageNum = this.postPageNum;
             scanMsg.commentState = this.ifShowComment;
+            scanMsg.scrollTop = document.scrollingElement.scrollTop;
             let key = 'articleScanMsg|' + this.article.id;
             if (scanMsg.commentState) {
                 let postScrollTop = document.getElementById("post-container").scrollTop;
@@ -347,10 +344,6 @@ export default {
             this.loading.top = false;
             if (response.status == 200) {
                 this.article.ifTop = !this.article.ifTop;
-                //update
-                sessionStorage.removeItem('indexScanMsg');
-                let key = 'articleScanMsg|' + this.article.id;
-                sessionStorage.removeItem(key);
                 this.alert(getNormalSuccessAlert(this.article.ifTop ? "置顶成功" : "取消置顶成功"));
             } else {
                 this.alert(getNormalErrorAlert(response.message));
@@ -393,27 +386,6 @@ export default {
         },
     },
     async mounted() {
-        if (sessionStorage.getItem('articleScanMsg|' + this.$route.params.id)) {
-            let scanMsg = JSON.parse(sessionStorage.getItem('articleScanMsg|' + this.$route.params.id));
-            this.articleResponse = scanMsg.articleResponse;
-            [this.article, this.editorType] = await responseToArticle(scanMsg.articleResponse);
-            this.setLoading(getLoadMsg("正在获取文章图片..."));
-            this.article.content = await formatImageLinkInArticle(this.article.content);
-            this.setLoading(getCancelLoadMsg());
-            this.postItems = scanMsg.postItems;
-            this.postPageNum = scanMsg.postPageNum;
-            this.setCommentState(scanMsg.commentState);
-            this.loadState = true;
-            setTimeout(() => {
-                if (scanMsg.commentState) {
-                    document.getElementById("post-container").scrollTop = scanMsg.postScrollTop;
-                }
-            }, 10)
-            //add to history
-            document.getElementById('web-title').innerText = '文章 | ' + this.article.title;
-            await addHistory("article", this.article.id, this.article.title);
-            return;
-        }
         this.setLoading(getCancelLoadMsg());
         /**
          * get the route params and fetch data
@@ -437,6 +409,19 @@ export default {
             this.$router.push({ name: "ErrorPage", params: { reason: "缺少参数" } })
         }
         this.setLoading(getCancelLoadMsg());
+        /**
+         * restore scan state
+         */
+        if (sessionStorage.getItem('articleScanMsg|' + this.$route.params.id)) {
+            let scanMsg = JSON.parse(sessionStorage.getItem('articleScanMsg|' + this.$route.params.id));
+            this.setCommentState(scanMsg.commentState);
+            setTimeout(() => {
+                if (scanMsg.commentState) {
+                    document.getElementById("post-container").scrollTop = scanMsg.postScrollTop;
+                    document.scrollingElement.scrollTop = scanMsg.scrollTop;
+                }
+            }, 10);
+        }
     },
 }
 </script>
