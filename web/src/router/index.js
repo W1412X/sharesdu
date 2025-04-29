@@ -4,6 +4,8 @@
  */
 import { getCookie } from '@/utils/cookie';
 import { createRouter, createWebHashHistory } from 'vue-router';
+const load = (path) => () => import(`@/pages/${path}.vue`);
+
 const routes = [
   {
     path:"/",
@@ -12,30 +14,30 @@ const routes = [
   {
     path:'/welcome',
     name:'WelcomePage',
-    component: (()=>import('@/pages/WelcomePage.vue')),
+    component: load('WelcomePage'),
   },
   {
     path:'/index',
     name:'IndexPage',
-    component: (()=>import('@/pages/IndexPage.vue')),
+    component: load('IndexPage'),
     meta: { requiresAuth: true },
   },
   {
     path:'/article/:id/:post?',
     name:'ArticlePage',
-    component: (()=>import('@/pages/ArticlePage.vue')),
+    component: load('ArticlePage'),
     meta: { requiresAuth: true },
   },
   {
     path:'/post/:id/:reply?',
     name:'PostPage',
-    component: (()=>import('@/pages/PostPage.vue')),
+    component: load('PostPage'),
     meta: { requiresAuth: true },
   },
   {
     path:'/manage',
     name:"ManagePage",
-    component:(()=>import("@/pages/ManagePage.vue")),
+    component:load('ManagePage'),
     meta:{requiresAuth:true},
     props: route => ({
       init_id: route.query.init_id || null,
@@ -45,55 +47,55 @@ const routes = [
   {
     path:'/course/:id/:post?',
     name:'CoursePage',
-    component: (()=>import('@/pages/CoursePage.vue')),
+    component: load('CoursePage'),
     meta: { requiresAuth: true },
   },
   {
     path:'/login',
     name:'LoginPage',
-    component: (()=>import('@/pages/LoginPage.vue')),
+    component:load('LoginPage'),
     meta: { requiresAuth: false },
   },
   {
     path:'/error/:reason?',
     name:'ErrorPage',
-    component: (()=>import('@/pages/ErrorPage.vue')),
+    component:load('ErrorPage'),
     meta: { requiresAuth: false },
   },
   {
     path:'/editor/:id?',
     name:'EditorPage',
-    component: (()=>import('@/pages/EditorPage.vue')),
+    component:load('EditorPage'),
     meta: { requiresAuth: true },
   },
   {
     path:'/self',//if no id, to the user
     name:'SelfPage',
-    component: (()=>import('@/pages/SelfPage.vue')),
+    component:load('SelfPage'),
     meta: { requiresAuth: true },
   },
   {
     path:'/author/:id',
     name:'AuthorPage',
-    component: (()=>import('@/pages/AuthorPage.vue')),
+    component:load('AuthorPage'),
     meta: { requiresAuth: true },
   },
   {
     path:'/document/:name',
     name:'DocumentPage',
-    component: (()=>import('@/pages/DocumentPage.vue')),
+    component:load('DocumentPage'),
     meta: { requiresAuth: false },
   },
   {
     path:'/chat/:id?/:name?',//user id
     name:'ChatPage',
-    component: (()=>import('@/pages/ChatPage.vue')),
+    component:load('ChatPage'),
     meta: { requiresAuth: true },
   },
   {
     path: '/search',
     name: 'SearchPage',
-    component: (() => import('@/pages/SearchPage.vue')),
+    component:load('SearchPage'),
     meta: { requiresAuth: true },
     props: route => ({
       type: route.query.type || 'all',
