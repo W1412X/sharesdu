@@ -67,12 +67,6 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path:'/test',
-    name:'TestPage',
-    component: (()=>import('@/pages/TestPage.vue')),
-    meta: { requiresAuth: false },
-  },
-  {
     path:'/self',//if no id, to the user
     name:'SelfPage',
     component: (()=>import('@/pages/SelfPage.vue')),
@@ -88,12 +82,6 @@ const routes = [
     path:'/document/:name',
     name:'DocumentPage',
     component: (()=>import('@/pages/DocumentPage.vue')),
-    meta: { requiresAuth: false },
-  },
-  {
-    path:'/test',
-    name:'TestPage',
-    component: (()=>import('@/pages/TestPage.vue')),
     meta: { requiresAuth: false },
   },
   {

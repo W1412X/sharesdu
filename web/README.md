@@ -30,4 +30,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
   - [wangeditor's issue](https://github.com/wangeditor-next/wangEditor-next/issues/535)  
 
 - a bug from vue3 (solved by other way)  
-  - when you try 
+  - when you try   
+
+### TODO  
+- support service worker cache  
