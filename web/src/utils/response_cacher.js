@@ -1,4 +1,4 @@
-class ResponseBuffer {
+export class ResponseBuffer {
     constructor(maxCapacity, expirationTime) {
         this.maxCapacity = maxCapacity;
         this.expirationTime = expirationTime;//ms
@@ -36,8 +36,6 @@ class ResponseBuffer {
         this.timeouts.delete(key);
     }
 }
-
-export var responseBuffer=new ResponseBuffer(100,600*1000);
 export const responseCacheUrls=[
-
+    
 ]
