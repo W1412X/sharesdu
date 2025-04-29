@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build --report"
   },
   "dependencies": {
     "@jamescoyle/vue-icon": "^0.1.2",
@@ -30,7 +30,6 @@
     "lodash": "^4.17.21",
     "marked": "^13.0.2",
     "md-editor-v3": "^5.4.1",
-    "segmentit": "^2.0.3",
     "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.2.13",
     "vue-iframe": "^0.0.0",

@@ -85,7 +85,6 @@ import HistoryCard from '@/components/history/HistoryCard.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import PostEditor from '@/components/post/PostEditor.vue';
 import CourseEditor from '@/components/course/CourseEditor.vue';
-import { extractWords } from './utils/keyword';
 export default {
   setup() {
     /**
@@ -246,7 +245,7 @@ export default {
       this.searchType = type;
     },
     search() {
-      let keyworkds = extractWords(this.searchContent);
+      let keyworkds = this.searchContent.split(' ');
       if (this.searchContent.length == 0) {
         this.alert(getNormalInfoAlert("内容不可为空"));
         return;
