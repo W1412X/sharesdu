@@ -72,14 +72,6 @@ export async function dealAxiosError(error) {
     try {
         await waitForLock("token");
         setLock("token", true);
-
-        // 打印原始错误信息
-        console.group("🔍 原始错误数据");
-        if (error.response) {
-        } else {
-        }
-        console.groupEnd();
-
         // 判断是否有响应数据
         if (error.response && error.response.data) {
             const { data } = error.response;
@@ -106,7 +98,6 @@ export async function dealAxiosError(error) {
                                 message: "已更新access token，重新请求"
                             };
                         } else {
-                            console.warn("❌ refreshToken 已过期或失效，尝试密码登录...");
                             if (getCookie("passwd")) {
 
                                 const loginResponse = await loginWithPassword({
@@ -129,7 +120,6 @@ export async function dealAxiosError(error) {
                                         message: "已更新access token，重新请求"
                                     };
                                 } else {
-                                    handleLogout();
                                     result = {
                                         status: -1,
                                         message: "自动登陆失败，请手动登陆"
@@ -144,7 +134,6 @@ export async function dealAxiosError(error) {
                             }
                         }
                     } catch (tokenRefreshError) {
-                        console.error("📛 刷新 token 或密码登录时发生异常:", tokenRefreshError);
                         handleLogout();
                         result = {
                             status: -1,
@@ -154,7 +143,6 @@ export async function dealAxiosError(error) {
 
                     // 没有 refreshToken 的情况
                 } else {
-                    console.warn("📛 refreshToken 不存在，尝试检查是否保存了密码...");
 
                     if (getCookie("passwd")) {
 
@@ -178,7 +166,6 @@ export async function dealAxiosError(error) {
                                 message: "已更新access token，重新请求"
                             };
                         } else {
-                            handleLogout();
                             result = {
                                 status: -1,
                                 message: "自动登陆失败，请手动登陆"
@@ -200,7 +187,6 @@ export async function dealAxiosError(error) {
 
             // 无响应的情况
         } else if (error.request) {
-            console.warn("⚠️ 请求已发出但未收到响应，可能是网络问题");
             result = {
                 status: -1,
                 message: "服务器无响应，请联系管理员"
@@ -208,7 +194,6 @@ export async function dealAxiosError(error) {
 
             // 其它未知错误
         } else {
-            console.error("💥 发生未知错误，准备登出用户");
             handleLogout();
             result = {
                 status: -1,
@@ -217,7 +202,6 @@ export async function dealAxiosError(error) {
         }
 
     } catch (err) {
-        console.error("🚨 在处理 Axios 错误时发生异常:", err);
         handleLogout();
         result = {
             status: -1,
