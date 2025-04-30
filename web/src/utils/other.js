@@ -66,187 +66,181 @@ export function getContentWithoutEditorType(content) {
     }
 }
 export async function dealAxiosError(error) {
-    setLock("token",true);
+
+    let result = null;
+
     try {
-        /**
-             * got response  
-             */
-        if (error.response.data) {
-            /**
-             * here check if the error is caused by the token
-             */
-            if (error.response.data.status == 1000 || error.response.data.status == 1001) {
-                /**
-                 * check if the refresh token is exsits
-                 * if exsits -> try to get the new access token and reload  
-                 * if not -> to login page and alert
-                 */
+        await waitForLock("token");
+        setLock("token", true);
+
+        // 打印原始错误信息
+        console.group("🔍 原始错误数据");
+        if (error.response) {
+        } else {
+        }
+        console.groupEnd();
+
+        // 判断是否有响应数据
+        if (error.response && error.response.data) {
+            const { data } = error.response;
+            const { status: errStatus, message: errMsg } = data;
+
+
+            // 判断是否是 token 失效相关错误
+            if (errStatus === 1000 || errStatus === 1001) {
+
                 const refreshToken = getCookie("refreshToken");
-                setCookie("accessToken", "", -1);
+                const accessToken = getCookie("accessToken");
+
+
+                // 如果存在 refreshToken
                 if (refreshToken) {
+
                     try {
-                        /**
-                         * wait for the token lock
-                         * ensure the access now is empty
-                         * and if the access not empty after wait 
-                         * means that other request have get the access token
-                         * return 1412
-                         */
-                        await waitForLock("token");
-                        if (getCookie("accessToken")) {
-                            return {
-                                status: 1412,
-                            }
-                        }
                         const response = await getAccessToken(refreshToken);
-                        if (response.status == 999) {
+
+                        if (response.status === 999) {
                             setCookie("accessToken", response.access, 5);
-                            return {
+                            result = {
                                 status: 1412,
                                 message: "已更新access token，重新请求"
-                            }
+                            };
                         } else {
-                            /**
-                             * here the refresh token expired
-                             * so we try login by passwd if savepasswd
-                             */
+                            console.warn("❌ refreshToken 已过期或失效，尝试密码登录...");
                             if (getCookie("passwd")) {
-                                let response = await loginWithPassword({
+
+                                const loginResponse = await loginWithPassword({
                                     user_name: getCookie("userName"),
                                     pass_word: getCookie("passwd")
-                                })
-                                if (response.status == 200) {
-                                    setLogin(response.user_name, response.user_id, response.email, response.refresh, globalProperties.$apiUrl + "/image/user?user_id=" + response.user_id, getCookie("passwd"))
-                                    return {
+                                });
+
+
+                                if (loginResponse.status === 200) {
+                                    setLogin(
+                                        loginResponse.user_name,
+                                        loginResponse.user_id,
+                                        loginResponse.email,
+                                        loginResponse.refresh,
+                                        globalProperties.$apiUrl + "/image/user?user_id=" + loginResponse.user_id,
+                                        getCookie("passwd")
+                                    );
+                                    result = {
                                         status: 1412,
                                         message: "已更新access token，重新请求"
-                                    }
+                                    };
                                 } else {
-                                    clearTokenCookies();
-                                    sessionStorage.clear();
-                                    window.alert("自动登陆失败，请手动登陆");
-                                    setTimeout(() => {
-                                        window.open("/#/login", "_self")
-                                        location.reload();
-                                    }, 1000)
-                                    return {
+                                    handleLogout();
+                                    result = {
                                         status: -1,
-                                        message: "自动登陆失败，请手动登陆",
-                                    }
+                                        message: "自动登陆失败，请手动登陆"
+                                    };
                                 }
                             } else {
-                                clearTokenCookies();
-                                sessionStorage.clear();
-                                window.alert("令牌已过期，请重新登录");
-                                setTimeout(() => {
-                                    window.open("/#/login", "_self")
-                                    location.reload();
-                                }, 1000)
-                                return {
+                                handleLogout();
+                                result = {
                                     status: -1,
-                                    message: "获取access失败，请重新登陆",
-                                }
+                                    message: "令牌已过期，请重新登录"
+                                };
                             }
                         }
-                    } catch (error) {
-                        clearTokenCookies();
-                        sessionStorage.clear();
-                        window.alert("令牌已过期，请重新登录");
-                        setTimeout(() => {
-                            window.open("/#/login", "_self")
-                            location.reload();
-                        }, 1000)
-                        return {
+                    } catch (tokenRefreshError) {
+                        console.error("📛 刷新 token 或密码登录时发生异常:", tokenRefreshError);
+                        handleLogout();
+                        result = {
                             status: -1,
                             message: "重新登陆，令牌无效"
-                        }
+                        };
                     }
+
+                    // 没有 refreshToken 的情况
                 } else {
+                    console.warn("📛 refreshToken 不存在，尝试检查是否保存了密码...");
+
                     if (getCookie("passwd")) {
-                        let response = await loginWithPassword({
+
+                        const loginResponse = await loginWithPassword({
                             user_name: getCookie("userName"),
                             pass_word: getCookie("passwd")
-                        })
-                        if (response.status == 200) {
-                            setLogin(response.user_name, response.user_id, response.email, response.refresh, globalProperties.$apiUrl + "/image/user?user_id=" + response.user_id, getCookie("passwd"))
-                            return {
+                        });
+
+
+                        if (loginResponse.status === 200) {
+                            setLogin(
+                                loginResponse.user_name,
+                                loginResponse.user_id,
+                                loginResponse.email,
+                                loginResponse.refresh,
+                                globalProperties.$apiUrl + "/image/user?user_id=" + loginResponse.user_id,
+                                getCookie("passwd")
+                            );
+                            result = {
                                 status: 1412,
                                 message: "已更新access token，重新请求"
-                            }
+                            };
                         } else {
-                            clearTokenCookies();
-                            sessionStorage.clear();
-                            window.alert("自动登陆失败，请手动登陆");
-                            setTimeout(() => {
-                                window.open("/#/login", "_self")
-                                location.reload();
-                            }, 1000)
-                            return {
+                            handleLogout();
+                            result = {
                                 status: -1,
-                                message: "自动登陆失败，请手动登陆",
-                            }
+                                message: "自动登陆失败，请手动登陆"
+                            };
                         }
                     } else {
-                        /**
- * if the refresh key not exists too
- * then delete all the user message
- * and redirect to login page
- */
-                        clearTokenCookies();
-                        sessionStorage.clear();
-                        window.alert("令牌已过期，请重新登录");
-                        setTimeout(() => {
-                            window.open("/#/login", "_self")
-                            location.reload();
-                        }, 1000)
-                        return {
+                        handleLogout();
+                        result = {
                             status: -1,
-                            message: "重新登陆"
-                        }
+                            message: "令牌已过期，请重新登录"
+                        };
                     }
                 }
+
+                // 非 token 错误
+            } else {
+                result = error.response.data;
             }
-            /**
-             * not token error
-             */
-            return error.response.data;
+
+            // 无响应的情况
         } else if (error.request) {
-            /**
-             * no response
-             * return the error message  
-             */
-            return {
+            console.warn("⚠️ 请求已发出但未收到响应，可能是网络问题");
+            result = {
                 status: -1,
                 message: "服务器无响应，请联系管理员"
-            }
+            };
+
+            // 其它未知错误
         } else {
-            clearTokenCookies();
-            sessionStorage.clear();
-            window.alert("令牌已过期，请重新登录");
-            setTimeout(() => {
-                window.open("/#/login", "_self")
-                location.reload();
-            }, 1000)
-            return {
+            console.error("💥 发生未知错误，准备登出用户");
+            handleLogout();
+            result = {
                 status: -1,
                 message: "重新登陆"
-            }
+            };
         }
-    } catch (error) {
-        clearTokenCookies();
-        sessionStorage.clear();
-        window.alert("令牌已过期，请重新登录");
-        setTimeout(() => {
-            window.open("/#/login", "_self")
-            location.reload();
-        }, 1000)
-        return {
+
+    } catch (err) {
+        console.error("🚨 在处理 Axios 错误时发生异常:", err);
+        handleLogout();
+        result = {
             status: -1,
             message: "重新登陆"
-        }
-    }finally{
-        setLock("token",false);
+        };
+
+    } finally {
+        setLock("token", false);
     }
+
+    return result;
+}
+
+// 封装统一登出逻辑
+function handleLogout() {
+    clearTokenCookies();
+    sessionStorage.clear();
+
+    window.alert("令牌已过期，请重新登录");
+    setTimeout(() => {
+        window.open("/#/login", "_self");
+        location.reload();
+    }, 1000);
 }
 
 /**
@@ -498,16 +492,16 @@ export function removeStringsInBrackets(inputString) {
     return inputString.replace(regex, '');
 }
 
-export function setLogin(userName, user_id, email, refresh, profile, ifMaster =false, ifSuperMaster=false ,passwd = null) {
+export function setLogin(userName, user_id, email, refresh, profile, ifMaster = false, ifSuperMaster = false, passwd = null) {
     setCookie('userName', userName, 7 * 24);
     setCookie('userId', user_id, 7 * 24);
     setCookie('email', email, 7 * 24);
     setCookie('refreshToken', refresh, 7 * 24);
     setCookie('userProfileUrl', profile, 7 * 24);
-    if(ifMaster){
+    if (ifMaster) {
         setCookie('ifMaster', ifMaster, 7 * 24);
     }
-    if(ifSuperMaster){
+    if (ifSuperMaster) {
         setCookie('ifSuperMaster', ifSuperMaster, 7 * 24);
     }
     if (passwd) {

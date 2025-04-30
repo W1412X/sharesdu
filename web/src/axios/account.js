@@ -5,7 +5,7 @@
  * every function return a json with status code and message
  */
 import { dealAxiosError } from "@/utils/other.js";
-import { setLock, waitForLock } from "@/utils/lock.js";
+import { waitForLock } from "@/utils/lock.js";
 import axiosInstance, { axiosInstanceNoHeader } from "./axios";
 /**
  * registe by Email
