@@ -110,7 +110,7 @@ import HybridSearchItem from '@/components/search/HybridSearchItem.vue';
 import SearchItem from '@/components/search/SearchItem.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
-import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets, waitSecond } from '@/utils/other';
+import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets } from '@/utils/other';
 import { computed } from 'vue';
 import { getCookie } from '@/utils/cookie';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
@@ -174,8 +174,8 @@ export default {
         courseCollege:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
-                while(!this.ifMounted){
-                    await waitSecond(0.1);
+                if(!this.ifMounted){
+                    return;
                 }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
@@ -186,8 +186,8 @@ export default {
         courseMethod:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
-                while(!this.ifMounted){
-                    await waitSecond(0.1);
+                if(!this.ifMounted){
+                    return;
                 }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
@@ -198,8 +198,8 @@ export default {
         courseType:{
             //eslint-disable-next-line
             async handler(newVal,oldVal){
-                while(!this.ifMounted){
-                    await waitSecond(0.1);
+                if(!this.ifMounted){
+                    return;
                 }
                 this.searchList['课程'][this.sortType]=[];
                 this.searchPage['课程'][this.sortType]=1;
@@ -217,8 +217,8 @@ export default {
                 /**
                  * which fix the bug when the page first load,can not get the data 
                  */
-                while(!this.ifMounted){
-                    await waitSecond(0.1);
+                if(!this.ifMounted){
+                    return;
                 }
                 this.$emit("search_type_changed",newVal);
                 //set sort type  
@@ -745,6 +745,8 @@ export default {
             }
         },
         async load() {
+            console.log(this.searchPage);
+            console.log(this.searchList);
             switch (this.searchType) {
                 case "文章":
                     await this.loadArticle();
@@ -791,7 +793,6 @@ export default {
             this.filtArticleTags=scanMsg.filtArticleTags;
             this.sortType=scanMsg.sortType;
             this.articleType=scanMsg.articleType;
-            this.setSortType(this.sortType);
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },100);
