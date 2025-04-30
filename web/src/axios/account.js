@@ -44,11 +44,7 @@ export const getRegisterEmailCode = async (email,inviteCode) => {
  */
 export const loginWithPassword = async (data) => {
   try {
-    setLock('token',true);
     const response = await axiosInstanceNoHeader.post('/login_passwd', data);
-    setTimeout(()=>{
-      setLock('token',false);
-    },1000);
     return response.data;
   } catch (error) {
     return error.response.data;

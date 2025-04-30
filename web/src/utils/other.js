@@ -66,6 +66,7 @@ export function getContentWithoutEditorType(content) {
     }
 }
 export async function dealAxiosError(error) {
+    setLock("token",true);
     try {
         /**
              * got response  
@@ -97,7 +98,6 @@ export async function dealAxiosError(error) {
                                 status: 1412,
                             }
                         }
-                        setLock("token", true);
                         const response = await getAccessToken(refreshToken);
                         if (response.status == 999) {
                             setCookie("accessToken", response.access, 5);
@@ -160,8 +160,6 @@ export async function dealAxiosError(error) {
                             status: -1,
                             message: "重新登陆，令牌无效"
                         }
-                    } finally {
-                        setLock("token", false);
                     }
                 } else {
                     if (getCookie("passwd")) {
@@ -246,6 +244,8 @@ export async function dealAxiosError(error) {
             status: -1,
             message: "重新登陆"
         }
+    }finally{
+        setLock("token",false);
     }
 }
 
