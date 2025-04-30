@@ -4,7 +4,6 @@ import { globalProperties } from "@/main";
 import { setLock, waitForLock } from "./lock";
 import { loginWithPassword } from "@/axios/account";
 import { fetchImgAndDeal } from "./image";
-import { selfDefinedSessionStorage } from "./sessionStorage";
 //import { getDeviceType } from "./device";
 /**
  * a deep copy function for json object
@@ -124,7 +123,7 @@ export async function dealAxiosError(error) {
                                     }
                                 } else {
                                     clearTokenCookies();
-                                    selfDefinedSessionStorage.clear();
+                                    sessionStorage.clear();
                                     window.alert("自动登陆失败，请手动登陆");
                                     setTimeout(() => {
                                         window.open("/#/login", "_self")
@@ -137,7 +136,7 @@ export async function dealAxiosError(error) {
                                 }
                             } else {
                                 clearTokenCookies();
-                                selfDefinedSessionStorage.clear();
+                                sessionStorage.clear();
                                 window.alert("令牌已过期，请重新登录");
                                 setTimeout(() => {
                                     window.open("/#/login", "_self")
@@ -151,7 +150,7 @@ export async function dealAxiosError(error) {
                         }
                     } catch (error) {
                         clearTokenCookies();
-                        selfDefinedSessionStorage.clear();
+                        sessionStorage.clear();
                         window.alert("令牌已过期，请重新登录");
                         setTimeout(() => {
                             window.open("/#/login", "_self")
@@ -178,7 +177,7 @@ export async function dealAxiosError(error) {
                             }
                         } else {
                             clearTokenCookies();
-                            selfDefinedSessionStorage.clear();
+                            sessionStorage.clear();
                             window.alert("自动登陆失败，请手动登陆");
                             setTimeout(() => {
                                 window.open("/#/login", "_self")
@@ -196,7 +195,7 @@ export async function dealAxiosError(error) {
  * and redirect to login page
  */
                         clearTokenCookies();
-                        selfDefinedSessionStorage.clear();
+                        sessionStorage.clear();
                         window.alert("令牌已过期，请重新登录");
                         setTimeout(() => {
                             window.open("/#/login", "_self")
@@ -224,7 +223,7 @@ export async function dealAxiosError(error) {
             }
         } else {
             clearTokenCookies();
-            selfDefinedSessionStorage.clear();
+            sessionStorage.clear();
             window.alert("令牌已过期，请重新登录");
             setTimeout(() => {
                 window.open("/#/login", "_self")
@@ -237,7 +236,7 @@ export async function dealAxiosError(error) {
         }
     } catch (error) {
         clearTokenCookies();
-        selfDefinedSessionStorage.clear();
+        sessionStorage.clear();
         window.alert("令牌已过期，请重新登录");
         setTimeout(() => {
             window.open("/#/login", "_self")
