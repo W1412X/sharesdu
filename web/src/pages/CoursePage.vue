@@ -408,6 +408,7 @@ export default {
         },
         async getSelfComment(){
             this.loadState.selfComment=false;
+            console.log(getCookie("userId"));
             let response=await getUserCourseEvaluation(getCookie("userId"),this.course.id)
             this.loadState.selfComment=true;
             if(response.status==200){

@@ -36,6 +36,7 @@ export function getCookie(name) {
  * @param {int} hour 
  */
 export function setCookie(name, value, hour) {
+  value=value.toString();
   name=encrypt(name);
   value=encrypt(value);
   let expires = '';
