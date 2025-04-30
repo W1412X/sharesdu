@@ -66,30 +66,28 @@ export function getContentWithoutEditorType(content) {
     }
 }
 export async function dealAxiosError(error) {
-
     let result = null;
 
     try {
         await waitForLock("token");
         setLock("token", true);
+
         // 判断是否有响应数据
         if (error.response && error.response.data) {
             const { data } = error.response;
-            const { status: errStatus, message: errMsg } = data;
+            const { status: errStatus } = data;
 
 
             // 判断是否是 token 失效相关错误
             if (errStatus === 1000 || errStatus === 1001) {
 
                 const refreshToken = getCookie("refreshToken");
-                const accessToken = getCookie("accessToken");
-
 
                 // 如果存在 refreshToken
                 if (refreshToken) {
-
                     try {
                         const response = await getAccessToken(refreshToken);
+
 
                         if (response.status === 999) {
                             setCookie("accessToken", response.access, 5);
@@ -99,7 +97,6 @@ export async function dealAxiosError(error) {
                             };
                         } else {
                             if (getCookie("passwd")) {
-
                                 const loginResponse = await loginWithPassword({
                                     user_name: getCookie("userName"),
                                     pass_word: getCookie("passwd")
@@ -113,6 +110,8 @@ export async function dealAxiosError(error) {
                                         loginResponse.email,
                                         loginResponse.refresh,
                                         globalProperties.$apiUrl + "/image/user?user_id=" + loginResponse.user_id,
+                                        loginResponse.is_master,
+                                        loginResponse.is_super_master,
                                         getCookie("passwd")
                                     );
                                     result = {
@@ -120,6 +119,12 @@ export async function dealAxiosError(error) {
                                         message: "已更新access token，重新请求"
                                     };
                                 } else {
+                                    setCookie("refreshToken", "",-1);
+                                    window.alert("自动登录失败，跳转至登陆页");
+                                    setTimeout(() => {
+                                        window.open(`/#/login?name=${getCookie('userName')}&passwd=${getCookie('passwd')}`, "_self");
+                                        location.reload();
+                                    }, 500);
                                     result = {
                                         status: -1,
                                         message: "自动登陆失败，请手动登陆"
@@ -141,11 +146,9 @@ export async function dealAxiosError(error) {
                         };
                     }
 
-                    // 没有 refreshToken 的情况
                 } else {
 
                     if (getCookie("passwd")) {
-
                         const loginResponse = await loginWithPassword({
                             user_name: getCookie("userName"),
                             pass_word: getCookie("passwd")
@@ -159,6 +162,8 @@ export async function dealAxiosError(error) {
                                 loginResponse.email,
                                 loginResponse.refresh,
                                 globalProperties.$apiUrl + "/image/user?user_id=" + loginResponse.user_id,
+                                loginResponse.is_master,
+                                loginResponse.is_super_master,
                                 getCookie("passwd")
                             );
                             result = {
@@ -166,6 +171,11 @@ export async function dealAxiosError(error) {
                                 message: "已更新access token，重新请求"
                             };
                         } else {
+                            window.alert("自动登录失败，跳转至登陆页");
+                            setTimeout(() => {
+                                window.open(`/#/login?name=${getCookie('userName')}&passwd=${getCookie('passwd')}`, "_self");
+                                location.reload();
+                            }, 500);
                             result = {
                                 status: -1,
                                 message: "自动登陆失败，请手动登陆"
@@ -180,19 +190,16 @@ export async function dealAxiosError(error) {
                     }
                 }
 
-                // 非 token 错误
             } else {
                 result = error.response.data;
             }
 
-            // 无响应的情况
         } else if (error.request) {
             result = {
                 status: -1,
                 message: "服务器无响应，请联系管理员"
             };
 
-            // 其它未知错误
         } else {
             handleLogout();
             result = {
@@ -214,6 +221,7 @@ export async function dealAxiosError(error) {
 
     return result;
 }
+
 
 // 封装统一登出逻辑
 function handleLogout() {

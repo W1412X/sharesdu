@@ -188,6 +188,16 @@ import AgreeButton from '@/components/common/AgreeButton.vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
     name: 'LoginPage',
+    props:{
+        name:{
+            type:String,
+            default:""
+        },
+        passwd:{
+            type:String,
+            default:""
+        }
+    },
     setup() {
         const themeColor = globalProperties.$themeColor;
         const ifShowEmailExamineCard = ref(false);
@@ -443,6 +453,10 @@ export default {
             this.registerByInviteStep=msg.registerByInviteStep;
             this.nowTab=msg.nowTab;
             this.setEmailExamineCardState(msg.ifShowEmailExamineCard);
+        }
+        if(this.user_name){
+            this.loginByUsernameData.userName=this.name;
+            this.loginByUsernameData.passwd=this.passwd;
         }
         initTriangleEffect(document);
     },

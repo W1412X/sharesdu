@@ -56,6 +56,10 @@ const routes = [
     name:'LoginPage',
     component:load('LoginPage'),
     meta: { requiresAuth: false },
+    props: route => ({
+      name: route.query.userName || null,
+      passwd: route.query.passwd || null,
+    }),
   },
   {
     path:'/error/:reason?',
