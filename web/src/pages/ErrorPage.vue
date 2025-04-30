@@ -12,6 +12,7 @@
 <script>
 import { globalProperties } from '@/main';
 import { getCancelLoadMsg } from '@/utils/other';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 
 export default {
     name: 'ErrorPage',
@@ -34,7 +35,7 @@ export default {
     methods: {
         goBack() {
             try{
-                let tmp=JSON.parse(sessionStorage.getItem("lastTwoRouter"));
+                let tmp=JSON.parse(selfDefinedSessionStorage.getItem("lastTwoRouter"));
                 this.$router.push(tmp.from);   
             }catch(e){
                 this.$router.push({name:"IndexPage"});

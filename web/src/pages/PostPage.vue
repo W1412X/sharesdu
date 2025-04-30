@@ -135,6 +135,7 @@ import { addHistory } from '@/utils/history';
 import EmojiPicker from '@/components/common/EmojiPicker.vue';
 import ImgCard from '@/components/common/ImgCard.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
     name: 'PostPage',
     components: {
@@ -199,7 +200,7 @@ export default {
             let scanMsg={};
             scanMsg.scrollTop=document.scrollingElement.scrollTop;
             let key='postScanMsg|'+this.post.id;
-            sessionStorage.setItem(key,JSON.stringify(scanMsg));
+            selfDefinedSessionStorage.setItem(key,JSON.stringify(scanMsg));
             next()
         }catch(e){
             next();
@@ -392,8 +393,8 @@ export default {
         /**
          * restore scan state
          */
-        if(sessionStorage.getItem('postScanMsg|'+this.$route.params.id)){
-            let scanMsg=JSON.parse(sessionStorage.getItem('postScanMsg|'+this.$route.params.id));
+        if(selfDefinedSessionStorage.getItem('postScanMsg|'+this.$route.params.id)){
+            let scanMsg=JSON.parse(selfDefinedSessionStorage.getItem('postScanMsg|'+this.$route.params.id));
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },10);

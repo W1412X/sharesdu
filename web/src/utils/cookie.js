@@ -7,13 +7,8 @@
  *  
  * themeColor
  */
-export function base64Encode(str) {
-  return window.btoa(str);
-}
 
-export function base64Decode(str) {
-  return window.atob(str);
-}
+import { decrypt, encrypt } from "./encrypt";
 
 /**
  * get the given name's value
@@ -21,12 +16,13 @@ export function base64Decode(str) {
  * @returns 
  */
 export function getCookie(name) {
+  name=encrypt(name);
   const nameEQ = `${name}=`;
   const cookies = document.cookie.split('; ');
   for (let i = 0; i < cookies.length; i++) {
     let cookie = cookies[i];
     if(cookie.startsWith(nameEQ)){
-      return base64Decode(cookie.substring(nameEQ.length));
+      return decrypt(cookie.substring(nameEQ.length));
     }
   }
   return null;
@@ -40,11 +36,12 @@ export function getCookie(name) {
  * @param {int} hour 
  */
 export function setCookie(name, value, hour) {
+  name=encrypt(name);
+  value=encrypt(value);
   let expires = '';
   if (!hour) {
     hour=0.5;
   }
-  value=base64Encode(value);
   const date = new Date();
   date.setTime(date.getTime() + (hour * 60 * 60 * 1000));
   expires = `expires=${date.toUTCString()}`;
@@ -56,6 +53,7 @@ export function setCookie(name, value, hour) {
  * @param {String} name 
  */
 export function clearCookie(name) {
+  name=encrypt(name);
   setCookie(name, "", -1);
 }
 

@@ -42,6 +42,7 @@ import { globalProperties } from '@/main';
 import { getCancelLoadMsg, getLoadMsg, getNormalInfoAlert, setLogin } from '@/utils/other';
 import { clearTokenCookies } from '@/utils/cookie';
 import { csDeleteAccount, csLoginByEmail, csRegisterByEmail, csResetPassword } from '@/axios/api_convert/account';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
     props: {
         initData: {
@@ -110,7 +111,7 @@ export default {
                 switch(this.data.type){
                     case 'register':  
                         this.alert(getNormalInfoAlert("登陆之后，在个人主页可以修改个人信息"))
-                        sessionStorage.removeItem("loginMsg");
+                        selfDefinedSessionStorage.removeItem("loginMsg");
                         window.location.reload();
                         break;
                     case 'login':
@@ -125,7 +126,7 @@ export default {
                          * delete the user message
                          */
                         clearTokenCookies();
-                        sessionStorage.removeItem("loginMsg");
+                        selfDefinedSessionStorage.removeItem("loginMsg");
                         this.$router.push({name:"WelcomePage"});
                         break;
                     case 'reset_passwd':

@@ -3,6 +3,7 @@
  * pages are imported dynamically  
  */
 import { getCookie } from '@/utils/cookie';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { createRouter, createWebHashHistory } from 'vue-router';
 const load = (path) => () => import(`@/pages/${path}.vue`);
 
@@ -133,7 +134,7 @@ router.beforeEach((to, from, next) => {
         params: from.params,
         query: from.query,
       }
-      sessionStorage.setItem("lastTwoRouter",JSON.stringify({to:tmpTo,from:tmpFrom}));
+      selfDefinedSessionStorage.setItem("lastTwoRouter",JSON.stringify({to:tmpTo,from:tmpFrom}));
     }
   }catch(e){
     console.error(e);

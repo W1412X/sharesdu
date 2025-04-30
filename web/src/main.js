@@ -17,6 +17,7 @@ import '@mdi/font/css/materialdesignicons.css';
 import './style/global.css';
 import { getDeviceType } from './utils/device';
 import { adjustAlpha } from './utils/other';
+import { selfDefinedSessionStorage } from './utils/sessionStorage';
 const vuetify = createVuetify({
   components,
   directives,
@@ -178,7 +179,7 @@ export const globalProperties=app.config.globalProperties;
 const globalVersion="-0.0.1";
 if(getCookie("version")!=globalVersion){
   clearTokenCookies();
-  sessionStorage.clear();
+  selfDefinedSessionStorage.clear();
   localStorage.clear();
 }
 setCookie("version",globalVersion);

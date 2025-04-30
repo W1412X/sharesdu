@@ -147,6 +147,7 @@ import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
 import { ref, computed } from 'vue';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
   name: 'SelfPage',
   setup() {
@@ -213,7 +214,7 @@ export default {
       scanMsg.scrollTop = document.scrollingElement.scrollTop;
       scanMsg.choose = this.choose;
       let key = 'selfScanMsg';
-      sessionStorage.setItem(key, JSON.stringify(scanMsg));
+      selfDefinedSessionStorage.setItem(key, JSON.stringify(scanMsg));
       next()
     }catch(e){
       next();
@@ -375,8 +376,8 @@ export default {
       profileUrl: getCookie('userProfileUrl'),
     }
     document.getElementById('web-title').innerText = "我的";
-    if (sessionStorage.getItem('selfScanMsg')) {
-      let scanMsg = JSON.parse(sessionStorage.getItem('selfScanMsg'));
+    if (selfDefinedSessionStorage.getItem('selfScanMsg')) {
+      let scanMsg = JSON.parse(selfDefinedSessionStorage.getItem('selfScanMsg'));
       setTimeout(() => {
         document.scrollingElement.scrollTop = scanMsg.scrollTop;
       }, 10);

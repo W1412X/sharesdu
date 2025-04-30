@@ -25,7 +25,6 @@
     "dedent": "^1.5.3",
     "dexie": "^4.0.11",
     "image-compressor.js": "^1.1.4",
-    "jieba-js": "^1.0.2",
     "katex": "^0.15.6",
     "lodash": "^4.17.21",
     "marked": "^13.0.2",

@@ -113,6 +113,7 @@ import { globalProperties } from '@/main';
 import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets, waitSecond } from '@/utils/other';
 import { computed } from 'vue';
 import { getCookie } from '@/utils/cookie';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
     props: {
         type: {
@@ -158,7 +159,7 @@ export default {
             scanMsg.articleType=this.articleType;
             scanMsg.scrollTop=document.scrollingElement.scrollTop;
             let key='searchScanMsg|'+this.query.join(',');
-            sessionStorage.setItem(key,JSON.stringify(scanMsg));
+            selfDefinedSessionStorage.setItem(key,JSON.stringify(scanMsg));
             next()
         }catch(e){
             next();
@@ -774,10 +775,10 @@ export default {
         },
     },
     async mounted() {
-        //get the sessionStorage  
+        //get the selfDefinedSessionStorage  
         document.getElementById('web-title').innerText='搜索結果';
         let sessionKey='searchScanMsg|'+this.query.join(',');
-        let scanMsg=sessionStorage.getItem(sessionKey);
+        let scanMsg=selfDefinedSessionStorage.getItem(sessionKey);
         if(scanMsg!=null){
             scanMsg=JSON.parse(scanMsg);
             this.editingArticleFiltTag=scanMsg.editingArticleFiltTag;

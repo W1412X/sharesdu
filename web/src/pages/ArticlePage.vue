@@ -156,6 +156,7 @@ import DeleteButton from '@/components/common/DeleteButton.vue';
 import { addHistory } from '@/utils/history';
 import ManageButton from '@/components/manage/ManageButton.vue';
 import { setArticleTop } from '@/axios/top';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
     name: 'ArticlePage',
     components: {
@@ -266,7 +267,7 @@ export default {
                 let postScrollTop = document.getElementById("post-container").scrollTop;
                 scanMsg.postScrollTop = postScrollTop;
             }
-            sessionStorage.setItem(key, JSON.stringify(scanMsg));
+            selfDefinedSessionStorage.setItem(key, JSON.stringify(scanMsg));
             next();
         }catch(e){
             next();
@@ -412,8 +413,8 @@ export default {
         /**
          * restore scan state
          */
-        if (sessionStorage.getItem('articleScanMsg|' + this.$route.params.id)) {
-            let scanMsg = JSON.parse(sessionStorage.getItem('articleScanMsg|' + this.$route.params.id));
+        if (selfDefinedSessionStorage.getItem('articleScanMsg|' + this.$route.params.id)) {
+            let scanMsg = JSON.parse(selfDefinedSessionStorage.getItem('articleScanMsg|' + this.$route.params.id));
             this.setCommentState(scanMsg.commentState);
             setTimeout(() => {
                 if (scanMsg.commentState) {

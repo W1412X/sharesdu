@@ -185,6 +185,7 @@ import { getNormalWarnAlert, openNewPage, setLogin } from '@/utils/other';
 import { csLoginByUserName } from '@/axios/api_convert/account';
 import { initTriangleEffect } from '@/utils/animation';
 import AgreeButton from '@/components/common/AgreeButton.vue';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
     name: 'LoginPage',
     setup() {
@@ -319,7 +320,7 @@ export default {
             msg.registerByInviteStep=this.registerByInviteStep;
             msg.ifShowEmailExamineCard=this.ifShowEmailExamineCard;
             msg.nowTab=this.nowTab;
-            sessionStorage.setItem('loginMsg',JSON.stringify(msg));
+            selfDefinedSessionStorage.setItem('loginMsg',JSON.stringify(msg));
             next();
         }catch(e){
             next();
@@ -429,7 +430,7 @@ export default {
     },
     mounted() {
         //get last edit msg  
-        let msg=sessionStorage.getItem("loginMsg");
+        let msg=selfDefinedSessionStorage.getItem("loginMsg");
         if(msg){
             msg=JSON.parse(msg);
             this.loginByUsernameData=msg.loginByUsernameData;

@@ -192,6 +192,7 @@ import EmojiPicker from '@/components/common/EmojiPicker.vue';
 import CourseHistoryCard from '@/components/course/CourseHistoryCard.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
     name: 'CoursePage',
     components: {
@@ -273,7 +274,7 @@ export default {
                 scanMsg.postScrollTop=document.getElementById("post-container").scrollTop;
             }
             let key='courseScanMsg|'+this.course.id;
-            sessionStorage.setItem(key,JSON.stringify(scanMsg));
+            selfDefinedSessionStorage.setItem(key,JSON.stringify(scanMsg));
             next()
         }catch(e){
             next();
@@ -536,8 +537,8 @@ export default {
         /**
          * restore scan state
          */
-        if(sessionStorage.getItem('courseScanMsg|'+this.$route.params.id)){
-            let scanMsg=JSON.parse(sessionStorage.getItem('courseScanMsg|'+this.$route.params.id));
+        if(selfDefinedSessionStorage.getItem('courseScanMsg|'+this.$route.params.id)){
+            let scanMsg=JSON.parse(selfDefinedSessionStorage.getItem('courseScanMsg|'+this.$route.params.id));
             this.setPostState(scanMsg.postState);
             document.getElementById('web-title').innerText='课程 | '+this.course.name;
             setTimeout(()=>{

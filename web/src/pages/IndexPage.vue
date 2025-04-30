@@ -75,6 +75,7 @@ import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, openNew
 import { getArticleList, getPostListByArticleId } from '@/axios/article';
 import { getCourseList } from '@/axios/course';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
+import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
     name: 'IndexPage',
     components: {
@@ -174,7 +175,7 @@ export default {
             let scrollPosition = document.scrollingElement.scrollTop;
             lastScanMsg.scrollPosition = scrollPosition;
             lastScanMsg.articleSortMethod = this.articleSortMethod;
-            sessionStorage.setItem('indexScanMsg', JSON.stringify(lastScanMsg))
+            selfDefinedSessionStorage.setItem('indexScanMsg', JSON.stringify(lastScanMsg))
             next()
         }catch(e){
             next();
@@ -401,7 +402,7 @@ export default {
         await this.loadMore(this.itemType);
 
         //use session storage to save memory now
-        let lastScanMsg = JSON.parse(sessionStorage.getItem("indexScanMsg"));
+        let lastScanMsg = JSON.parse(selfDefinedSessionStorage.getItem("indexScanMsg"));
         if(lastScanMsg){
             this.itemType = lastScanMsg.itemType;
             this.articleSortMethod = lastScanMsg.articleSortMethod;
