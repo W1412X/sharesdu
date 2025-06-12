@@ -118,7 +118,7 @@ export default {
                         /**
                          * save the user message
                          */
-                        setLogin(response.user_name,response.user_id,response.email,response.refresh,this.apiUrl + "/image/user?user_id=" + response.user_id, response.is_master, response.is_super_master ,this.ifSavePasswd?this.loginByUsernameData.passwd:null);
+                        setLogin(response.user_name,response.user_id,this.data.email,response.refresh,this.apiUrl + "/image/user?user_id=" + response.user_id, response.is_master, response.is_super_master ,null);
                         this.$router.push({ name: 'IndexPage' });
                         break;
                     case 'delete_account':

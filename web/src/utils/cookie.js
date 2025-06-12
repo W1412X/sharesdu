@@ -36,6 +36,7 @@ export function getCookie(name) {
  * @param {int} hour 
  */
 export function setCookie(name, value, hour) {
+  console.log(name,value);
   if(value==null||value==""||value==undefined){
     hour=-1;
   }
