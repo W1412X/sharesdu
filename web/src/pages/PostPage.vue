@@ -20,6 +20,7 @@
             <div style="display: flex;flex-direction: row-reverse;">
                 <v-btn @click="closeParentReply" color="#00000000" variant="text" size="25">
                     <v-icon type="mdi" icon="mdi-close" :color="themeColor"></v-icon>
+                    <v-tooltip activator="parent">关闭</v-tooltip>
                 </v-btn>
             </div>
             <reply-item v-if="ifShowTmpParentReply" :post-id="this.post.id" :init-data="this.tmpParentReply" @show_parent="getParentReply" @reply="addReply" @alert="alert" @set_loading="setLoading"></reply-item>
@@ -104,6 +105,7 @@
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="setCommentState(true)" icon class="bottom-btn">
                             <v-icon size="23" icon="mdi-comment-outline"></v-icon>
+                            <v-tooltip activator="parent">添加评论</v-tooltip>
                         </v-btn>
                     </div>
                 </div>
@@ -199,6 +201,9 @@ export default {
             }
             let scanMsg={};
             scanMsg.scrollTop=document.scrollingElement.scrollTop;
+            scanMsg.pageNum={
+                reply:this.replyPageNum,
+            }
             let key='postScanMsg|'+this.post.id;
             selfDefinedSessionStorage.setItem(key,JSON.stringify(scanMsg));
             next()
@@ -238,6 +243,7 @@ export default {
             loadState:{
                 post:false,
             },
+            lastPageNum:null,
         }
     },
     methods: {
@@ -312,6 +318,9 @@ export default {
                 }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
+            }
+            while(this.lastPageNum!=null&&this.lastPageNum.reply>this.replyPageNum){
+                await this.loadMoreReply();
             }
         },
         async getParentReply(id){
@@ -395,6 +404,7 @@ export default {
          */
         if(selfDefinedSessionStorage.getItem('postScanMsg|'+this.$route.params.id)){
             let scanMsg=JSON.parse(selfDefinedSessionStorage.getItem('postScanMsg|'+this.$route.params.id));
+            this.lastPageNum=scanMsg.pageNum;
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },10);

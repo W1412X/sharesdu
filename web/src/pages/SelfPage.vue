@@ -371,7 +371,7 @@ export default {
     this.user = {
       id: getCookie("userId"),
       name: getCookie("userName"),
-      email: getCookie("userEmail"),
+      email: getCookie("email"),
       passwd: "********",
       profileUrl: getCookie('userProfileUrl'),
     }

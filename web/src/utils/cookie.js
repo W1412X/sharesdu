@@ -22,7 +22,16 @@ export function getCookie(name) {
   for (let i = 0; i < cookies.length; i++) {
     let cookie = cookies[i];
     if(cookie.startsWith(nameEQ)){
-      return decrypt(cookie.substring(nameEQ.length));
+      let value=cookie.substring(nameEQ.length);
+      if(value.includes("|FH|")){
+        value=value.replaceAll("|FH|", ";");
+      }else if(value.includes("|DH|")){
+        value=value.replaceAll("|DH|", ",");
+      }else if(value.includes("|KG|")){
+        value=value.replaceAll("|KG|", " ");
+      }
+      console.log(value);
+      return decrypt(value);
     }
   }
   return null;
@@ -36,13 +45,20 @@ export function getCookie(name) {
  * @param {int} hour 
  */
 export function setCookie(name, value, hour) {
-  console.log(name,value);
   if(value==null||value==""||value==undefined){
     hour=-1;
   }
   value=value.toString();
   name=encrypt(name);
   value=encrypt(value);
+  //deal with unsupport code
+  if(value.includes(";")){
+    value=value.replaceAll(";","|FH|");
+  }else if(value.includes(",")){
+    value=value.replaceAll(",","|DH|");
+  }else if(value.includes(" ")){
+    value=value.replaceAll(" ","|KG|");
+  }
   let expires = '';
   if (!hour) {
     hour=0.5;

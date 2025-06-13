@@ -77,10 +77,10 @@ export const getArticleDetail = async (id) => {
 };
 
 // 获取文章下的Post列表函数
-export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) => {
+export const getPostListByArticleId = async (id, pageIndex = 1,useCache=true, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await axiosInstance.get('/article/post_list', { params: { article_id:id, page_index: pageIndex, page_size: pageSize } });
+        const response = await axiosInstance.get('/article/post_list', { params: { article_id:id, page_index: pageIndex, page_size: pageSize } },useCache);
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);
@@ -93,10 +93,10 @@ export const getPostListByArticleId = async (id, pageIndex = 1, pageSize = 20) =
 };
 
 // 获取文章列表函数
-export const getArticleList = async (sort='time',tags=null,pageIndex = 1, pageSize = 20) => {
+export const getArticleList = async (sort='time',tags=null,pageIndex = 1,useCache=true, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await axiosInstance.get('/article/list', { params: { page_index: pageIndex, page_size: pageSize,tags:tags,sort:sort } });
+        const response = await axiosInstance.get('/article/list', { params: { page_index: pageIndex, page_size: pageSize,tags:tags,sort:sort } },useCache);
         return response.data;
     } catch (error) {
         let dealResult=await dealAxiosError(error);

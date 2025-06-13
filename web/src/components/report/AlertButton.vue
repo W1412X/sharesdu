@@ -12,6 +12,7 @@
         'background-color': 'rgba(0,0,0,0)',
     }">
         <v-icon :size="size" icon="mdi-alert-circle-outline"></v-icon>
+        <v-tooltip activator="parent">举报此项</v-tooltip>
     </v-btn>
 </template>
 <script>

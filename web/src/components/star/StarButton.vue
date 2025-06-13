@@ -12,6 +12,7 @@
         'background-color':'rgba(0,0,0,0)'
     }">
         <v-icon type="mdi" :size="size" :color="color" :icon="star"></v-icon>
+        <v-tooltip activator="parent">添加到收藏夹</v-tooltip>
     </v-btn>
 </template>
 

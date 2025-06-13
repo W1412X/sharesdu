@@ -7,6 +7,7 @@
         'background-color': 'rgba(0,0,0,0)',
     }">
         <v-icon :size="size" icon="mdi-delete-outline"></v-icon>
+        <v-tooltip activator="parent">删除此项</v-tooltip>
     </v-btn>
 </template>
 <script>

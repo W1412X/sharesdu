@@ -172,6 +172,11 @@ export default {
             }
             let lastScanMsg = {}
             lastScanMsg.itemType = this.itemType;
+            lastScanMsg.pageNum={
+                article:this.articlePageNum,
+                post:this.postPageNum,
+                course:this.coursePageNum,
+            }
             let scrollPosition = document.scrollingElement.scrollTop;
             lastScanMsg.scrollPosition = scrollPosition;
             lastScanMsg.articleSortMethod = this.articleSortMethod;
@@ -207,7 +212,8 @@ export default {
                 article: false,
                 course: false,
                 post: false,
-            }
+            },
+            lastPageNum:null,
         }
     },
     methods: {
@@ -215,10 +221,11 @@ export default {
             openNewPage("#/editor")
         },
         async refresh({ done }) {
+            console.log("refresh")
             let response = null;
             switch (this.itemType) {
                 case 'article':
-                    response = await getArticleList(this.articleSortMethod, null, 1);
+                    response = await getArticleList(this.articleSortMethod, null, 1,false);
                     if (response.status == 200) {
                         this.articlePageNum[this.articleSortMethod] = 2;
                         this.articleList[this.articleSortMethod] = [];
@@ -245,7 +252,7 @@ export default {
                     }
                     break;
                 case 'post':
-                    response = await getPostListByArticleId(20, 1);
+                    response = await getPostListByArticleId(20, 1,false);
                     if (response.status == 200) {
                         this.postPageNum = 2;
                         this.postList = [];
@@ -269,7 +276,7 @@ export default {
                     }
                     break;
                 case 'course':
-                    response = await getCourseList(1);
+                    response = await getCourseList(1,false);
                     if (response.status == 200) {
                         this.coursePageNum = 2;
                         this.courseList = [];
@@ -387,6 +394,30 @@ export default {
                     this.alert(getNormalErrorAlert(response.message));
                 }
             }
+            /**
+             * restore the last scan state
+             */
+            if(this.lastPageNum!=null){
+                switch(itemType){
+                    case "article":
+                        while(this.lastPageNum.article[this.articleSortMethod]>this.articlePageNum[this.articleSortMethod]){
+                            await this.loadMore(itemType);
+                        }
+                        break;
+                    case "post":
+                        while(this.lastPageNum.post>this.postPageNum){
+                            await this.loadMore(itemType);
+                        }
+                        break;
+                    case "course":
+                        while(this.lastPageNum.course>this.coursePageNum){
+                            await this.loadMore(itemType);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         },
         alert(msg) {
             this.$emit('alert', msg);
@@ -399,16 +430,18 @@ export default {
         }
     },
     async mounted() {
-        await this.loadMore(this.itemType);
-
         //use session storage to save memory now
         let lastScanMsg = JSON.parse(selfDefinedSessionStorage.getItem("indexScanMsg"));
         if(lastScanMsg){
             this.itemType = lastScanMsg.itemType;
+            this.lastPageNum=lastScanMsg.pageNum;
             this.articleSortMethod = lastScanMsg.articleSortMethod;
+            await this.loadMore(this.itemType);
             setTimeout(() => {
                 document.scrollingElement.scrollTop = lastScanMsg.scrollPosition;
             }, 10)
+        }else{
+            await this.loadMore(this.itemType);
         }
         document.getElementById('web-title').innerText = 'ShareSDU | 首页';
         this.ifMounted=true;

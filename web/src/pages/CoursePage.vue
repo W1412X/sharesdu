@@ -152,6 +152,7 @@
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="showPost" icon class="bottom-btn">
                             <v-icon icon="mdi-comment-outline" size="24"></v-icon>
+                            <v-tooltip activator="parent">查看帖子</v-tooltip>
                         </v-btn>
                     </div>
                 </div>
@@ -268,6 +269,10 @@ export default {
                 return;
             }
             let scanMsg={};
+            scanMsg.pageNum={
+                post:this.postPageNum,
+                comment:this.commentPageNum,
+            }
             scanMsg.scrollTop=document.scrollingElement.scrollTop;
             scanMsg.postState=this.ifShowPost;
             if(scanMsg.postState){
@@ -320,7 +325,8 @@ export default {
             loadState:{
                 course:false,
                 selfComment:false,
-            }
+            },
+            lastPageNum:null,
         }
     },
     methods: {
@@ -354,6 +360,9 @@ export default {
                 this.postPageNum++;
             }else{
                 this.alert(getNormalErrorAlert(response.data.message));
+            }
+            while(this.lastPageNum!=null&&this.lastPageNum.post>this.postPageNum){
+                await this.loadMorePost();
             }
             this.loading.post=false;
         },
@@ -446,6 +455,9 @@ export default {
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
+            while(this.lastPageNum!=null&&this.lastPageNum.comment>this.commentPageNum){
+                await this.getCourseCommentList();
+            }
         },
         showHistory(){
             this.setHistoryState(true)
@@ -532,14 +544,13 @@ export default {
             //this.$router.push({name:"ErrorPage",reason:"课程信息获取失败"})
             return;
         }
-        await this.getSelfComment();
-        await this.getCourseCommentList();
         /**
          * restore scan state
          */
         if(selfDefinedSessionStorage.getItem('courseScanMsg|'+this.$route.params.id)){
             let scanMsg=JSON.parse(selfDefinedSessionStorage.getItem('courseScanMsg|'+this.$route.params.id));
             this.setPostState(scanMsg.postState);
+            this.lastPageNum=scanMsg.pageNum;
             document.getElementById('web-title').innerText='课程 | '+this.course.name;
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
@@ -548,6 +559,8 @@ export default {
                 }
             },10);
         }
+        await this.getSelfComment();
+        await this.getCourseCommentList();
     },
 }
 </script>

@@ -26,27 +26,56 @@
         :init-data="{ id: userId, name: ifMobile ? '' : userName }" :color="'#ffffff'"></avatar-name>
       <v-spacer></v-spacer>
       <v-select :color="navIconColor" :base-color="navIconColor" v-model="searchType" label="类型"
-        style="max-width: 60px;min-width: 50px;margin-right: 5px;" density="compact" variant="outlined"
+        style="max-width: 100px;min-width: 50px;margin-right: 5px;" density="compact" variant="outlined"
         :items="['文章', '帖子', '课程', '全部', '回复']" :item-color="themeColor">
       </v-select>
       <sensitive-text-field id="search-box-listen" :style="{ color: navIconColor }" :color="navIconColor" :base-color="navIconColor"
-        v-model="searchContent" style="min-width: 200px;" density="compact" label="搜索 文章/帖子/课程/回复"
+        v-model="searchContent" style="min-width: 200px;" density="compact" :label="searchLabel"
         variant="outlined">
       </sensitive-text-field>
       <div class="search-btn-container">
-        <v-btn id="search-btn" @click="search" icon="mdi-magnify" variant="text" :color="navIconColor" size="40"></v-btn>
+        <v-btn id="search-btn" @click="search" icon="mdi-magnify" variant="text" :color="navIconColor" size="40">
+          <div class="icon-container">
+            <v-icon type="mdi" icon="mdi-magnify" :color="navIconColor" size="28"></v-icon>
+          </div>
+        </v-btn>
       </div>
       <v-spacer></v-spacer>
-      <v-btn v-if="ifShowHomeBtn && !ifShowBottomNav" @click="toHomePage" icon="mdi-home" variant="text"
-        :color="navIconColor" size="40"></v-btn>
-      <v-btn v-if="ifShowTopEditBtns" @click="setPostEditorState(true)" icon="mdi-comment-question-outline"
-        variant="text" :color="navIconColor" size="40"></v-btn>
-      <v-btn v-if="ifShowTopEditBtns" @click="editArticle" icon="mdi-file-edit-outline" variant="text"
-        :color="navIconColor" size="40"></v-btn>
-      <v-btn v-if="ifShowTopEditBtns" @click="setCourseEditorState(true)" icon="mdi-book-plus-outline" variant="text"
-        :color="navIconColor" size="40"></v-btn>
-      <v-btn @click="setShowHistoryState(true)" icon="mdi-history" variant="text" :color="navIconColor"
-        size="40"></v-btn>
+      <v-btn v-if="ifShowHomeBtn && !ifShowBottomNav" @click="toHomePage" icon="mdi-home" variant="text" size="40"
+        :color="navIconColor">
+        <div class="icon-container">
+          <v-icon type="mdi" icon="mdi-home" :color="navIconColor" size="28"></v-icon>
+        </div>
+        <v-tooltip activator="parent">返回首页</v-tooltip>
+      </v-btn>
+      <v-btn v-if="ifShowTopEditBtns" @click="setPostEditorState(true)" size="40"
+        icon
+        variant="text">
+        <div class="icon-container">
+          <v-icon type="mdi" icon="mdi-comment-question-outline" :color="navIconColor" size="28"></v-icon>
+        </div>
+        <v-tooltip activator="parent">发表帖子</v-tooltip>
+      </v-btn>
+      <v-btn v-if="ifShowTopEditBtns" @click="editArticle" variant="text" icon size="40"
+        :color="navIconColor">
+        <div class="icon-container">
+          <v-icon type="mdi" icon="mdi-file-edit-outline" :color="navIconColor" size="28"></v-icon>
+        </div>
+        <v-tooltip activator="parent">发表文章</v-tooltip>
+      </v-btn>
+      <v-btn v-if="ifShowTopEditBtns" @click="setCourseEditorState(true)" variant="text" icon  size="40"
+        :color="navIconColor">
+        <div class="icon-container">
+          <v-icon type="mdi" icon="mdi-book-plus-outline" :color="navIconColor" size="28"></v-icon>
+        </div>
+        <v-tooltip activator="parent">创建课程</v-tooltip>
+      </v-btn>
+      <v-btn @click="setShowHistoryState(true)" variant="text" :color="navIconColor" icon size="40">
+        <div class="icon-container">
+          <v-icon type="mdi" icon="mdi-history" :color="navIconColor" size="28"></v-icon>
+        </div>
+        <v-tooltip activator="parent">浏览历史</v-tooltip>
+      </v-btn>
     </div>
     <div
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': routerMarginBottom }">
@@ -55,17 +84,17 @@
     </div>
     <div v-if="ifShowBottomNav" class="bottom-nav-container">
       <v-spacer />
-      <v-btn @click="openUrl('#/index')" icon="mdi-home" variant="text" :color="themeColor" size="40"></v-btn>
+      <v-btn @click="openUrl('#/index')" variant="text" icon="mdi-home" :color="themeColor" size="40"></v-btn>
       <v-spacer />
       <v-speed-dial>
         <template v-slot:activator="{ props: activatorProps }">
           <v-btn v-bind="activatorProps" size="40" variant="text" :color="themeColor" icon="mdi-plus"></v-btn>
         </template>
-        <v-btn @click="openUrl('#/editor')" key="article" :color="themeColor" icon="mdi-file-edit-outline"></v-btn>
-        <v-btn @click="setCourseEditorState(true)" key="course" :color="themeColor"
-          icon="mdi-book-plus-outline"></v-btn>
-        <v-btn @click="setPostEditorState(true)" key="post" :color="themeColor"
-          icon="mdi-comment-question-outline"></v-btn>
+        <v-btn @click="openUrl('#/editor')" key="article" :color="themeColor" text="发表文章" prepend-icon="mdi-file-edit-outline"></v-btn>
+        <v-btn @click="setCourseEditorState(true)" key="course" text="创建课程" :color="themeColor"
+        prepend-icon="mdi-book-plus-outline"></v-btn>
+        <v-btn @click="setPostEditorState(true)" key="post" text="发表帖子" :color="themeColor"
+          prepend-icon="mdi-comment-question-outline"></v-btn>
       </v-speed-dial>
       <v-spacer />
       <v-btn @click="openUrl('#/self')" icon="mdi-account" variant="text" :color="themeColor" size="40"></v-btn>
@@ -230,6 +259,9 @@ export default {
         text: '加载中...',
         progress: -1,
       },
+      searchLabel:computed(()=>{ 
+        return "搜索"+this.searchType;
+      }),
       searchContent: "",
       searchType: "全部",
     }
@@ -344,7 +376,12 @@ export default {
   display: flex;
   max-height: 500px;
 }
-
+.icon-container{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  align-items: center;
+}
 /** desktop */
 @media screen and (min-width: 1000px) {
   .nav-bar {

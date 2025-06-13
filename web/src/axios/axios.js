@@ -11,13 +11,13 @@ class AxiosWithCache {
         });
         this.cacher=new ResponseBuffer(100, 600 * 1000);
     }
-    async get(url, config = {}) {
+    async get(url, config = {},useCache=true) {
         /**
          * check cache
          */
         let key=url+JSON.stringify(config);
         let cachedResponse=this.cacher.getResponse(key);
-        if(cachedResponse){
+        if(cachedResponse&&useCache){
             return cachedResponse;
         }
         /**

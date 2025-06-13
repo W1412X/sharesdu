@@ -5,6 +5,7 @@
         'border-radius': '100%',
     }">
         <v-icon :color="color" :size="size" :icon="heart"></v-icon>
+        <v-tooltip activator="parent">点赞</v-tooltip>
     </v-btn>
 </template>
 <script>

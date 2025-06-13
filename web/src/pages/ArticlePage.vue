@@ -108,6 +108,7 @@
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="comment" icon class="bottom-btn">
                             <v-icon icon="mdi-comment-outline" size="23"></v-icon>
+                            <v-tooltip activator="parent">查看帖子</v-tooltip>
                         </v-btn>
                     </div>
                     <div class="column-center padding-right-10px">
@@ -214,6 +215,7 @@ export default {
     },
     data() {
         return {
+            lastPageNum:null,
             articleResponse: null,
             article: {
                 id: "",
@@ -249,7 +251,7 @@ export default {
             loading: {
                 post: false,
                 top: false,
-            }
+            },
         }
     },
     beforeRouteLeave(to, from, next) {
@@ -261,6 +263,9 @@ export default {
             //use session storage to save memory now  
             let scanMsg = {};
             scanMsg.commentState = this.ifShowComment;
+            scanMsg.pageNum={
+                post:this.postPageNum,
+            }
             scanMsg.scrollTop = document.scrollingElement.scrollTop;
             let key = 'articleScanMsg|' + this.article.id;
             if (scanMsg.commentState) {
@@ -320,6 +325,9 @@ export default {
                 this.postPageNum++;
             } else {
                 this.alert(getNormalErrorAlert(response.message));
+            }
+            while(this.lastPageNum!=null&&this.postPageNum<this.lastPageNum.post){
+                await this.loadMorePost();
             }
             this.loading.post = false;
         },
@@ -415,7 +423,11 @@ export default {
          */
         if (selfDefinedSessionStorage.getItem('articleScanMsg|' + this.$route.params.id)) {
             let scanMsg = JSON.parse(selfDefinedSessionStorage.getItem('articleScanMsg|' + this.$route.params.id));
+            this.lastPageNum=scanMsg.pageNum;
             this.setCommentState(scanMsg.commentState);
+            if(scanMsg.commentState){
+                await this.loadMorePost();
+            }
             setTimeout(() => {
                 if (scanMsg.commentState) {
                     document.getElementById("post-container").scrollTop = scanMsg.postScrollTop;

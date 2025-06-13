@@ -156,6 +156,7 @@ export default {
             scanMsg.ifArticleFilter=this.ifArticleFilter;
             scanMsg.filtArticleTags=this.filtArticleTags;
             scanMsg.sortType=this.sortType;
+            scanMsg.pageNum=this.searchPage;
             scanMsg.articleType=this.articleType;
             scanMsg.scrollTop=document.scrollingElement.scrollTop;
             let key='searchScanMsg|'+this.query.join(',');
@@ -506,7 +507,8 @@ export default {
                     }
                 }
                 return tmp;
-            })
+            }),
+            lastPageNum:null,
         }
     },
     methods: {
@@ -745,8 +747,6 @@ export default {
             }
         },
         async load() {
-            console.log(this.searchPage);
-            console.log(this.searchList);
             switch (this.searchType) {
                 case "文章":
                     await this.loadArticle();
@@ -765,6 +765,9 @@ export default {
                     break;
                 default:
                     this.alert(getNormalWarnAlert("未知错误"));
+            }
+            if(this.lastPageNum!=null&&this.searchPage[this.searchType][this.sortType]<this.lastPageNum[this.searchType][this.sortType]){
+                await this.load();
             }
         },
         setSortType(sortValue) {
@@ -793,6 +796,7 @@ export default {
             this.filtArticleTags=scanMsg.filtArticleTags;
             this.sortType=scanMsg.sortType;
             this.articleType=scanMsg.articleType;
+            this.lastPageNum=scanMsg.pageNum;
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
             },100);

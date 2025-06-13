@@ -190,10 +190,10 @@ export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20)
  * @param {*} pageSize 
  * @returns 
  */
-export const getCourseList = async (pageIndex = 1, pageSize = 20) => {
+export const getCourseList = async (pageIndex = 1,useCache=true, pageSize = 20) => {
     try {
         await waitForLock('token');
-        const response = await axiosInstance.get('/course/list', { params: { page_index: pageIndex, page_size: pageSize } });
+        const response = await axiosInstance.get('/course/list', { params: { page_index: pageIndex, page_size: pageSize } },useCache);
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

@@ -30,7 +30,8 @@
                             <v-btn @click="loginByUsername()" class="login-btn" variant="outlined"
                                 :disabled="!(valUserName(loginByUsernameData.userName) && valPassWord(loginByUsernameData.passwd))"
                                 :loading="loading.login"
-                                :color="themeColor">登陆</v-btn>
+                                :color="themeColor">
+                                登陆</v-btn>
                         </v-tabs-window-item>
                         <!-- login by email  -->
                         <v-tabs-window-item v-if="loginMethod === 'email'" title="登录" value="login">
@@ -186,6 +187,7 @@ import { csLoginByUserName } from '@/axios/api_convert/account';
 import { initTriangleEffect } from '@/utils/animation';
 import AgreeButton from '@/components/common/AgreeButton.vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import { getCookie } from '@/utils/cookie';
 export default {
     name: 'LoginPage',
     props:{
@@ -457,6 +459,10 @@ export default {
         if(this.user_name){
             this.loginByUsernameData.userName=this.name;
             this.loginByUsernameData.passwd=this.passwd;
+        }
+        if(getCookie("passwd")){
+            this.loginByUsernameData.userName=getCookie("userName");
+            this.loginByUsernameData.passwd=getCookie("passwd");
         }
         initTriangleEffect(document);
     },

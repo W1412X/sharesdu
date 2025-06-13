@@ -4,7 +4,7 @@ import { globalProperties } from "@/main";
 import { setLock, waitForLock } from "./lock";
 import { loginWithPassword } from "@/axios/account";
 import { fetchImgAndDeal } from "./image";
-import { getDeviceType } from "./device";
+import { getDeviceTypeByAgent } from "./device";
 //import { getDeviceType } from "./device";
 /**
  * a deep copy function for json object
@@ -460,7 +460,7 @@ export function hexToRgba(hex, opacity) {
  * 
  */
 export function openNewPage(url) {
-    let device=getDeviceType();
+    let device=getDeviceTypeByAgent();
     //window.open(url, "_self");
     if(device==="mobile"){
         window.open(url,"_self");

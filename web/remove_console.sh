@@ -1,5 +1,5 @@
 #!/bin/bash
-TARGET_DIR=\$1
+TARGET_DIR=$1
 if [ -z "$TARGET_DIR" ]; then
     echo "请提供目录路径作为参数"
     exit 1

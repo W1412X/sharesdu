@@ -20,7 +20,8 @@
         <v-navigation-drawer v-if="deviceType === 'desktop'" v-model="drawer" :rail="rail" permanent
             @click="rail = false">
             <v-btn v-if="!rail" size="30" class="menu-btn" :icon="'mdi-chevron-left'"
-                @click.stop="rail = !rail"></v-btn>
+                @click.stop="rail = !rail">
+            </v-btn>
             <v-list density="compact" nav :color="themeColor" v-model="choose">
                 <v-list-item @click="choose = 'item'" prepend-icon="mdi-sitemap" title="对象管理" value="item"></v-list-item>
                 <v-list-item @click="choose = 'invite'" prepend-icon="mdi-account-plus" title="邀请码管理" value="invite"></v-list-item>
