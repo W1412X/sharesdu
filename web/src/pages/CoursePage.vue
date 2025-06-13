@@ -181,7 +181,7 @@ import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
 import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList, getCoursePostList } from '@/axios/course';
 import { computed,ref } from 'vue';
-import { copy, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { copy, getNormalErrorAlert, getNormalSuccessAlert, roundNumber } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
 import StarButton from '@/components/star/StarButton.vue';
 import PostEditor from '@/components/post/PostEditor.vue';
@@ -521,6 +521,7 @@ export default {
             if(response.course_detail.all_people!=0){
                 avgScore=response.course_detail.all_score/response.course_detail.all_people;
             }
+            avgScore=roundNumber(avgScore,1);
             this.course={
                 id:response.course_detail.course_id,
                 name:response.course_detail.course_name,

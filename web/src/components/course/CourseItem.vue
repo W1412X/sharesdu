@@ -40,7 +40,7 @@
 //import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiComment, mdiStar } from '@mdi/js';
 import { globalProperties } from '@/main';
-import { openNewPage } from '@/utils/other';
+import { openNewPage, roundNumber } from '@/utils/other';
 export default {
     name: 'CourseItem',
     components: {
@@ -82,6 +82,7 @@ export default {
     },
     data(){
         const data=this.initData;
+        data.score=roundNumber(data.score,1);
         return {
             data,
             star:mdiStar,

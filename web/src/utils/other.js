@@ -576,3 +576,14 @@ export function waitSecond(second) {
         setTimeout(resolve, second * 1000);
     });
 }
+
+/**
+ * 
+ * @param {Number} number 
+ * @param {int} bit 
+ * @returns 
+ */
+export function roundNumber(number, bit) {
+    const factor = Math.pow(10, bit);
+    return Math.round(number * factor) / factor;
+}
