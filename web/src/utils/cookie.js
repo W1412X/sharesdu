@@ -16,6 +16,13 @@ import { decrypt, encrypt } from "./encrypt";
  * @returns 
  */
 export function getCookie(name) {
+  if(name.includes("|FH|")){
+    name=name.replaceAll("|FH|", ";");
+  }else if(name.includes("|DH|")){
+    name=name.replaceAll("|DH|", ",");
+  }else if(name.includes("|KG|")){
+    name=name.replaceAll("|KG|", " ");
+  }
   name=encrypt(name);
   const nameEQ = `${name}=`;
   const cookies = document.cookie.split('; ');
@@ -30,7 +37,7 @@ export function getCookie(name) {
       }else if(value.includes("|KG|")){
         value=value.replaceAll("|KG|", " ");
       }
-      console.log(value);
+      
       return decrypt(value);
     }
   }
@@ -50,6 +57,13 @@ export function setCookie(name, value, hour) {
   }
   value=value.toString();
   name=encrypt(name);
+  if(name.includes(";")){
+    name=name.replaceAll(";", "|FH|");
+  }else if(name.includes(",")){
+    name=name.replaceAll(",", "|DH|");
+  }else if(name.includes(" ")){
+    name=name.replaceAll(" ", "|KG|");
+  }
   value=encrypt(value);
   //deal with unsupport code
   if(value.includes(";")){
@@ -88,7 +102,8 @@ export function clearTokenCookies() {
   setCookie("userName", "", -1);
   setCookie("email", "", -1);
   setCookie("userProfileUrl","",-1);
-  setCookie("passwd","",-1);
   setCookie("ifMaster","",-1);
   setCookie("ifSuperMaster","",-1);
+  localStorage.removeItem("passwd");
+  localStorage.removeItem("userName");
 }

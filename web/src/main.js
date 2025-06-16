@@ -176,7 +176,7 @@ app.config.globalProperties.$themeColor=themeColor;
 export const globalProperties=app.config.globalProperties;
 
 //add version control  
-const globalVersion="-0.0.3";
+const globalVersion="-0.0.5";
 if(getCookie("version")!=globalVersion){
   clearTokenCookies();
   selfDefinedSessionStorage.clear();

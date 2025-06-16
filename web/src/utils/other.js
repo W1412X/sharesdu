@@ -97,10 +97,10 @@ export async function dealAxiosError(error) {
                                 message: "已更新access token，重新请求"
                             };
                         } else {
-                            if (getCookie("passwd")) {
+                            if (localStorage.getItem("passwd")) {
                                 const loginResponse = await loginWithPassword({
-                                    user_name: getCookie("userName"),
-                                    pass_word: getCookie("passwd")
+                                    user_name: localStorage.getItem("userName"),
+                                    pass_word: localStorage.getItem("passwd")
                                 });
 
 
@@ -113,7 +113,7 @@ export async function dealAxiosError(error) {
                                         globalProperties.$apiUrl + "/image/user?user_id=" + loginResponse.user_id,
                                         loginResponse.is_master,
                                         loginResponse.is_super_master,
-                                        getCookie("passwd")
+                                        localStorage.getItem("passwd")
                                     );
                                     result = {
                                         status: 1412,
@@ -149,10 +149,10 @@ export async function dealAxiosError(error) {
 
                 } else {
 
-                    if (getCookie("passwd")) {
+                    if (localStorage.getItem("passwd")) {
                         const loginResponse = await loginWithPassword({
-                            user_name: getCookie("userName"),
-                            pass_word: getCookie("passwd")
+                            user_name: localStorage.getItem("userName"),
+                            pass_word: localStorage.getItem("passwd")
                         });
 
 
@@ -165,7 +165,7 @@ export async function dealAxiosError(error) {
                                 globalProperties.$apiUrl + "/image/user?user_id=" + loginResponse.user_id,
                                 loginResponse.is_master,
                                 loginResponse.is_super_master,
-                                getCookie("passwd")
+                                localStorage.getItem("passwd")
                             );
                             result = {
                                 status: 1412,
@@ -228,7 +228,6 @@ export async function dealAxiosError(error) {
 function handleLogout() {
     clearTokenCookies();
     sessionStorage.clear();
-
     window.alert("令牌已过期，请重新登录");
     setTimeout(() => {
         window.open("/#/login", "_self");
@@ -498,8 +497,8 @@ export function setLogin(userName, user_id, email, refresh, profile, ifMaster = 
         setCookie('ifSuperMaster', ifSuperMaster, 7 * 24);
     }
     if (passwd) {
-        setCookie('passwd', passwd, 9999 * 24);
-        setCookie('userName', userName, 9999 * 24);
+        localStorage.setItem('passwd', passwd);
+        localStorage.setItem('userName', userName);
     }
 }
 

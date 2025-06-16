@@ -221,7 +221,6 @@ export default {
             openNewPage("#/editor")
         },
         async refresh({ done }) {
-            console.log("refresh")
             let response = null;
             switch (this.itemType) {
                 case 'article':

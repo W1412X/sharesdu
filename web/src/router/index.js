@@ -150,7 +150,7 @@ router.beforeEach((to, from, next) => {
     /**
      * if login,then to IndexPage
      */
-    if(getCookie("refreshToken")){
+    if(getCookie("refreshToken")||localStorage.getItem('passwd')){
       window.alert("您已经登录");
       router.push({name:"IndexPage"});
       return;

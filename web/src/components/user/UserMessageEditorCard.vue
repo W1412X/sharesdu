@@ -269,18 +269,19 @@ export default {
     },
     async logout() {
       //logout from current device  
-      clearTokenCookies();
       this.setLoading(getLoadMsg("正在退出登录...", -1));
       const response = await logout();
       if (response.status == 200) {
+        clearTokenCookies();
           this.$router.push('/login');
       } else {
         this.alert({
           state: true,
           color: 'error',
-          title: '登出失败',
+          title: '登出失败，已强制登出',
           content: response.message
         })
+        clearTokenCookies();
       }
       this.setLoading(getCancelLoadMsg());
     },
@@ -298,6 +299,8 @@ export default {
     setLoading(msg) {
       this.$emit('set_loading', msg);
     }
-  }
+  },
+  mounted() { 
+  },
 }
 </script>
