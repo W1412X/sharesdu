@@ -29,7 +29,10 @@
             <!--
              <div class="text-small detail-container">{{ data.content }}</div>
             -->
-            <div @click="click()" class="text-medium detail-expand key-text">{{ data.content }}</div>
+            <div @click="click()" class="text-medium detail-expand key-text link-text">
+                <with-link-container :init-data="{'content':data.content}" :clickable="false">
+                </with-link-container>
+            </div>
             <div class="row-div-scroll">
                 <img-card v-for="(img,index) in data.imgList" :height="100" :width="100" :src="img" :key="index"></img-card>
             </div>
@@ -43,11 +46,14 @@ import { ref } from 'vue';
 import { copy, extractStringsInBrackets, getLinkInPost, getNormalErrorAlert, getNormalWarnAlert, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
 import ImgCard from '@/components/common/ImgCard.vue';
 import { setPostTopInArticle, setPostTopInCourse } from '@/axios/top';
+import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
     name: 'PostItem',
     components: {
         AvatarName,
         ImgCard,
+        // eslint-disable-next-line
+        WithLinkContainer
     },
     props: {
         initData: {
@@ -191,7 +197,7 @@ export default {
             this.parent.type=link.split('/')[1];
             this.parent.id=link.split('/')[2];
         }
-    }
+    },
 }
 </script>
 <style scoped>

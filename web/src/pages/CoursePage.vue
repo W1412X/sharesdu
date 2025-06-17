@@ -112,7 +112,7 @@
                         </div>
                     </div>
                     <div v-if="this.ifRated===true" class="text-medium self-comment-text support-line-feed">
-                        {{ selfComment.comment }}
+                        <with-link-container :init-data="{content:selfComment.comment}"></with-link-container>
                     </div>
                     <v-btn @click="setCommentEditorState(true)" class="add-comment-btn" variant="tonal" :color="themeColor">
                         <div v-if="this.ifRated===false" class="title-medium-bold">
@@ -194,6 +194,7 @@ import CourseHistoryCard from '@/components/course/CourseHistoryCard.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
 export default {
     name: 'CoursePage',
     components: {
@@ -208,6 +209,7 @@ export default {
         CourseHistoryCard,
         PartLoadingView,
         ManageButton,
+        WithLinkContainer,
     },
     setup() {
         const userName=getCookie("userName");

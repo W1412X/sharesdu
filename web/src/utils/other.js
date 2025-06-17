@@ -586,3 +586,42 @@ export function roundNumber(number, bit) {
     const factor = Math.pow(10, bit);
     return Math.round(number * factor) / factor;
 }
+export function extractLinks(text) {
+    const pattern = /https?:\/\/\S+|www\.\S+/gi;
+    return (text || '').match(pattern) || [];
+}
+
+/**
+ * 
+ * @param {String} urlString 
+ * @returns 
+ */
+export function extractDomain(urlString) {
+    try {
+        let normalizedUrl = urlString.trim();
+        if (!/^https?:\/\//i.test(normalizedUrl)) {
+            normalizedUrl = 'https://' + normalizedUrl;
+        }
+        const url = new URL(normalizedUrl);
+        return url.hostname;
+    } catch (e) {
+        console.error('Invalid URL:', urlString);
+        return null;
+    }
+}
+/**
+ * check if url is internal
+ * @param {String} url 
+ * @returns 
+ */
+export function isExactlySameOrigin(url) {
+    try {
+        if(extractDomain(url)==extractDomain(window.location.href)){
+            return true;
+        }
+        return false;
+    } catch (e) {
+        console.error('Invalid URL:', url);
+        return false;
+    }
+}

@@ -47,7 +47,7 @@
                     {{ post.title }}
                 </div>
                 <div class="detail-text text-medium">
-                    {{ post.content }}
+                    <WithLinkContainer :init-data="{content:post.content}"></WithLinkContainer>
                 </div>
                 <div class="row-div-scroll">
                     <img-card v-for="(img,index) in post.imgList" :height="140" :width="140" :src="img" :key="index"></img-card>
@@ -138,6 +138,7 @@ import EmojiPicker from '@/components/common/EmojiPicker.vue';
 import ImgCard from '@/components/common/ImgCard.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
 export default {
     name: 'PostPage',
     components: {
@@ -151,6 +152,7 @@ export default {
         EmojiPicker,
         ImgCard,
         PartLoadingView,
+        WithLinkContainer,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;

@@ -12,7 +12,9 @@
                 :color="themeColor" :disabled="true"></v-rating>
         </div>
         <div class="text-medium support-line-feed">
-            {{ data.comment }}
+            <with-link-container :initData="{
+                'content':data.comment
+            }"></with-link-container>
         </div>
         <div style="display:flex;flex-direction: row;margin-top:5px;color:#8a8a8a">
             <span style="font-size: 16px;">{{ data.time }}</span>
@@ -28,6 +30,7 @@
 import AlertButton from '@/components/report/AlertButton.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { globalProperties } from '@/main';
+import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
     props: {
         initData: {
@@ -48,6 +51,7 @@ export default {
     components: {
         AlertButton,
         AvatarName,
+        WithLinkContainer,
     },
     setup() {
         const themeColor=globalProperties.$themeColor;

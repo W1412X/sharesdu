@@ -4,6 +4,7 @@
  */
 import { getCookie } from '@/utils/cookie';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
+import { isExactlySameOrigin } from '@/utils/other';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { createRouter, createWebHashHistory } from 'vue-router';
 const load = (path) => () => import(`@/pages/${path}.vue`);

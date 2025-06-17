@@ -27,7 +27,7 @@
         <div @click="click" class="comment text-medium content">
             <span v-if="this.ifChild == true" @click="showParent" class="text-medium-bold"
                 :style="{ 'color': themeColor }">{{ parentAuthorName + '： ' }}</span>
-            <span class="key-text">{{ data.content }}</span>
+            <with-link-container :initData="{'content':data.content}" class="key-text"></with-link-container>
         </div>
         <div class="bottom-bar">
             <div class="time text-small">
@@ -75,6 +75,7 @@ import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { addHeaderToReply, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader } from '@/utils/other';
 import { createReplyUnderPost } from '@/axios/post';
 import EmojiPicker from '@/components/common/EmojiPicker.vue';
+import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
     name: 'ReplyItem',
     props: {
@@ -125,6 +126,7 @@ export default {
         DeleteButton,
         SensitiveTextArea,
         EmojiPicker,
+        WithLinkContainer,
     },
     data() {
         const data = this.initData;
