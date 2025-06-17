@@ -1,18 +1,20 @@
+import { selfDefineLocalStorage } from "./localStorage";
+
 /**
  * deal with emoji  
  */  
 export async function fetchEmojis() {
     try {
         //ensure the localstorage canbe use
-        if (localStorage.getItem('emojis')) {
-            return JSON.parse(localStorage.getItem('emojis'));
+        if (selfDefineLocalStorage.getItem('emojis')) {
+            return JSON.parse(selfDefineLocalStorage.getItem('emojis'));
         }
         const url = `/resource/emojis.json`;
         const response = await fetch(url);
         if (response.ok) {
             const emojisData = await response.json();
             try{
-                localStorage.setItem('emojis', JSON.stringify(emojisData));
+                selfDefineLocalStorage.setItem('emojis', JSON.stringify(emojisData));
             }catch(e){
                 console.error(e);
             }
@@ -26,12 +28,12 @@ export async function fetchEmojis() {
     }
 }
 export function addSelfEmoji(emoji){
-    let emojis=JSON.parse(localStorage.getItem('emojis'));
+    let emojis=JSON.parse(selfDefineLocalStorage.getItem('emojis'));
     emojis["自定义"].unshift(emoji);
-    localStorage.setItem('emojis', JSON.stringify(emojis));
+    selfDefineLocalStorage.setItem('emojis', JSON.stringify(emojis));
 }
 export function addUsedEmoji(emoji){
-    let emojis=JSON.parse(localStorage.getItem('emojis'));
+    let emojis=JSON.parse(selfDefineLocalStorage.getItem('emojis'));
     //here check if already in used 
     if(emojis["常用"].includes(emoji)){
         //move the emoji to the first
@@ -42,7 +44,7 @@ export function addUsedEmoji(emoji){
             }
         }
         emojis["常用"].unshift(emoji);
-        localStorage.setItem('emojis', JSON.stringify(emojis));
+        selfDefineLocalStorage.setItem('emojis', JSON.stringify(emojis));
         return;
     }
     if(emojis["常用"].length<10){
@@ -51,5 +53,5 @@ export function addUsedEmoji(emoji){
         emojis["常用"].pop();
         emojis["常用"].unshift(emoji);
     }
-    localStorage.setItem('emojis', JSON.stringify(emojis));
+    selfDefineLocalStorage.setItem('emojis', JSON.stringify(emojis));
 }

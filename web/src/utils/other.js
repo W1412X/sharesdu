@@ -1,10 +1,11 @@
 import { getAccessToken } from "@/axios/token";
 import { clearTokenCookies, getCookie, setCookie } from "./cookie";
 import { globalProperties } from "@/main";
-import { setLock, waitForLock } from "./lock";
+import { acquireLock, releaseLock } from "./lock";
 import { loginWithPassword } from "@/axios/account";
 import { fetchImgAndDeal } from "./image";
 import { getDeviceTypeByAgent } from "./device";
+import { selfDefineLocalStorage } from "./localStorage";
 //import { getDeviceType } from "./device";
 /**
  * a deep copy function for json object
@@ -70,9 +71,7 @@ export async function dealAxiosError(error) {
     let result = null;
 
     try {
-        await waitForLock("token");
-        setLock("token", true);
-
+        await acquireLock('token')
         // 判断是否有响应数据
         if (error.response && error.response.data) {
             const { data } = error.response;
@@ -97,10 +96,10 @@ export async function dealAxiosError(error) {
                                 message: "已更新access token，重新请求"
                             };
                         } else {
-                            if (localStorage.getItem("passwd")) {
+                            if (selfDefineLocalStorage.getItem("passwd")) {
                                 const loginResponse = await loginWithPassword({
-                                    user_name: localStorage.getItem("userName"),
-                                    pass_word: localStorage.getItem("passwd")
+                                    user_name: selfDefineLocalStorage.getItem("userName"),
+                                    pass_word: selfDefineLocalStorage.getItem("passwd")
                                 });
 
 
@@ -113,14 +112,14 @@ export async function dealAxiosError(error) {
                                         globalProperties.$apiUrl + "/image/user?user_id=" + loginResponse.user_id,
                                         loginResponse.is_master,
                                         loginResponse.is_super_master,
-                                        localStorage.getItem("passwd")
+                                        selfDefineLocalStorage.getItem("passwd")
                                     );
                                     result = {
                                         status: 1412,
                                         message: "已更新access token，重新请求"
                                     };
                                 } else {
-                                    setCookie("refreshToken", "",-1);
+                                    clearTokenCookies();
                                     window.alert("自动登录失败，跳转至登陆页");
                                     setTimeout(() => {
                                         window.open(`/#/login?name=${getCookie('userName')}&passwd=${getCookie('passwd')}`, "_self");
@@ -149,10 +148,10 @@ export async function dealAxiosError(error) {
 
                 } else {
 
-                    if (localStorage.getItem("passwd")) {
+                    if (selfDefineLocalStorage.getItem("passwd")) {
                         const loginResponse = await loginWithPassword({
-                            user_name: localStorage.getItem("userName"),
-                            pass_word: localStorage.getItem("passwd")
+                            user_name: selfDefineLocalStorage.getItem("userName"),
+                            pass_word: selfDefineLocalStorage.getItem("passwd")
                         });
 
 
@@ -165,7 +164,7 @@ export async function dealAxiosError(error) {
                                 globalProperties.$apiUrl + "/image/user?user_id=" + loginResponse.user_id,
                                 loginResponse.is_master,
                                 loginResponse.is_super_master,
-                                localStorage.getItem("passwd")
+                                selfDefineLocalStorage.getItem("passwd")
                             );
                             result = {
                                 status: 1412,
@@ -173,6 +172,7 @@ export async function dealAxiosError(error) {
                             };
                         } else {
                             window.alert("自动登录失败，跳转至登陆页");
+                            clearTokenCookies();
                             setTimeout(() => {
                                 window.open(`/#/login?name=${getCookie('userName')}&passwd=${getCookie('passwd')}`, "_self");
                                 location.reload();
@@ -217,7 +217,7 @@ export async function dealAxiosError(error) {
         };
 
     } finally {
-        setLock("token", false);
+        releaseLock('token')
     }
 
     return result;
@@ -497,8 +497,8 @@ export function setLogin(userName, user_id, email, refresh, profile, ifMaster = 
         setCookie('ifSuperMaster', ifSuperMaster, 7 * 24);
     }
     if (passwd) {
-        localStorage.setItem('passwd', passwd);
-        localStorage.setItem('userName', userName);
+        selfDefineLocalStorage.setItem('passwd', passwd);
+        selfDefineLocalStorage.setItem('userName', userName);
     }
 }
 

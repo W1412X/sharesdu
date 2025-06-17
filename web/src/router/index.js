@@ -3,6 +3,7 @@
  * pages are imported dynamically  
  */
 import { getCookie } from '@/utils/cookie';
+import { selfDefineLocalStorage } from '@/utils/localStorage';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { createRouter, createWebHashHistory } from 'vue-router';
 const load = (path) => () => import(`@/pages/${path}.vue`);
@@ -150,7 +151,7 @@ router.beforeEach((to, from, next) => {
     /**
      * if login,then to IndexPage
      */
-    if(getCookie("refreshToken")||localStorage.getItem('passwd')){
+    if(getCookie("refreshToken")||selfDefineLocalStorage.getItem('passwd')){
       window.alert("您已经登录");
       router.push({name:"IndexPage"});
       return;

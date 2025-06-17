@@ -1,7 +1,7 @@
 // src/main.js
 import { createApp } from 'vue';
 import App from './App.vue';
-import { clearTokenCookies, getCookie, setCookie } from './utils/cookie';
+import { clearTokenCookies, getCookie } from './utils/cookie';
 import router from './router';
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
@@ -18,6 +18,7 @@ import './style/global.css';
 import { getDeviceType } from './utils/device';
 import { adjustAlpha } from './utils/other';
 import { selfDefinedSessionStorage } from './utils/sessionStorage';
+import { selfDefineLocalStorage } from './utils/localStorage';
 const vuetify = createVuetify({
   components,
   directives,
@@ -176,13 +177,13 @@ app.config.globalProperties.$themeColor=themeColor;
 export const globalProperties=app.config.globalProperties;
 
 //add version control  
-const globalVersion="-0.0.5";
-if(getCookie("version")!=globalVersion){
+const globalVersion="-0.0.0";
+if(selfDefineLocalStorage.getItem("version")!=globalVersion){
   clearTokenCookies();
   selfDefinedSessionStorage.clear();
-  localStorage.clear();
+  selfDefineLocalStorage.clear();
 }
-setCookie("version",globalVersion);
+selfDefineLocalStorage.setItem("version",globalVersion);
 
 app.provide(store);
 app.use(router)

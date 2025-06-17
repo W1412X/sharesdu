@@ -9,6 +9,7 @@
  */
 
 import { decrypt, encrypt } from "./encrypt";
+import { selfDefineLocalStorage } from "./localStorage";
 
 /**
  * get the given name's value
@@ -104,6 +105,6 @@ export function clearTokenCookies() {
   setCookie("userProfileUrl","",-1);
   setCookie("ifMaster","",-1);
   setCookie("ifSuperMaster","",-1);
-  localStorage.removeItem("passwd");
-  localStorage.removeItem("userName");
+  selfDefineLocalStorage.removeItem("passwd");
+  selfDefineLocalStorage.removeItem("userName");
 }

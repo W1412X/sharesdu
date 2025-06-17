@@ -187,6 +187,7 @@ import { csLoginByUserName } from '@/axios/api_convert/account';
 import { initTriangleEffect } from '@/utils/animation';
 import AgreeButton from '@/components/common/AgreeButton.vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import { selfDefineLocalStorage } from '@/utils/localStorage';
 export default {
     name: 'LoginPage',
     props:{
@@ -459,9 +460,9 @@ export default {
             this.loginByUsernameData.userName=this.name;
             this.loginByUsernameData.passwd=this.passwd;
         }
-        if(localStorage.getItem("passwd")){
-            this.loginByUsernameData.userName=localStorage.getItem("userName");
-            this.loginByUsernameData.passwd=localStorage.getItem("passwd");
+        if(selfDefineLocalStorage.getItem("passwd")){
+            this.loginByUsernameData.userName=selfDefineLocalStorage.getItem("userName");
+            this.loginByUsernameData.passwd=selfDefineLocalStorage.getItem("passwd");
         }
         initTriangleEffect(document);
     },

@@ -1,10 +1,10 @@
 <!--  -->
 <template>
     <div class="avatar-name" @click="toAuthorPage">
-        <v-icon v-if="this.profileUrl==null" icon="mdi-account-circle" :size="size" color='#bbbbbb'></v-icon>
-        <v-avatar v-if="this.profileUrl!=null" :size="size" :image="this.profileUrl"></v-avatar>
-        <div v-if="ifShowName"   :style="{color:color,'font-size':nameSize+'px'}">
-            {{initData.name}}
+        <v-icon v-if="this.profileUrl == null" icon="mdi-account-circle" :size="size" color='#bbbbbb'></v-icon>
+        <v-avatar v-if="this.profileUrl != null" :size="size" :image="this.profileUrl"></v-avatar>
+        <div v-if="ifShowName" :style="{ color: color, 'font-size': nameSize + 'px' }">
+            {{ initData.name }}
         </div>
     </div>
 </template>
@@ -12,59 +12,60 @@
 import { globalProperties } from '@/main'
 import { getCookie } from '@/utils/cookie'
 import { globalProfileCacher } from '@/utils/global_img_cache'
+import { acquireLock, releaseLock } from '@/utils/lock'
 import { getProfileUrl } from '@/utils/profile'
 
 export default {
-    props:{
+    props: {
         initData: {
             type: Object,
             default: function () {
                 return {
-                    id:null,
+                    id: null,
                     name: null,
                 }
             }
         },
-        size:{
+        size: {
             type: String,
             default: '30'
         },
-        color:{
+        color: {
             type: String,
             default: '#000'
         },
-        clickable:{
+        clickable: {
             type: Boolean,
             default: true
         },
-        ifShowName:{
+        ifShowName: {
             type: Boolean,
             default: true
         },
-        nameSize:{
+        nameSize: {
             type: String,
             default: '16'
         }
     },
-    data(){
-        return{
-            profileUrl:null,
-            time:1000,
+    data() {
+        return {
+            profileUrl: null,
+            time: 1000,
         }
     },
     methods: {
-        toAuthorPage(){
-            if(!this.clickable){
+        toAuthorPage() {
+            if (!this.clickable) {
                 return;
             }
-            if(getCookie("userId")==this.initData.id){
+            if (getCookie("userId") == this.initData.id) {
                 this.$router.push({
                     name: 'SelfPage',
                     params: {
                         id: this.initData.id
                     }
                 });
-            }else{
+            } else {
                 this.$router.push({
                     name: 'AuthorPage',
                     params: {
@@ -73,38 +74,34 @@ export default {
                 })
             }
         },
-        async getProfile(){
+        async getProfile() {
             /**
              * check global cache first  
              */
-            let tmp=globalProfileCacher.getImage(globalProperties.$apiUrl+'/image/user?user_id='+this.initData.id);
-            if(tmp){
-                this.profileUrl=tmp;
+            let tmp = globalProfileCacher.getImage(globalProperties.$apiUrl + '/image/user?user_id=' + this.initData.id);
+            if (tmp) {
+                this.profileUrl = tmp;
                 return;
-            }else{
-                let url=await getProfileUrl(this.initData.id);
-                globalProfileCacher.addImage(globalProperties.$apiUrl+'/image/user?user_id='+this.initData.id,url);
-                this.profileUrl=url;
+            } else {
+                let url = await getProfileUrl(this.initData.id);
+                this.profileUrl = url;
             }
         },
-        async getProfileRecursion(){
-            if(this.initData.id&&getCookie('accessToken')){
-                await this.getProfile();
-            }else{
-                setTimeout(()=>{
-                    this.getProfileRecursion();
-                    this.time=this.time*2;
-                },this.time);
-            }
-        }
     },
-    async mounted(){
-        await this.getProfileRecursion();
+    // mounted()
+    async mounted() {
+        const lockKey = 'profile-' + this.initData.id;
+        await acquireLock(lockKey);
+        try {
+            await this.getProfile(); // 这里不再重复加锁
+        } finally {
+            releaseLock(lockKey);
+        }
     }
 }
 </script>
 <style scoped>
-.avatar-name{
+.avatar-name {
     display: flex;
     align-items: center;
     gap: 10px;
