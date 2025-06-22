@@ -72,7 +72,7 @@ import DeleteButton from '@/components/common/DeleteButton.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
-import { addHeaderToReply, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader } from '@/utils/other';
+import { addHeaderToReply, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader, openPage } from '@/utils/other';
 import { createReplyUnderPost } from '@/axios/post';
 import EmojiPicker from '@/components/common/EmojiPicker.vue';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
@@ -146,7 +146,7 @@ export default {
         },
         click() {
             if(this.ifPreview){
-                this.$router.push({
+                openPage("router",{
                     name: 'PostPage',
                     params: {
                         id: this.data.id,
@@ -271,7 +271,7 @@ export default {
         text-overflow: ellipsis;
     }
     .container {
-        width: 100%;
+        width: 880px;
         display: flex;
         flex-direction: column;
         padding-top: 10px;

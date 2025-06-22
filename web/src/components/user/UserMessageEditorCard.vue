@@ -79,7 +79,7 @@ import EmailExamineCard from '@/components/user/EmailExamineCard.vue';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { logout } from '@/axios/account';
-import { copy, getCancelLoadMsg, getLoadMsg } from '@/utils/other';
+import { copy, getCancelLoadMsg, getLoadMsg, openPage } from '@/utils/other';
 import { rules, validatePassWord } from '@/utils/rules';
 import { clearTokenCookies, getCookie } from '@/utils/cookie';
 import { globalProperties } from '@/main';
@@ -273,7 +273,7 @@ export default {
       const response = await logout();
       if (response.status == 200) {
         clearTokenCookies();
-          this.$router.push('/login');
+          openPage("url",'#/login');
       } else {
         this.alert({
           state: true,

@@ -109,7 +109,7 @@
 <script>
 import ChatMessage from '@/components/chat/ChatMessage.vue';
 import { getCookie } from '@/utils/cookie';
-import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, extractTime, getNormalInfoAlert, copy } from '@/utils/other';
+import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, extractTime, getNormalInfoAlert, copy, openPage } from '@/utils/other';
 import { globalProperties } from '@/main';
 import { getChatHistory, getChatUsers, markMessageAsRead, sendPrivateMessage } from '@/axios/chat';
 import { ref } from 'vue';
@@ -228,7 +228,7 @@ export default {
     },
     methods: {
         toHomePage() {
-            this.$router.push({
+            openPage("router",{
                 name: 'IndexPage',
             })
         },

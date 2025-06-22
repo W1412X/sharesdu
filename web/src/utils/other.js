@@ -6,6 +6,7 @@ import { loginWithPassword } from "@/axios/account";
 import { fetchImgAndDeal } from "./image";
 import { getDeviceTypeByAgent } from "./device";
 import { selfDefineLocalStorage } from "./localStorage";
+import router from "@/router";
 //import { getDeviceType } from "./device";
 /**
  * a deep copy function for json object
@@ -122,6 +123,7 @@ export async function dealAxiosError(error) {
                                     clearTokenCookies();
                                     window.alert("自动登录失败，跳转至登陆页");
                                     setTimeout(() => {
+                                        selfDefineLocalStorage.setItem('lastHref',window.location.href);
                                         window.open(`/#/login?name=${getCookie('userName')}&passwd=${getCookie('passwd')}`, "_self");
                                         location.reload();
                                     }, 500);
@@ -174,6 +176,7 @@ export async function dealAxiosError(error) {
                             window.alert("自动登录失败，跳转至登陆页");
                             clearTokenCookies();
                             setTimeout(() => {
+                                selfDefineLocalStorage.setItem('lastHref',window.location.href);
                                 window.open(`/#/login?name=${getCookie('userName')}&passwd=${getCookie('passwd')}`, "_self");
                                 location.reload();
                             }, 500);
@@ -229,8 +232,9 @@ function handleLogout() {
     clearTokenCookies();
     sessionStorage.clear();
     window.alert("令牌已过期，请重新登录");
+    selfDefineLocalStorage.setItem("lastHref",window.location.href);
     setTimeout(() => {
-        window.open("/#/login", "_self");
+        openPage("url",{url:"#/login"},"_self");
         location.reload();
     }, 1000);
 }
@@ -454,36 +458,92 @@ export function hexToRgba(hex, opacity) {
         return hexToRgba("#9c0c13", 0.1);
     }
 }
-
 /**
  * 
+ * @param {String} url 
+ * @returns {Boolean}
  */
-export function openNewPage(url) {
-    let device=getDeviceTypeByAgent();
-    //window.open(url, "_self");
-    if(device==="mobile"){
-        window.open(url,"_self");
+export function isDebugHashPath(url) {
+    if (url.startsWith('#')) {
+      return url.startsWith('#/debug/');
+    }
+    try {
+      const hashStartIndex = url.indexOf('#');
+      if (hashStartIndex === -1) return false;
+  
+      const hash = url.slice(hashStartIndex);
+      return hash.startsWith('#/debug/');
+    } catch (e) {
+      return false;
+    }
+  }
+/**
+ * 给一个 URL 或 hash 添加 /debug/ 前缀到 hash 路径中
+ * @param {String} urlOrHash - 完整 URL 或 hash 片段
+ * @returns {String} 新的 URL 或 hash
+ */
+export function addDebugToPath(urlOrHash) {
+    if(urlOrHash.startsWith('#')&&urlOrHash.length==1){
+        urlOrHash='#/'
+    }
+    if (urlOrHash.startsWith('#/')) {
+        let newHash='#/debug/'+urlOrHash.substring(2);
+        return newHash;
     }else{
-        window.open(url,"_blank");
+        let front=urlOrHash.substring(0,urlOrHash.indexOf('#'));
+        let back=urlOrHash.substring(urlOrHash.indexOf('#')+2);
+        return front+'#/debug/'+back;
+    }
+  }
+/**
+ * 
+ * @param {string} type url/router 
+ * @param {JSON} data if url -> {url:string} else {router obj}
+ */
+export function openPage(type,data,newTab=null) {
+    let device=getDeviceTypeByAgent();
+    let target=device=='desktop'?'_blank':'_self';
+    if(newTab!=null){
+        target=newTab;
+    }
+    if(type==='url'){
+        //window.open(url, "_self");
+        if(isDebugHashPath(window.location.href)){
+            data.url=addDebugToPath(data.url);
+        }
+        if(device==="mobile"){
+            window.open(data.url,target);
+        }else{
+            window.open(data.url,target);
+        }
+    }else if(type==='router'){
+        if(isDebugHashPath(window.location.href)){
+            if(data.name.endsWith("Debug")){
+                //eslint-disable-next-line
+            }else{
+                data.name=data.name+"Debug";
+            }
+        }
+        router.push(data);
     }
 }
 
-export function extractStringsInBrackets(inputString) {
-    const regex = /\[([^\]]+)\]/g;
+export function extractImageLinksInBrackets(inputString) {
+    const regex = /\[(https?:\/\/[^\s\]]+\.(jpg|jpeg|png|gif|webp|bmp)(\?[^\s\]]*)?|data:image\/[a-z+]+;base64,[^"\'>\]]+)\]/gi;
     let result = [];
     let match;
+  
     while ((match = regex.exec(inputString)) !== null) {
-        result.push(match[1]);
+      result.push(match[1]);
     }
-
+  
     return result;
-}
-
-export function removeStringsInBrackets(inputString) {
-    const regex = /\[([^\]]+)\]/g;
+  }
+  
+  export function removeImageLinksInBrackets(inputString) {
+    const regex = /\[(https?:\/\/[^\s\]]+\.(jpg|jpeg|png|gif|webp|bmp)(\?[^\s\]]*)?|data:image\/[a-z+]+;base64,[^"\'>\]]+)\]/gi;
     return inputString.replace(regex, '');
-}
-
+  }
 export function setLogin(userName, user_id, email, refresh, profile, ifMaster = false, ifSuperMaster = false, passwd = null) {
     setCookie('userName', userName, 7 * 24);
     setCookie('userId', user_id, 7 * 24);
@@ -624,4 +684,34 @@ export function isExactlySameOrigin(url) {
         console.error('Invalid URL:', url);
         return false;
     }
+}
+
+/**
+ * check if element is at bottom
+ * @param {Object} element
+ * @returns 
+ */
+export function isElementAtBottom(element) {
+    if (!element) {
+      console.error('Element not found');
+      return false;
+    }
+    let rect = element.getBoundingClientRect();
+    let windowHeight = window.innerHeight;
+      
+    // Check if the bottom of the target element is within the viewport
+    if (rect.bottom <= windowHeight && rect.bottom >= 0) {
+        return true;
+    } else {
+      return false;
+    }
+}
+
+/**
+ * 
+ * @param {Object} element 
+ * @returns 
+ */
+export function isScrollToBottom(element){
+    return element.scrollHeight - element.scrollTop === element.clientHeight;
 }

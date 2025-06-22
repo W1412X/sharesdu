@@ -124,14 +124,14 @@
                     </v-btn>
                 </v-card>
             </v-card>
-            <div class="comments-container">
+            <div id="comments-container" class="comments-container">
                 <div class="comment-column">
                     <course-comment v-for="(item,index) in commentList" 
                         :init-data="item"
                         :key="index"    
                     ></course-comment>
                 </div>
-                <v-btn :loading="loading.loadEvaluation" :disabled="loading.loadEvaluation" class="load-more-btn" variant="tonal" @click="getCourseCommentList()">加载更多</v-btn>
+                <v-btn v-if="!allLoad.comment" :loading="loading.loadEvaluation" :disabled="loading.loadEvaluation" :color="themeColor" class="load-more-btn" variant="text" @click="getCourseCommentList()">加载更多</v-btn>
             </div>
             <div class="bottom-bar">
                 <div class="column-center user-name text-medium">
@@ -169,7 +169,7 @@
                     @set_post_top="setPostTop"
                 >
                 </post-item>
-                <v-btn @click="loadMorePost" :loading="loading.post" :disabled="loading.post" v-if="this.postItems.length!==0" variant="tonal" class="load-btn">加载更多</v-btn>
+                <v-btn @click="loadMorePost" :loading="loading.post" :disabled="loading.post" v-if="this.postItems.length!==0&&!this.allLoad.post" :color="themeColor" variant="text" class="load-btn">加载更多</v-btn>
             </div>
         </div>
     </v-overlay>
@@ -181,7 +181,7 @@ import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
 import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList, getCoursePostList } from '@/axios/course';
 import { computed,ref } from 'vue';
-import { copy, getNormalErrorAlert, getNormalSuccessAlert, roundNumber } from '@/utils/other';
+import { copy, getNormalErrorAlert, getNormalSuccessAlert, isElementAtBottom, isScrollToBottom, openPage, roundNumber } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
 import StarButton from '@/components/star/StarButton.vue';
 import PostEditor from '@/components/post/PostEditor.vue';
@@ -195,6 +195,7 @@ import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
+import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 export default {
     name: 'CoursePage',
     components: {
@@ -306,6 +307,10 @@ export default {
                 publishTime:null,
                 relative_articles:null,//list
             },
+            allLoad:{
+                comment:false,
+                post:false,
+            },
             selfComment: {
                 score:null,
                 comment: null,
@@ -331,6 +336,25 @@ export default {
             lastPageNum:null,
         }
     },
+    watch:{
+        ifShowPost:{
+            //eslint-disable-next-line
+            handler(newValue, oldValue) {
+                try{
+                    if(newValue){
+                        setTimeout(()=>{
+                            document.getElementById("post-container").addEventListener('scroll', this.glideLoad);
+                        },100);
+                    }else{
+                        document.getElementById("post-container").removeEventListener('scroll', this.glideLoad);
+                    }
+                }catch(e){
+                    //eslint-disable-next-line
+                }
+            },
+            immediate:false
+        },
+    },
     methods: {
         addEmoji(emoji) {
             this.selfComment.comment+=emoji;
@@ -340,7 +364,11 @@ export default {
             this.setPostState(true);
         },
         async loadMorePost(){
+            if(this.allLoad.post){
+                return;
+            }
             this.loading.post=true;
+            await acquireLock("course-load-post"+this.course.id);
             let response=await getCoursePostList(this.course.id,this.postPageNum);
             if(response.status==200){
                 for(let i=0;i<response.post_list.length;i++){
@@ -360,9 +388,13 @@ export default {
                     });
                 }
                 this.postPageNum++;
+                if(response.total_pages<=response.current_page){
+                    this.allLoad.post=true;
+                 }
             }else{
                 this.alert(getNormalErrorAlert(response.data.message));
             }
+            releaseLock("course-load-post"+this.course.id);
             while(this.lastPageNum!=null&&this.lastPageNum.post>this.postPageNum){
                 await this.loadMorePost();
             }
@@ -434,7 +466,11 @@ export default {
             }
         },
         async getCourseCommentList(){
+            if(this.allLoad.comment){
+                return;
+            }
             this.loading.loadEvaluation=true;
+            await acquireLock("course-load-comment"+this.course.id);
             let response=await getCourseScoreList(this.course.id,this.commentPageNum);
             this.loading.loadEvaluation=false;
             if(response.status==200){
@@ -454,9 +490,13 @@ export default {
                     }
                  }
                  this.commentPageNum++;
+                 if(response.total_pages<=response.current_page){
+                    this.allLoad.comment=true;
+                 }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
+            releaseLock("course-load-comment"+this.course.id);
             while(this.lastPageNum!=null&&this.lastPageNum.comment>this.commentPageNum){
                 await this.getCourseCommentList();
             }
@@ -506,6 +546,26 @@ export default {
             }
 
         },
+        async glideLoad() {
+            if(this.ifShowPost){
+                //if show post load post  
+                if (getLock('course-load-post' + this.course.id)) {
+                    return;
+                }
+                if(isScrollToBottom(document.getElementById("post-container"))){
+                    await this.loadMorePost();
+                }
+            }else{
+                //load comment
+                //if show post load post  
+                if (getLock('course-load-comment' + this.course.id)) {
+                    return;
+                }
+                if(isElementAtBottom(document.getElementById("comments-container"))){
+                    await this.getCourseCommentList();
+                }
+            }
+        }
     },
     async mounted() {
         /**
@@ -544,9 +604,10 @@ export default {
             this.alert(getNormalSuccessAlert("获取课程信息成功"));
         }else{
             this.alert(getNormalErrorAlert(response.message));
-            //this.$router.push({name:"ErrorPage",reason:"课程信息获取失败"})
+            openPage("router",{name:"ErrorPage",reason:"课程信息获取失败"});
             return;
         }
+        await this.getSelfComment();
         /**
          * restore scan state
          */
@@ -554,6 +615,7 @@ export default {
             let scanMsg=JSON.parse(selfDefinedSessionStorage.getItem('courseScanMsg|'+this.$route.params.id));
             this.setPostState(scanMsg.postState);
             this.lastPageNum=scanMsg.pageNum;
+            await this.getCourseCommentList();
             document.getElementById('web-title').innerText='课程 | '+this.course.name;
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
@@ -561,9 +623,14 @@ export default {
                     document.getElementById("post-container").scrollTop=scanMsg.postScrollTop;
                 }
             },10);
+        }else{
+            await this.getCourseCommentList();
         }
-        await this.getSelfComment();
-        await this.getCourseCommentList();
+        //comment container scroll listener
+        window.addEventListener('scroll',this.glideLoad);
+    },
+    unmounted() {
+        window.removeEventListener('scroll',this.glideLoad);
     },
 }
 </script>

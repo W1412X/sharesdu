@@ -25,12 +25,15 @@
                     <div>{{ data.replyNum }}</div>
                 </div>
             </div>
-            <div @click="click()" class="title title-container key-text">{{ data.title }}</div>
+            <div @click="click()" class="title title-container key-text">
+                <with-link-container :init-data="{'content':data.title,'keywords':this.searchQuery}" :clickable="false">
+                </with-link-container>
+            </div>
             <!--
              <div class="text-small detail-container">{{ data.content }}</div>
             -->
             <div @click="click()" class="text-medium detail-expand key-text link-text">
-                <with-link-container :init-data="{'content':data.content}" :clickable="false">
+                <with-link-container :init-data="{'content':data.content,'keywords':this.searchQuery}" :clickable="false"  :type="'post'">
                 </with-link-container>
             </div>
             <div class="row-div-scroll">
@@ -43,7 +46,7 @@
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { ref } from 'vue';
-import { copy, extractStringsInBrackets, getLinkInPost, getNormalErrorAlert, getNormalWarnAlert, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
+import { copy, extractImageLinksInBrackets, getLinkInPost, getNormalErrorAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 import ImgCard from '@/components/common/ImgCard.vue';
 import { setPostTopInArticle, setPostTopInCourse } from '@/axios/top';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
@@ -73,6 +76,12 @@ export default {
         ifParentAuthor:{
             type:Boolean,
             default:false,
+        },
+        searchQuery:{
+            type:Array,
+            default:()=>{
+                return [];
+            }
         }
     },
     setup() {
@@ -113,7 +122,7 @@ export default {
              * to post page
              */
             if(this.data.id==null){//no id param
-                this.$router.push({
+                openPage("router",{
                     name:'ErrorPage',
                     params:{
                         reason:"未指定资源！"
@@ -121,7 +130,7 @@ export default {
                 })
                 return;
             }
-            openNewPage("#/post/"+this.data.id)
+            openPage("url",{url:"#/post/"+this.data.id})
         },
         async top(){
             this.loading.top=true;
@@ -187,11 +196,8 @@ export default {
     beforeMount(){
         this.data =copy(this.initData);
         let link=getLinkInPost(this.data.content);
-        let content=getPostWithoutLink(this.data.content);
-        let imgList=extractStringsInBrackets(content);
-        content=removeStringsInBrackets(content);
+        let imgList=extractImageLinksInBrackets(this.data.content);
         this.data.link=link;
-        this.data.content=content;
         this.data.imgList=imgList;
         if(link){
             this.parent.type=link.split('/')[1];
@@ -295,8 +301,8 @@ export default {
         display: flex;
         flex-direction: column;
         padding-top: 5px;
-        padding-left: 5px;
-        padding-right: 5px;
+        padding-left: 1vw;
+        padding-right: 1vw;
         padding-bottom: 15px;
     }
     .title-container {

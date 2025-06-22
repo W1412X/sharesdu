@@ -17,7 +17,7 @@
 
 <script>
 import { globalProperties } from '@/main';
-import { getReplyContentWithoutHeader, openNewPage } from '@/utils/other';
+import { getReplyContentWithoutHeader, openPage } from '@/utils/other';
 
 export default {
     props: {
@@ -59,16 +59,16 @@ export default {
         click(){
             switch(this.data.type){
                 case 'article':
-                    openNewPage("#/article/"+this.data.id);
+                    openPage("url",{url:"#/article/"+this.data.id});
                     break;
                 case 'course':
-                    openNewPage("#/course/"+this.data.id);
+                    openPage("url",{url:"#/course/"+this.data.id});
                     break;
                 case 'post':
-                    openNewPage("#/post/"+this.data.id);
+                    openPage("url",{url:"#/post/"+this.data.id});
                     break;
                 case 'reply':
-                    openNewPage("#/post/"+this.data.postId);
+                    openPage("url",{url:"#/post/"+this.data.postId});
             }
         },
         getIcon(type) {

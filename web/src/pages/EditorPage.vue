@@ -62,7 +62,7 @@ import HtmlEditor from '@/components/article/HtmlEditor.vue';
 import MdEditor from '@/components/article/MdEditor.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
-import { addEditorType, arrToString, extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { addEditorType, arrToString, extractEditorType, getCancelLoadMsg, getContentWithoutEditorType, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
 import { computed,ref } from 'vue';
 export default {
     name: 'EditorPage',
@@ -304,10 +304,10 @@ export default {
         },
         toNextPage(){
             this.ifComfirmLeave=true;
-            this.$router.push(this.nextPage);
+            openPage("router",this.nextPage);
         },
         toPage(pageName,params=null){
-            this.$router.push({
+            openPage("router",{
                 name:pageName,
                 params:params
             })
@@ -354,7 +354,7 @@ export default {
                 }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
-                this.$router.push({name:"ErrorPage",params:{
+                openPage("router",{name:"ErrorPage",params:{
                     reason:"无法找到该文章"
                 }});
             }

@@ -23,7 +23,7 @@
     </v-card>
 </template>
 <script>
-import { copy, getNormalWarnAlert } from '@/utils/other';
+import { copy, getNormalWarnAlert, openPage } from '@/utils/other';
 import AvatarName from '@/components/common/AvatarName.vue';
 
 export default {
@@ -56,7 +56,7 @@ export default {
     methods: {
         click() {
             if (this.data.id && this.data.name) {
-                this.$router.push({
+                openPage("router",{
                     name: "ChatPage",
                     params: {
                         id: this.data.id,

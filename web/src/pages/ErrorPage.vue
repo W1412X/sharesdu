@@ -11,7 +11,7 @@
 
 <script>
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg } from '@/utils/other';
+import { getCancelLoadMsg, openPage } from '@/utils/other';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 
 export default {
@@ -36,9 +36,9 @@ export default {
         goBack() {
             try{
                 let tmp=JSON.parse(selfDefinedSessionStorage.getItem("lastTwoRouter"));
-                this.$router.push(tmp.from);   
+                openPage("router",tmp.from);   
             }catch(e){
-                this.$router.push({name:"IndexPage"});
+                openPage("router",{name:"IndexPage"});
             }
         }
     },

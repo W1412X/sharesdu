@@ -5,44 +5,44 @@
             <v-icon :color="'#8a8a8a'" :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;"/>
             <div v-if="data.type=='article'" class="div-1">
                 <div class="title-container title-bold key-text">
-                    {{ data.articleTitle }}
+                    <with-link-container :initData="{'content':data.articleTitle,'keywords':query}"></with-link-container>
                 </div>
                 <div class="msg-container text-medium key-text">
-                    {{ data.articleSummary }}
+                    <with-link-container :initData="{'content':data.articleSummary,'keywords':query}"></with-link-container>
                 </div>
                 <div class="time-container text-small">
-                    @{{ data.articleAuthor }}
+                    <with-link-container :initData="{'content':'@'+data.articleAuthor,'keywords':query}"></with-link-container>
                 </div>
             </div>
             <div v-if="data.type=='post'" class="div-1">
                 <div class="title-container title-bold key-text">
-                    {{ data.postTitle }}
+                    <with-link-container :initData="{'content':data.postTitle,'keywords':query}"></with-link-container>
                 </div>
                 <div class="msg-container text-medium key-text">
-                    {{ data.postContent }}
+                    <with-link-container :initData="{'content':data.postContent,'keywords':query}" :type="'post'"></with-link-container>
                 </div>
                 <div class="time-container text-small">
-                    @{{ data.postAuthor }}
+                    <with-link-container :initData="{'content':'@'+data.postAuthor,'keywords':query}"></with-link-container>
                 </div>
             </div>
             <div v-if="data.type=='reply'" class="div-1">
                 <div class="title-container title-bold">
                     {{'回复帖子: ' }}
-                    <span class="key-text">{{ data.replyPostTitle }}</span>
+                    <with-link-container :initData="{'content':data.replyPostTitle,'keywords':query}"></with-link-container>
                 </div>
                 <div class="msg-container text-medium key-text">
-                    {{ data.replyContent }}
+                    <with-link-container :initData="{'content':data.replyContent,'keywords':query}"></with-link-container>
                 </div>
             </div>
             <div v-if="data.type=='course'" class="div-1">
                 <div class="title-container title-bold key-text">
-                    {{ data.courseName }}
+                    <with-link-container :initData="{'content':data.courseName,'keywords':query}"></with-link-container>
                 </div>
                 <div class="msg-container text-medium">
-                    {{'授课教师: ' }} <span class="key-text">{{ data.courseTeacher }}</span>
+                    {{'授课教师: ' }} <with-link-container :initData="{'content':data.courseTeacher,'keywords':query}"></with-link-container>
                 </div>
                 <div class="msg-container text-medium">
-                    {{'开设学院: '  }}<span class="key-text">{{ data.courseCollege }}</span>
+                    {{'开设学院: '  }}<with-link-container :initData="{'content':data.courseCollege,'keywords':query}"></with-link-container>
                 </div>
             </div>
         </div>
@@ -51,7 +51,8 @@
 
 <script>
 import { globalProperties } from '@/main';
-import { adjustAlpha, openNewPage } from '@/utils/other';
+import WithLinkContainer from '../common/WithLinkContainer.vue';
+import { openPage } from '@/utils/other';
 
 export default {
     props: {
@@ -87,6 +88,9 @@ export default {
             },
         }
     },
+    components:{
+        WithLinkContainer,
+    },
     setup(){
         const themeColor=globalProperties.$themeColor;
         return {
@@ -99,22 +103,20 @@ export default {
             data
         };
     },
-    components: {
-    },
     methods: {
         click(){
             switch(this.data.type){
                 case 'article':
-                    openNewPage("#/article/"+this.data.id)
+                    openPage("url",{url:"#/article/"+this.data.id})
                     break;
                 case 'course':
-                    openNewPage("#/course/"+this.data.id);
+                    openPage("url",{url:"#/course/"+this.data.id})
                     break;
                 case 'post':
-                    openNewPage("#/post/"+this.data.id);
+                    openPage("url",{url:"#/post/"+this.data.id})
                     break;
                 case 'reply':
-                    openNewPage("#/post",this.data.replyPostId);
+                    openPage("url",{url:"#/post/"+this.data.replyPostId})
                     break;
                 default:
                     break;
@@ -135,16 +137,6 @@ export default {
         },
     },
     mounted(){
-        let styledQuery=[];
-        for(let i=0;i<this.query.length;i++){
-            styledQuery.push(`<span style="font-weight:bold;color:`+adjustAlpha(this.themeColor,0.9)+`">${this.query[i]}</span>`);
-        }
-        let elements=this.$el.getElementsByClassName("key-text");
-        for(let i=0;i<this.query.length;i++){
-            for(let u=0;u<elements.length;u++){
-                elements[u].innerHTML=elements[u].innerHTML.replaceAll(this.query[i],styledQuery[i]);
-            }
-        }
     }
 }
 </script>

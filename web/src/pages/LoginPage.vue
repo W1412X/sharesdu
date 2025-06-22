@@ -49,7 +49,7 @@
                             </div>
                             <sensitive-text-field v-model="registerByEmailData.userName"
                                 prepend-inner-icon="mdi-account" class="input" :rules="[loginRules.userName]"
-                                :density="inputType" variant="solo-filled" label="用户名"></sensitive-text-field>
+                                :density="inputType" variant="solo-filled" label="用户名" :hint="'起一个喜欢的名称(此名称将作为登陆依据之一)'"></sensitive-text-field>
                             <sensitive-text-field class="input" v-model="registerByEmailData.passwd"
                                 :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
                                 :type="passwdVisible ? 'text' : 'password'" :density="inputType"
@@ -106,7 +106,7 @@
                             </div>
                             <sensitive-text-field v-model="registerByInviteData.userName" class="input"
                                 :rules="[loginRules.userName]" prepend-inner-icon="mdi-account" :density="inputType"
-                                variant="solo-filled" label="用户名"></sensitive-text-field>
+                                variant="solo-filled" label="用户名" :hint="'起一个喜欢的名称(此名称将作为登陆依据之一)'"></sensitive-text-field>
                             <sensitive-text-field class="input" v-model="registerByInviteData.passwd"
                                 :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
                                 :type="passwdVisible ? 'text' : 'password'" :density="inputType"
@@ -182,7 +182,7 @@ import { computed, ref } from 'vue';
 import { rules } from '@/utils/rules';
 import { validateEmail, validatePassWord, validateUserName } from '@/utils/rules';
 import { /*getRegisterEmailCode*/ loginWithPassword, /*loginWithEmail, register*/ } from '@/axios/account';
-import { getNormalWarnAlert, openNewPage, setLogin } from '@/utils/other';
+import { getNormalWarnAlert, openPage, setLogin } from '@/utils/other';
 import { csLoginByUserName } from '@/axios/api_convert/account';
 import { initTriangleEffect } from '@/utils/animation';
 import AgreeButton from '@/components/common/AgreeButton.vue';
@@ -360,9 +360,15 @@ export default {
                 /**
                  * to the index page
                  */
-                this.$router.push({
-                    name: 'IndexPage',
-                })
+                if(selfDefineLocalStorage.getItem("lastHref")){
+                    window.open(selfDefineLocalStorage.getItem("lastHref"),'_self')      
+                    selfDefineLocalStorage.removeItem("lastHref")  
+                }else{
+                    openPage("router",{
+                        name: 'IndexPage',
+                    })
+                }
+
             } else {
                 this.alert({
                     color: 'error',
@@ -434,7 +440,7 @@ export default {
             this.$emit('set_loading', msg);
         },
         toUrl(url) {
-            openNewPage(url);
+            openPage("url",{url:url});
         },
         handleAgree(state){
             this.ifSavePasswd=state;

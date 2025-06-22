@@ -1,6 +1,6 @@
 <template>
     <div class="full-center">
-        <div class="column-div">
+        <div id="search-part-container" class="column-div">
             <div class="control-bar">
                 <v-select v-model="searchType" label="搜索类型" density="compact" variant="outlined"
                     style="max-width: 100px;min-width: 100px;" :items="['全部', '文章', '帖子', '课程', '回复']"
@@ -86,19 +86,19 @@
             <div v-if="sortType != null" class="item-container">
                 <search-item v-for="item in this.searchList[searchType][sortType]" :key="item.id" :init-data="item"
                     :need-icon="searchType == '全部'" :query="query"></search-item>
-                <v-btn :loading="loading.item" :disabled="loading.item" style="width: 100%;" variant="tonal"
+                <v-btn v-if="!allLoad[searchType][sortType]" :loading="loading.item" :disabled="loading.item" style="width: 100%;" variant="text"
                     :color="themeColor" @click="load" text="加载更多"></v-btn>
             </div>
             <div v-if="searchType=='回复'" class="item-container">
                 <search-item v-for="item in searchList[searchType][sortType]" :key="item.id" :init-data="item"
                     :query="query"></search-item>
-                <v-btn :loading="loading.item" :disabled="loading.item" style="width: 100%;" variant="tonal"
+                <v-btn v-if="!allLoad[searchType][sortType]" :loading="loading.item" :disabled="loading.item" style="width: 100%;" variant="text"
                     :color="themeColor" @click="load" text="加载更多"></v-btn>
             </div>
             <div v-if="searchType=='全部'" class="item-container">
                 <hybrid-search-item v-for="item in searchList[searchType][sortType]" :key="item.id" :init-data="item"
                     :query="query"></hybrid-search-item>
-                <v-btn :loading="loading.item" :disabled="loading.item" style="width: 100%;" variant="tonal"
+                <v-btn v-if="!allLoad[searchType][sortType]" :loading="loading.item" :disabled="loading.item" style="width: 100%;" variant="text"
                     :color="themeColor" @click="load" text="加载更多"></v-btn>
             </div>
         </div>
@@ -110,10 +110,11 @@ import HybridSearchItem from '@/components/search/HybridSearchItem.vue';
 import SearchItem from '@/components/search/SearchItem.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
-import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, getPostWithoutLink, removeStringsInBrackets } from '@/utils/other';
+import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, isElementAtBottom, openPage } from '@/utils/other';
 import { computed } from 'vue';
 import { getCookie } from '@/utils/cookie';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 export default {
     props: {
         type: {
@@ -355,6 +356,36 @@ export default {
                     null:1
                 }
             },
+            allLoad:{
+                "文章": {
+                    "publish_time": false,
+                    "-publish_time": false,
+                    "hot_score": false,
+                    "-hot_score": false,
+                    "likes_count": false,
+                    "-likes_count": false,
+                },
+                "帖子": {
+                    "publish_time": false,
+                    "-publish_time": false,
+                    "hot_score": false,
+                    "-hot_score": false,
+                    "views": false,
+                    "-views": false
+                },
+                "课程": {
+                    "publish_time": false,
+                    "-publish_time": false,
+                    "stars": false,
+                    "-stars": false
+                },
+                "全部": {
+                    null:false
+                },
+                "回复": {
+                    null:false
+                }
+            },
             searchResultNum:{
                 "文章": {
                     "publish_time": 0,
@@ -544,6 +575,7 @@ export default {
             this.$emit('alert', msg);
         },
         async loadArticle() {
+            await acquireLock('search'+this.searchType+this.sortType+this.query);
             this.loading.item = true;
             let response = await searchArticles(this.queryTosubmit, this.filtArticleTagsToSubmit, this.articleType, this.sortType, this.searchPage['文章'][this.sortType]);
             this.loading.item = false;
@@ -568,11 +600,16 @@ export default {
                     })
                 }
                 this.searchPage['文章'][this.sortType]++;
+                if(response.results.length==0){
+                    this.allLoad[this.searchType][this.sortType]=true;
+                }
             } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
+            releaseLock('search'+this.searchType+this.sortType+this.query);
         },
         async loadCourse() {
+            await acquireLock('search'+this.searchType+this.sortType+this.query);
             let tmpType = null;
             switch (this.courseType) {
                 case "必修":
@@ -652,11 +689,16 @@ export default {
                     })
                 }
                 this.searchPage["课程"][this.sortType]++;
+                if(response.results.length==0){
+                    this.allLoad[this.searchType][this.sortType]=true;
+                }
             } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
+            releaseLock('search'+this.searchType+this.sortType+this.query);
         },
         async loadPost() {
+            acquireLock('search'+this.searchType+this.sortType+this.query);
             this.loading.item = true;
             let response = await searchPosts(this.queryTosubmit,this.sortType,this.searchPage['帖子'][this.sortType]);
             this.loading.item = false;
@@ -679,11 +721,16 @@ export default {
                     })
                 }
                 this.searchPage["帖子"][this.sortType]++;
+                if(response.results.length==0){
+                    this.allLoad[this.searchType][this.sortType]=true;
+                }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
+            releaseLock('search'+this.searchType+this.sortType+this.query);
         },
         async loadReply() {
+            acquireLock('search'+this.searchType+this.sortType+this.query);
             this.loading.item = true;
             let response=await searchReplies(this.queryTosubmit,this.searchPage["回复"][this.sortType]);
             this.loading.item=false;
@@ -702,11 +749,16 @@ export default {
                     })
                 }
                 this.searchPage['回复'][this.sortType]++;
+                if(response.results.length==0){
+                    this.allLoad[this.searchType][this.sortType]=true;
+                }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
+            releaseLock('search'+this.searchType+this.sortType+this.query)
         },
         async loadAll() {
+            acquireLock('search'+this.searchType+this.sortType+this.query);
             this.loading.item = true;
             let response=await globalSearch(this.queryTosubmit,this.searchPage["全部"][this.sortType]);
             this.loading.item = false;
@@ -725,7 +777,7 @@ export default {
                             break;
                         case 'post':
                             tmp['postTitle']=response.results[i].title;
-                            tmp['postContent']=removeStringsInBrackets(getPostWithoutLink(response.results[i].content));
+                            tmp['postContent']=response.results[i].content;
                             tmp['postAuthor']=response.results[i].author;
                             break;
                         case 'reply':
@@ -742,11 +794,18 @@ export default {
                     this.searchList["全部"][this.sortType].push(tmp);
                 }
                 this.searchPage["全部"][this.sortType]++;
+                if(response.results.length==0){
+                    this.allLoad[this.searchType][this.sortType]=true;
+                }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
             }
+            releaseLock('search'+this.searchType+this.sortType+this.query);
         },
         async load() {
+            if(this.allLoad[this.searchType][this.sortType]){
+                return;
+            }
             switch (this.searchType) {
                 case "文章":
                     await this.loadArticle();
@@ -778,6 +837,15 @@ export default {
                 this.load();
             }
         },
+        async glideLoad() {
+            // prevent load when other load unfinished
+            if (getLock('search'+this.searchType+this.sortType+this.query)) {
+                return;
+            }
+            if(isElementAtBottom(document.getElementById("search-part-container"))){
+                await this.load();
+            }
+        }
     },
     async mounted() {
         //get the selfDefinedSessionStorage  
@@ -825,7 +893,7 @@ export default {
                         this.searchType = "全部";
                 }
             } else {
-                this.$router.push({
+                openPage("router",{
                     name: "ErrorPage",
                     params: {
                         reason: "缺少必要参数 >_< "
@@ -839,6 +907,11 @@ export default {
             }
         }
         this.ifMounted=true;
+        //add scroll listener
+        window.addEventListener("scroll",this.glideLoad);
+    },
+    unmounted(){
+        window.removeEventListener("scroll",this.glideLoad);
     }
 }
 </script>

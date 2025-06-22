@@ -145,7 +145,7 @@ import StarCard from '@/components/star/StarCard.vue';
 import UserMessageEditorCard from '@/components/user/UserMessageEditorCard.vue';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
+import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 import { ref, computed } from 'vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
@@ -322,7 +322,7 @@ export default {
       this.setBlockListState(false);
     },
     toUrl(url) {
-      openNewPage(url);
+      openPage("url",{url:url});
     },
     async clearNotification() {
       if (this.notificationList.length == 0) {

@@ -1,31 +1,35 @@
 <template>
     <v-dialog v-model="ifShowDialog" style="width: 100%;height:100%;justify-content: center;">
-      <div v-if="ifShowComment" style="width: 100%;height:100%;justify-content: center;display: flex">
-        <v-card class="dialog-card">
-            <div class="title-bold">
-                评论帖子
-            </div>
-            <div class="row-div">
-                <SensitiveTextArea v-model="inputingComment"  style="margin-top: 10px;" variant="outlined" density="compact" label="输入评论内容"/>
-                <EmojiPicker @emoji="addEmoji"></EmojiPicker>
-            </div>
-            <div class="dialog-bottom-btn-bar">
-                <v-btn :disabled="loading.submitReply" :loading="loading.submitReply" @click="submitComment" variant="text">发表</v-btn>
-                <v-btn @click="setCommentState(false)" variant="text">取消</v-btn>
-            </div>
-        </v-card>
-      </div>
-      <div v-if="ifShowTmpParentReply" style="width: 100%;height:100%;justify-content: center;display: flex;">
-        <div style="display: flex;flex-direction: column;">
-            <div style="display: flex;flex-direction: row-reverse;">
-                <v-btn @click="closeParentReply" color="#00000000" variant="text" size="25">
-                    <v-icon type="mdi" icon="mdi-close" :color="themeColor"></v-icon>
-                    <v-tooltip activator="parent">关闭</v-tooltip>
-                </v-btn>
-            </div>
-            <reply-item v-if="ifShowTmpParentReply" :post-id="this.post.id" :init-data="this.tmpParentReply" @show_parent="getParentReply" @reply="addReply" @alert="alert" @set_loading="setLoading"></reply-item>
+        <div v-if="ifShowComment" style="width: 100%;height:100%;justify-content: center;display: flex">
+            <v-card class="dialog-card">
+                <div class="title-bold">
+                    评论帖子
+                </div>
+                <div class="row-div">
+                    <SensitiveTextArea v-model="inputingComment" style="margin-top: 10px;" variant="outlined"
+                        density="compact" label="输入评论内容" />
+                    <EmojiPicker @emoji="addEmoji"></EmojiPicker>
+                </div>
+                <div class="dialog-bottom-btn-bar">
+                    <v-btn :disabled="loading.submitReply" :loading="loading.submitReply" @click="submitComment"
+                        variant="text">发表</v-btn>
+                    <v-btn @click="setCommentState(false)" variant="text">取消</v-btn>
+                </div>
+            </v-card>
         </div>
-      </div>
+        <div v-if="ifShowTmpParentReply" style="width: 100%;height:100%;justify-content: center;display: flex;">
+            <div style="display: flex;flex-direction: column;">
+                <div style="display: flex;flex-direction: row-reverse;">
+                    <v-btn @click="closeParentReply" color="#00000000" variant="text" size="25">
+                        <v-icon type="mdi" icon="mdi-close" :color="themeColor"></v-icon>
+                        <v-tooltip activator="parent">关闭</v-tooltip>
+                    </v-btn>
+                </div>
+                <reply-item v-if="ifShowTmpParentReply" :post-id="this.post.id" :init-data="this.tmpParentReply"
+                    @show_parent="getParentReply" @reply="addReply" @alert="alert"
+                    @set_loading="setLoading"></reply-item>
+            </div>
+        </div>
     </v-dialog>
     <div class="full-center">
         <div class="column-div">
@@ -33,59 +37,59 @@
             <div v-if="loadState.post" class="top-bar">
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium name-font">
-                        <avatar-name v-if="this.post.authorId" :init-data="{id:this.post.authorId,name:post.authorName}"></avatar-name>
+                        <avatar-name v-if="this.post.authorId"
+                            :init-data="{ id: this.post.authorId, name: post.authorName }"></avatar-name>
                     </div>
                     <v-spacer></v-spacer>
                     <div class="column-center padding-right-5px">
-                        
+
                     </div>
                     <div class="column-center padding-right-5px">
-                        <star-button @alert="alert" @set_loading="setLoading" :state="post.ifStar" :type="'post'" :id="post.id"></star-button>
+                        <star-button @alert="alert" @set_loading="setLoading" :state="post.ifStar" :type="'post'"
+                            :id="post.id"></star-button>
                     </div>
                 </div>
                 <div class="title-container title-bold">
                     {{ post.title }}
                 </div>
                 <div class="detail-text text-medium">
-                    <WithLinkContainer :init-data="{content:post.content}"></WithLinkContainer>
+                    <WithLinkContainer :init-data="{ content: post.content }" :type="'post'"></WithLinkContainer>
                 </div>
                 <div class="row-div-scroll">
-                    <img-card v-for="(img,index) in post.imgList" :height="140" :width="140" :src="img" :key="index"></img-card>
+                    <img-card v-for="(img, index) in post.imgList" :height="140" :width="140" :src="img"
+                        :key="index"></img-card>
                 </div>
                 <div class="full-column-center text-small grey-font">
                     <div class="comment-star-display-div">
                         <div class="row-right-20px-column-center">
-                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-heart"
-                                size="18"></v-icon>
+                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-heart" size="18"></v-icon>
                             <div class="column-center">
                                 {{ post.likeNum }}
                             </div>
                         </div>
                         <div class="row-right-20px-column-center">
-                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment"
-                                size="16"></v-icon>
+                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment" size="16"></v-icon>
                             <div class="column-center">
                                 {{ post.replyNum }}
                             </div>
                         </div>
                         <div class="row-right-20px-column-center">
-                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-eye"
-                                size="16"></v-icon>
+                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-eye" size="16"></v-icon>
                             <div class="column-center">
                                 {{ post.viewNum }}
                             </div>
                         </div>
                         <v-spacer></v-spacer>
                         <div class="time-div grey-font text-small">
-                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock"
-                                size="17"></v-icon>
+                            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="17"></v-icon>
                             <div class="column-center">
                                 {{ post.publishTime }}
                             </div>
                         </div>
                     </div>
                 </div>
-                <v-btn v-if="this.post.relativeLink!==null" @click="toRelativePage" class="link-btn" variant="tonal" :color="themeColor">{{ relativeText }}</v-btn>
+                <v-btn v-if="this.post.relativeLink !== null" @click="toRelativePage" class="link-btn" variant="tonal"
+                    :color="themeColor">{{ relativeText }}</v-btn>
             </div>
             <div class="bottom-bar">
                 <div class="column-center user-name text-medium">
@@ -93,14 +97,16 @@
                 </div>
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
-                    <div v-if="userId!=post.authorId" class="column-center margin-right-15px">
+                    <div v-if="userId != post.authorId" class="column-center margin-right-15px">
                         <alert-button :type="'post'" :id="post.id"></alert-button>
                     </div>
                     <div v-else class="column-center margin-right-15px">
-                        <delete-button @delete="deleteSelf" :id="this.post.id" :type="'post'" :size="24" @alert="alert" @set_loading="setLoading"></delete-button>
+                        <delete-button @delete="deleteSelf" :id="this.post.id" :type="'post'" :size="24" @alert="alert"
+                            @set_loading="setLoading"></delete-button>
                     </div>
                     <div class="column-center padding-right-5px">
-                        <like-button v-if="post.id!==null" :type="'post'" :id="post.id" @alert="alert" @set_loading="setLoading" :state="post.ifLike"></like-button>
+                        <like-button v-if="post.id !== null" :type="'post'" :id="post.id" @alert="alert"
+                            @set_loading="setLoading" :state="post.ifLike"></like-button>
                     </div>
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="setCommentState(true)" icon class="bottom-btn">
@@ -110,13 +116,16 @@
                     </div>
                 </div>
             </div>
-            <div class="comments-container">
-            <div class="column-div">
-                <reply-item v-for="comment in replyList" :init-data="comment" @show_parent="getParentReply" @reply="addReply" :post-id="this.post.id" :key="comment.id" @alert="alert" @set_loading="setLoading">
-                </reply-item>
-                <v-btn :loading="loading.loadReply" :disabled="loading.loadReply" variant="tonal" class="load-btn" @click="loadMoreReply">加载更多</v-btn>
+            <div id="comments-container" class="comments-container">
+                <div class="column-div">
+                    <reply-item v-for="comment in replyList" :init-data="comment" @show_parent="getParentReply"
+                        @reply="addReply" :post-id="this.post.id" :key="comment.id" @alert="alert"
+                        @set_loading="setLoading">
+                    </reply-item>
+                    <v-btn v-if="!allLoad.reply" :loading="loading.loadReply" :disabled="loading.loadReply"
+                        variant="text" class="load-btn" :color="themeColor" @click="loadMoreReply">加载更多</v-btn>
+                </div>
             </div>
-        </div>
         </div>
     </div>
 </template>
@@ -128,7 +137,7 @@ import AlertButton from '@/components/report/AlertButton.vue';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
-import { extractStringsInBrackets, getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, getPostWithoutLink, openNewPage, removeStringsInBrackets } from '@/utils/other';
+import { extractImageLinksInBrackets, getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, isElementAtBottom, openPage } from '@/utils/other';
 import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyListByPostId } from '@/axios/post';
 import LikeButton from '@/components/common/LikeButton.vue';
 import ReplyItem from '@/components/post/ReplyItem.vue';
@@ -139,6 +148,7 @@ import ImgCard from '@/components/common/ImgCard.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
+import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 export default {
     name: 'PostPage',
     components: {
@@ -172,11 +182,11 @@ export default {
          * posts list visibility control here
          */
         const ifShowComment = ref(false);
-        const ifShowTmpParentReply=ref(false);
-        const ifShowDialog=computed(()=>{
+        const ifShowTmpParentReply = ref(false);
+        const ifShowDialog = computed(() => {
             return ifShowComment.value || ifShowTmpParentReply.value;
         });
-        const userId=getCookie('userId');
+        const userId = getCookie('userId');
         const setCommentState = (state) => {
             ifShowComment.value = state;
         }
@@ -195,34 +205,34 @@ export default {
             ifShowTmpParentReply,
         }
     },
-    beforeRouteLeave (to, from, next) {
-        try{
-            if(!getCookie("userName")){
+    beforeRouteLeave(to, from, next) {
+        try {
+            if (!getCookie("userName")) {
                 next();
                 return;
             }
-            let scanMsg={};
-            scanMsg.scrollTop=document.scrollingElement.scrollTop;
-            scanMsg.pageNum={
-                reply:this.replyPageNum,
+            let scanMsg = {};
+            scanMsg.scrollTop = document.scrollingElement.scrollTop;
+            scanMsg.pageNum = {
+                reply: this.replyPageNum,
             }
-            let key='postScanMsg|'+this.post.id;
-            selfDefinedSessionStorage.setItem(key,JSON.stringify(scanMsg));
+            let key = 'postScanMsg|' + this.post.id;
+            selfDefinedSessionStorage.setItem(key, JSON.stringify(scanMsg));
             next()
-        }catch(e){
+        } catch (e) {
             next();
         }
     },
     data() {
-        const relativeText=computed(()=>{
-            if(this.post.relativeLink.includes("course")){
+        const relativeText = computed(() => {
+            if (this.post.relativeLink.includes("course")) {
                 return "关联课程";
-            }else{
+            } else {
                 return "关联文章";
             }
         })
         return {
-            inputingComment:'',
+            inputingComment: '',
             post: {
                 id: null,
                 title: null,
@@ -230,172 +240,191 @@ export default {
                 starNum: null,
                 replyNum: null,
                 authorName: null,
-                authorId:null,
-                relativeLink:null,
+                authorId: null,
+                relativeLink: null,
                 publishTime: null,
             },
             relativeText,
             replyList: [],
-            replyPageNum:1,
-            tmpParentReply:null,
-            loading:{
-                loadReply:false,
-                submitReply:false,
+            replyPageNum: 1,
+            tmpParentReply: null,
+            loading: {
+                loadReply: false,
+                submitReply: false,
             },
-            loadState:{
-                post:false,
+            loadState: {
+                post: false,
             },
-            lastPageNum:null,
+            allLoad: {
+                reply: false,
+            },
+            lastPageNum: null,
         }
     },
     methods: {
-        addEmoji(emoji){
-            this.inputingComment+=emoji;
+        addEmoji(emoji) {
+            this.inputingComment += emoji;
         },
-        async submitComment(){
+        async submitComment() {
             /**
              * need post comment
              */
-            if(this.inputingComment==""){
+            if (this.inputingComment == "") {
                 this.alert(getNormalWarnAlert("评论内容不能为空"));
                 return;
             }
-            this.loading.submitReply=true;
-            let response=await createReplyUnderPost(this.post.id,this.inputingComment);
-            this.loading.submitReply=false;
-            if(response.status==200||response.status==201){
+            this.loading.submitReply = true;
+            let response = await createReplyUnderPost(this.post.id, this.inputingComment);
+            this.loading.submitReply = false;
+            if (response.status == 200 || response.status == 201) {
                 this.alert(getNormalSuccessAlert("评论成功"));
                 this.replyList.unshift({
-                    id:response.reply_id,
-                    content:this.inputingComment,
-                    authorName:getCookie("userName"),
-                    authorId:getCookie("userId"),
-                    likeNum:0,
-                    publishTime:new Date().toLocaleString(),
+                    id: response.reply_id,
+                    content: this.inputingComment,
+                    authorName: getCookie("userName"),
+                    authorId: getCookie("userId"),
+                    likeNum: 0,
+                    publishTime: new Date().toLocaleString(),
                 })
                 this.setCommentState(false);
-            }else{
+            } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
         },
-        addReply(tmp){
+        addReply(tmp) {
             this.replyList.unshift(
                 tmp
             )
         },
-        setLoading(msg){
-            this.$emit('set_loading',msg);
+        setLoading(msg) {
+            this.$emit('set_loading', msg);
         },
-        alert(msg){
-            this.$emit('alert',msg);
+        alert(msg) {
+            this.$emit('alert', msg);
         },
-        deleteSelf(){
-            this.$router.push({
-                name:"IndexPage",
+        deleteSelf() {
+            openPage("router",{
+                name: "IndexPage",
             })
         },
-        toRelativePage(){
-            openNewPage(this.post.relativeLink);
+        toRelativePage() {
+            openPage("url",{url:this.post.relativeLink});
         },
-        async loadMoreReply(){
-            this.loading.loadReply=true;
-            let response=await getReplyListByPostId(this.post.id,this.replyPageNum);
-            this.loading.loadReply=false;
-            if(response.status==200){
-                for(let i=0;i<response.reply_list.length;i++){
-                    let reply={
-                        id:response.reply_list[i].reply_id,
-                        content:response.reply_list[i].reply_content,
-                        authorName:response.reply_list[i].replier_name,
-                        authorId:response.reply_list[i].replier_id,
-                        likeNum:response.reply_list[i].like_count,
-                        publishTime:response.reply_list[i].publish_time,
+        async loadMoreReply() {
+            if (this.allLoad.reply) {
+                return;
+            }
+            await acquireLock('post-load-reply' + this.post.id);
+            this.loading.loadReply = true;
+            let response = await getReplyListByPostId(this.post.id, this.replyPageNum);
+            this.loading.loadReply = false;
+            releaseLock('post-load-reply' + this.post.id)
+            if (response.status == 200) {
+                for (let i = 0; i < response.reply_list.length; i++) {
+                    let reply = {
+                        id: response.reply_list[i].reply_id,
+                        content: response.reply_list[i].reply_content,
+                        authorName: response.reply_list[i].replier_name,
+                        authorId: response.reply_list[i].replier_id,
+                        likeNum: response.reply_list[i].like_count,
+                        publishTime: response.reply_list[i].publish_time,
                     }
                     this.replyList.push(reply);
                 }
-                if(response.reply_list.length==0){
+                if (response.reply_list.length == 0) {
                     this.alert(getNormalInfoAlert("没有更多回复了"));
-                }else{
+                } else {
                     this.replyPageNum++;
                 }
-            }else{
+                if (response.total_pages <= response.current_page) {
+                    this.allLoad.reply = true;
+                }
+            } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
-            while(this.lastPageNum!=null&&this.lastPageNum.reply>this.replyPageNum){
+            while (this.lastPageNum != null && this.lastPageNum.reply > this.replyPageNum) {
                 await this.loadMoreReply();
             }
         },
-        async getParentReply(id){
-            if(id==null){
+        async getParentReply(id) {
+            if (id == null) {
                 this.alert(getNormalErrorAlert("无父级回复"));
                 return;
             }
             //to ensure the state
             this.setTmpParentReplyState(false);
-            this.tmpParentReply=null;
+            this.tmpParentReply = null;
 
             this.setLoading(getLoadMsg("正在加载..."));
-            let response=await getReplyDetailById(id);
+            let response = await getReplyDetailById(id);
             this.setLoading(getCancelLoadMsg());
-            if(response.status==200||response.status==201){
+            if (response.status == 200 || response.status == 201) {
                 this.alert(getNormalSuccessAlert("加载成功"));
-                this.tmpParentReply={
-                    id:response.reply_detail.reply_id,
-                    content:response.reply_detail.reply_content,
-                    authorName:response.reply_detail.replier_name,
-                    authorId:response.reply_detail.replier_id,
-                    likeNum:response.reply_detail.like_count,
-                    publishTime:response.reply_detail.publish_time,
+                this.tmpParentReply = {
+                    id: response.reply_detail.reply_id,
+                    content: response.reply_detail.reply_content,
+                    authorName: response.reply_detail.replier_name,
+                    authorId: response.reply_detail.replier_id,
+                    likeNum: response.reply_detail.like_count,
+                    publishTime: response.reply_detail.publish_time,
                 }
                 this.setTmpParentReplyState(true);
-            }else{
+            } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
         },
         closeParentReply() {
             this.setTmpParentReplyState(false);
-            this.tmpParentReply=null;
+            this.tmpParentReply = null;
         },
+        glideLoad() {
+            // prevent load when other load unfinished
+            if (getLock('post-load-reply' + this.post.id)) {
+                return;
+            }
+            if (isElementAtBottom(document.getElementById("comments-container"))) {
+                this.loadMoreReply();
+            }
+        }
     },
     async mounted() {
         this.setLoading(getCancelLoadMsg());
         /**
          * get the route params and fetch data
          */
-        if(!this.$route.params.id){
-            this.$router.push({
-                name:"ErrorPage",
-                params:{
-                    reason:"未指定资源参数!"
+        if (!this.$route.params.id) {
+            openPage("router",{
+                name: "ErrorPage",
+                params: {
+                    reason: "未指定资源参数!"
                 }
             })
             return;
         }
-        this.loadState.post=false;
-        let response=await getPostDetailById(this.$route.params.id);
-        this.loadState.post=true;
-        if(response.status==200){
-            this.post.authorId=response.post_detail.poster_id;
-            this.post.authorName=response.post_detail.poster_name;
-            this.post.id=response.post_detail.post_id;
-            this.post.title=response.post_detail.post_title;
-            this.post.content=getPostWithoutLink(response.post_detail.post_content);
-            this.post.imgList=extractStringsInBrackets(this.post.content);
-            this.post.content=removeStringsInBrackets(this.post.content);
-            this.post.relativeLink=getLinkInPost(response.post_detail.post_content);
-            this.post.likeNum=response.post_detail.like_count;
-            this.post.replyNum=response.post_detail.reply_count;
-            this.post.viewNum=response.post_detail.view_count;
-            this.post.publishTime=response.post_detail.publish_time;
-            this.post.ifLike=response.post_detail.if_like;
-            await addHistory("post",this.post.id,this.post.title);
-            document.getElementById('web-title').innerText='帖子 | '+this.post.title;
-        }else{
+        this.loadState.post = false;
+        let response = await getPostDetailById(this.$route.params.id);
+        this.loadState.post = true;
+        if (response.status == 200) {
+            this.post.authorId = response.post_detail.poster_id;
+            this.post.authorName = response.post_detail.poster_name;
+            this.post.id = response.post_detail.post_id;
+            this.post.title = response.post_detail.post_title;
+            this.post.content=response.post_detail.post_content;
+            this.post.imgList = extractImageLinksInBrackets(this.post.content);
+            this.post.relativeLink = getLinkInPost(response.post_detail.post_content);
+            this.post.likeNum = response.post_detail.like_count;
+            this.post.replyNum = response.post_detail.reply_count;
+            this.post.viewNum = response.post_detail.view_count;
+            this.post.publishTime = response.post_detail.publish_time;
+            this.post.ifLike = response.post_detail.if_like;
+            await addHistory("post", this.post.id, this.post.title);
+            document.getElementById('web-title').innerText = '帖子 | ' + this.post.title;
+        } else {
             this.alert(getNormalErrorAlert(response.message));
-            this.$router.push({
-                name:"ErrorPage",
-                params:{
-                    reason:response.message
+            openPage("router",{
+                name: "ErrorPage",
+                params: {
+                    reason: response.message
                 }
             });
             return;
@@ -404,14 +433,23 @@ export default {
         /**
          * restore scan state
          */
-        if(selfDefinedSessionStorage.getItem('postScanMsg|'+this.$route.params.id)){
-            let scanMsg=JSON.parse(selfDefinedSessionStorage.getItem('postScanMsg|'+this.$route.params.id));
-            this.lastPageNum=scanMsg.pageNum;
-            setTimeout(()=>{
-                document.scrollingElement.scrollTop=scanMsg.scrollTop;
-            },10);
-            return;
+        let restoreTop=0;
+        if (selfDefinedSessionStorage.getItem('postScanMsg|' + this.$route.params.id)) {
+            let scanMsg = JSON.parse(selfDefinedSessionStorage.getItem('postScanMsg|' + this.$route.params.id));
+            this.lastPageNum = scanMsg.pageNum;
+            restoreTop = scanMsg.scrollTop;
+            await this.loadMoreReply();
+        }else{
+            await this.loadMoreReply();
         }
+        document.scrollingElement.scrollTop=restoreTop;
+        /**
+         * add roll listener
+         */
+        window.addEventListener('scroll', this.glideLoad)
+    },
+    unmounted() {
+        window.removeEventListener('scroll', this.glideLoad);
     },
 }
 </script>
@@ -422,11 +460,13 @@ export default {
     justify-content: center;
     height: 100%;
 }
-.dialog-bottom-btn-bar{
-    padding:10px;
+
+.dialog-bottom-btn-bar {
+    padding: 10px;
     display: flex;
     flex-direction: row-reverse;
 }
+
 .margin-bottom-40px {
     margin-bottom: 40px;
 }
@@ -438,17 +478,19 @@ export default {
     align-items: center;
 }
 
-.dialog-card{
+.dialog-card {
     padding: 10px;
     display: flex;
     flex-direction: column;
 }
-.row-div{
+
+.row-div {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
-.row-div-scroll{
+
+.row-div-scroll {
     margin: 5px;
     display: flex;
     flex-direction: row;
@@ -456,6 +498,7 @@ export default {
     overflow-x: scroll;
     width: 100%;
 }
+
 .bottom-bar {
     display: flex;
     width: 900px;
@@ -475,7 +518,7 @@ export default {
     background-color: rgba(0, 0, 0, 0);
 }
 
-.detail-text{
+.detail-text {
     width: 100%;
     margin-top: 0px;
     margin-bottom: 5px;
@@ -511,9 +554,11 @@ export default {
 .padding-right-10px {
     padding-right: 10px;
 }
+
 .margin-right-15px {
     margin-right: 20px;
 }
+
 .full-column-center {
     display: flex;
     height: 100%;
@@ -568,7 +613,7 @@ export default {
         width: 750px;
         white-space: pre-line;
         word-break: break-all;
-        overflow:hidden;
+        overflow: hidden;
     }
 
     .user-name {
@@ -625,7 +670,7 @@ export default {
         width: 98vw;
         white-space: pre-line;
         word-break: break-all;
-        overflow:hidden;
+        overflow: hidden;
     }
 
     .user-name {

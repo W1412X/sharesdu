@@ -10,7 +10,7 @@
 import AuthorCard from '@/components/user/AuthorCard.vue';
 import CreatePreviewAndList from '@/components/user/CreatePreviewAndList.vue';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg } from '@/utils/other';
+import { getCancelLoadMsg, openPage } from '@/utils/other';
 
 export default{
     name:'AuthorPage',
@@ -43,7 +43,7 @@ export default{
     async mounted(){
         this.setLoading(getCancelLoadMsg());
         if(this.$route.params.id==getCookie("userId")){
-            this.$router.push({name:'SelfPage',params:{id:getCookie("userId")}})
+            openPage("router",{name:'SelfPage',params:{id:getCookie("userId")}})
             return;
         }
         this.id=this.$route.params.id;

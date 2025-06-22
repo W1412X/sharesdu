@@ -11,6 +11,8 @@
     </v-btn>
 </template>
 <script>
+import { openPage } from '@/utils/other';
+
 export default {
     props: {
         id: {
@@ -38,7 +40,7 @@ export default {
     },
     methods: {
         click() {
-            this.$router.push({
+            openPage("router",{
                 name:'ManagePage',
                 query:{
                     init_id:this.id,

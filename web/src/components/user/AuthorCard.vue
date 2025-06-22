@@ -72,7 +72,7 @@
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { getAuthorInfo } from '@/axios/account';
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openNewPage } from '@/utils/other';
+import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 import { blockUser } from '@/axios/block';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
@@ -120,7 +120,7 @@ export default{
             this.$emit("alert", msg);
         },
         toManage(){
-            openNewPage("/#/manage");
+            openPage("url",{url:"#/manage"})
         },
         async block(){
             /**
@@ -154,7 +154,7 @@ export default{
             this.lastBlockTime=currentTime;
         },
         toSend(){
-            this.$router.push({
+            openPage("router",{
                 name:"ChatPage",
                 params:{
                     id:this.id,
@@ -199,7 +199,7 @@ export default{
             this.loadState=true;
         } else {
             this.alert(getNormalErrorAlert(response.message));
-            this.$router.push({ name: 'ErrorPage', params: { reason: "无法找到此用户" } });
+            openPage("router",{ name: 'ErrorPage', params: { reason: "无法找到此用户" } });
         }
     }catch(e){
         this.alert(getNormalErrorAlert("获取用户信息失败"));

@@ -1,62 +1,60 @@
-/**
- * define routes
- * pages are imported dynamically  
- */
 import { getCookie } from '@/utils/cookie';
+import { startDebug } from '@/utils/debug';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
-import { isExactlySameOrigin } from '@/utils/other';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { createRouter, createWebHashHistory } from 'vue-router';
+
 const load = (path) => () => import(`@/pages/${path}.vue`);
 
-const routes = [
+// 原始路由配置
+const originalRoutes = [
   {
-    path:"/",
-    redirect:"/welcome",
+    path: '/',
+    redirect: '/welcome',
   },
   {
-    path:'/welcome',
-    name:'WelcomePage',
+    path: '/welcome',
+    name: 'WelcomePage',
     component: load('WelcomePage'),
   },
   {
-    path:'/index',
-    name:'IndexPage',
+    path: '/index',
+    name: 'IndexPage',
     component: load('IndexPage'),
     meta: { requiresAuth: true },
   },
   {
-    path:'/article/:id/:post?',
-    name:'ArticlePage',
+    path: '/article/:id/:post?',
+    name: 'ArticlePage',
     component: load('ArticlePage'),
     meta: { requiresAuth: true },
   },
   {
-    path:'/post/:id/:reply?',
-    name:'PostPage',
+    path: '/post/:id/:reply?',
+    name: 'PostPage',
     component: load('PostPage'),
     meta: { requiresAuth: true },
   },
   {
-    path:'/manage',
-    name:"ManagePage",
-    component:load('ManagePage'),
-    meta:{requiresAuth:true},
+    path: '/manage',
+    name: 'ManagePage',
+    component: load('ManagePage'),
+    meta: { requiresAuth: true },
     props: route => ({
       init_id: route.query.init_id || null,
       init_type: route.query.init_type || null,
     }),
   },
   {
-    path:'/course/:id/:post?',
-    name:'CoursePage',
+    path: '/course/:id/:post?',
+    name: 'CoursePage',
     component: load('CoursePage'),
     meta: { requiresAuth: true },
   },
   {
-    path:'/login',
-    name:'LoginPage',
-    component:load('LoginPage'),
+    path: '/login',
+    name: 'LoginPage',
+    component: load('LoginPage'),
     meta: { requiresAuth: false },
     props: route => ({
       name: route.query.userName || null,
@@ -64,45 +62,45 @@ const routes = [
     }),
   },
   {
-    path:'/error/:reason?',
-    name:'ErrorPage',
-    component:load('ErrorPage'),
+    path: '/error/:reason?',
+    name: 'ErrorPage',
+    component: load('ErrorPage'),
     meta: { requiresAuth: false },
   },
   {
-    path:'/editor/:id?',
-    name:'EditorPage',
-    component:load('EditorPage'),
+    path: '/editor/:id?',
+    name: 'EditorPage',
+    component: load('EditorPage'),
     meta: { requiresAuth: true },
   },
   {
-    path:'/self',//if no id, to the user
-    name:'SelfPage',
-    component:load('SelfPage'),
+    path: '/self',
+    name: 'SelfPage',
+    component: load('SelfPage'),
     meta: { requiresAuth: true },
   },
   {
-    path:'/author/:id',
-    name:'AuthorPage',
-    component:load('AuthorPage'),
+    path: '/author/:id',
+    name: 'AuthorPage',
+    component: load('AuthorPage'),
     meta: { requiresAuth: true },
   },
   {
-    path:'/document/:name',
-    name:'DocumentPage',
-    component:load('DocumentPage'),
+    path: '/document/:name',
+    name: 'DocumentPage',
+    component: load('DocumentPage'),
     meta: { requiresAuth: false },
   },
   {
-    path:'/chat/:id?/:name?',//user id
-    name:'ChatPage',
-    component:load('ChatPage'),
+    path: '/chat/:id?/:name?',
+    name: 'ChatPage',
+    component: load('ChatPage'),
     meta: { requiresAuth: true },
   },
   {
     path: '/search',
     name: 'SearchPage',
-    component:load('SearchPage'),
+    component: load('SearchPage'),
     meta: { requiresAuth: true },
     props: route => ({
       type: route.query.type || 'all',
@@ -115,53 +113,61 @@ const routes = [
     redirect: '/error/找不到此资源',
     meta: { requiresAuth: false },
   },
-  
 ];
+
+const devRoutes = originalRoutes.map(route => ({
+  ...route,
+  path: '/debug' + route.path,
+  name: `${route.name}Debug`,
+}));
+
+const routes = [...originalRoutes, ...devRoutes];
 
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
   routes,
 });
-/**
- * it seems like that it's unneccessary to check the token here  
- * when request is made,the token will be checked in @/utils/others/dealAxiosError
- * so we just check if the cookie exsits here  
- */
+
+// beforeEach 中逻辑不变
 router.beforeEach((to, from, next) => {
-  try{
-    if(to.name!="ErrorPage"){
-      let tmpTo={
+  if(to.name.endsWith("Debug")&&(!from.name||!from.name.endsWith("Debug"))){
+    startDebug();
+    window.alert("本页面处于调试模式");
+  }
+  try {
+    if (to.name !== "ErrorPage"&&to.name !="ErrorPageDebug") {
+      let tmpTo = {
         name: to.name,
         params: to.params,
         query: to.query,
-      }
-      let tmpFrom={
+      };
+      let tmpFrom = {
         name: from.name,
         params: from.params,
         query: from.query,
-      }
-      selfDefinedSessionStorage.setItem("lastTwoRouter",JSON.stringify({to:tmpTo,from:tmpFrom}));
+      };
+      selfDefinedSessionStorage.setItem("lastTwoRouter", JSON.stringify({ to: tmpTo, from: tmpFrom }));
     }
-  }catch(e){
+  } catch (e) {
     console.error(e);
   }
-  if(to.matched.some(record => record.meta.requiresAuth)){
-    //if need login,do nothing here,in the request part will do 
+  if (to.matched.some(record => record.meta.requiresAuth)) {
     next();
-  }else if(to.path=="/login"){
-    /**
-     * if login,then to IndexPage
-     */
-    if(getCookie("refreshToken")||selfDefineLocalStorage.getItem('passwd')){
+  } else if (to.path === "/login"||to.path ==="/debug/login") {
+    if (getCookie("refreshToken") || selfDefineLocalStorage.getItem('passwd')) {
       window.alert("您已经登录");
-      router.push({name:"IndexPage"});
+      if(to.path==="/login"){
+        router.push({ name: "IndexPage" });
+      }else if(to.path==="/debug/login"){
+        router.push({ name: "IndexPageDebug" });
+      }
       return;
-    }else{
-      //to login page  
+    } else {
       next();
     }
-  }else{//page public
+  } else {
     next();
   }
 });
+
 export default router;

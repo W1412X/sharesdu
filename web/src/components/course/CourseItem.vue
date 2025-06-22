@@ -3,22 +3,35 @@
         <div class="row-div">
             <div class="name-container">
                 <div class="name title key-text">
-                    {{ data.name }}
+                    <with-link-container :init-data="{'content':data.name,'keywords':this.searchQuery}" :clickable="false">
+                    </with-link-container>
                 </div>
                 <div class="row-div">
                     <div class="text-medium msg">
-                        课程类型:<span class="key-text">{{ data.type }}</span>
+                        课程类型:<span class="key-text">
+                            <with-link-container :init-data="{'content':data.type,'keywords':this.searchQuery}" :clickable="false">
+                            </with-link-container>
+                        </span>
                     </div>
                     <div class="text-medium msg">
-                            开设学院:<span class="key-text">{{ data.college }}</span>
+                            开设学院:<span class="key-text">
+                                <with-link-container :init-data="{'content':data.college,'keywords':this.searchQuery}" :clickable="false">
+                                </with-link-container>
+                            </span>
                     </div>
                 </div>
                 <div class="row-div">
                     <div class="text-medium msg">
-                        上课方式:<span class="key-text">{{ data.attendMethod }}</span>
+                        上课方式:<span class="key-text">
+                            <with-link-container :init-data="{'content':data.attendMethod,'keywords':this.searchQuery}" :clickable="false">
+                            </with-link-container>
+                        </span>
                     </div>
                     <div class="text-medium msg">
-                        考核方式:<span class="key-text">{{ data.examineMethod }}</span>
+                        考核方式:<span class="key-text">
+                            <with-link-container :init-data="{'content':data.examineMethod,'keywords':this.searchQuery}" :clickable="false">
+                            </with-link-container>
+                        </span>
                     </div>
                 </div>
                 <div class="text-small time">
@@ -40,11 +53,13 @@
 //import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiComment, mdiStar } from '@mdi/js';
 import { globalProperties } from '@/main';
-import { openNewPage, roundNumber } from '@/utils/other';
+import { openPage, roundNumber } from '@/utils/other';
+import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
     name: 'CourseItem',
     components: {
         //SvgIcon
+        WithLinkContainer,
     },
     props: {
         initData: {
@@ -70,6 +85,12 @@ export default {
                     relativeArticles:null,
                 }
             }
+        },
+        searchQuery:{
+            type:Array,
+            default:()=>{
+                return [];
+            }
         }
     },
     setup(){
@@ -94,7 +115,7 @@ export default {
             /**
              * open a new tab and go
              */
-            openNewPage("#/course/"+this.data.id)
+            openPage("url",{url:"#/course/"+this.data.id})
         }
     }
 }

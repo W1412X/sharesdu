@@ -35,7 +35,8 @@
                 </div>
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium grey-font">
-                        <avatar-name v-if="article.authorId" :init-data="{ id: article.authorId, name: article.authorName }">
+                        <avatar-name v-if="article.authorId"
+                            :init-data="{ id: article.authorId, name: article.authorName }">
                         </avatar-name>
                     </div>
                     <v-spacer></v-spacer>
@@ -112,8 +113,8 @@
                         </v-btn>
                     </div>
                     <div class="column-center padding-right-10px">
-                        <star-button v-if="article.id !== null" @alert="alert" @set_loading="setLoading" :type="'article'"
-                            :id="article.id" :state="article.ifStar"></star-button>
+                        <star-button v-if="article.id !== null" @alert="alert" @set_loading="setLoading"
+                            :type="'article'" :id="article.id" :state="article.ifStar"></star-button>
                     </div>
                     <div class="column-center padding-right-5px">
                         <like-button v-if="article.id !== null" @alert="alert" @set_loading="setLoading"
@@ -132,8 +133,8 @@
                 <post-item v-for="(item) in postItems" :init-data="item" :key="item.id"
                     :if-parent-author="userId == article.authorId" @alert="alert" @set_post_top="setPostTop">
                 </post-item>
-                <v-btn @click="loadMorePost" :loading="this.loading.post" :disabled="loading.post" variant="tonal"
-                    class="load-btn">加载更多</v-btn>
+                <v-btn v-if="!allLoad.post" @click="loadMorePost" :loading="this.loading.post" :disabled="loading.post"
+                    variant="text" class="load-btn" :color="themeColor">加载更多</v-btn>
             </div>
         </div>
     </v-overlay>
@@ -150,7 +151,7 @@ import { computed, ref } from 'vue';
 import PostItem from '@/components/post/PostItem.vue';
 import PostEditor from '@/components/post/PostEditor.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
-import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage, responseToArticle } from '@/utils/other';
+import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, isScrollToBottom, openPage, responseToArticle } from '@/utils/other';
 import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
 import LikeButton from '@/components/common/LikeButton.vue';
 import DeleteButton from '@/components/common/DeleteButton.vue';
@@ -158,6 +159,7 @@ import { addHistory } from '@/utils/history';
 import ManageButton from '@/components/manage/ManageButton.vue';
 import { setArticleTop } from '@/axios/top';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 export default {
     name: 'ArticlePage',
     components: {
@@ -213,9 +215,24 @@ export default {
             ifMaster,
         }
     },
+    watch:{
+        ifShowComment:{
+            //eslint-disable-next-line
+            handler(newValue, oldValue) {
+                if(newValue){
+                    setTimeout(()=>{
+                        document.getElementById("post-container").addEventListener('scroll', this.glideLoad);
+                    },100);
+                }else{
+                    document.getElementById("post-container").removeEventListener('scroll', this.glideLoad);
+                }
+            },
+            immediate:false
+        },
+    },
     data() {
         return {
-            lastPageNum:null,
+            lastPageNum: null,
             articleResponse: null,
             article: {
                 id: "",
@@ -252,10 +269,13 @@ export default {
                 post: false,
                 top: false,
             },
+            allLoad: {
+                post: false,
+            }
         }
     },
     beforeRouteLeave(to, from, next) {
-        try{
+        try {
             if (!getCookie("userName")) {
                 next();
                 return;
@@ -263,8 +283,8 @@ export default {
             //use session storage to save memory now  
             let scanMsg = {};
             scanMsg.commentState = this.ifShowComment;
-            scanMsg.pageNum={
-                post:this.postPageNum,
+            scanMsg.pageNum = {
+                post: this.postPageNum,
             }
             scanMsg.scrollTop = document.scrollingElement.scrollTop;
             let key = 'articleScanMsg|' + this.article.id;
@@ -274,7 +294,7 @@ export default {
             }
             selfDefinedSessionStorage.setItem(key, JSON.stringify(scanMsg));
             next();
-        }catch(e){
+        } catch (e) {
             next();
         }
     },
@@ -289,13 +309,13 @@ export default {
             }
         },
         deleteSelf() {
-            this.$router.push({
+            openPage("router",{
                 name: "IndexPage",
             })
         },
         edit() {
             this.setLoading(getLoadMsg("正在加载编辑器..."))
-            this.$router.push({
+            openPage("router",{
                 name: "EditorPage",
                 params: {
                     id: this.article.id,
@@ -303,8 +323,13 @@ export default {
             })
         },
         async loadMorePost() {
+            if(this.allLoad.post){
+                return;
+            }
             this.loading.post = true;
+            await acquireLock("article-load-post" + this.article.id);
             let response = await getPostListByArticleId(this.article.id, this.postPageNum);
+            releaseLock("article-load-post" + this.article.id);
             if (response.status == 200) {
                 for (let i = 0; i < response.post_list.length; i++) {
                     this.postItems.push({
@@ -323,10 +348,13 @@ export default {
                     });
                 }
                 this.postPageNum++;
+                if(response.total_pages<=response.current_page){
+                    this.allLoad.post=true;
+                }
             } else {
                 this.alert(getNormalErrorAlert(response.message));
             }
-            while(this.lastPageNum!=null&&this.postPageNum<this.lastPageNum.post){
+            while (this.lastPageNum != null && this.postPageNum < this.lastPageNum.post) {
                 await this.loadMorePost();
             }
             this.loading.post = false;
@@ -341,7 +369,7 @@ export default {
             this.$emit("set_loading", msg);
         },
         toOriginLink() {
-            openNewPage(this.article.originLink);
+            openPage("url",{url:this.article.originLink});
         },
         async setArticleTop() {
             if (!this.ifMaster) {
@@ -393,6 +421,15 @@ export default {
             }
 
         },
+        async glideLoad() {
+            // prevent load when other load unfinished
+            if (getLock('article-load-post' + this.article.id)) {
+                return;
+            }
+            if (isScrollToBottom(document.getElementById("post-container"))) {
+                await this.loadMorePost();
+            }
+        }
     },
     async mounted() {
         this.setLoading(getCancelLoadMsg());
@@ -412,10 +449,10 @@ export default {
                 document.getElementById('web-title').innerText = '文章 | ' + this.article.title;
             } else {
                 this.alert(getNormalErrorAlert(response.message));
-                this.$router.push({ name: "ErrorPage", params: { reason: response.message } })
+                openPage("router",{ name: "ErrorPage", params: { reason: response.message } })
             }
         } else {
-            this.$router.push({ name: "ErrorPage", params: { reason: "缺少参数" } })
+            openPage("router",{ name: "ErrorPage", params: { reason: "缺少参数" } })
         }
         this.setLoading(getCancelLoadMsg());
         /**
@@ -423,9 +460,9 @@ export default {
          */
         if (selfDefinedSessionStorage.getItem('articleScanMsg|' + this.$route.params.id)) {
             let scanMsg = JSON.parse(selfDefinedSessionStorage.getItem('articleScanMsg|' + this.$route.params.id));
-            this.lastPageNum=scanMsg.pageNum;
+            this.lastPageNum = scanMsg.pageNum;
             this.setCommentState(scanMsg.commentState);
-            if(scanMsg.commentState){
+            if (scanMsg.commentState) {
                 await this.loadMorePost();
             }
             setTimeout(() => {
@@ -436,6 +473,9 @@ export default {
             }, 10);
         }
     },
+    unmounted() {
+        window.removeEventListener('scroll', this.glideLoad);
+    }
 }
 </script>
 <style scoped>

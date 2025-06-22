@@ -8,8 +8,14 @@
             <img-card :width="deviceType === 'desktop'?140:95" :height="deviceType === 'desktop'?130:95" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
                 cover aspect-ratio="7/6"></img-card>
             <div class="row-div padding-left-5">
-                <div class="title title-container key-text">{{ data.title }}</div>
-                <div class="text-small summary-container key-text">{{ data.summary }}</div>
+                <div class="title title-container key-text">
+                    <with-link-container :init-data="{'content':data.title,'keywords':this.searchQuery}" :clickable="false">
+                    </with-link-container>
+                </div>
+                <div class="text-small summary-container key-text">
+                    <with-link-container :init-data="{'content':data.summary,'keywords':this.searchQuery}" :clickable="false">
+                    </with-link-container>
+                </div>
                 <v-spacer></v-spacer>
                 <div class="text-small bottom-bar">
                     <div v-if="data.authorName != null" class="bottom-item">
@@ -39,8 +45,9 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
-import { openNewPage } from '@/utils/other';
+import { openPage } from '@/utils/other';
 import { defineAsyncComponent } from 'vue';
+import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
     name: 'ArticleItem',
     props: {
@@ -65,6 +72,12 @@ export default {
 
                 }
             }
+        },
+        searchQuery:{
+            type:Array,
+            default:()=>{
+                return [];
+            }
         }
     },
     setup() {
@@ -85,6 +98,7 @@ export default {
     },
     components:{
         ImgCard:defineAsyncComponent(() => import('@/components/common/ImgCard.vue')),
+        WithLinkContainer,
     },
     methods:{
         click(){
@@ -92,9 +106,9 @@ export default {
              * open a new tab and go
              */
             if(!this.data.id){//no id param
-                openNewPage("#/error/无法找到此资源");
+                openPage("url",{url:"#/error/无法找到此资源"});
             }
-            openNewPage("#/article/"+this.data.id);
+            openPage("url",{url:"#/article/"+this.data.id});
         }
     }
 }

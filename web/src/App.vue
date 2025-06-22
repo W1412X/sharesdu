@@ -109,7 +109,7 @@ import { useRoute } from 'vue-router';
 import { globalProperties } from './main';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { getCookie } from './utils/cookie';
-import { getNormalInfoAlert, openNewPage } from './utils/other';
+import { getNormalInfoAlert, openPage } from './utils/other';
 import HistoryCard from '@/components/history/HistoryCard.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import PostEditor from '@/components/post/PostEditor.vue';
@@ -182,6 +182,10 @@ export default {
     // eslint-disable-next-line
     watch(route, (newRoute, oldRoute) => {
       page.value = newRoute.name;
+      //adapt for debug page
+      if(page.value.endsWith("Debug")){
+        page.value=page.value.substring(0,page.value.indexOf("Debug"))
+      }
       userId.value = getCookie("userId");
       userName.value = getCookie("userName");
       ifAvatarState.value = false;
@@ -317,7 +321,7 @@ export default {
         default:
           type = 'all';
       }
-      this.$router.push({
+      openPage("router",{
         path: '/search',
         query: {
           type: type,
@@ -326,7 +330,7 @@ export default {
       });
     },
     toHomePage() {
-      this.$router.push({
+      openPage("router",{
         name: 'IndexPage',
       })
     },
@@ -336,12 +340,12 @@ export default {
       this.setCourseEditorState(false);
     },
     editArticle() {
-      this.$router.push({
+      openPage("router",{
         name: 'EditorPage',
       })
     },
     openUrl(url) {
-      openNewPage(url);
+     openPage("url",{url:url});
     }
   },
   created() {

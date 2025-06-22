@@ -10,6 +10,7 @@
 </template>
 <script>
 import { globalProperties } from '@/main'
+import { openPage } from '@/utils/other';
 export default{
     props:{
         data:{//tag string
@@ -29,7 +30,7 @@ export default{
     },
     methods:{
         toTagPage(){//need a search page 
-            this.$router.push({
+            openPage("router",{
                 path: '/search',
                 query: {
                     type: 'all',

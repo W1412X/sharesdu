@@ -21,7 +21,7 @@
 <script>
 import { markAsReadNotification } from '@/axios/notification';
 import { globalProperties } from '@/main';
-import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
+import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
 import { computed } from 'vue';
 
 export default {
@@ -98,9 +98,9 @@ export default {
                 this.data.state=true;
                 this.alert(getNormalSuccessAlert("已标记为已读"));
                 if(this.data.relatedItem.type=='message'){
-                    openNewPage("#/chat");
+                    openPage("url",{url:"#/chat"});
                 }else{
-                    openNewPage("#/"+this.data.relatedItem.type+"/"+this.data.relatedItem.id);
+                    openPage("url",{url:"#/"+this.data.relatedItem.type+"/"+this.data.relatedItem.id});
                 }
             }else{
                 this.alert(getNormalErrorAlert(response.message));

@@ -1,7 +1,7 @@
 // src/main.js
 import { createApp } from 'vue';
 import App from './App.vue';
-import { clearTokenCookies, getCookie } from './utils/cookie';
+import { clearTokenCookies } from './utils/cookie';
 import router from './router';
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
@@ -157,7 +157,7 @@ app.config.globalProperties.$deviceType=deviceType;
 /**
  * Get the current theme color,default #9c0c13   
  */
-var tmp=getCookie("themeColor");
+var tmp=selfDefineLocalStorage.getItem("themeColor");
 var themeColor="#9c0c13";
 var themeColorTransparent=adjustAlpha(themeColor);
 document.documentElement.style.setProperty('--theme-color', themeColor);

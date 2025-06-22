@@ -18,7 +18,7 @@
             </v-tabs>
         </div>
         <div class="row-center">
-            <v-pull-to-refresh :pull-down-threshold="64" @load="refresh" style="margin-top: 40px;">
+            <v-pull-to-refresh id="item-container" :pull-down-threshold="64" @load="refresh" style="margin-top: 40px;">
                 <div v-if="itemType == 'article'" class="item-container">
                     <div class="sort-method-bar">
                         <v-spacer />
@@ -45,20 +45,20 @@
                     </div>
                     <article-item v-for="item in this.articleList[articleSortMethod]" :key="item.id" :init-data="item">
                     </article-item>
-                    <v-btn @click="loadMore('article')" variant="tonal" :loading="loading.article"
-                        class="load-btn">加载更多</v-btn>
+                    <v-btn v-if="!allLoad.article[articleSortMethod]" @click="loadMore('article')" variant="text"
+                        :loading="loading.article" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
                 </div>
                 <div v-if="itemType == 'post'" class="item-container">
                     <post-item v-for="item in this.postList" :key="item.id" :init-data="item">
                     </post-item>
-                    <v-btn @click="loadMore('post')" variant="tonal" :loading="loading.post"
-                        class="load-btn">加载更多</v-btn>
+                    <v-btn v-if="!allLoad.post" @click="loadMore('post')" :variant="'text'" :loading="loading.post"
+                        class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
                 </div>
                 <div v-if="itemType == 'course'" class="item-container">
                     <course-item v-for="item in this.courseList" :key="item.id" :init-data="item">
                     </course-item>
-                    <v-btn @click="loadMore('course')" variant="tonal" :loading="loading.course"
-                        class="load-btn">加载更多</v-btn>
+                    <v-btn v-if="!allLoad.course" @click="loadMore('course')" :variant="'text'"
+                        :loading="loading.course" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
                 </div>
             </v-pull-to-refresh>
         </div>
@@ -71,11 +71,12 @@ import ArticleItem from '@/components/article/ArticleItem.vue';
 import CourseItem from '@/components/course/CourseItem.vue';
 import PostItem from '@/components/post/PostItem.vue';
 import { getCookie } from '@/utils/cookie';
-import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, openNewPage } from '@/utils/other';
+import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, isElementAtBottom, openPage } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/axios/article';
 import { getCourseList } from '@/axios/course';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 export default {
     name: 'IndexPage',
     components: {
@@ -126,7 +127,7 @@ export default {
         itemType: {
             // eslint-disable-next-line
             handler(newVal, oldVal) {
-                if(!this.ifMounted){
+                if (!this.ifMounted) {
                     return;
                 }
                 switch (newVal) {
@@ -164,25 +165,25 @@ export default {
         }
     },
     beforeRouteLeave(to, from, next) {
-        try{
+        try {
             //use session storage to save memory now  
-            if(!getCookie("userName")){
+            if (!getCookie("userName")) {
                 next();
                 return;
             }
             let lastScanMsg = {}
             lastScanMsg.itemType = this.itemType;
-            lastScanMsg.pageNum={
-                article:this.articlePageNum,
-                post:this.postPageNum,
-                course:this.coursePageNum,
+            lastScanMsg.pageNum = {
+                article: this.articlePageNum,
+                post: this.postPageNum,
+                course: this.coursePageNum,
             }
             let scrollPosition = document.scrollingElement.scrollTop;
             lastScanMsg.scrollPosition = scrollPosition;
             lastScanMsg.articleSortMethod = this.articleSortMethod;
             selfDefinedSessionStorage.setItem('indexScanMsg', JSON.stringify(lastScanMsg))
             next()
-        }catch(e){
+        } catch (e) {
             next();
         }
     },
@@ -213,18 +214,28 @@ export default {
                 course: false,
                 post: false,
             },
-            lastPageNum:null,
+            allLoad: {
+                article: {
+                    time: false,
+                    star: false,
+                    view: false,
+                    hot: false,
+                },
+                course: false,
+                post: false,
+            },
+            lastPageNum: null,
         }
     },
     methods: {
         editArticle() {
-            openNewPage("#/editor")
+            openPage("url",{url:"#/editor"})
         },
         async refresh({ done }) {
             let response = null;
             switch (this.itemType) {
                 case 'article':
-                    response = await getArticleList(this.articleSortMethod, null, 1,false);
+                    response = await getArticleList(this.articleSortMethod, null, 1, false);
                     if (response.status == 200) {
                         this.articlePageNum[this.articleSortMethod] = 2;
                         this.articleList[this.articleSortMethod] = [];
@@ -251,7 +262,7 @@ export default {
                     }
                     break;
                 case 'post':
-                    response = await getPostListByArticleId(20, 1,false);
+                    response = await getPostListByArticleId(20, 1, false);
                     if (response.status == 200) {
                         this.postPageNum = 2;
                         this.postList = [];
@@ -275,7 +286,7 @@ export default {
                     }
                     break;
                 case 'course':
-                    response = await getCourseList(1,false);
+                    response = await getCourseList(1, false);
                     if (response.status == 200) {
                         this.coursePageNum = 2;
                         this.courseList = [];
@@ -310,7 +321,12 @@ export default {
             this.alert(getNormalInfoAlert("功能未开放..."))
         },
         async loadMore(itemType) {
+            await acquireLock("index-load-more");
             if (itemType == 'article') {
+                if (this.allLoad[itemType][this.articleSortMethod]) {
+                    releaseLock("index-load-more");
+                    return;
+                }
                 this.loading.article = true;
                 let response = await getArticleList(this.articleSortMethod, null, this.articlePageNum[this.articleSortMethod]);
                 this.loading.article = false;
@@ -330,15 +346,22 @@ export default {
                             coverLink: response.article_list[ind].cover_link,
                             type: response.article_list[ind].article_type,
                             hotScore: response.article_list[ind].hot_score,
-                            ifTop:response.article_list[ind].if_top,
+                            ifTop: response.article_list[ind].if_top,
                         });
                     }
                     this.articlePageNum[this.articleSortMethod]++;
                     this.alert(getNormalSuccessAlert(response.message));
+                    if (response.total_pages <= response.current_page) {
+                        this.allLoad["article"][this.articleSortMethod] = true;
+                    }
                 } else {
                     this.alert(getNormalErrorAlert(response.message));
                 }
             } else if (itemType == 'course') {
+                if (this.allLoad[itemType]) {
+                    releaseLock("index-load-more");
+                    return;
+                }
                 this.loading.course = true;
                 let response = await getCourseList(this.coursePageNum);
                 this.loading.course = false;
@@ -363,10 +386,17 @@ export default {
                     }
                     this.alert(getNormalSuccessAlert("加载成功"));
                     this.coursePageNum++;
+                    if (response.total_pages <= response.current_page) {
+                        this.allLoad["course"] = true;
+                    }
                 } else {
                     this.alert(getNormalErrorAlert(response.message));
                 }
             } else if (itemType == 'post') {
+                if (this.allLoad[itemType]) {
+                    releaseLock("index-load-more");
+                    return;
+                }
                 //get the article 20 template  
                 this.loading.post = true;
                 let response = await getPostListByArticleId(20, this.postPageNum);
@@ -389,27 +419,31 @@ export default {
                     }
                     this.postPageNum++;
                     this.alert(getNormalSuccessAlert(response.message));
+                    if (response.total_pages <= response.current_page) {
+                        this.allLoad["post"] = true;
+                    }
                 } else {
                     this.alert(getNormalErrorAlert(response.message));
                 }
             }
+            releaseLock("index-load-more");
             /**
              * restore the last scan state
              */
-            if(this.lastPageNum!=null){
-                switch(itemType){
+            if (this.lastPageNum != null) {
+                switch (itemType) {
                     case "article":
-                        while(this.lastPageNum.article[this.articleSortMethod]>this.articlePageNum[this.articleSortMethod]){
+                        while (this.lastPageNum.article[this.articleSortMethod] > this.articlePageNum[this.articleSortMethod]) {
                             await this.loadMore(itemType);
                         }
                         break;
                     case "post":
-                        while(this.lastPageNum.post>this.postPageNum){
+                        while (this.lastPageNum.post > this.postPageNum) {
                             await this.loadMore(itemType);
                         }
                         break;
                     case "course":
-                        while(this.lastPageNum.course>this.coursePageNum){
+                        while (this.lastPageNum.course > this.coursePageNum) {
                             await this.loadMore(itemType);
                         }
                         break;
@@ -426,24 +460,40 @@ export default {
         },
         addPost(item) {
             this.postList.unshift(item);
+        },
+        glideLoad() {
+            // prevent load when other load unfinished
+            if (getLock('index-load-more')) {
+                return;
+            }
+            if (isElementAtBottom(document.getElementById("item-container"))) {
+                this.loadMore(this.itemType);
+            }
         }
     },
     async mounted() {
         //use session storage to save memory now
         let lastScanMsg = JSON.parse(selfDefinedSessionStorage.getItem("indexScanMsg"));
-        if(lastScanMsg){
+        if (lastScanMsg) {
             this.itemType = lastScanMsg.itemType;
-            this.lastPageNum=lastScanMsg.pageNum;
+            this.lastPageNum = lastScanMsg.pageNum;
             this.articleSortMethod = lastScanMsg.articleSortMethod;
             await this.loadMore(this.itemType);
             setTimeout(() => {
                 document.scrollingElement.scrollTop = lastScanMsg.scrollPosition;
             }, 10)
-        }else{
+        } else {
             await this.loadMore(this.itemType);
         }
         document.getElementById('web-title').innerText = 'ShareSDU | 首页';
-        this.ifMounted=true;
+        this.ifMounted = true;
+        /**
+         * add roll listener
+         */
+        window.addEventListener('scroll', this.glideLoad)
+    },
+    unmounted() {
+        window.removeEventListener('scroll', this.glideLoad);
     }
 }
 </script>

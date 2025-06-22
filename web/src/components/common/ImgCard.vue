@@ -7,6 +7,9 @@
                     <v-icon icon="mdi-close" size="20" :color="themeColor" @click="setImgDetailState(false)"></v-icon>
                 </div>
                 <img class="img-big" :src="src"><img/>
+                <div style="width: 100%;height: 50px;display: flex;align-items: center;justify-content: center;">
+                  <v-btn @click="saveImage" icon="mdi-tray-arrow-down" :size="15" variant="text" :color="themeColor"></v-btn>
+                </div>
             </div>
         </div>
     </v-dialog>
@@ -125,7 +128,15 @@ import { computed, ref } from 'vue';
             if(this.clickable){
                 this.setImgDetailState(true);
             }
-        }
+        },
+        saveImage() {
+          const link = document.createElement('a');
+          link.href = this.imgUrl;
+          link.download = Date.now().toString()+'.jpeg';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        },
     },
     async mounted() {
       if (this.ifNeedDeal) {

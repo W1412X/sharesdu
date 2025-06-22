@@ -13,6 +13,7 @@ import { globalProperties } from '@/main'
 import { getCookie } from '@/utils/cookie'
 import { globalProfileCacher } from '@/utils/global_img_cache'
 import { acquireLock, releaseLock } from '@/utils/lock'
+import { openPage } from '@/utils/other'
 import { getProfileUrl } from '@/utils/profile'
 
 export default {
@@ -59,14 +60,14 @@ export default {
                 return;
             }
             if (getCookie("userId") == this.initData.id) {
-                this.$router.push({
+                openPage("router",{
                     name: 'SelfPage',
                     params: {
                         id: this.initData.id
                     }
                 });
             } else {
-                this.$router.push({
+                openPage("router",{
                     name: 'AuthorPage',
                     params: {
                         id: this.initData.id

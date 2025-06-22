@@ -1,6 +1,7 @@
 <template>
     <v-card class="card" elevation="1">
       <div class="title-center">设置主题颜色</div>
+      <div class="text-tiny">注: APP中重启应用生效</div>
       <div class="row-center">
         <v-color-picker :modes="['hexa']" v-model="this.color" hide-inputs></v-color-picker>
       </div>
@@ -10,7 +11,8 @@
     </v-card>
   </template>
   <script>
-import { setCookie } from '@/utils/cookie';
+import { selfDefineLocalStorage } from '@/utils/localStorage';
+
 
     export default {
       setup() {},
@@ -21,7 +23,7 @@ import { setCookie } from '@/utils/cookie';
       },
       methods: {
         setColor() {
-            setCookie("themeColor",this.color,999999);
+            selfDefineLocalStorage.setItem("themeColor",this.color);
             this.$emit("set_color");
             location.reload();
         },

@@ -7,7 +7,7 @@
                 <div class="top-btn-div">
                     <v-btn @click="this.setContactState(true)" :color="themeColor" variant="text"
                         class="title-bold">联系我们</v-btn>
-                    <v-btn @click="downloadApp" :color="themeColor" variant="text" class="title-bold">安装APP</v-btn>
+                    <v-btn @click="downloadApp" :color="themeColor" variant="text" class="title-bold">APP</v-btn>
                 </div>
             </div>
             <div class="logo-line"></div>
@@ -32,15 +32,17 @@
                             </div>
                         </v-card>
                         <v-card v-if="ifShowDownload" class="card">
-                            <div class="title-bold">下载APP</div>
+                            <div class="row-div">
+                                <div class="title-bold">测试阶段，有问题请联系管理员</div>
+                                <v-spacer></v-spacer>
+                                <v-btn @click="setDownloadState(false)" :size="25" :icon="'mdi-close'" variant="text"></v-btn>
+                            </div>
                             <div class="text-medium" style="margin: 5px;">
                                 对于OPPO，VIVO，小米等品牌以及<span class="text-medium-bold">非纯血鸿蒙华为</span>用户直接下载Android版本并安装
                                 <br />
                                 对于苹果用户，下载配置文件后在<span class="text-medium-bold">设置 > 已下载描述文件</span>进行安装
                                 <br />
                                 对于<span class="text-medium-bold">华为鸿蒙NEXT</span>用户，下载Harmony版本安装
-                                <br/>
-                                <span class="text-tiny">IOS应用由<span class="text-tiny-bold">第三方平台</span>打包生成，谨慎授予相关权限</span>
                                 <br />
                                 <span class="text-tiny">注：如有无法安装以及其他问题请联系开发者(<a class="text-tiny-bold" href="https://qm.qq.com/q/Uh7X13Hp8Q">点击此处进入QQ群</a>)</span>
                             </div>
@@ -100,7 +102,7 @@
 <script>
 import { globalProperties } from '@/main';
 import { initTriangleEffect } from '@/utils/animation';
-import { openNewPage } from '@/utils/other';
+import { openPage } from '@/utils/other';
 import { ref, computed } from 'vue';
 export default {
     name: 'WelcomePage',
@@ -147,7 +149,7 @@ export default {
             this.setDownloadState(true);
         },
         openUrl(url) {
-            openNewPage(url);
+            openPage("url",{url:url});
         },
         downloadIOS(){
             let a= document.createElement('a');
@@ -169,6 +171,11 @@ export default {
 <style scoped>
 .download-btn {
     margin: 5px;
+}
+.row-div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 /** desktop */
 @media screen and (min-width: 1000px) {
