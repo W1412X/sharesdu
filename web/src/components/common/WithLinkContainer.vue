@@ -12,7 +12,7 @@
       ref="iframe"
       frameborder="0"
       :style="{border: 'none',width: iframeWidth, height: iframeHeight}"
-      :srcdoc="data.content"
+      :src="tmpUrl"
     ></iframe>
     </div>
   </div>
@@ -63,6 +63,7 @@ export default {
       data,
       ifHtml:false,
       processedContent:null,
+      tmpUrl: null,
     };
   },
   methods: {
@@ -160,6 +161,8 @@ export default {
       if(this.data.content.startsWith("SELF-DEFINE-HTML")){
         this.data.content=this.data.content.substring(16);
         this.ifHtml=true;
+        this.tmpUrl=URL.createObjectURL(new Blob([this.data.content], { type: "text/html" }));
+        console.log(this.tmpUrl);
       }else{
         this.data.content=removeImageLinksInBrackets(this.data.content);
         this.processedContent=this.processContent(this.data.content);
@@ -172,6 +175,9 @@ export default {
     if(this.ifHtml){
       this.setupIframeResize();
     }
+  },
+  beforeUnmount(){
+    URL.revokeObjectURL(this.tmpUrl);
   }
 };
 </script>
