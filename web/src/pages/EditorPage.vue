@@ -274,7 +274,7 @@ export default {
                         //if resource upload  
                         if(this.editorBarRef.$data.file!=null){
                             this.setLoading(getLoadMsg("正在上传资源文件...", -1));
-                            let response=await uploadResource(this.editorBarRef.$data.file,this.articleId);
+                            let response=await uploadResource(this.editorBarRef.$data.file,this.articleId,this.setLoading);
                             if(response.status==200||response.status==201){
                                 this.alert(getNormalSuccessAlert("资源上传成功"));
                                 this.ifSubmit=true;

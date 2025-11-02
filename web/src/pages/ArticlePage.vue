@@ -78,7 +78,7 @@
                     <tag-button v-for="(tag, index) in article.tags" :data="tag" :key="index"></tag-button>
                 </div>
                 <div v-if="this.article.sourceUrl" class="source-bar-container">
-                    <source-bar :article-id="this.article.id" :article-title="this.article.title"></source-bar>
+                    <source-bar :article-id="this.article.id" :article-title="this.article.title" @alert="alert" @set_loading="setLoading"></source-bar>
                 </div>
             </div>
             <article-display v-if="loadState" class="margin-bottom-40px" :init-data="displayMsg"></article-display>
@@ -186,7 +186,7 @@ export default {
         /**
          * get user msg
          */
-        var userName = getCookie('userName');
+        let userName = getCookie('userName');
         const userId = getCookie('userId');
         /**
          * posts list visibility control here

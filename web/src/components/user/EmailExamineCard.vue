@@ -84,8 +84,8 @@ export default {
                 return;
             }
             this.loading.examine = true;
-            var formToSubmit = this.data;
-            var response = null;
+            let formToSubmit = this.data;
+            let response = null;
             switch (this.data.type) {
                 case 'register':
                     response = await registerByEmail(csRegisterByEmail(formToSubmit));
@@ -149,7 +149,7 @@ export default {
             this.loading.examine = false;
         },
         async resend() {//resend the code  
-            var response = null;
+            let response = null;
             this.setLoading(getLoadMsg('正在发送验证码...', -1));
             switch (this.data.type) {
                 case 'register':

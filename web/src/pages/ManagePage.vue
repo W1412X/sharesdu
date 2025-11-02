@@ -66,6 +66,7 @@
             </div>
             <v-card v-if="ifShowUserList" variant="outlined" class="column-div-scroll user-list-card"
                 style="margin-top: 10px;">
+                <span class="text-small">共<span :style="{'font-weight':'bold','color':themeColor}">{{  totalUserNum }}</span>个用户</span>
                 <v-data-table :items="userList" fixed-header hover>
                     <!-- bug but can run -->
                     <template v-slot:[`item.用户`]="{ item }">
@@ -118,10 +119,21 @@ export default {
             default: null,//article,user,course
         }
     },
+    watch:{
+        choose:{
+            //eslint-disable-next-line
+            async handler(newVal, oldVal){
+                if(this.choose=='item'&&this.userList.length==0){
+                    await this.loadUser();
+                }
+            },
+            immediate:true,
+        }
+    },
     setup() {
 
-        var drawer = ref(true);
-        var choose = ref('item');
+        let drawer = ref(true);
+        let choose = ref('item');
         const rail = ref(true);
         const deviceType = globalProperties.$deviceType;
         const navVisible = ref(false);
@@ -171,6 +183,7 @@ export default {
             ifShowBlockUserList: false,
             nowShowUrl: null,
             blockUserPageNum: 1,
+            totalUserNum:null,
         }
     },
     methods: {
@@ -308,6 +321,7 @@ export default {
                 }
                 this.maxUserPageNum=response.pagination.total_pages;
                 this.userPageNum++;
+                this.totalUserNum=response.pagination.total_items;
             }
         },
         async loadBlockUser() {

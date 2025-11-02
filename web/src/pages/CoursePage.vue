@@ -14,6 +14,7 @@
                     <v-btn @click="closeEditor" variant="text" class="dialog-bottom-bar-btn" >取消</v-btn>
                 </div>
             </v-card>
+            <PosterDisplayer v-if="ifShowPosterDisplayer" :imageUrl="this.posterImageUrl" @alert="alert" @set_loading="setLoading" @close="closePosterDisplayer"></PosterDisplayer>
             <post-editor v-if="ifShowPostEditor" @add_post="addPost" @close="closePostEditor" @alert="alert" @set_loading="setLoading" :type-msg="{type:'course',id:this.course.id}"></post-editor>
             <course-editor v-if="ifShowCourseEditor" @alert="alert" @set_loading="setLoading" :init-data="this.course" @close="setCourseEditorState(false)"></course-editor>
             <course-history-card v-if="ifShowHistory" :id="this.course.id" @close="setHistoryState(false)" @set_loading="setLoading" @alert="alert"></course-history-card>
@@ -28,7 +29,10 @@
                         {{ course.name }}
                     </div>
                     <v-spacer></v-spacer>
-                    <manage-button v-if="ifMaster" :id="this.course.id" :type="'course'" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"></manage-button>
+                    <v-btn @click="generateShareImage()" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;" elevation="0" icon variant="text">
+                        <v-icon icon="mdi-share-variant-outline" size="22" :color="'#8a8a8a'"></v-icon>
+                        <v-tooltip activator="parent">生成本课程的分享图片</v-tooltip>
+                    </v-btn>
                     <v-btn @click="setCourseEditorState(true)" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;" elevation="0" icon variant="text">
                         <v-icon icon="mdi-book-edit-outline" size="22" :color="'#8a8a8a'"></v-icon>
                         <v-tooltip activator="parent">如课程信息有误，您可以提交修改</v-tooltip>
@@ -139,9 +143,10 @@
                 </div>
                 <v-spacer class="spacer"></v-spacer>
                 <div class="row-reverse">
-                    <div class="column-center padding-right-5px">
+                    <div v-if="!ifMaster" class="column-center padding-right-5px">
                         <alert-button :id="this.course.id" :type="'course'"></alert-button>
                     </div>
+                    <manage-button v-if="ifMaster" :id="this.course.id" :type="'course'" style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"></manage-button>
                     <!-- wait to do
                     <div class="column-center padding-right-5px">
                         <v-btn elevation="0" @click="setCourseEditorState(true)" icon class="bottom-btn">
@@ -149,6 +154,7 @@
                         </v-btn>
                     </div>
                     -->
+                    
                     <div class="column-center padding-right-10px">
                         <v-btn elevation="0" @click="showPost" icon class="bottom-btn">
                             <v-icon icon="mdi-comment-outline" size="24"></v-icon>
@@ -196,6 +202,8 @@ import ManageButton from '@/components/manage/ManageButton.vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
+import { generateCoursePosterImage } from '@/utils/poster';
+import PosterDisplayer from '@/components/common/PosterDisplayer.vue';
 export default {
     name: 'CoursePage',
     components: {
@@ -211,6 +219,7 @@ export default {
         PartLoadingView,
         ManageButton,
         WithLinkContainer,
+        PosterDisplayer,
     },
     setup() {
         const userName=getCookie("userName");
@@ -224,6 +233,7 @@ export default {
         const ifShowPost=ref(false);
         const ifShowCourseEditor=ref(false);
         const ifShowHistory=ref(false);
+        const ifShowPosterDisplayer=ref(false);
         const ifMaster=getCookie("ifMaster");
         const setPostEditorState=(state)=>{
             ifShowPostEditor.value=state;
@@ -234,8 +244,11 @@ export default {
         const setHistoryState=(state)=>{
             ifShowHistory.value=state;
         };
+        const setPosterDisplayerState=(state)=>{
+            ifShowPosterDisplayer.value=state;
+        }
         const ifShowDialog=computed(()=>{
-            return ifShowCommentEditor.value || ifShowPostEditor.value || ifShowCourseEditor.value || ifShowHistory.value;
+            return ifShowCommentEditor.value || ifShowPostEditor.value || ifShowCourseEditor.value || ifShowHistory.value || ifShowPosterDisplayer.value;
         })
         const setCommentEditorState=(state)=>{
             ifShowCommentEditor.value=state;
@@ -262,6 +275,8 @@ export default {
             ifShowHistory,
             setHistoryState,
             ifMaster,
+            setPosterDisplayerState,
+            ifShowPosterDisplayer,
         }
     },
     beforeRouteLeave (to, from, next) {
@@ -334,6 +349,7 @@ export default {
                 selfComment:false,
             },
             lastPageNum:null,
+            posterImageUrl:"",//poster image 
         }
     },
     watch:{
@@ -565,6 +581,63 @@ export default {
                     await this.getCourseCommentList();
                 }
             }
+        },
+        async generateShareImage(){
+            this.setLoading({
+                state:true,
+                text:"正在生成海报...",
+                progress:-1
+            })
+            this.posterImageUrl=await generateCoursePosterImage({
+                title:this.course.name,
+                type:this.course.type,
+                teacher:this.course.teacher,
+                rating:this.course.avgScore,
+                ratingCount:this.course.evaluateNum,
+                url:window.location.href,
+            })
+            this.setLoading({state:false});
+            this.setPosterDisplayerState(true);
+        },
+        closePosterDisplayer(){
+            this.setPosterDisplayerState(false);
+            //release
+            URL.revokeObjectURL(this.posterImageUrl);
+        },
+        async initCourse(){
+            this.course.id = this.$route.params.id;
+            this.loadState.course=false;
+            let response=await getCourseDetail(this.course.id);
+            this.loadState.course=true;
+            if(response.status==200){
+                let avgScore=0;
+                if(response.course_detail.all_people!=0){
+                    avgScore=response.course_detail.all_score/response.course_detail.all_people;
+                }
+                avgScore=roundNumber(avgScore,1);
+                this.course={
+                    id:response.course_detail.course_id,
+                    name:response.course_detail.course_name,
+                    type:response.course_detail.course_type,
+                    credit:response.course_detail.credits,
+                    teacher:response.course_detail.course_teacher	,
+                    attendMethod:response.course_detail.course_method,
+                    examineMethod:response.course_detail.assessment_method,
+                    publishTime:response.course_detail.publish_time,
+                    campus:response.course_detail.campus,
+                    college:response.course_detail.college,
+                    evaluateNum:response.course_detail.all_people,
+                    avgScore:avgScore,
+                    scoreDistribution:response.course_detail.score_distribution,
+                }
+                await addHistory("course",this.course.id,this.course.name);
+                document.getElementById('web-title').innerText='课程 | '+this.course.name;
+                this.alert(getNormalSuccessAlert("获取课程信息成功"));
+            }else{
+                this.alert(getNormalErrorAlert(response.message));
+                openPage("router",{name:"ErrorPage",reason:"课程信息获取失败"});
+                return;
+            }
         }
     },
     async mounted() {
@@ -574,40 +647,6 @@ export default {
         /**
          * get course detail
          */
-        this.course.id = this.$route.params.id;
-        this.loadState.course=false;
-        let response=await getCourseDetail(this.course.id);
-        this.loadState.course=true;
-        if(response.status==200){
-            let avgScore=0;
-            if(response.course_detail.all_people!=0){
-                avgScore=response.course_detail.all_score/response.course_detail.all_people;
-            }
-            avgScore=roundNumber(avgScore,1);
-            this.course={
-                id:response.course_detail.course_id,
-                name:response.course_detail.course_name,
-                type:response.course_detail.course_type,
-                credit:response.course_detail.credits,
-                teacher:response.course_detail.course_teacher	,
-                attendMethod:response.course_detail.course_method,
-                examineMethod:response.course_detail.assessment_method,
-                publishTime:response.course_detail.publish_time,
-                campus:response.course_detail.campus,
-                college:response.course_detail.college,
-                evaluateNum:response.course_detail.all_people,
-                avgScore:avgScore,
-                scoreDistribution:response.course_detail.score_distribution,
-            }
-            await addHistory("course",this.course.id,this.course.name);
-            document.getElementById('web-title').innerText='课程 | '+this.course.name;
-            this.alert(getNormalSuccessAlert("获取课程信息成功"));
-        }else{
-            this.alert(getNormalErrorAlert(response.message));
-            openPage("router",{name:"ErrorPage",reason:"课程信息获取失败"});
-            return;
-        }
-        await this.getSelfComment();
         /**
          * restore scan state
          */
@@ -615,7 +654,7 @@ export default {
             let scanMsg=JSON.parse(selfDefinedSessionStorage.getItem('courseScanMsg|'+this.$route.params.id));
             this.setPostState(scanMsg.postState);
             this.lastPageNum=scanMsg.pageNum;
-            await this.getCourseCommentList();
+            await Promise.all([this.initCourse(),this.getSelfComment(),this.getCourseCommentList()]);
             document.getElementById('web-title').innerText='课程 | '+this.course.name;
             setTimeout(()=>{
                 document.scrollingElement.scrollTop=scanMsg.scrollTop;
@@ -624,7 +663,7 @@ export default {
                 }
             },10);
         }else{
-            await this.getCourseCommentList();
+            await Promise.all([this.initCourse(),this.getSelfComment(),this.getCourseCommentList()]);
         }
         //comment container scroll listener
         window.addEventListener('scroll',this.glideLoad);

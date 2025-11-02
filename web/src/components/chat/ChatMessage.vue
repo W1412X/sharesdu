@@ -84,7 +84,7 @@ export default {
         },
     },
     setup(){
-        var ifShowMore=ref(false);
+        let ifShowMore=ref(false);
         const themeColor=globalProperties.$themeColor;
         const setShowMoreState=(state)=>{
             ifShowMore.value=state;
@@ -99,7 +99,7 @@ export default {
         AvatarName,
     },
     data(){
-        var data=this.initData;
+        let data=this.initData;
         data.time=extractTime(data.time);
         return{
             data,

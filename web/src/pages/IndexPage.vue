@@ -66,7 +66,7 @@
 </template>
 <script>
 import { globalProperties } from '@/main';
-import { ref, computed } from 'vue';
+import { ref, computed, shallowRef } from 'vue';
 import ArticleItem from '@/components/article/ArticleItem.vue';
 import CourseItem from '@/components/course/CourseItem.vue';
 import PostItem from '@/components/post/PostItem.vue';
@@ -189,14 +189,14 @@ export default {
     },
     data() {
         const itemType = 'article';
+        const articleList=shallowRef({
+            time: [],
+            star: [],
+            view: [],
+            hot: [],
+        })
         return {
             ifMounted: false,
-            articleList: {
-                time: [],
-                star: [],
-                view: [],
-                hot: [],
-            },
             courseList: [],
             postList: [],
             articlePageNum: {
@@ -225,6 +225,7 @@ export default {
                 post: false,
             },
             lastPageNum: null,
+            articleList,
         }
     },
     methods: {

@@ -171,7 +171,7 @@ export default {
         ImgCard: defineAsyncComponent(() => import('@/components/common/ImgCard.vue')),
     },
     data() {
-        var data=this.initData;
+        let data=this.initData;
         const file=null;
         return{
             data,
@@ -293,8 +293,8 @@ export default {
         },
 
         deleteTag(text) {
-            var tmp=[];
-            var arr=this.data.tags;
+            let tmp=[];
+            let arr=this.data.tags;
             for (let i=0;i<arr.length;i++) {
                 if(arr[i]!=text){
                     tmp.push(arr[i]);

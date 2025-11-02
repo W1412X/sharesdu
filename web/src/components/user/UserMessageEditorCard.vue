@@ -142,7 +142,7 @@ export default {
       }),
     }
     //显示的邮箱验证码的卡片
-    var examineCardData;
+    let examineCardData;
     const ifAbleEditUserName = false
     const ifAbleEditPasswd = false
     const ifAbleEditEmail = false

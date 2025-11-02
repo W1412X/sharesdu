@@ -41,5 +41,5 @@ class ImageCacher {
     }
 }
 
-export var globalProfileCacher=new ImageCacher(3000);
-export var globalImageCacher=new ImageCacher(100);
+export let globalProfileCacher=new ImageCacher(3000);
+export let globalImageCacher=new ImageCacher(100);

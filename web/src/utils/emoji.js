@@ -37,7 +37,7 @@ export function addUsedEmoji(emoji){
     //here check if already in used 
     if(emojis["常用"].includes(emoji)){
         //move the emoji to the first
-        for (var i = 0; i < emojis["常用"].length; i++) {
+        for (let i = 0; i < emojis["常用"].length; i++) {
             if (emojis["常用"][i] == emoji) {
                 emojis["常用"].splice(i, 1);
                 break;

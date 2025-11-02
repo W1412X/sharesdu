@@ -1,7 +1,7 @@
 // src/main.js
 import { createApp } from 'vue';
 import App from './App.vue';
-import { clearTokenCookies } from './utils/cookie';
+import { clearCookie, clearTokenCookies, getCookie, setCookie } from './utils/cookie';
 import router from './router';
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
@@ -149,6 +149,49 @@ app.config.globalProperties.$imgDict={
     unreviewed:window.location.origin+"/resource/review_failed.png",
   }
 }
+
+/**
+ * check local storage method 
+ */
+try{
+  selfDefineLocalStorage.setItem("test","test");
+  if(selfDefineLocalStorage.getItem("test")!="test"){
+    window.alert("由于浏览器的设置，本页面无法使用本地存储，因此部分功能如自动登陆以及带宽优化无法使用");
+  }
+}catch(e){
+  window.alert("由于浏览器的设置，本页面无法使用本地存储，因此部分功能如自动登陆以及带宽优化无法使用");
+}finally{
+  selfDefineLocalStorage.removeItem("test");
+}
+/**
+ * check cookie
+ */
+try{
+  setCookie("test","test");
+  if(getCookie("test")!="test"){
+    window.alert("本页面禁用了Cookie，无法使用，请修改浏览器设置或退出网站");
+    window.history.go(-1)
+  }
+}catch(e){
+  window.alert("本页面禁用了Cookie，无法使用，请修改浏览器设置或退出网站");
+  window.history.go(-1)
+}finally{
+  clearCookie("test");
+}
+/**
+ * check self session storage
+ */
+try{
+  selfDefinedSessionStorage.setItem("test","test");
+  if(selfDefinedSessionStorage.getItem("test")!="test"){
+    window.alert("本页面禁用了会话存储，部分功能如页面恢复，浏览记录将无法使用");
+  }
+}catch(e){
+  window.alert("本页面禁用了会话存储，部分功能如页面恢复，浏览记录将无法使用");
+}finally{
+  selfDefinedSessionStorage.removeItem("test");
+}
+
 const deviceType=getDeviceType();
 /**
  * mobile/desktop  
@@ -157,9 +200,9 @@ app.config.globalProperties.$deviceType=deviceType;
 /**
  * Get the current theme color,default #9c0c13   
  */
-var tmp=selfDefineLocalStorage.getItem("themeColor");
-var themeColor="#9c0c13";
-var themeColorTransparent=adjustAlpha(themeColor);
+let tmp=selfDefineLocalStorage.getItem("themeColor");
+let themeColor="#9c0c13";
+let themeColorTransparent=adjustAlpha(themeColor);
 document.documentElement.style.setProperty('--theme-color', themeColor);
 document.documentElement.style.setProperty('--theme-color-transparent', themeColorTransparent);
 if(tmp!=null){

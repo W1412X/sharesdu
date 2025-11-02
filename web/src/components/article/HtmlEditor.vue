@@ -68,7 +68,7 @@ export default defineComponent({
                 editor.disable();
             }
         };
-        var imageDict={};
+        let imageDict={};
         const customUpload =async (file, insertFn) => {
             const image =await compressImage(file,1024*4);
             const tmpUrl=URL.createObjectURL(image);

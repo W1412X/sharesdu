@@ -51,7 +51,7 @@ export default {
         }
     },
     data() {
-        var data=copy(this.initData);
+        let data=copy(this.initData);
         const color=computed(()=>{
             if(this.data.state){
                 return "grey";

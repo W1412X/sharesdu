@@ -73,15 +73,21 @@
                             </div>
                             <div class="row-center-div">
                                 <v-select class="select-input" v-model="registerByEmailData.campus"
-                                    variant="solo-filled" density="compact" :items="campusList" label="校区"></v-select>
+                                    variant="solo-filled" density="compact" :items="campusList" label="校区" hide-details="true"></v-select>
                                 <v-autocomplete class="select-input" v-model="registerByEmailData.college"
-                                    variant="solo-filled" density="compact" :items="collegeList" label="学院"></v-autocomplete>
+                                    variant="solo-filled" density="compact" :items="collegeList" label="学院" hide-details="true"></v-autocomplete>
                                 <sensitive-text-field class="select-input" v-model="registerByEmailData.major"
-                                    :density="inputType" variant="solo-filled" label="专业"></sensitive-text-field>
+                                    :density="inputType" variant="solo-filled" label="专业" hide-details="true"></sensitive-text-field>
                             </div>
                             <sensitive-text-field v-model="registerByEmailData.email" class="input"
                                 :rules="[loginRules.email]" :density="inputType" variant="solo-filled"
-                                prepend-inner-icon="mdi-email" label="校园邮箱(@mail.sdu.edu.cn)"></sensitive-text-field>
+                                prepend-inner-icon="mdi-email" label="校园邮箱(以@mail.sdu.edu.cn结尾)"></sensitive-text-field>
+                            <div class="text-tiny agreement-text-container" style="width: 100%;display: flex;flex-direction: row;">
+                                <v-spacer></v-spacer>
+                                <span @click="toUrl('https://info.sdu.edu.cn/info/1007/1530.htm')" style="margin-right: 20px;">
+                                    <strong style="color: grey; text-decoration: underline;">什么是校园邮箱？</strong>
+                                </span>
+                            </div>
                             <div class="text-small agreement-text-container">
                                 注册即代表您已阅读并同意
                                 <span @click="toUrl('/#/document/to_know')">
@@ -264,7 +270,7 @@ export default {
         /**
          * card message card 
          */
-        var examineCardInfo = computed(() => {
+        let examineCardInfo = computed(() => {
             if (this.nowTab == 'login') {
                 return {
                     type: 'login',
@@ -295,10 +301,10 @@ export default {
                 }
             }
         })
-        var loginMethod = 'userName';// userName/email
-        var registerMethod = 'email';// email/invite
-        var registerByEmailStep = 0;
-        var registerByInviteStep = 0;
+        let loginMethod = 'userName';// userName/email
+        let registerMethod = 'email';// email/invite
+        let registerByEmailStep = 0;
+        let registerByInviteStep = 0;
         const loginRules = rules;
         return {
             loginByUsernameData,

@@ -11,7 +11,7 @@ import axiosInstance from "./axios";
  */
 export const getAccessToken=async (refreshToken)=>{
     try {
-        var data={
+        let data={
             refresh:refreshToken,
         }
         const response = await axiosInstance.post('/token/refresh',data);

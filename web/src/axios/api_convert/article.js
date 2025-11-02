@@ -4,7 +4,7 @@ import { addDictFromString, copy, getHeadString, setDictString } from "@/utils/o
  * create article
  */
 export function csCreateArticle(data) {
-    var head=setDictString('editor',data.editor);
+    let head=setDictString('editor',data.editor);
     const result={
         article_title:data.title,
         content:head+data.content,
@@ -29,7 +29,7 @@ export function scCreateArticle(data){
  * edit article
  */
 export function csEditArticle(data){
-    var head=setDictString('editor',data.editor);
+    let head=setDictString('editor',data.editor);
     const result={
         article_id:data.id,
         article_title:data.title,
@@ -45,8 +45,8 @@ export function csEditArticle(data){
  * get article
  */
 export function scGetArticle(data){
-    var article=data.article_detail;
-    var result=addDictFromString(getHeadString(article.article_content));
+    let article=data.article_detail;
+    let result=addDictFromString(getHeadString(article.article_content));
     result.id=article.article_id;
     result.title=article.article_title;
     result.content=copy(article.article_content);

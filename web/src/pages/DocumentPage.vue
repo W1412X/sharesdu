@@ -14,7 +14,7 @@ export default {
         ArticleDisplay,
     },
     data() {
-        var data={
+        let data={
             type:'md',
             content:"## Loading...",
         }
@@ -28,7 +28,7 @@ export default {
     async mounted() {
         this.$emit("set_loading",getLoadMsg("正在加载..."));
         const route = useRoute();
-        var doc='';
+        let doc='';
         if ('name' in route.params) {
             doc = route.params['name'];
         }

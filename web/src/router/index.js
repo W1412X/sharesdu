@@ -109,6 +109,12 @@ const originalRoutes = [
     }),
   },
   {
+    path: '/dev',
+    name: 'DevPage',
+    component: load('DevPage'),
+    meta: { requiresAuth: false },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/error/找不到此资源',
     meta: { requiresAuth: false },

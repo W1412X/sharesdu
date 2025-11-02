@@ -135,7 +135,7 @@ export default {
       loadState.value = state;
     }
     const ifShowNav = computed(() => {
-      if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage','DocumentPage', undefined, null].includes(page.value)) {
+      if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage','DocumentPage', 'DevPage',undefined, null].includes(page.value)) {
         return false;
       } else {
         return true;
@@ -281,25 +281,16 @@ export default {
       this.searchType = type;
     },
     search() {
-      let keyworkds = this.searchContent.split(' ');
-      if (this.searchContent.length == 0) {
-        this.alert(getNormalInfoAlert("内容不可为空"));
-        return;
-      }
-      if (keyworkds.length == 0) {
+      let dealedString=this.searchContent.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '');
+      if (dealedString.length == 0) {
         this.alert(getNormalInfoAlert("关键词无效，换一个试试吧 >_<"));
+        this.searchContent="";
         return;
       }
-      if (this.searchContent.length >= 25) {
+      if (dealedString.length >= 25) {
         this.alert(getNormalInfoAlert("搜索内容不得超过25字"));
+        this.searchContent="";
         return;
-      }
-      let s = "";
-      for (let i = 0; i < keyworkds.length; i++) {
-        s += keyworkds[i];
-        if (i != keyworkds.length - 1) {
-          s += ',';
-        }
       }
       let type = null;
       switch (this.searchType) {
@@ -325,7 +316,7 @@ export default {
         path: '/search',
         query: {
           type: type,
-          query: s
+          query: dealedString
         }
       });
     },

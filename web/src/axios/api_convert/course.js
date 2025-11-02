@@ -34,7 +34,7 @@ export function scCourseSelfComment(data){
 }
 
 export function scCourseCommentList(data){
-    var result={
+    let result={
         status:data.status,
         message:data.message,
         commentList:[],

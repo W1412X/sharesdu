@@ -151,16 +151,16 @@ import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 export default {
   name: 'SelfPage',
   setup() {
-    var drawer = ref(true);
-    var choose = ref('info');
+    let drawer = ref(true);
+    let choose = ref('info');
     const rail = ref(true);
     const deviceType = globalProperties.$deviceType;
     const themeColor = globalProperties.$themeColor;
     const navVisible = ref(false);
     const selfItemType = ref('article');
-    var ifShowBlockList = ref(false);
-    var ifShowColorSelectorCard = ref(false);
-    var ifShowDialog = computed(() => {
+    let ifShowBlockList = ref(false);
+    let ifShowColorSelectorCard = ref(false);
+    let ifShowDialog = computed(() => {
       return ifShowBlockList.value || ifShowColorSelectorCard.value;
     });
     const setBlockListState = ((state) => {
@@ -283,7 +283,7 @@ export default {
       /**
        * here to request
        */
-      var response = getNetworkErrorResponse();
+      let response = getNetworkErrorResponse();
       this.setLoading(getLoadMsg("正在处理", -1));
       response = await unblockUser(user.id);
       if (response.status == 200) {

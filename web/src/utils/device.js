@@ -6,7 +6,7 @@ export function getDeviceType() {
     /**
      * get the device type
      */
-    var deviceType="";
+    let deviceType="";
     if (window.innerWidth <= 1000) {
       deviceType = 'mobile';
     } else {

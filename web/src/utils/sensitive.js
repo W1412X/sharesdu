@@ -34,11 +34,11 @@ class Trie {
         }
     }
 }
-var trie = new Trie(wordList)
+let trie = new Trie(wordList)
 const root = trie.root
-var nodeNow = root
-var return_word = ''
-var count=0
+let nodeNow = root
+let return_word = ''
+let count=0
 function toLowerCase(str) {
     if(!str){
         return "";
@@ -75,7 +75,7 @@ export const detect =(text)=>{//
 }
 //返回一个布尔值，判断敏感词是否可扩
 function if_can_expand (node,text,ind){
-    var node_now=node;
+    let node_now=node;
     for(;ind<text.length;ind++){
         const char=text[ind];
         if(!node_now.children[char]){//文本的下一个字符不在树中，不可扩
@@ -96,10 +96,10 @@ export const replaceAll=(text)=> {
         return [];
     }
     text=toLowerCase(text)
-    var nodeNow = root
-    var return_word = ''
-    var count = 0;
-    var word_set=[];
+    let nodeNow = root
+    let return_word = ''
+    let count = 0;
+    let word_set=[];
     for (let ind = 0; ind < text.length; ind++) {
         const char = text[ind]
         if (!nodeNow.children[char]) {

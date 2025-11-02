@@ -404,6 +404,22 @@ export function extractTime(str) {
     }
 }
 /**
+ * 获取当前时间并格式化为 YYYY-MM-DD HH:mm:ss 字符串
+ * @returns {string} 格式化后的时间字符串
+ */
+export function getCurrentFormattedTime() {
+    const now = new Date();
+    
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需+1
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+/**
  * 
  * @param {String} hexColor 
  * @param {Float} alpha 
@@ -715,3 +731,22 @@ export function isElementAtBottom(element) {
 export function isScrollToBottom(element){
     return element.scrollHeight - element.scrollTop === element.clientHeight;
 }
+/**
+ * 防抖实现  
+ * @param {Function} func 
+ * @param {int} delay ms 
+ * @returns 
+ */
+export function debounce(func, delay) {
+    let timeout=null;
+    return function (...args) {
+      //清除上一次的延时器
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      //设置新的延时器
+      timeout = setTimeout(() => {
+        func.apply(this, args);  //执行传入的函数
+      }, delay);
+    };
+  }

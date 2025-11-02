@@ -7,13 +7,15 @@
   </span>
   </span>
   <div v-if="ifHtml"  style="width: 100%;max-width:100%;display: flex;overflow: auto;">
+    <v-btn variant="text" icon="mdi-full-screen" size="25"></v-btn>
     <div style="width: fit-content;height: fit-content;">
       <iframe
-      ref="iframe"
-      frameborder="0"
-      :style="{border: 'none',width: iframeWidth, height: iframeHeight}"
-      :src="tmpUrl"
-    ></iframe>
+        ref="iframe"
+        frameborder="0"
+        :style="{border: 'none',width: iframeWidth, height: iframeHeight}"
+        :srcdoc="data.content"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-modals"
+      ></iframe>
     </div>
   </div>
 </template>
@@ -140,7 +142,6 @@ export default {
     },
     setupIframeResize() {
       const iframe = this.$refs.iframe;
-
       if (!iframe) return;
 
       iframe.onload = () => {
@@ -148,11 +149,54 @@ export default {
           const height = iframe.contentWindow.document.body.scrollHeight;
           this.iframeHeight = height + 'px';
           this.iframeWidth=iframe.contentWindow.document.body.scrollWidth+'px';
-          console.log(this.iframeHeight);
         } catch (e) {
           console.error("无法访问 iframe 内容（可能是跨域）", e);
         }
       };
+    },
+    setupIframeCookieBlock() {
+      const iframe = this.$refs.iframe;
+      iframe.beforeMount = () => {
+        try {
+          const iframeDoc = iframe.contentDocument;
+          const iframeWin = iframe.contentWindow;
+
+          //检查是否同源
+          if (!iframeDoc || !iframeWin) {
+            return;
+          }
+
+          //注入脚本：重写 document.cookie 的 getter
+          const script = iframeDoc.createElement('script');
+          script.type = 'text/javascript';
+          script.textContent = `
+            (function() {
+              const originalDescriptor = Object.getOwnPropertyDescriptor(Document.prototype, 'cookie') ||
+                                        Object.getOwnPropertyDescriptor(HTMLDocument.prototype, 'cookie');
+              //overide
+              Object.defineProperty(document, 'cookie', {
+                get: function() {
+                  return ''; // 返回空值
+                },
+                set: function(val) {
+                  console.warn('[Cookie 拦截] 尝试设置 cookie:', val);
+                  // return true;
+                  if (originalDescriptor && originalDescriptor.set) {
+                    //不允许设置
+                    // originalDescriptor.set.call(document, val);
+                  }
+                  return true;
+                },
+                configurable: true,
+                enumerable: true
+              });
+            })();
+          `;
+          iframeDoc.head.appendChild(script);
+        } catch (error) {
+          console.error('注入 Cookie 拦截脚本失败:', error);
+        }
+      }
     }
   },
   beforeMount(){
@@ -162,7 +206,6 @@ export default {
         this.data.content=this.data.content.substring(16);
         this.ifHtml=true;
         this.tmpUrl=URL.createObjectURL(new Blob([this.data.content], { type: "text/html" }));
-        console.log(this.tmpUrl);
       }else{
         this.data.content=removeImageLinksInBrackets(this.data.content);
         this.processedContent=this.processContent(this.data.content);
@@ -174,6 +217,10 @@ export default {
   mounted(){
     if(this.ifHtml){
       this.setupIframeResize();
+      /**
+       * prevent cookie operation 
+       */
+      this.setupIframeCookieBlock();
     }
   },
   beforeUnmount(){

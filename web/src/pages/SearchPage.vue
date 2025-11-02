@@ -544,8 +544,8 @@ export default {
     },
     methods: {
         deleteTag(text) {
-            var tmp=[];
-            var arr=Array.from(this.filtArticleTags);
+            let tmp=[];
+            let arr=Array.from(this.filtArticleTags);
             for (let i=0;i<arr.length;i++) {
                 if(arr[i]!=text){
                     tmp.push(arr[i]);

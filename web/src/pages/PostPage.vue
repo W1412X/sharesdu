@@ -174,7 +174,7 @@ export default {
         /**
          * get user msg
          */
-        var userName = getCookie('userName');
+        let userName = getCookie('userName');
         if (userName == null) {
             userName = "游客";
         }
@@ -385,6 +385,36 @@ export default {
             if (isElementAtBottom(document.getElementById("comments-container"))) {
                 this.loadMoreReply();
             }
+        },
+        async initPost(){
+            this.loadState.post = false;
+            let response = await getPostDetailById(this.$route.params.id);
+            this.loadState.post = true;
+            if (response.status == 200) {
+                this.post.authorId = response.post_detail.poster_id;
+                this.post.authorName = response.post_detail.poster_name;
+                this.post.id = response.post_detail.post_id;
+                this.post.title = response.post_detail.post_title;
+                this.post.content=response.post_detail.post_content;
+                this.post.imgList = extractImageLinksInBrackets(this.post.content);
+                this.post.relativeLink = getLinkInPost(response.post_detail.post_content);
+                this.post.likeNum = response.post_detail.like_count;
+                this.post.replyNum = response.post_detail.reply_count;
+                this.post.viewNum = response.post_detail.view_count;
+                this.post.publishTime = response.post_detail.publish_time;
+                this.post.ifLike = response.post_detail.if_like;
+                await addHistory("post", this.post.id, this.post.title);
+                document.getElementById('web-title').innerText = '帖子 | ' + this.post.title;
+            } else {
+                this.alert(getNormalErrorAlert(response.message));
+                openPage("router",{
+                    name: "ErrorPage",
+                    params: {
+                        reason: response.message
+                    }
+                });
+                return;
+            }
         }
     },
     async mounted() {
@@ -401,35 +431,8 @@ export default {
             })
             return;
         }
-        this.loadState.post = false;
-        let response = await getPostDetailById(this.$route.params.id);
-        this.loadState.post = true;
-        if (response.status == 200) {
-            this.post.authorId = response.post_detail.poster_id;
-            this.post.authorName = response.post_detail.poster_name;
-            this.post.id = response.post_detail.post_id;
-            this.post.title = response.post_detail.post_title;
-            this.post.content=response.post_detail.post_content;
-            this.post.imgList = extractImageLinksInBrackets(this.post.content);
-            this.post.relativeLink = getLinkInPost(response.post_detail.post_content);
-            this.post.likeNum = response.post_detail.like_count;
-            this.post.replyNum = response.post_detail.reply_count;
-            this.post.viewNum = response.post_detail.view_count;
-            this.post.publishTime = response.post_detail.publish_time;
-            this.post.ifLike = response.post_detail.if_like;
-            await addHistory("post", this.post.id, this.post.title);
-            document.getElementById('web-title').innerText = '帖子 | ' + this.post.title;
-        } else {
-            this.alert(getNormalErrorAlert(response.message));
-            openPage("router",{
-                name: "ErrorPage",
-                params: {
-                    reason: response.message
-                }
-            });
-            return;
-        }
-        await this.loadMoreReply();
+        this.post.id=this.$route.params.id;
+        await Promise.all([this.initPost(),this.loadMoreReply()])
         /**
          * restore scan state
          */

@@ -29,7 +29,7 @@ export default {
         /**
          * used to the map the local url to the server url
          */
-        var imageDict={};
+        let imageDict={};
         return {
             data:null,
             imageDict,
