@@ -19,6 +19,7 @@
                 </div>
             </div>
         </div>
+        <NothingView v-if="items.length==0" :color="hexToRgba('#8a8a8a',0.5)" text="暂无热榜数据" icon="mdi-fire"></NothingView>
     </div>
 </template>
 <script>
@@ -26,6 +27,8 @@ import { globalProperties } from '@/main';
 import { reactive } from 'vue';
 import { createEventBus, getEventBus } from '@/utils/eventBus';
 import { getFireColor } from '../js/utils';
+import { hexToRgba } from '@/utils/other';
+import NothingView from '../../NothingView.vue';
 export default {
     props:{
         inputStyle:{
@@ -38,51 +41,6 @@ export default {
     setup() {
         const themeColor = globalProperties.$themeColor;
         let items = reactive([
-            {
-                rock:1,
-                hotScore:1920,
-                text:"测试使用热度1"
-            },
-            {
-                rock:2,
-                hotScore:960,
-                text:"测试使用热度2"
-            },
-            {
-                rock:3,
-                hotScore:480,
-                text:"测试使用热度3"
-            },
-            {
-                rock:4,
-                hotScore:240,
-                text:"测试使用热度1"
-            },
-            {
-                rock:5,
-                hotScore:120,
-                text:"测试使用热度2"
-            },
-            {
-                rock:6,
-                hotScore:80,
-                text:"测试使用热度3"
-            },
-            {
-                rock:7,
-                hotScore:40,
-                text:"测试使用热度1"
-            },
-            {
-                rock:8,
-                hotScore:20,
-                text:"测试使用热度2"
-            },
-            {
-                rock:9,
-                hotScore:0,
-                text:"测试使用热度3"
-            },
         ]);
         let eventBus=getEventBus("search-suggestion-show");
         return {
@@ -90,6 +48,9 @@ export default {
             items,
             eventBus
         }
+    },
+    components:{
+        NothingView,
     },
     data() {
         return {
@@ -101,6 +62,9 @@ export default {
         },
         getFireColor(hotScore){
             return getFireColor(hotScore);
+        },
+        hexToRgba(hex,opacity){
+            return hexToRgba(hex,opacity);
         },
         upReccommend(item){
             if(this.inputStyle.width=='100vw'){//searchMobilePage

@@ -34,7 +34,7 @@
                 </div>
             </v-card>
         </div>
-        <v-btn variant="tonal" class="width-100" :color="themeColor">前往创作中心</v-btn>
+        <v-btn variant="tonal" class="width-100" :color="themeColor" @click="to('self')">前往创作中心</v-btn>
     </v-card>
 </template>
 <script>
@@ -80,7 +80,10 @@ export default {
                     this.$emit('show','course');
                     break;
                 case 'service':
-                    openPage('url','#/service')
+                    openPage('url',{url:'#/service'})
+                    break;
+                case 'self':
+                    openPage('url',{url:'#/self'})
                     break;
             }
         },
