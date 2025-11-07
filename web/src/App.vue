@@ -2,7 +2,6 @@
 <template>
   <v-dialog v-if="ifShowDialog" v-model="ifShowDialog" class="full-screen dialog">
     <div class="dialog-card-container">
-      <history-card v-if="ifShowHistory" @close="closeDialog"></history-card>
       <post-editor v-if="ifShowPostEditor" @close="closeDialog" @alert="alert" @set_loading="setLoading"
         @add_post="addPost"></post-editor>
       <course-editor v-if="ifShowCourseEditor" @close="closeDialog" @alert="alert"
@@ -21,22 +20,17 @@
       <div v-if="alertMsg.title" class="title">{{ alertMsg.title }}</div>
       <p v-if="alertMsg.content" class="text-medium">{{ alertMsg.content }}</p>
     </v-snackbar>
-    <div v-if="this.ifShowNav" class="nav-bar" :style="{ 'background-color': navColor }">
+    <div v-if="this.ifShowNav && !this.ifMobile" class="nav-bar" :style="{ 'background-color': navColor }">
       <avatar-name id="avatar-name" v-if="ifAvatarState && ifShowAvatar"
         :init-data="{ id: userId, name: ifMobile ? '' : userName }" :color="'#ffffff'"></avatar-name>
       <v-spacer></v-spacer>
-      <v-select :color="navIconColor" :base-color="navIconColor" v-model="searchType" label="类型"
-        style="max-width: 100px;min-width: 50px;margin-right: 5px;" density="compact" variant="outlined"
-        :items="['文章', '帖子', '课程', '全部', '回复']" :item-color="themeColor">
-      </v-select>
-      <sensitive-text-field id="search-box-listen" :style="{ color: navIconColor }" :color="navIconColor" :base-color="navIconColor"
-        v-model="searchContent" style="min-width: 200px;" density="compact" :label="searchLabel"
-        variant="outlined">
-      </sensitive-text-field>
+      <search-input id="search-box-listen" v-model="searchContent" :borderColor="navIconColor"
+        :boxShadowColor="hexToRgba(navIconColor, 0.5)" :placeholderColor="navIconColor"
+        :inputStyle="{ 'border-radius': '20px', height: '35px', width: ifMobile ? '60vw' : '500px', 'padding-left': '15px' }"></search-input>
       <div class="search-btn-container">
-        <v-btn id="search-btn" @click="search" icon="mdi-magnify" variant="text" :color="navIconColor" size="40">
+        <v-btn id="search-btn" @click="search" icon="mdi-magnify" variant="text" :color="navIconColor" size="35">
           <div class="icon-container">
-            <v-icon type="mdi" icon="mdi-magnify" :color="navIconColor" size="28"></v-icon>
+            <v-icon type="mdi" icon="mdi-magnify" :color="navIconColor" size="25"></v-icon>
           </div>
         </v-btn>
       </div>
@@ -44,38 +38,68 @@
       <v-btn v-if="ifShowHomeBtn && !ifShowBottomNav" @click="toHomePage" icon="mdi-home" variant="text" size="40"
         :color="navIconColor">
         <div class="icon-container">
-          <v-icon type="mdi" icon="mdi-home" :color="navIconColor" size="28"></v-icon>
+          <v-icon type="mdi" icon="mdi-home" :color="navIconColor" size="25"></v-icon>
         </div>
         <v-tooltip activator="parent">返回首页</v-tooltip>
       </v-btn>
-      <v-btn v-if="ifShowTopEditBtns" @click="setPostEditorState(true)" size="40"
-        icon
-        variant="text">
-        <div class="icon-container">
-          <v-icon type="mdi" icon="mdi-comment-question-outline" :color="navIconColor" size="28"></v-icon>
-        </div>
-        <v-tooltip activator="parent">发表帖子</v-tooltip>
-      </v-btn>
-      <v-btn v-if="ifShowTopEditBtns" @click="editArticle" variant="text" icon size="40"
+      <v-btn v-if="ifShowService&&!ifMobile" @click="toServicePage" icon="mdi-home" variant="text" size="38"
         :color="navIconColor">
         <div class="icon-container">
-          <v-icon type="mdi" icon="mdi-file-edit-outline" :color="navIconColor" size="28"></v-icon>
+          <v-icon type="mdi" icon="mdi-web" :color="navIconColor" size="25"></v-icon>
         </div>
-        <v-tooltip activator="parent">发表文章</v-tooltip>
+        <v-tooltip activator="parent">微服务</v-tooltip>
       </v-btn>
-      <v-btn v-if="ifShowTopEditBtns" @click="setCourseEditorState(true)" variant="text" icon  size="40"
+      <v-menu v-if="ifShowTopEditBtns" open-on-hover>
+        <template v-slot:activator="{ props }">
+          <v-btn v-if="navIconColor == '#ffffff'" prepend-icon="mdi-plus" :color="navIconColor" variant="tonal" rounded
+            v-bind="props">
+            创作
+          </v-btn>
+          <v-btn v-else type="mdi" icon="mdi-plus" :color="navIconColor" variant="text" v-bind="props"
+            size="40"></v-btn>
+        </template>
+        <v-list>
+          <create-choice-card @close="closeDialog" @alert="alert" @set_loading="setLoading"
+            @show="showDialog"></create-choice-card>
+        </v-list>
+      </v-menu>
+    </div>
+    <div v-if="this.ifShowNav && this.ifMobile" class="nav-bar" :style="{ 'background-color': navColor }">
+      <avatar-name v-if="ifAvatarState && ifShowAvatar" id="avatar-name"
+        :init-data="{ id: userId, name: ifMobile ? '' : userName }" :color="'#ffffff'"></avatar-name>
+      <v-spacer></v-spacer>
+      <search-input v-show="mobileIfShowSearchInput" id="search-box-listen" v-model="searchContent"
+        :borderColor="navIconColor" :can-suggestion="ifCanSearchInputSuggestion"
+        :boxShadowColor="hexToRgba(navIconColor, 0.5)" :placeholderColor="navIconColor"
+        :inputStyle="{ 'font-color': navIconColor, 'border-radius': '20px', height: '35px', width: ifMobile ? '60vw' : '500px', 'padding-left': '15px' }"></search-input>
+      <div v-show="mobileIfShowSearchInput" class="search-btn-container">
+        <v-btn id="search-btn" @click="search" icon="mdi-magnify" variant="text" :color="navIconColor" size="35">
+          <div class="icon-container">
+            <v-icon type="mdi" icon="mdi-magnify" :color="navIconColor" size="25"></v-icon>
+          </div>
+        </v-btn>
+      </div>
+      <v-tabs v-if="!mobileIfShowSearchInput" v-model="itemType" fixed-tabs class="select-bar" hide-slider>
+        <v-tab :style="{ background: 'rgba(255,255,255,0)', 'color': this.itemType == 'index' ? 'white' : 'grey' }"
+          height="40px" value="index" text="推荐"></v-tab>
+        <v-tab :style="{ background: 'rgba(255,255,255,0)', 'color': this.itemType == 'service' ? 'white' : 'grey' }"
+          height="40px" value="service" text="微服务"></v-tab>
+      </v-tabs>
+      <v-spacer></v-spacer>
+      <v-btn v-if="ifShowHomeBtn && !ifShowBottomNav && mobileIfShowSearchInput" @click="toHomePage" icon="mdi-home" variant="text" size="38"
         :color="navIconColor">
         <div class="icon-container">
-          <v-icon type="mdi" icon="mdi-book-plus-outline" :color="navIconColor" size="28"></v-icon>
+          <v-icon type="mdi" icon="mdi-home" :color="navIconColor" size="25"></v-icon>
         </div>
-        <v-tooltip activator="parent">创建课程</v-tooltip>
+        <v-tooltip activator="parent">返回首页</v-tooltip>
       </v-btn>
-      <v-btn @click="setShowHistoryState(true)" variant="text" :color="navIconColor" icon size="40">
-        <div class="icon-container">
-          <v-icon type="mdi" icon="mdi-history" :color="navIconColor" size="28"></v-icon>
-        </div>
-        <v-tooltip activator="parent">浏览历史</v-tooltip>
-      </v-btn>
+      <div v-show="!mobileIfShowSearchInput" class="search-btn-container">
+        <v-btn id="search-btn" @click="search" icon="mdi-magnify" variant="text" :color="navIconColor" size="35">
+          <div class="icon-container">
+            <v-icon type="mdi" icon="mdi-magnify" :color="navIconColor" size="25"></v-icon>
+          </div>
+        </v-btn>
+      </div>
     </div>
     <div
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': routerMarginBottom }">
@@ -90,9 +114,10 @@
         <template v-slot:activator="{ props: activatorProps }">
           <v-btn v-bind="activatorProps" size="40" variant="text" :color="themeColor" icon="mdi-plus"></v-btn>
         </template>
-        <v-btn @click="openUrl('#/editor')" key="article" :color="themeColor" text="发表文章" prepend-icon="mdi-file-edit-outline"></v-btn>
+        <v-btn @click="openUrl('#/editor')" key="article" :color="themeColor" text="发表文章"
+          prepend-icon="mdi-file-edit-outline"></v-btn>
         <v-btn @click="setCourseEditorState(true)" key="course" text="创建课程" :color="themeColor"
-        prepend-icon="mdi-book-plus-outline"></v-btn>
+          prepend-icon="mdi-book-plus-outline"></v-btn>
         <v-btn @click="setPostEditorState(true)" key="post" text="发表帖子" :color="themeColor"
           prepend-icon="mdi-comment-question-outline"></v-btn>
       </v-speed-dial>
@@ -109,11 +134,12 @@ import { useRoute } from 'vue-router';
 import { globalProperties } from './main';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { getCookie } from './utils/cookie';
-import { getNormalInfoAlert, openPage } from './utils/other';
-import HistoryCard from '@/components/history/HistoryCard.vue';
-import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
+import { getNormalInfoAlert, hexToRgba, openPage } from './utils/other';
 import PostEditor from '@/components/post/PostEditor.vue';
 import CourseEditor from '@/components/course/CourseEditor.vue';
+import CreateChoiceCard from './components/common/CreateChoiceCard.vue';
+import SearchInput from './components/common/searchInput/SearchInput.vue';
+import { createEventBus, getEventBus } from './utils/eventBus';
 export default {
   setup() {
     /**
@@ -135,14 +161,14 @@ export default {
       loadState.value = state;
     }
     const ifShowNav = computed(() => {
-      if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage','DocumentPage', 'DevPage',undefined, null].includes(page.value)) {
+      if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage', 'DocumentPage', 'DevPage', undefined, null].includes(page.value)) {
         return false;
       } else {
         return true;
       }
     })
     const navColor = computed(() => {
-      if (page.value == "SelfPage" || page.value=='ManagePage') {
+      if (page.value == "SelfPage" || page.value == 'ManagePage') {
         return '#ffffff';
       } else {
         return themeColor;
@@ -150,27 +176,30 @@ export default {
     })
     const routerMarginTop = computed(() => {
       if (ifShowNav.value) {
-        return '55px';
+        return '41px';
       } else {
         return '0px';
       }
     })
     const navIconColor = computed(() => {
-      if (page.value == "SelfPage" || page.value=='ManagePage') {
+      if (page.value == "SelfPage" || page.value == 'ManagePage') {
         return themeColor;
       } else {
         return "#ffffff";
       }
     });
     const ifShowHomeBtn = computed(() => {
-      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "ManagePage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || page.value == "SearchPage";
+      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "ManagePage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || page.value == "SearchPage" || page.value=="ServicePage";
     })
     const ifShowAvatar = computed(() => {
-      if (page.value == "SelfPage" || page.value=='ManagePage') {
+      if (page.value == "SelfPage" || page.value == 'ManagePage') {
         return false;
       } else {
         return true;
       }
+    })
+    const ifCanSearchInputSuggestion = computed(() => {
+      return !['SearchMobilePage'].includes(page.value);
     })
     const ifAvatarState = ref(true);
     const ifMobile = computed(() => {
@@ -183,8 +212,8 @@ export default {
     watch(route, (newRoute, oldRoute) => {
       page.value = newRoute.name;
       //adapt for debug page
-      if(page.value.endsWith("Debug")){
-        page.value=page.value.substring(0,page.value.indexOf("Debug"))
+      if (page.value.endsWith("Debug")) {
+        page.value = page.value.substring(0, page.value.indexOf("Debug"))
       }
       userId.value = getCookie("userId");
       userName.value = getCookie("userName");
@@ -217,6 +246,18 @@ export default {
     const ifShowTopEditBtns = computed(() => {
       return deviceType.value === 'desktop' && ['IndexPage', 'SelfPage'].includes(page.value);
     })
+    const mobileIfShowSearchInput = computed(() => {
+      if (['IndexPage','ServicePage'].includes(page.value)) {
+        return false;
+      }
+      return true;
+    });
+    const itemType = ref("index");
+    const itemTypeList = ['index', 'service'];
+    const ifShowService=computed(()=>{
+      return ['IndexPage'].includes(page.value);
+    });
+    const searchInputEventBus=getEventBus("global-search-input")?getEventBus("global-search-input"):createEventBus("global-search-input");
     return {
       ifShowNav,
       navColor,
@@ -240,15 +281,38 @@ export default {
       ifShowHomeBtn,
       ifShowTopEditBtns,
       ifMobile,
+      mobileIfShowSearchInput,
+      itemType,
+      itemTypeList,
+      ifCanSearchInputSuggestion,
+      ifShowService,
+      searchInputEventBus,
     }
   },
   components: {
     LoadingView,
     AvatarName,
-    HistoryCard,
-    SensitiveTextField,
     PostEditor,
+    CreateChoiceCard,
     CourseEditor,
+    SearchInput,
+  },
+  watch:{
+    itemType:{
+      handler(newVal,oldVal){
+        if(newVal==oldVal){
+          return;
+        }
+        switch(newVal){
+          case 'service':
+            this.toServicePage();
+            break;
+          case 'index':
+            this.toHomePage();
+            break;
+        }
+      }
+    }
   },
   data() {
     return {
@@ -263,8 +327,8 @@ export default {
         text: '加载中...',
         progress: -1,
       },
-      searchLabel:computed(()=>{ 
-        return "搜索"+this.searchType;
+      searchLabel: computed(() => {
+        return "搜索" + this.searchType;
       }),
       searchContent: "",
       searchType: "全部",
@@ -280,16 +344,37 @@ export default {
     handleSearchTypeChanged(type) {
       this.searchType = type;
     },
+    hexToRgba(hex, opacity) {
+      return hexToRgba(hex, opacity);
+    },
+    showDialog(type) {
+      switch (type) {
+        case 'article':
+          openPage("url", "#/edit");
+          break;
+        case 'course':
+          this.setCourseEditorState(true);
+          break;
+        case 'post':
+          this.setPostEditorState(true);
+          break;
+        default:
+      }
+    },
     search() {
-      let dealedString=this.searchContent.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '');
+      if (this.ifMobile && !this.mobileIfShowSearchInput) {
+        openPage("url", { url: "#/search_mobile" });
+        return;
+      }
+      let dealedString = this.searchContent.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '');
       if (dealedString.length == 0) {
         this.alert(getNormalInfoAlert("关键词无效，换一个试试吧 >_<"));
-        this.searchContent="";
+        this.searchContent = "";
         return;
       }
       if (dealedString.length >= 25) {
         this.alert(getNormalInfoAlert("搜索内容不得超过25字"));
-        this.searchContent="";
+        this.searchContent = "";
         return;
       }
       let type = null;
@@ -312,7 +397,7 @@ export default {
         default:
           type = 'all';
       }
-      openPage("router",{
+      openPage("router", {
         path: '/search',
         query: {
           type: type,
@@ -321,7 +406,7 @@ export default {
       });
     },
     toHomePage() {
-      openPage("router",{
+      openPage("router", {
         name: 'IndexPage',
       })
     },
@@ -331,12 +416,15 @@ export default {
       this.setCourseEditorState(false);
     },
     editArticle() {
-      openPage("router",{
+      openPage("router", {
         name: 'EditorPage',
       })
     },
     openUrl(url) {
-     openPage("url",{url:url});
+      openPage("url", { url: url });
+    },
+    toServicePage(){
+      openPage("url",{url:"#/service"});
     }
   },
   created() {
@@ -354,6 +442,9 @@ export default {
     } catch (e) {
       //eslint-disable-next-line
     }
+    this.searchInputEventBus.on("fill-search-input",(value)=>{
+      this.searchContent=value;
+    })
 
   }
 };
@@ -371,12 +462,14 @@ export default {
   display: flex;
   max-height: 500px;
 }
-.icon-container{
+
+.icon-container {
   display: flex;
   flex-direction: column;
   height: 100%;
   align-items: center;
 }
+
 /** desktop */
 @media screen and (min-width: 1000px) {
   .nav-bar {
@@ -387,7 +480,7 @@ export default {
     display: flex;
     flex-direction: row;
     padding: 5px;
-    max-height: 55px;
+    max-height: 45px;
     background-color: var(--theme-color);
   }
 
@@ -409,7 +502,7 @@ export default {
     display: flex;
     flex-direction: row;
     padding: 5px;
-    max-height: 55px;
+    max-height: 45px;
     background-color: var(--theme-color);
   }
 

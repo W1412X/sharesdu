@@ -123,7 +123,7 @@ export async function dealAxiosError(error) {
                                     clearTokenCookies();
                                     window.alert("自动登录失败，跳转至登陆页");
                                     setTimeout(() => {
-                                        selfDefineLocalStorage.setItem('lastHref',window.location.href);
+                                        selfDefineLocalStorage.setItem('lastHref', window.location.href);
                                         window.open(`/#/login?name=${getCookie('userName')}&passwd=${getCookie('passwd')}`, "_self");
                                         location.reload();
                                     }, 500);
@@ -176,7 +176,7 @@ export async function dealAxiosError(error) {
                             window.alert("自动登录失败，跳转至登陆页");
                             clearTokenCookies();
                             setTimeout(() => {
-                                selfDefineLocalStorage.setItem('lastHref',window.location.href);
+                                selfDefineLocalStorage.setItem('lastHref', window.location.href);
                                 window.open(`/#/login?name=${getCookie('userName')}&passwd=${getCookie('passwd')}`, "_self");
                                 location.reload();
                             }, 500);
@@ -232,9 +232,9 @@ function handleLogout() {
     clearTokenCookies();
     sessionStorage.clear();
     window.alert("令牌已过期，请重新登录");
-    selfDefineLocalStorage.setItem("lastHref",window.location.href);
+    selfDefineLocalStorage.setItem("lastHref", window.location.href);
     setTimeout(() => {
-        openPage("url",{url:"#/login"},"_self");
+        openPage("url", { url: "#/login" }, "_self");
         location.reload();
     }, 1000);
 }
@@ -409,14 +409,14 @@ export function extractTime(str) {
  */
 export function getCurrentFormattedTime() {
     const now = new Date();
-    
+
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需+1
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-    
+
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 /**
@@ -481,63 +481,63 @@ export function hexToRgba(hex, opacity) {
  */
 export function isDebugHashPath(url) {
     if (url.startsWith('#')) {
-      return url.startsWith('#/debug/');
+        return url.startsWith('#/debug/');
     }
     try {
-      const hashStartIndex = url.indexOf('#');
-      if (hashStartIndex === -1) return false;
-  
-      const hash = url.slice(hashStartIndex);
-      return hash.startsWith('#/debug/');
+        const hashStartIndex = url.indexOf('#');
+        if (hashStartIndex === -1) return false;
+
+        const hash = url.slice(hashStartIndex);
+        return hash.startsWith('#/debug/');
     } catch (e) {
-      return false;
+        return false;
     }
-  }
+}
 /**
  * 给一个 URL 或 hash 添加 /debug/ 前缀到 hash 路径中
  * @param {String} urlOrHash - 完整 URL 或 hash 片段
  * @returns {String} 新的 URL 或 hash
  */
 export function addDebugToPath(urlOrHash) {
-    if(urlOrHash.startsWith('#')&&urlOrHash.length==1){
-        urlOrHash='#/'
+    if (urlOrHash.startsWith('#') && urlOrHash.length == 1) {
+        urlOrHash = '#/'
     }
     if (urlOrHash.startsWith('#/')) {
-        let newHash='#/debug/'+urlOrHash.substring(2);
+        let newHash = '#/debug/' + urlOrHash.substring(2);
         return newHash;
-    }else{
-        let front=urlOrHash.substring(0,urlOrHash.indexOf('#'));
-        let back=urlOrHash.substring(urlOrHash.indexOf('#')+2);
-        return front+'#/debug/'+back;
+    } else {
+        let front = urlOrHash.substring(0, urlOrHash.indexOf('#'));
+        let back = urlOrHash.substring(urlOrHash.indexOf('#') + 2);
+        return front + '#/debug/' + back;
     }
-  }
+}
 /**
  * 
  * @param {string} type url/router 
  * @param {JSON} data if url -> {url:string} else {router obj}
  */
-export function openPage(type,data,newTab=null) {
-    let device=getDeviceTypeByAgent();
-    let target=device=='desktop'?'_blank':'_self';
-    if(newTab!=null){
-        target=newTab;
+export function openPage(type, data, newTab = null) {
+    let device = getDeviceTypeByAgent();
+    let target = device == 'desktop' ? '_blank' : '_self';
+    if (newTab != null) {
+        target = newTab;
     }
-    if(type==='url'){
+    if (type === 'url') {
         //window.open(url, "_self");
-        if(isDebugHashPath(window.location.href)){
-            data.url=addDebugToPath(data.url);
+        if (isDebugHashPath(window.location.href)) {
+            data.url = addDebugToPath(data.url);
         }
-        if(device==="mobile"){
-            window.open(data.url,target);
-        }else{
-            window.open(data.url,target);
+        if (device === "mobile") {
+            window.open(data.url, target);
+        } else {
+            window.open(data.url, target);
         }
-    }else if(type==='router'){
-        if(isDebugHashPath(window.location.href)){
-            if(data.name.endsWith("Debug")){
+    } else if (type === 'router') {
+        if (isDebugHashPath(window.location.href)) {
+            if (data.name.endsWith("Debug")) {
                 //eslint-disable-next-line
-            }else{
-                data.name=data.name+"Debug";
+            } else {
+                data.name = data.name + "Debug";
             }
         }
         router.push(data);
@@ -548,18 +548,18 @@ export function extractImageLinksInBrackets(inputString) {
     const regex = /\[(https?:\/\/[^\s\]]+\.(jpg|jpeg|png|gif|webp|bmp)(\?[^\s\]]*)?|data:image\/[a-z+]+;base64,[^"\'>\]]+)\]/gi;
     let result = [];
     let match;
-  
+
     while ((match = regex.exec(inputString)) !== null) {
-      result.push(match[1]);
+        result.push(match[1]);
     }
-  
+
     return result;
-  }
-  
-  export function removeImageLinksInBrackets(inputString) {
+}
+
+export function removeImageLinksInBrackets(inputString) {
     const regex = /\[(https?:\/\/[^\s\]]+\.(jpg|jpeg|png|gif|webp|bmp)(\?[^\s\]]*)?|data:image\/[a-z+]+;base64,[^"\'>\]]+)\]/gi;
     return inputString.replace(regex, '');
-  }
+}
 export function setLogin(userName, user_id, email, refresh, profile, ifMaster = false, ifSuperMaster = false, passwd = null) {
     setCookie('userName', userName, 7 * 24);
     setCookie('userId', user_id, 7 * 24);
@@ -692,7 +692,7 @@ export function extractDomain(urlString) {
  */
 export function isExactlySameOrigin(url) {
     try {
-        if(extractDomain(url)==extractDomain(window.location.href)){
+        if (extractDomain(url) == extractDomain(window.location.href)) {
             return true;
         }
         return false;
@@ -709,17 +709,17 @@ export function isExactlySameOrigin(url) {
  */
 export function isElementAtBottom(element) {
     if (!element) {
-      console.error('Element not found');
-      return false;
+        console.error('Element not found');
+        return false;
     }
     let rect = element.getBoundingClientRect();
     let windowHeight = window.innerHeight;
-      
+
     // Check if the bottom of the target element is within the viewport
     if (rect.bottom <= windowHeight && rect.bottom >= 0) {
         return true;
     } else {
-      return false;
+        return false;
     }
 }
 
@@ -728,7 +728,7 @@ export function isElementAtBottom(element) {
  * @param {Object} element 
  * @returns 
  */
-export function isScrollToBottom(element){
+export function isScrollToBottom(element) {
     return element.scrollHeight - element.scrollTop === element.clientHeight;
 }
 /**
@@ -738,15 +738,29 @@ export function isScrollToBottom(element){
  * @returns 
  */
 export function debounce(func, delay) {
-    let timeout=null;
+    let timeout = null;
     return function (...args) {
-      //清除上一次的延时器
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-      //设置新的延时器
-      timeout = setTimeout(() => {
-        func.apply(this, args);  //执行传入的函数
-      }, delay);
+        //清除上一次的延时器
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        //设置新的延时器
+        timeout = setTimeout(() => {
+            func.apply(this, args);  //执行传入的函数
+        }, delay);
     };
-  }
+}
+/**
+ * 
+ * @param {*} event 
+ * @param {*} element 
+ * @returns 
+ */
+export function isClickInsideElement(event, element) {
+    const rect = element.getBoundingClientRect();
+    const x = event.clientX;
+    const y = event.clientY;
+    console.log(x,y)
+    console.log(rect)
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}

@@ -13,6 +13,11 @@ const originalRoutes = [
     redirect: '/welcome',
   },
   {
+    path:"/test",
+    name:'TestPage',
+    component:load('TestPage')
+  },
+  {
     path: '/welcome',
     name: 'WelcomePage',
     component: load('WelcomePage'),
@@ -20,7 +25,7 @@ const originalRoutes = [
   {
     path: '/index',
     name: 'IndexPage',
-    component: load('IndexPage'),
+    component: load('index/IndexPage'),
     meta: { requiresAuth: true },
   },
   {
@@ -100,7 +105,7 @@ const originalRoutes = [
   {
     path: '/search',
     name: 'SearchPage',
-    component: load('SearchPage'),
+    component: load('search/SearchPage'),
     meta: { requiresAuth: true },
     props: route => ({
       type: route.query.type || 'all',
@@ -109,9 +114,21 @@ const originalRoutes = [
     }),
   },
   {
+    path:'/search_mobile',
+    name:'SearchMobilePage',
+    component:load('search/SearchMobilePage'),
+    meta:{requiresAuth:true}
+  },
+  {
     path: '/dev',
     name: 'DevPage',
     component: load('DevPage'),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/service',
+    name: 'ServicePage',
+    component: load('ServicePage'),
     meta: { requiresAuth: false },
   },
   {

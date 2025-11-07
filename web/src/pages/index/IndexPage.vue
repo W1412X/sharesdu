@@ -4,7 +4,7 @@
         </div>
     </v-dialog>
     <div class="full-screen">
-        <div class="row-center">
+        <div v-if="!ifMobile" class="row-center">
             <v-tabs v-model="itemType" fixed-tabs class="select-bar">
                 <v-tab
                     :style="{ background: 'rgba(255,255,255,1)', 'color': this.itemType == 'article' ? '#000000' : '#8a8a8a' }"
@@ -17,10 +17,20 @@
                     height="40px" value="course" text="课程"></v-tab>
             </v-tabs>
         </div>
+        <div v-else class="select-bar">
+            <div class="row-div-bottom">
+                    <v-btn variant="text" :color="this.itemType=='article'?themeColor:'#8a8a8a'" text="文章" class="mobile-select-button text-small" @click="()=>{this.itemType='article'}"  ></v-btn>
+                    <v-btn variant="text" :color="this.itemType=='post'?themeColor:'#8a8a8a'" text="帖子" class="mobile-select-button text-small" @click="()=>{this.itemType='post'}"></v-btn>
+                    <v-btn variant="text" :color="this.itemType=='course'?themeColor:'#8a8a8a'" text="课程" class="mobile-select-button text-small" @click="()=>{this.itemType='course'}"></v-btn>
+            </div>
+        </div>
         <div class="row-center">
+            <v-spacer></v-spacer>
+            <div></div>
+            <v-spacer></v-spacer>
             <v-pull-to-refresh id="item-container" :pull-down-threshold="64" @load="refresh" style="margin-top: 40px;">
                 <div v-if="itemType == 'article'" class="item-container">
-                    <div class="sort-method-bar">
+                    <div v-if="!ifMobile" class="sort-method-bar">
                         <v-spacer />
                         <v-btn variant="tonal" class="text-small sort-btn" @click="articleSortMethod = 'time'"
                             type="mdi" :color="articleSortMethod == 'time' ? themeColor : 'grey'"
@@ -61,6 +71,9 @@
                         :loading="loading.course" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
                 </div>
             </v-pull-to-refresh>
+            <v-spacer></v-spacer>
+            <service-list></service-list>
+            <v-spacer></v-spacer>
         </div>
     </div>
 </template>
@@ -77,6 +90,7 @@ import { getCourseList } from '@/axios/course';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
+import { getDeviceType } from '@/utils/device';
 export default {
     name: 'IndexPage',
     components: {
@@ -89,6 +103,9 @@ export default {
         /**
          * loading message
          */
+        const ifMobile=computed(()=>{
+            return getDeviceType()=='mobile';
+        });
         const loadingMsg = ref({});
         loadingMsg.value = {
             state: false,
@@ -121,6 +138,7 @@ export default {
             userName,
             userProfileUrl,
             themeColor,
+            ifMobile,
         }
     },
     watch: {
@@ -509,6 +527,13 @@ export default {
     margin-left: 10px;
     max-height: 25px;
 }
+.row-div-bottom{
+    display: flex;
+    flex-direction: row;
+    align-items:end;
+    width: fit-content;
+    height: 100%;
+}
 
 /** desktop */
 @media screen and (min-width: 1000px) {
@@ -527,17 +552,6 @@ export default {
         padding: 5px;
     }
 
-    .top-bar {
-        z-index: 1000;
-        position: fixed;
-        width: 100%;
-        height: fit-content;
-        display: flex;
-        flex-direction: row;
-        padding: 5px;
-        max-height: 55px;
-        background-color: var(--theme-color);
-    }
 
     .search-btn-container {
         width: fit-content;
@@ -553,7 +567,7 @@ export default {
     }
 
     .select-bar {
-        z-index: 1000;
+        z-index: 2;
         position: fixed;
         width: 750px;
         height: 40px;
@@ -592,18 +606,6 @@ export default {
         padding: 5px;
     }
 
-    .top-bar {
-        z-index: 1000;
-        position: fixed;
-        width: 100vw;
-        height: fit-content;
-        display: flex;
-        flex-direction: row;
-        padding: 5px;
-        max-height: 55px;
-        background-color: var(--theme-color);
-    }
-
     .search-btn-container {
         width: fit-content;
         height: 100%;
@@ -618,7 +620,7 @@ export default {
     }
 
     .select-bar {
-        z-index: 1000;
+        z-index: 2;
         width: 100vw;
         position: fixed;
         height: 40px;
@@ -636,6 +638,12 @@ export default {
         display: flex;
         flex-direction: column;
         background-color: white;
+    }
+    .mobile-select-button{
+        height: 28px;
+        width: 40px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 }
 </style>

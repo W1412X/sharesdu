@@ -3,7 +3,7 @@
         <div id="search-part-container" class="column-div">
             <div class="control-bar">
                 <v-select v-model="searchType" label="搜索类型" density="compact" variant="outlined"
-                    style="max-width: 100px;min-width: 100px;" :items="['全部', '文章', '帖子', '课程', '回复']"
+                    style="max-width: 100px;min-width: 100px;" :items="['全部', '文章', '帖子', '微服务','课程', '回复']"
                     :hide-details="true"></v-select>
                 <v-spacer></v-spacer>
                 <div id="type-container" class="type-bar">
@@ -83,6 +83,13 @@
                     条结果
                 </div>
             </div>
+            <div v-if="this.searchList[searchType][sortType].length==0&&!this.loading.item">
+                <v-empty-state color="grey" text-color=""
+                    icon="mdi-magnify"
+                >
+                    <span style="color: grey;">{{ this.unFoundText }}</span>
+                </v-empty-state>
+            </div>
             <div v-if="sortType != null" class="item-container">
                 <search-item v-for="item in this.searchList[searchType][sortType]" :key="item.id" :init-data="item"
                     :need-icon="searchType == '全部'" :query="query"></search-item>
@@ -115,6 +122,7 @@ import { computed } from 'vue';
 import { getCookie } from '@/utils/cookie';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
+import { addToSearchHistory } from '@/components/common/searchInput/js/utils';
 export default {
     props: {
         type: {
@@ -296,6 +304,9 @@ export default {
             sortTypeLabelNow:computed(()=>{
                 return this.sortTypeLabelDict[this.sortType];
             }),
+            unFoundText:computed(()=>{
+                return "未找到有关 \""+this.query[0]+"\" 的内容"
+            }),
             searchList: {
                 "文章": {
                     "publish_time": [],
@@ -320,6 +331,9 @@ export default {
                     "-stars": []
                 },
                 "全部": {
+                    null:[]
+                },
+                "微服务":{
                     null:[]
                 },
                 "回复": {
@@ -352,6 +366,9 @@ export default {
                 "全部": {
                     null:1
                 },
+                "微服务":{
+                    null:1,
+                },
                 "回复": {
                     null:1
                 }
@@ -382,6 +399,9 @@ export default {
                 "全部": {
                     null:false
                 },
+                "微服务":{
+                    null:false,
+                },
                 "回复": {
                     null:false
                 }
@@ -408,6 +428,9 @@ export default {
                     "-publish_time": 0,
                     "stars": 0,
                     "-stars": 0
+                },
+                "微服务":{
+                    null:0,
                 },
                 "全部": {
                     null:0
@@ -494,6 +517,11 @@ export default {
                 '回复': [
                     {
                         value: null,
+                    }
+                ],
+                "微服务":[
+                    {
+                        value:null,
                     }
                 ],
                 '全部': [
@@ -909,6 +937,10 @@ export default {
         this.ifMounted=true;
         //add scroll listener
         window.addEventListener("scroll",this.glideLoad);
+
+        //add search histroy
+        addToSearchHistory(this.query[0]);
+
     },
     unmounted(){
         window.removeEventListener("scroll",this.glideLoad);
