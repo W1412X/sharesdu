@@ -42,7 +42,6 @@ export default {
 <style scoped>
 .full-row{
     max-height: 20px;
-    width: 100%;
     display: flex;
     justify-content: center;
     flex-direction: row;
