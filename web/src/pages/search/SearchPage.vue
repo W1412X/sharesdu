@@ -83,13 +83,7 @@
                     条结果
                 </div>
             </div>
-            <div v-if="this.searchList[searchType][sortType].length==0&&!this.loading.item">
-                <v-empty-state color="grey" text-color=""
-                    icon="mdi-magnify"
-                >
-                    <span style="color: grey;">{{ this.unFoundText }}</span>
-                </v-empty-state>
-            </div>
+            <nothing-view v-if="this.searchList[searchType][sortType].length==0&&!this.loading.item" :color="hexToRgba('#8a8a8a',0.5)" :text="unFoundText" icon="mdi-magnify"></nothing-view>
             <div v-if="sortType != null" class="item-container">
                 <search-item v-for="item in this.searchList[searchType][sortType]" :key="item.id" :init-data="item"
                     :need-icon="searchType == '全部'" :query="query"></search-item>
@@ -123,6 +117,7 @@ import { getCookie } from '@/utils/cookie';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 import { addToSearchHistory } from '@/components/common/searchInput/js/utils';
+import NothingView from '@/components/common/NothingView.vue';
 export default {
     props: {
         type: {
