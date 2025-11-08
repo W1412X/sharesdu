@@ -111,7 +111,7 @@ import ChatMessage from '@/components/chat/ChatMessage.vue';
 import { getCookie } from '@/utils/cookie';
 import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, extractTime, getNormalInfoAlert, copy, openPage } from '@/utils/other';
 import { globalProperties } from '@/main';
-import { getChatHistory, getChatUsers, markMessageAsRead, sendPrivateMessage } from '@/axios/chat';
+import { getChatHistory, getChatUsers, markMessageAsRead, sendPrivateMessage } from '@/api/modules/chat';
 import { ref } from 'vue';
 import AvatarName from '@/components/common/AvatarName.vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
@@ -452,7 +452,7 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow-y: scroll;
+    overflow-y: auto;
     width: 350px;
     border-right: 0.5px solid #ccc;
 }
@@ -508,7 +508,7 @@ export default {
 
     .message-container {
         width: 100%;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
         display: flex;
         flex-direction: column;
@@ -569,7 +569,7 @@ export default {
         display: flex;
         flex: 1;
         flex-direction: column;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
     }
 

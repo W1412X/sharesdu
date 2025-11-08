@@ -19,7 +19,7 @@
     </v-card>
 </template>
 <script>
-import { markAsReadNotification } from '@/axios/notification';
+import { markAsReadNotification } from '@/api/modules/notification';
 import { globalProperties } from '@/main';
 import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
 import { computed } from 'vue';

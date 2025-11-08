@@ -54,9 +54,9 @@
     </div>
 </template>
 <script>
-import { createArticle, editArticle, getArticleDetail } from '@/axios/article';
-import { uploadArticleImage } from '@/axios/image';
-import { uploadResource } from '@/axios/resource';
+import { createArticle, editArticle, getArticleDetail } from '@/api/modules/article';
+import { uploadArticleImage } from '@/api/modules/image';
+import { uploadResource } from '@/api/modules/resource';
 import EditorBar from '@/components/article/EditorBar.vue';
 import HtmlEditor from '@/components/article/HtmlEditor.vue';
 import MdEditor from '@/components/article/MdEditor.vue';
@@ -407,7 +407,7 @@ export default {
         width:1000px;
         height:100%;
         border: grey 1px solid;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .title-input{
         margin-top: 10px;
@@ -434,7 +434,7 @@ export default {
         width:100vw;
         display: flex;
         flex-direction: column;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .edit-finish-card{
         display: flex;

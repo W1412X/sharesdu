@@ -37,7 +37,7 @@
 </template>
 <script>
 import { extractTime, getNormalInfoAlert } from '@/utils/other';
-import { getUserContent, getUserPreview } from '@/axios/account';
+import { getUserContent, getUserPreview } from '@/api/modules/account';
 import StarItem from '@/components/star/StarItem.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 

@@ -124,8 +124,8 @@
 import { globalProperties } from '@/main';
 import { computed, defineAsyncComponent, ref } from 'vue';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalWarnAlert } from '@/utils/other';
-import { uploadArticleImage } from '@/axios/image';
-import { compressImage } from '@/utils/image';
+import { uploadArticleImage } from '@/api/modules/image';
+import { compressImage } from '@/utils/imageUtils';
 export default {
     name: 'EditorBar',
     props: {
@@ -186,9 +186,20 @@ export default {
             input.accept = 'image/jpeg, image/png, image/gif';
             input.onchange = async (event) => {
                 let image = event.target.files[0];
-                image=await compressImage(image, 1024 * 4);
-                this.data.coverLink = URL.createObjectURL(image);
-                this.tmpCoverImage=image;
+                if (!image) return;
+                try {
+                    image = await compressImage(image, 1024 * 4);
+                    this.data.coverLink = URL.createObjectURL(image);
+                    this.tmpCoverImage = image;
+                } catch (error) {
+                    console.error('Failed to compress image:', error);
+                    this.$emit('alert', { 
+                        state: true, 
+                        color: 'error', 
+                        title: '图片处理失败', 
+                        content: error.message || '图片压缩失败，请重试' 
+                    });
+                }
             };
             input.click();
         },

@@ -3,8 +3,26 @@ import { startDebug } from '@/utils/debug';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { createRouter, createWebHashHistory } from 'vue-router';
-
-const load = (path) => () => import(`@/pages/${path}.vue`);
+import {
+  WelcomePage,
+  SearchPage,
+  CoursePage,
+  ArticlePage,
+  PostPage,
+  IndexPage,
+  LoginPage,
+  ChatPage,
+  SelfPage,
+  EditorPage,
+  ManagePage,
+  AuthorPage,
+  DocumentPage,
+  ErrorPage,
+  ServicePage,
+  DevPage,
+  TestPage,
+  SearchMobilePage,
+} from './asyncComponents';
 
 // 原始路由配置
 const originalRoutes = [
@@ -15,35 +33,35 @@ const originalRoutes = [
   {
     path:"/test",
     name:'TestPage',
-    component:load('TestPage')
+    component: TestPage
   },
   {
     path: '/welcome',
     name: 'WelcomePage',
-    component: load('WelcomePage'),
+    component: WelcomePage,
   },
   {
     path: '/index',
     name: 'IndexPage',
-    component: load('index/IndexPage'),
+    component: IndexPage,
     meta: { requiresAuth: true },
   },
   {
     path: '/article/:id/:post?',
     name: 'ArticlePage',
-    component: load('ArticlePage'),
+    component: ArticlePage,
     meta: { requiresAuth: true },
   },
   {
     path: '/post/:id/:reply?',
     name: 'PostPage',
-    component: load('PostPage'),
+    component: PostPage,
     meta: { requiresAuth: true },
   },
   {
     path: '/manage',
     name: 'ManagePage',
-    component: load('ManagePage'),
+    component: ManagePage,
     meta: { requiresAuth: true },
     props: route => ({
       init_id: route.query.init_id || null,
@@ -53,13 +71,13 @@ const originalRoutes = [
   {
     path: '/course/:id/:post?',
     name: 'CoursePage',
-    component: load('CoursePage'),
+    component: CoursePage,
     meta: { requiresAuth: true },
   },
   {
     path: '/login',
     name: 'LoginPage',
-    component: load('LoginPage'),
+    component: LoginPage,
     meta: { requiresAuth: false },
     props: route => ({
       name: route.query.userName || null,
@@ -69,43 +87,43 @@ const originalRoutes = [
   {
     path: '/error/:reason?',
     name: 'ErrorPage',
-    component: load('ErrorPage'),
+    component: ErrorPage,
     meta: { requiresAuth: false },
   },
   {
     path: '/editor/:id?',
     name: 'EditorPage',
-    component: load('EditorPage'),
+    component: EditorPage,
     meta: { requiresAuth: true },
   },
   {
     path: '/self',
     name: 'SelfPage',
-    component: load('SelfPage'),
+    component: SelfPage,
     meta: { requiresAuth: true },
   },
   {
     path: '/author/:id',
     name: 'AuthorPage',
-    component: load('AuthorPage'),
+    component: AuthorPage,
     meta: { requiresAuth: true },
   },
   {
     path: '/document/:name',
     name: 'DocumentPage',
-    component: load('DocumentPage'),
+    component: DocumentPage,
     meta: { requiresAuth: false },
   },
   {
     path: '/chat/:id?/:name?',
     name: 'ChatPage',
-    component: load('ChatPage'),
+    component: ChatPage,
     meta: { requiresAuth: true },
   },
   {
     path: '/search',
     name: 'SearchPage',
-    component: load('search/SearchPage'),
+    component: SearchPage,
     meta: { requiresAuth: true },
     props: route => ({
       type: route.query.type || 'all',
@@ -116,19 +134,19 @@ const originalRoutes = [
   {
     path:'/search_mobile',
     name:'SearchMobilePage',
-    component:load('search/SearchMobilePage'),
+    component: SearchMobilePage,
     meta:{requiresAuth:true}
   },
   {
     path: '/dev',
     name: 'DevPage',
-    component: load('DevPage'),
+    component: DevPage,
     meta: { requiresAuth: false },
   },
   {
     path: '/service',
     name: 'ServicePage',
-    component: load('ServicePage'),
+    component: ServicePage,
     meta: { requiresAuth: false },
   },
   {

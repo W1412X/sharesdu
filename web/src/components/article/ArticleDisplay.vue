@@ -52,7 +52,7 @@ export default {
     }
     .displayer {
         width: 100%;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .md-container{
         padding:10px;
@@ -65,7 +65,7 @@ export default {
     }
     .displayer{
         width: 100%;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .md-container{
         padding:5px;

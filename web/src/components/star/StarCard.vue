@@ -61,7 +61,7 @@
 import { globalProperties } from '@/main';
 import StarItem from '@/components/star/StarItem.vue';
 import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
-import { createStarFolder, getStarFolders, getStarList, starContent } from '@/axios/star';
+import { createStarFolder, getStarFolders, getStarList, starContent } from '@/api/modules/star';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
@@ -287,7 +287,7 @@ export default {
 
 .row-60-scroll {
     max-width: 60%;
-    overflow: scroll;
+    overflow: auto;
 }
 
 @media screen and (min-width: 1000px) {

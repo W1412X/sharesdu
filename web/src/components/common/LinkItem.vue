@@ -14,10 +14,10 @@
     </span>
 </template>
 <script>
-import { getAuthorInfo } from '@/axios/account';
-import { getArticleDetail } from '@/axios/article';
-import { getCourseDetail } from '@/axios/course';
-import { getPostDetailById } from '@/axios/post';
+import { getAuthorInfo } from '@/api/modules/account';
+import { getArticleDetail } from '@/api/modules/article';
+import { getCourseDetail } from '@/api/modules/course';
+import { getPostDetailById } from '@/api/modules/post';
 import { globalProperties } from '@/main';
 import { isExactlySameOrigin, openPage, roundNumber } from '@/utils/other';
 export default {

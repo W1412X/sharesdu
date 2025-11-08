@@ -185,7 +185,7 @@ import CourseComment from '@/components/course/CourseComment.vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { globalProperties } from '@/main.js';
 // eslint-disable-next-line
-import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList, getCoursePostList } from '@/axios/course';
+import { getCourseDetail,editRating, rateCourse, getUserCourseEvaluation,getCourseScoreList, getCoursePostList } from '@/api/modules/course';
 import { computed,ref } from 'vue';
 import { copy, getNormalErrorAlert, getNormalSuccessAlert, isElementAtBottom, isScrollToBottom, openPage, roundNumber } from '@/utils/other';
 import { getCookie } from '@/utils/cookie';
@@ -742,7 +742,7 @@ export default {
 
 .msg-container {
     width: 100%;
-    overflow-x: scroll;
+    overflow-x: auto;
     display: flex;
     flex-direction: column;
 }
@@ -852,7 +852,7 @@ export default {
         width: 752px;
         padding:1px;
         height: 100vh;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 
     .actual-score-text {
@@ -912,7 +912,7 @@ export default {
         padding: 1px;
         margin-bottom: 40px;
         height: fit-content;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 
     .comment-column{
@@ -1042,7 +1042,7 @@ export default {
         padding: 1px;
         margin-bottom: 40px;
         height: fit-content;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .comment-column{
         width: 100vw;
@@ -1060,7 +1060,7 @@ export default {
         border-top: #8a8a8a 1px solid;
         width: 100vw;
         height: 60vh;
-        overflow-y: scroll;
+        overflow-y: auto;
         border-radius: 5px;
     }
 }

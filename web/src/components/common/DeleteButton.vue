@@ -11,9 +11,9 @@
     </v-btn>
 </template>
 <script>
-import { deleteArticle } from '@/axios/article';
-import { deleteCourse } from '@/axios/course';
-import { deletePostById, deleteReplyById } from '@/axios/post';
+import { deleteArticle } from '@/api/modules/article';
+import { deleteCourse } from '@/api/modules/course';
+import { deletePostById, deleteReplyById } from '@/api/modules/post';
 import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 export default {
     props: {

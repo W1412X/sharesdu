@@ -175,7 +175,7 @@ export default {
     flex-wrap: wrap;
     flex-direction: row;
     height: 80%;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 5px;
 }
 @media  screen and (min-width: 600px)  {
@@ -183,7 +183,7 @@ export default {
         max-width: 750px;
         min-height: 300px;
         max-height: 800px;
-        overflow-y: scroll;
+        overflow-y: auto;
         padding: 5px;
     }
 }
@@ -192,7 +192,7 @@ export default {
         max-width: 80vw;
         min-height: 30vh;
         max-height: 80vh;
-        overflow-y: scroll;
+        overflow-y: auto;
         padding: 5px;
     }
 }

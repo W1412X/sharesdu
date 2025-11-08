@@ -14,7 +14,7 @@
     </v-card>
 </template>
 <script>
-import { downloadResource } from '@/axios/resource';
+import { downloadResource } from '@/api/modules/resource';
 import { globalProperties } from '@/main';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 

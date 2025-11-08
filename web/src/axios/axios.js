@@ -1,10 +1,12 @@
 import { getCookie } from '@/utils/cookie';
 import { ResponseBuffer } from '@/utils/response_cacher';
 import axios from 'axios';
+import { apiConfig } from '@/config';
+
 class AxiosWithCache {
     constructor() {
         this.axiosInstance=axios.create({
-            baseURL: 'https://api.sharesdu.com/index/api',
+            baseURL: apiConfig.baseURL,
             headers: {
                 'Authorization': 'Bearer '+getCookie("accessToken"),
             },
@@ -77,5 +79,5 @@ axiosInstance.axiosInstance.interceptors.response.use(
 
 export default axiosInstance;
 export const axiosInstanceNoHeader=axios.create({
-    baseURL: 'https://api.sharesdu.com/index/api',
+    baseURL: apiConfig.baseURL,
 });

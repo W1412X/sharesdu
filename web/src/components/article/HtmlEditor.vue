@@ -14,9 +14,9 @@ import { onBeforeUnmount, shallowRef, defineComponent } from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { Boot } from '@wangeditor/editor'
 import formulaModule from '@wangeditor/plugin-formula'
-import { uploadArticleImage } from '@/axios/image';
+import { uploadArticleImage } from '@/api/modules/image';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other'
-import { compressImage } from '@/utils/image'
+import { compressImage } from '@/utils/imageUtils'
 export default defineComponent({
     name: 'HtmlEditor',
     props: {
@@ -70,10 +70,18 @@ export default defineComponent({
         };
         let imageDict={};
         const customUpload =async (file, insertFn) => {
-            const image =await compressImage(file,1024*4);
-            const tmpUrl=URL.createObjectURL(image);
-            insertFn(tmpUrl);
-            imageDict[tmpUrl]=image;
+            try {
+                const image = await compressImage(file,1024*4);
+                const tmpUrl=URL.createObjectURL(image);
+                insertFn(tmpUrl);
+                imageDict[tmpUrl]=image;
+            } catch (error) {
+                console.error('Failed to compress image:', error);
+                // 如果压缩失败，使用原始文件
+                const tmpUrl=URL.createObjectURL(file);
+                insertFn(tmpUrl);
+                imageDict[tmpUrl]=file;
+            }
         };
         const editorConfig = {
             hoverbarKeys: {
@@ -187,7 +195,7 @@ export default defineComponent({
         min-height: 65vh;
     }
     .editor-container{
-        overflow-y: scroll;
+        overflow-y: auto;
         max-height: 65vh;
     }
 }
@@ -202,7 +210,7 @@ export default defineComponent({
         min-height: 75vh;
     }
     .editor-container{
-        overflow-y: scroll;
+        overflow-y: auto;
         max-height: 75vh;
     }
 }

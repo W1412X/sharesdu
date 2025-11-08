@@ -71,11 +71,11 @@
 </template>
 <script>
 import VuePictureCropper,{ cropper } from 'vue-picture-cropper'
-import { uploadProfileImage } from '@/axios/image';
+import { uploadProfileImage } from '@/api/modules/image';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
 // eslint-disable-next-line
-import { compressImage } from '@/utils/image';
+import { compressImage } from '@/utils/imageUtils';
 import { getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert } from '@/utils/other';
 import { getImageDimensions } from '@/utils/pixel_emoji';
 export default {
@@ -145,7 +145,14 @@ export default {
     async submit() {//关闭此窗口的逻辑，点击此按钮开始上传
       this.loading = true;
       await this.preview();
-      this.croppedImgBlob=await compressImage(this.croppedImgBlob,10);
+      try {
+        this.croppedImgBlob = await compressImage(this.croppedImgBlob,10);
+      } catch (error) {
+        console.error('Failed to compress profile image:', error);
+        this.alert(getNormalErrorAlert('图片压缩失败，请重试'));
+        this.loading = false;
+        return;
+      }
       const response = await uploadProfileImage(this.croppedImgBlob);
       this.loading = false;
       if (response.status == 200 || response.status == 201) {

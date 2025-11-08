@@ -82,7 +82,7 @@ import { getCurrentInstance } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { createCourse,/*, getCourseDetail,editCourse*/ 
-editCourse} from '@/axios/course';
+editCourse} from '@/api/modules/course';
 import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 
 export default {

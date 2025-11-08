@@ -73,7 +73,7 @@ import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { addHeaderToReply, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader, openPage } from '@/utils/other';
-import { createReplyUnderPost } from '@/axios/post';
+import { createReplyUnderPost } from '@/api/modules/post';
 import EmojiPicker from '@/components/common/EmojiPicker.vue';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {

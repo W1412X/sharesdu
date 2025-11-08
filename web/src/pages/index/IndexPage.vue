@@ -72,7 +72,6 @@
                 </div>
             </v-pull-to-refresh>
             <v-spacer></v-spacer>
-            <service-list></service-list>
             <v-spacer></v-spacer>
         </div>
     </div>
@@ -85,8 +84,8 @@ import CourseItem from '@/components/course/CourseItem.vue';
 import PostItem from '@/components/post/PostItem.vue';
 import { getCookie } from '@/utils/cookie';
 import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, isElementAtBottom, openPage } from '@/utils/other';
-import { getArticleList, getPostListByArticleId } from '@/axios/article';
-import { getCourseList } from '@/axios/course';
+import { getArticleList, getPostListByArticleId } from '@/api/modules/article';
+import { getCourseList } from '@/api/modules/course';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
@@ -548,7 +547,7 @@ export default {
         flex-direction: row;
         justify-content: start;
         align-items: center;
-        overflow-x: scroll;
+        overflow-x: auto;
         padding: 5px;
     }
 
@@ -602,7 +601,7 @@ export default {
         flex-direction: row;
         justify-content: start;
         align-items: center;
-        overflow-x: scroll;
+        overflow-x: auto;
         padding: 5px;
     }
 
@@ -623,6 +622,7 @@ export default {
         z-index: 2;
         width: 100vw;
         position: fixed;
+        background-color: white;
         height: 40px;
     }
 

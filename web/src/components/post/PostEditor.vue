@@ -24,13 +24,13 @@
 import { addLinkToPost, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
-import { createPostInArticle, createPostInCourse } from '@/axios/post';
-import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
+import { createPostInArticle, createPostInCourse } from '@/api/modules/post';
+import { getNetworkErrorResponse } from '@/api/modules/statusCodeMessages';
 import { getCookie } from '@/utils/cookie';
 import { globalProperties } from '@/main';
 import ImgCard from '@/components/common/ImgCard.vue';
-import { uploadArticleImage } from '@/axios/image';
-import { compressImage } from '@/utils/image';
+import { uploadArticleImage } from '@/api/modules/image';
+import { compressImage } from '@/utils/imageUtils';
 export default {
     name: 'PostEditor',
     props:{
@@ -91,7 +91,12 @@ export default {
         async handleFileChange(event) {
             const files = Array.from(event.target.files);
             for(let i=0;i<files.length;i++){
-                files[i]=await compressImage(files[i],1024*4);             
+                try {
+                    files[i] = await compressImage(files[i],1024*4);
+                } catch (error) {
+                    console.error(`Failed to compress image ${i}:`, error);
+                    // 如果压缩失败，使用原始文件
+                }
                 let tmp=URL.createObjectURL(files[i]);
                 this.imgSrcList.push(tmp);
                 this.imgDict[tmp]=files[i];
@@ -134,7 +139,12 @@ export default {
                 this.loading=true;
                 let img=this.imgSrcList[i];
                 let file=this.imgDict[img];
-                file=await compressImage(file,4*1024);
+                try {
+                    file = await compressImage(file,4*1024);
+                } catch (error) {
+                    console.error(`Failed to compress image ${i} before upload:`, error);
+                    // 如果压缩失败，使用原始文件继续上传
+                }
                 let response=await uploadArticleImage(file);
                 if(response.status!=200&&response.status!=201){
                     this.alert(getNormalErrorAlert(response.message));
@@ -180,7 +190,7 @@ export default {
 <style scoped>
 .row-div-scroll{
     display: flex;
-    overflow-x: scroll;
+    overflow-x: auto;
     flex-direction: row;
     align-items: center;
 }

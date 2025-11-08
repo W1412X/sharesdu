@@ -30,12 +30,12 @@
     </v-card>
 </template>
 <script>
-import { getRegisterEmailCode, getDeleteAccountEmailCode, getLoginEmailCode, getResetPasswordEmailCode, registerByEmail } from '@/axios/account';
-import { loginWithEmail, deleteAccount, resetPassword } from '@/axios/account';
+import { getRegisterEmailCode, getDeleteAccountEmailCode, getLoginEmailCode, getResetPasswordEmailCode, registerByEmail } from '@/api/modules/account';
+import { loginWithEmail, deleteAccount, resetPassword } from '@/api/modules/account';
 import { globalProperties } from '@/main';
 import { getCancelLoadMsg, getLoadMsg, getNormalInfoAlert, openPage, setLogin } from '@/utils/other';
 import { clearTokenCookies } from '@/utils/cookie';
-import { csDeleteAccount, csLoginByEmail, csRegisterByEmail, csResetPassword } from '@/axios/api_convert/account';
+import { csDeleteAccount, csLoginByEmail, csRegisterByEmail, csResetPassword } from '@/api/modules/api_convert/account';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
 export default {

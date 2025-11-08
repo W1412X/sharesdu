@@ -138,7 +138,7 @@ import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { extractImageLinksInBrackets, getCancelLoadMsg, getLinkInPost, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert, isElementAtBottom, openPage } from '@/utils/other';
-import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyListByPostId } from '@/axios/post';
+import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyListByPostId } from '@/api/modules/post';
 import LikeButton from '@/components/common/LikeButton.vue';
 import ReplyItem from '@/components/post/ReplyItem.vue';
 import DeleteButton from '@/components/common/DeleteButton.vue';
@@ -498,7 +498,7 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    overflow-x: scroll;
+    overflow-x: auto;
     width: 100%;
 }
 
@@ -547,7 +547,7 @@ export default {
     display: flex;
     flex-direction: row;
     padding-bottom: 5px;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .padding-right-5px {
@@ -570,7 +570,7 @@ export default {
 }
 
 .comment-star-display-div {
-    overflow-x: scroll;
+    overflow-x: auto;
     max-width: 100%;
     display: flex;
     flex-direction: row-reverse;

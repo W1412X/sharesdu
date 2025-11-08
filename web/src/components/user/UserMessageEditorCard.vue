@@ -78,7 +78,7 @@ import SetProfileCard from '@/components/user/SetProfileCard.vue';
 import EmailExamineCard from '@/components/user/EmailExamineCard.vue';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
-import { logout } from '@/axios/account';
+import { logout } from '@/api/modules/account';
 import { copy, getCancelLoadMsg, getLoadMsg, openPage } from '@/utils/other';
 import { rules, validatePassWord } from '@/utils/rules';
 import { clearTokenCookies, getCookie } from '@/utils/cookie';

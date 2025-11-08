@@ -35,7 +35,7 @@
 <script>
 import { globalProperties } from '@/main';
 import { globalImageCacher } from '@/utils/global_img_cache';
-import { fetchImgAndDeal } from '@/utils/image';
+import { fetchImgAndDeal } from '@/utils/imageUtils';
 import { computed, ref } from 'vue';
 
 export default {
@@ -103,8 +103,14 @@ export default {
             this.imgUrl = globalImageCacher.getImage(newValue);
             return;
           }
-          this.imgUrl = await fetchImgAndDeal(newValue);
-          globalImageCacher.addImage(newValue, this.imgUrl);
+          try {
+            this.imgUrl = await fetchImgAndDeal(newValue);
+            globalImageCacher.addImage(newValue, this.imgUrl);
+          } catch (error) {
+            console.error('Failed to fetch and process image:', error);
+            // 使用原始 URL 作为后备方案
+            this.imgUrl = newValue;
+          }
         }
       },
       immdiate: false,
@@ -135,12 +141,18 @@ export default {
        */
       if (globalImageCacher.getImage(this.imgUrl)) {
         this.imgUrl = globalImageCacher.getImage(this.imgUrl);
+        this.loadState = true;
         return;
       }
-      let tmp = await fetchImgAndDeal(this.imgUrl);
-      globalImageCacher.addImage(this.imgUrl, tmp);
-      this.imgUrl = tmp;
-
+      try {
+        let tmp = await fetchImgAndDeal(this.imgUrl);
+        globalImageCacher.addImage(this.imgUrl, tmp);
+        this.imgUrl = tmp;
+      } catch (error) {
+        console.error('Failed to fetch and process image:', error);
+        // 使用原始 URL 作为后备方案
+        this.imgUrl = this.src;
+      }
     }
     this.loadState = true;
   }

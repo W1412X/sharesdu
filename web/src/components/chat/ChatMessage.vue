@@ -60,7 +60,7 @@
     </div>
 </template>
 <script>
-import { deletePrivateMessage } from '@/axios/chat';
+import { deletePrivateMessage } from '@/api/modules/chat';
 import { extractTime, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { ref } from 'vue';
 import AvatarName from '@/components/common/AvatarName.vue';

@@ -19,7 +19,7 @@
 <script>
 import { computed, ref } from 'vue';
 import StarCard from '@/components/star/StarCard.vue';
-import { unstarContent } from '@/axios/star';
+import { unstarContent } from '@/api/modules/star';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalWarnAlert } from '@/utils/other';
 
 export default {

@@ -45,7 +45,7 @@
 <script>
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import AvatarName from '@/components/common/AvatarName.vue';
-import { getCourseHistory, rollbackCourse } from '@/axios/course';
+import { getCourseHistory, rollbackCourse } from '@/api/modules/course';
 
 export default {
     props: {
@@ -161,7 +161,7 @@ export default {
     flex-direction: row;
     height: 100%;
     align-items: center;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 @media screen and (min-width: 1000px) {

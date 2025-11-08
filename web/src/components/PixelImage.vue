@@ -214,47 +214,53 @@ export default {
             }
             let bwImg=null;
             this.setLoadingState(true);
-            switch(this.itemType){
-                case '黑白':
-                    this.styleImage = await convertToPixelatedBW(this.oriImage, this.width, this.height, this.pixelSize);
-                    this.styleImageUrl = URL.createObjectURL(this.styleImage);
-                    break;
-                case '黑白(反转)':
-                    this.styleImage = await convertToPixelatedBW(this.oriImage, this.width, this.height, this.pixelSize, true);
-                    this.styleImageUrl = URL.createObjectURL(this.styleImage);
-                    break;
-                case '彩色':
-                   this.styleImage = await convertToPixelatedColor(this.oriImage,this.width,this.height,this.pixelSize);
-                   this.styleImageUrl = URL.createObjectURL(this.styleImage);
-                   break;
-                case '线条':
-                    this.styleImage = await imageToSketch(this.oriImage,this.width,this.height,false,this.lineWidth);
-                    this.styleImage=await convertToPixelatedBW(this.styleImage,this.width,this.height,this.pixelSize);
-                    this.styleImageUrl = URL.createObjectURL(this.styleImage);
-                    break;
-                case '线条(反转)':
-                    this.styleImage = await imageToSketch(this.oriImage,this.width,this.height,true,this.lineWidth);
-                    this.styleImage=await convertToPixelatedBW(this.styleImage,this.width,this.height,this.pixelSize);
-                    this.styleImageUrl = URL.createObjectURL(this.styleImage);
-                    break;
-                case '文本':
-                    bwImg=await convertToPixelatedBW(this.oriImage, this.width, this.height, 1);
-                    this.imgText=await convertImageToText(bwImg,this.textRowNum,this.textColNum);
-                    break;
-                case '文本(反转)':
-                    bwImg=await convertToPixelatedBW(this.oriImage, this.width, this.height, 1, true);
-                    this.imgText=await convertImageToText(bwImg,this.textRowNum,this.textColNum);
-                    break;
-                case '文本(线条)':
-                    bwImg=await imageToSketch(this.oriImage, this.width, this.height, false,this.lineWidth);
-                    this.imgText=await convertImageToText(bwImg,this.textRowNum,this.textColNum);
-                    break;
-                case '文本(线条反转)':
-                    bwImg=await imageToSketch(this.oriImage, this.width, this.height, true,this.lineWidth);
-                    this.imgText=await convertImageToText(bwImg,this.textRowNum,this.textColNum);
-                    break;
+            try {
+                switch(this.itemType){
+                    case '黑白':
+                        this.styleImage = await convertToPixelatedBW(this.oriImage, this.width, this.height, this.pixelSize);
+                        this.styleImageUrl = URL.createObjectURL(this.styleImage);
+                        break;
+                    case '黑白(反转)':
+                        this.styleImage = await convertToPixelatedBW(this.oriImage, this.width, this.height, this.pixelSize, true);
+                        this.styleImageUrl = URL.createObjectURL(this.styleImage);
+                        break;
+                    case '彩色':
+                       this.styleImage = await convertToPixelatedColor(this.oriImage,this.width,this.height,this.pixelSize);
+                       this.styleImageUrl = URL.createObjectURL(this.styleImage);
+                       break;
+                    case '线条':
+                        this.styleImage = await imageToSketch(this.oriImage,this.width,this.height,false,this.lineWidth);
+                        this.styleImage=await convertToPixelatedBW(this.styleImage,this.width,this.height,this.pixelSize);
+                        this.styleImageUrl = URL.createObjectURL(this.styleImage);
+                        break;
+                    case '线条(反转)':
+                        this.styleImage = await imageToSketch(this.oriImage,this.width,this.height,true,this.lineWidth);
+                        this.styleImage=await convertToPixelatedBW(this.styleImage,this.width,this.height,this.pixelSize);
+                        this.styleImageUrl = URL.createObjectURL(this.styleImage);
+                        break;
+                    case '文本':
+                        bwImg=await convertToPixelatedBW(this.oriImage, this.width, this.height, 1);
+                        this.imgText=await convertImageToText(bwImg,this.textRowNum,this.textColNum);
+                        break;
+                    case '文本(反转)':
+                        bwImg=await convertToPixelatedBW(this.oriImage, this.width, this.height, 1, true);
+                        this.imgText=await convertImageToText(bwImg,this.textRowNum,this.textColNum);
+                        break;
+                    case '文本(线条)':
+                        bwImg=await imageToSketch(this.oriImage, this.width, this.height, false,this.lineWidth);
+                        this.imgText=await convertImageToText(bwImg,this.textRowNum,this.textColNum);
+                        break;
+                    case '文本(线条反转)':
+                        bwImg=await imageToSketch(this.oriImage, this.width, this.height, true,this.lineWidth);
+                        this.imgText=await convertImageToText(bwImg,this.textRowNum,this.textColNum);
+                        break;
+                }
+            } catch (error) {
+                console.error('Failed to convert image:', error);
+                window.alert('图片转换失败: ' + (error.message || '未知错误，请重试'));
+            } finally {
+                this.setLoadingState(false);
             }
-            this.setLoadingState(false);
         },
         saveImage() {
             const a = document.createElement('a');

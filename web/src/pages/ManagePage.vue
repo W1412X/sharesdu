@@ -98,8 +98,8 @@
     </div>
 </template>
 <script>
-import { freezeUnfreezeCourse } from '@/axios/course';
-import { blockArticle, blockUser, getBlockedUserList, getUserList, unblockArticle, unblockUser } from '@/axios/manage';
+import { freezeUnfreezeCourse } from '@/api/modules/course';
+import { blockArticle, blockUser, getBlockedUserList, getUserList, unblockArticle, unblockUser } from '@/api/modules/manage';
 import AvatarName from '@/components/common/AvatarName.vue';
 import CourseHistoryCard from '@/components/course/CourseHistoryCard.vue';
 import InviteCodeManageCard from '@/components/manage/InviteCodeManageCard.vue';

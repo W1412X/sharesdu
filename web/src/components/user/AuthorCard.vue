@@ -71,9 +71,9 @@
 <script>
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/common/AvatarName.vue';
-import { getAuthorInfo } from '@/axios/account';
+import { getAuthorInfo } from '@/api/modules/account';
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
-import { blockUser } from '@/axios/block';
+import { blockUser } from '@/api/modules/block';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
 

@@ -48,7 +48,7 @@ import AvatarName from '@/components/common/AvatarName.vue';
 import { ref } from 'vue';
 import { copy, extractImageLinksInBrackets, getLinkInPost, getNormalErrorAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 import ImgCard from '@/components/common/ImgCard.vue';
-import { setPostTopInArticle, setPostTopInCourse } from '@/axios/top';
+import { setPostTopInArticle, setPostTopInCourse } from '@/api/modules/top';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
     name: 'PostItem',
@@ -217,7 +217,7 @@ export default {
     margin: 5px;
     display: flex;
     flex-direction: row;
-    overflow-x: scroll;
+    overflow-x: auto;
     width: 100%;
 }
 .if-top-bar{

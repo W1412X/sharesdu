@@ -9,11 +9,6 @@
     </div>
   </v-dialog>
   <v-app style="display: flex;">
-    <!--
-    <div v-if="deviceType === 'mobile'" class="nav-bar">
-      <v-btn rounded="0" variant="text" color="#ffffff" icon="mdi-menu"></v-btn>
-    </div>
-    -->
     <loading-view :init-data="loadMsg" class="z-index-loading absolute-position">
     </loading-view>
     <v-snackbar class="z-index-msg absolute-position" :timeout="3000" :color="alertMsg.color" v-model="alertMsg.state">
@@ -81,9 +76,9 @@
       </div>
       <v-tabs v-if="!mobileIfShowSearchInput" v-model="itemType" fixed-tabs class="select-bar" hide-slider>
         <v-tab :style="{ background: 'rgba(255,255,255,0)', 'color': this.itemType == 'index' ? 'white' : 'grey' }"
-          height="40px" value="index" text="推荐"></v-tab>
+          height="40px" value="index" text="推荐" class="title-bold"></v-tab>
         <v-tab :style="{ background: 'rgba(255,255,255,0)', 'color': this.itemType == 'service' ? 'white' : 'grey' }"
-          height="40px" value="service" text="微服务"></v-tab>
+          height="40px" value="service" text="微服务" class="title-bold"></v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
       <v-btn v-if="ifShowHomeBtn && !ifShowBottomNav && mobileIfShowSearchInput" @click="toHomePage" icon="mdi-home" variant="text" size="38"
@@ -128,166 +123,186 @@
   </v-app>
 </template>
 <script>
-import { computed, getCurrentInstance, ref, watch } from 'vue';
 import LoadingView from '@/components/common/LoadingView.vue';
-import { useRoute } from 'vue-router';
-import { globalProperties } from './main';
 import AvatarName from '@/components/common/AvatarName.vue';
-import { getCookie } from './utils/cookie';
-import { getNormalInfoAlert, hexToRgba, openPage } from './utils/other';
 import PostEditor from '@/components/post/PostEditor.vue';
 import CourseEditor from '@/components/course/CourseEditor.vue';
 import CreateChoiceCard from './components/common/CreateChoiceCard.vue';
 import SearchInput from './components/common/searchInput/SearchInput.vue';
-import { createEventBus, getEventBus } from './utils/eventBus';
+import { hexToRgba, openPage } from './utils/other';
+import {
+  useDevice,
+  useRouteState,
+  useUser,
+  useNavigation,
+  useDialog,
+  useSearch,
+  useMessage,
+  useMobileNav,
+} from './app/composables';
+import { watch } from 'vue';
+
 export default {
   setup() {
-    /**
-     * get the device type
-     */
-    const deviceType = ref('');
-    if (window.innerWidth <= 1000) {
-      deviceType.value = 'mobile';
-    } else {
-      deviceType.value = 'desktop';
-    }
-    //listen the route change
-    const route = useRoute();
-    const page = ref('');
-    // eslint-disable-next-line
-    const themeColor = globalProperties.$themeColor;
-    const loadState = ref(false);
-    const setLoadState = (state) => {
-      loadState.value = state;
-    }
-    const ifShowNav = computed(() => {
-      if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage', 'DocumentPage', 'DevPage', undefined, null].includes(page.value)) {
-        return false;
-      } else {
-        return true;
-      }
-    })
-    const navColor = computed(() => {
-      if (page.value == "SelfPage" || page.value == 'ManagePage') {
-        return '#ffffff';
-      } else {
-        return themeColor;
-      }
-    })
-    const routerMarginTop = computed(() => {
-      if (ifShowNav.value) {
-        return '41px';
-      } else {
-        return '0px';
-      }
-    })
-    const navIconColor = computed(() => {
-      if (page.value == "SelfPage" || page.value == 'ManagePage') {
-        return themeColor;
-      } else {
-        return "#ffffff";
-      }
-    });
-    const ifShowHomeBtn = computed(() => {
-      return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || page.value == "SelfPage" || page.value == "ManagePage" || page.value == "EditorPage" || page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || page.value == "SearchPage" || page.value=="ServicePage";
-    })
-    const ifShowAvatar = computed(() => {
-      if (page.value == "SelfPage" || page.value == 'ManagePage') {
-        return false;
-      } else {
-        return true;
-      }
-    })
-    const ifCanSearchInputSuggestion = computed(() => {
-      return !['SearchMobilePage'].includes(page.value);
-    })
-    const ifAvatarState = ref(true);
-    const ifMobile = computed(() => {
-      return deviceType.value == "mobile";
-    })
-    const userId = ref(getCookie("userId"));
-    const userName = ref(getCookie("userName"));
-    const { proxy } = getCurrentInstance();
-    // eslint-disable-next-line
-    watch(route, (newRoute, oldRoute) => {
-      page.value = newRoute.name;
-      //adapt for debug page
-      if (page.value.endsWith("Debug")) {
-        page.value = page.value.substring(0, page.value.indexOf("Debug"))
-      }
-      userId.value = getCookie("userId");
-      userName.value = getCookie("userName");
-      ifAvatarState.value = false;
-      proxy.$nextTick(() => {
-        ifAvatarState.value = true;
-      });
-    });
-    const ifShowHistory = ref(false);
-    const ifShowCourseEditor = ref(false);
-    const ifShowPostEditor = ref(false);
-    const ifShowDialog = computed(() => {
-      return ifShowHistory.value || ifShowCourseEditor.value || ifShowPostEditor.value;
-    })
-    const setShowHistoryState = (state) => {
-      ifShowHistory.value = state;
-    }
-    const ifShowBottomNav = computed(() => {
-      return ['SelfPage', 'IndexPage', 'SearchPage'].includes(page.value) && deviceType.value == 'mobile';
-    })
-    const routerMarginBottom = computed(() => {
-      return ifShowBottomNav.value ? '50px' : '10px';
-    })
-    const setPostEditorState = (state) => {
-      ifShowPostEditor.value = state;
-    }
-    const setCourseEditorState = (state) => {
-      ifShowCourseEditor.value = state;
-    }
-    const ifShowTopEditBtns = computed(() => {
-      return deviceType.value === 'desktop' && ['IndexPage', 'SelfPage'].includes(page.value);
-    })
-    const mobileIfShowSearchInput = computed(() => {
-      if (['IndexPage','ServicePage'].includes(page.value)) {
-        return false;
-      }
-      return true;
-    });
-    const itemType = ref("index");
-    const itemTypeList = ['index', 'service'];
-    const ifShowService=computed(()=>{
-      return ['IndexPage'].includes(page.value);
-    });
-    const searchInputEventBus=getEventBus("global-search-input")?getEventBus("global-search-input"):createEventBus("global-search-input");
-    return {
+    // 设备类型
+    const { deviceType, ifMobile } = useDevice();
+    
+    // 路由状态
+    const { page, ifAvatarState } = useRouteState();
+    
+    // 用户信息
+    const { userId, userName } = useUser();
+    
+    // 消息和加载状态
+    const { alertMsg, loadMsg, loadState, alert, setLoading, setLoadState } = useMessage();
+    
+    // 导航栏逻辑
+    const {
+      themeColor,
       ifShowNav,
       navColor,
       navIconColor,
-      userId,
-      userName,
       routerMarginTop,
-      ifShowDialog,
-      ifShowHistory,
-      ifAvatarState,
-      setShowHistoryState,
-      ifShowAvatar,
-      setLoadState,
-      themeColor,
-      ifShowBottomNav,
-      routerMarginBottom,
-      setCourseEditorState,
-      setPostEditorState,
-      ifShowCourseEditor,
-      ifShowPostEditor,
       ifShowHomeBtn,
+      ifShowAvatar,
       ifShowTopEditBtns,
-      ifMobile,
-      mobileIfShowSearchInput,
+      ifShowService,
+      ifCanSearchInputSuggestion,
+    } = useNavigation(page, deviceType, loadState);
+    
+    // 对话框管理
+    const {
+      ifShowDialog,
+      ifShowPostEditor,
+      ifShowCourseEditor,
+      setPostEditorState,
+      setCourseEditorState,
+      closeDialog,
+    } = useDialog();
+    
+    // 移动端导航
+    const {
       itemType,
       itemTypeList,
-      ifCanSearchInputSuggestion,
-      ifShowService,
+      mobileIfShowSearchInput,
+      ifShowBottomNav,
+      routerMarginBottom,
+          // eslint-disable-next-line
+      watchItemType,
+    } = useMobileNav(page, deviceType);
+    
+    // 搜索功能
+    const {
+      searchContent,
+      searchType,
+      searchLabel,
       searchInputEventBus,
-    }
+      handleSearchTypeChanged,
+      search,
+    } = useSearch(ifMobile, mobileIfShowSearchInput, alert);
+    
+    // 导航方法
+    const toHomePage = () => {
+      openPage("router", {
+        name: 'IndexPage',
+      });
+    };
+    
+    const toServicePage = () => {
+      openPage("url", { url: "#/service" });
+    };
+    
+    // 监听 itemType 变化
+    watch(itemType, (newVal, oldVal) => {
+      if (newVal == oldVal) {
+        return;
+      }
+      switch (newVal) {
+        case 'service':
+          toServicePage();
+          break;
+        case 'index':
+          toHomePage();
+          break;
+      }
+    });
+    
+    // 对话框显示方法
+    const showDialog = (type) => {
+      switch (type) {
+        case 'article':
+          openPage("url", "#/edit");
+          break;
+        case 'course':
+          setCourseEditorState(true);
+          break;
+        case 'post':
+          setPostEditorState(true);
+          break;
+        default:
+      }
+    };
+    
+    // 其他方法
+    const openUrl = (url) => {
+      openPage("url", { url: url });
+    };
+    
+    return {
+      // 设备
+      deviceType,
+      ifMobile,
+      // 路由
+      page,
+      ifAvatarState,
+      // 用户
+      userId,
+      userName,
+      // 消息
+      alertMsg,
+      loadMsg,
+      loadState,
+      alert,
+      setLoading,
+      setLoadState,
+      // 导航
+      themeColor,
+      ifShowNav,
+      navColor,
+      navIconColor,
+      routerMarginTop,
+      routerMarginBottom,
+      ifShowHomeBtn,
+      ifShowAvatar,
+      ifShowTopEditBtns,
+      ifShowService,
+      ifCanSearchInputSuggestion,
+      // 对话框
+      ifShowDialog,
+      ifShowPostEditor,
+      ifShowCourseEditor,
+      setPostEditorState,
+      setCourseEditorState,
+      closeDialog,
+      // 移动端导航
+      itemType,
+      itemTypeList,
+      mobileIfShowSearchInput,
+      ifShowBottomNav,
+      // 搜索
+      searchContent,
+      searchType,
+      searchLabel,
+      searchInputEventBus,
+      handleSearchTypeChanged,
+      search,
+      // 方法
+      toHomePage,
+      toServicePage,
+      showDialog,
+      openUrl,
+      hexToRgba,
+    };
   },
   components: {
     LoadingView,
@@ -297,155 +312,41 @@ export default {
     CourseEditor,
     SearchInput,
   },
-  watch:{
-    itemType:{
-      handler(newVal,oldVal){
-        if(newVal==oldVal){
-          return;
-        }
-        switch(newVal){
-          case 'service':
-            this.toServicePage();
-            break;
-          case 'index':
-            this.toHomePage();
-            break;
-        }
-      }
-    }
-  },
   data() {
     return {
-      alertMsg: {
-        state: false,
-        color: null,
-        title: null,
-        content: null,
-      },
-      loadMsg: {
-        state: false,
-        text: '加载中...',
-        progress: -1,
-      },
-      searchLabel: computed(() => {
-        return "搜索" + this.searchType;
-      }),
-      searchContent: "",
-      searchType: "全部",
-    }
+      // 保留 data 中的内容，因为 searchLabel 使用了 computed
+    };
   },
   methods: {
-    alert(msg) {
-      this.alertMsg = msg;
+    addPost() {
+      // 如果需要处理添加帖子后的逻辑，可以在这里实现
     },
-    setLoading(msg) {
-      this.loadMsg = msg;
-    },
-    handleSearchTypeChanged(type) {
-      this.searchType = type;
-    },
-    hexToRgba(hex, opacity) {
-      return hexToRgba(hex, opacity);
-    },
-    showDialog(type) {
-      switch (type) {
-        case 'article':
-          openPage("url", "#/edit");
-          break;
-        case 'course':
-          this.setCourseEditorState(true);
-          break;
-        case 'post':
-          this.setPostEditorState(true);
-          break;
-        default:
-      }
-    },
-    search() {
-      if (this.ifMobile && !this.mobileIfShowSearchInput) {
-        openPage("url", { url: "#/search_mobile" });
-        return;
-      }
-      let dealedString = this.searchContent.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '');
-      if (dealedString.length == 0) {
-        this.alert(getNormalInfoAlert("关键词无效，换一个试试吧 >_<"));
-        this.searchContent = "";
-        return;
-      }
-      if (dealedString.length >= 25) {
-        this.alert(getNormalInfoAlert("搜索内容不得超过25字"));
-        this.searchContent = "";
-        return;
-      }
-      let type = null;
-      switch (this.searchType) {
-        case '文章':
-          type = 'article';
-          break;
-        case '帖子':
-          type = 'post';
-          break;
-        case '课程':
-          type = 'course';
-          break;
-        case '全部':
-          type = 'all';
-          break;
-        case '回复':
-          type = 'reply';
-          break;
-        default:
-          type = 'all';
-      }
-      openPage("router", {
-        path: '/search',
-        query: {
-          type: type,
-          query: dealedString
-        }
-      });
-    },
-    toHomePage() {
-      openPage("router", {
-        name: 'IndexPage',
-      })
-    },
-    closeDialog() {
-      this.setShowHistoryState(false);
-      this.setPostEditorState(false);
-      this.setCourseEditorState(false);
-    },
-    editArticle() {
-      openPage("router", {
-        name: 'EditorPage',
-      })
-    },
-    openUrl(url) {
-      openPage("url", { url: url });
-    },
-    toServicePage(){
-      openPage("url",{url:"#/service"});
-    }
-  },
-  created() {
   },
   mounted() {
     this.setLoadState(true);
+    
+    // 搜索框回车事件监听
     try {
       let searchBox = document.getElementById('search-box-listen');
-      searchBox.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' || event.keyCode == 13) {
-          event.preventDefault();
-          document.getElementById('search-btn').click();
-        }
-      });
+      if (searchBox) {
+        searchBox.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter' || event.keyCode == 13) {
+            event.preventDefault();
+            const searchBtn = document.getElementById('search-btn');
+            if (searchBtn) {
+              searchBtn.click();
+            }
+          }
+        });
+      }
     } catch (e) {
-      //eslint-disable-next-line
+      // 忽略错误
     }
-    this.searchInputEventBus.on("fill-search-input",(value)=>{
-      this.searchContent=value;
-    })
-
+    
+    // 监听搜索输入事件总线
+    this.searchInputEventBus.on("fill-search-input", (value) => {
+      this.searchContent = value;
+    });
   }
 };
 </script>
@@ -487,7 +388,7 @@ export default {
   .router-view {
     width: 100vw;
     max-width: 100vw;
-    overflow-y: scroll;
+    overflow-y: auto;
     background-color: white;
   }
 }
@@ -513,7 +414,7 @@ export default {
   .router-view {
     width: 100vw;
     max-width: 100vw;
-    overflow-y: scroll;
+    overflow-y: auto;
     background-color: white;
   }
 

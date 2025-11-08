@@ -4,8 +4,8 @@
     </div>
 </template>
 <script setup>
-import { uploadArticleImage } from '@/axios/image';
-import { compressImage } from '@/utils/image';
+import { uploadArticleImage } from '@/api/modules/image';
+import { compressImage } from '@/utils/imageUtils';
 import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
 import { MdEditor } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
@@ -43,11 +43,25 @@ export default {
             this.$emit('alert',msg);
         },
         async handleUploadImage(files, callback) {
-            const image = await compressImage(files[0],1024*4);
-            const tmpUrl=URL.createObjectURL(image);
-            callback([tmpUrl]);
-            //add the tmp Url to the dict 
-            this.imageDict[tmpUrl]=image;
+            try {
+                const image = await compressImage(files[0],1024*4);
+                const tmpUrl=URL.createObjectURL(image);
+                callback([tmpUrl]);
+                //add the tmp Url to the dict 
+                this.imageDict[tmpUrl]=image;
+            } catch (error) {
+                console.error('Failed to compress image:', error);
+                this.alert({ 
+                    state: true, 
+                    color: 'error', 
+                    title: '图片处理失败', 
+                    content: error.message || '图片压缩失败，请重试' 
+                });
+                // 如果压缩失败，使用原始文件
+                const tmpUrl=URL.createObjectURL(files[0]);
+                callback([tmpUrl]);
+                this.imageDict[tmpUrl]=files[0];
+            }
         },
         //call by the editor
         async doUpload(){

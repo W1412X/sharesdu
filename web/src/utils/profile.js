@@ -1,7 +1,7 @@
 import { globalProperties } from "@/main";
 import { waitForLock } from "./lock";
 import { globalProfileCacher } from "./global_img_cache";
-import { axiosInstanceNoHeader } from "@/axios/axios";
+import { axiosInstanceNoHeader } from "@/api/request";
 import { waitSecond } from "./other";
 /**
  * get the profile by userId

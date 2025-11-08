@@ -112,7 +112,7 @@
     </div>
 </template>
 <script>
-import { globalSearch, searchArticles, searchCourses, searchPosts, searchReplies } from '@/axios/search';
+import { globalSearch, searchArticles, searchCourses, searchPosts, searchReplies } from '@/api/modules/search';
 import HybridSearchItem from '@/components/search/HybridSearchItem.vue';
 import SearchItem from '@/components/search/SearchItem.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
@@ -987,7 +987,7 @@ export default {
     .course-select-container{
         display: flex;
         flex-direction: row;
-        overflow-x: scroll;
+        overflow-x: auto;
         padding: 6px;
         margin-right: 30px;
         max-width: none;
@@ -1009,7 +1009,7 @@ export default {
         height: max-content;
         width: 750px;
         max-width: 750px;
-        overflow-x: scroll;
+        overflow-x: auto;
         padding: 5px;
     }
 
@@ -1021,7 +1021,7 @@ export default {
         max-width: 400px;
         margin-right: 10px;
         width: fit-content;
-        overflow-x: scroll;
+        overflow-x: auto;
     }
     .article-tag-container{
         padding: 6px;
@@ -1048,7 +1048,7 @@ export default {
     .course-select-container{
         display: flex;
         flex-direction: row;
-        overflow-x: scroll;
+        overflow-x: auto;
         flex:1;
         margin-right: 30px;
         max-width: none;
@@ -1067,7 +1067,7 @@ export default {
         flex-direction: row;
         align-items: center;
         height: max-content;
-        overflow-x: scroll;
+        overflow-x: auto;
         width: 100vw;
         padding: 5px;
     }
@@ -1080,7 +1080,7 @@ export default {
         align-items: center;
         margin-right: 10px;
         max-width: 60vw;
-        overflow-x: scroll;
+        overflow-x: auto;
     }
 }
 </style>

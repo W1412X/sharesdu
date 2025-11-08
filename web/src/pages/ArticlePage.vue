@@ -152,12 +152,12 @@ import PostItem from '@/components/post/PostItem.vue';
 import PostEditor from '@/components/post/PostEditor.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, isScrollToBottom, openPage, responseToArticle } from '@/utils/other';
-import { getArticleDetail, getPostListByArticleId } from '@/axios/article';
+import { getArticleDetail, getPostListByArticleId } from '@/api/modules/article';
 import LikeButton from '@/components/common/LikeButton.vue';
 import DeleteButton from '@/components/common/DeleteButton.vue';
 import { addHistory } from '@/utils/history';
 import ManageButton from '@/components/manage/ManageButton.vue';
-import { setArticleTop } from '@/axios/top';
+import { setArticleTop } from '@/api/modules/top';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 export default {
@@ -442,11 +442,20 @@ export default {
             this.setLoading(getCancelLoadMsg());
             if (response.status == 200) {
                 this.articleResponse = response;
-                [this.article, this.editorType] = await responseToArticle(response);
-                this.loadState = true;
-                //add to history
-                await addHistory("article", this.article.id, this.article.title);
-                document.getElementById('web-title').innerText = '文章 | ' + this.article.title;
+                try {
+                    [this.article, this.editorType] = await responseToArticle(response);
+                    this.loadState = true;
+                    //add to history
+                    await addHistory("article", this.article.id, this.article.title);
+                    const webTitle = document.getElementById('web-title');
+                    if (webTitle) {
+                        webTitle.innerText = '文章 | ' + this.article.title;
+                    }
+                } catch (error) {
+                    console.error('Failed to process article:', error);
+                    this.alert(getNormalErrorAlert('文章处理失败: ' + (error.message || '未知错误')));
+                    openPage("router",{ name: "ErrorPage", params: { reason: '文章处理失败' } });
+                }
             } else {
                 this.alert(getNormalErrorAlert(response.message));
                 openPage("router",{ name: "ErrorPage", params: { reason: response.message } })
@@ -521,7 +530,7 @@ export default {
 }
 
 .row-div-reverse {
-    overflow-x: scroll;
+    overflow-x: auto;
     max-width: 100%;
     display: flex;
     flex-direction: row-reverse;
@@ -538,7 +547,7 @@ export default {
     flex-direction: row;
     padding-bottom: 5px;
     align-items: center;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .source-bar-container {
@@ -561,7 +570,7 @@ export default {
 }
 
 .row-div {
-    overflow-x: scroll;
+    overflow-x: auto;
     max-width: 100%;
     display: flex;
     align-items: center;
@@ -663,7 +672,7 @@ export default {
         width: 752px;
         padding: 1px;
         height: 100vh;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 }
 
@@ -745,7 +754,7 @@ export default {
         border-top: #8a8a8a 1px solid;
         width: 100vw;
         height: 60vh;
-        overflow-y: scroll;
+        overflow-y: auto;
         border-radius: 5px;
     }
 }

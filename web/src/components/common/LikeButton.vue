@@ -9,7 +9,7 @@
     </v-btn>
 </template>
 <script>
-import { likeContent, unlikeContent } from '@/axios/like';
+import { likeContent, unlikeContent } from '@/api/modules/like';
 import { getNormalErrorAlert } from '@/utils/other';
 import { computed } from 'vue';
 export default {

@@ -130,10 +130,10 @@
   </div>
 </template>
 <script>
-import { getBlockList, unblockUser } from '@/axios/block';
-import { getChatUsers } from '@/axios/chat';
-import { fetchNotificationsList, markAsReadNotification } from '@/axios/notification';
-import { getNetworkErrorResponse } from '@/axios/statusCodeMessages';
+import { getBlockList, unblockUser } from '@/api/modules/block';
+import { getChatUsers } from '@/api/modules/chat';
+import { fetchNotificationsList, markAsReadNotification } from '@/api/modules/notification';
+import { getNetworkErrorResponse } from '@/api/modules/statusCodeMessages';
 import AuthorCard from '@/components/user/AuthorCard.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
 import ChatItem from '@/components/chat/ChatItem.vue';
