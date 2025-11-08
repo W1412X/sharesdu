@@ -3,6 +3,7 @@
  * 包含图片压缩和图片获取处理函数
  */
 import config from '@/config';
+import { globalProperties } from '@/main';
 
 /**
  * 压缩图片
@@ -67,21 +68,42 @@ export async function compressImage(file, maxSizeKB) {
 /**
  * 获取并处理图片
  * @param {String} url - 图片 URL
- * @param {String} format - 图片格式（可选）
  * @returns {Promise<String>} 处理后的图片 URL
  */
-export async function fetchImgAndDeal(url) {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch image: ${response.statusText}`);
-        }
-        const blob = await response.blob();
-        return URL.createObjectURL(blob);
-    } catch (error) {
-        console.error('Error fetching image:', error);
-        throw error;
+export async function fetchImgAndDeal(imgUrl,type='svg'){
+  if(imgUrl==null){
+    return globalProperties.$imgDict['svg']['empty'];
+  }
+  if(imgUrl==globalProperties.$imgDict['svg']['upload']){
+    return globalProperties.$imgDict['svg']['empty'];
+  }
+  let response = await fetch(imgUrl);
+  let resultUrl=null;
+  if (!response.ok) {
+    resultUrl=globalProperties.$imgDict[type]['empty'];
+  }
+  const contentType = response.headers.get('Content-Type');
+  if (contentType && contentType.startsWith('image/')) {
+    //got
+    let blob = await response.blob();
+    resultUrl=URL.createObjectURL(blob);
+  } else if (contentType && contentType.includes('application/json')) {
+    const jsonData = await response.json();
+    if (jsonData.status == 403) {
+      if (jsonData['message'].includes('FROZEN')) {
+        //ing
+        resultUrl=globalProperties.$imgDict[type]['reviewing'];
+      } else {
+        //failed
+        resultUrl = globalProperties.$imgDict[type]['unreviewed'];
+      }
+    } else if (jsonData.status == 404) {
+      resultUrl = globalProperties.$imgDict[type]['notFound'];
     }
+  } else {
+    resultUrl = globalProperties.$imgDict[type]['empty'];
+  }
+  return resultUrl;
 }
 
 /**
