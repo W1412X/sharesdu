@@ -130,12 +130,20 @@
             </v-card>
             <div id="comments-container" class="comments-container">
                 <div class="comment-column">
-                    <course-comment v-for="(item,index) in commentList" 
-                        :init-data="item"
-                        :key="index"    
-                    ></course-comment>
+                    <template v-if="commentList.length > 0">
+                        <course-comment v-for="(item,index) in commentList" 
+                            :init-data="item"
+                            :key="index"    
+                        ></course-comment>
+                        <v-btn v-if="!allLoad.comment" :loading="loading.loadEvaluation" :disabled="loading.loadEvaluation" :color="themeColor" class="load-more-btn" variant="text" @click="getCourseCommentList()">加载更多</v-btn>
+                    </template>
+                    <nothing-view v-else-if="commentList.length <= 0" 
+                        icon="mdi-comment-text-outline" 
+                        text="暂无评论" 
+                        :icon-size="80"
+                        text-size="18px"
+                        min-height="300px"></nothing-view>
                 </div>
-                <v-btn v-if="!allLoad.comment" :loading="loading.loadEvaluation" :disabled="loading.loadEvaluation" :color="themeColor" class="load-more-btn" variant="text" @click="getCourseCommentList()">加载更多</v-btn>
             </div>
             <div class="bottom-bar">
                 <div class="column-center user-name text-medium">
@@ -171,11 +179,19 @@
                 <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
                     发表帖子
                 </v-btn>
-                <post-item v-for="item in postItems" :init-data="item" :key="item.id" :if-parent-author="ifMaster" @alert="alert" 
-                    @set_post_top="setPostTop"
-                >
-                </post-item>
-                <v-btn @click="loadMorePost" :loading="loading.post" :disabled="loading.post" v-if="this.postItems.length!==0&&!this.allLoad.post" :color="themeColor" variant="text" class="load-btn">加载更多</v-btn>
+                <template v-if="postItems.length > 0">
+                    <post-item v-for="item in postItems" :init-data="item" :key="item.id" :if-parent-author="ifMaster" @alert="alert" 
+                        @set_post_top="setPostTop"
+                    >
+                    </post-item>
+                    <v-btn @click="loadMorePost" :loading="loading.post" :disabled="loading.post" v-if="!this.allLoad.post" :color="themeColor" variant="text" class="load-btn">加载更多</v-btn>
+                </template>
+                <nothing-view v-else-if="postPageNum > 1" 
+                    icon="mdi-forum-outline" 
+                    text="暂无帖子" 
+                    :icon-size="80"
+                    text-size="18px"
+                    min-height="300px"></nothing-view>
             </div>
         </div>
     </v-overlay>
@@ -191,6 +207,7 @@ import { copy, getNormalErrorAlert, getNormalSuccessAlert, isElementAtBottom, is
 import { getCookie } from '@/utils/cookie';
 import StarButton from '@/components/star/StarButton.vue';
 import PostEditor from '@/components/post/PostEditor.vue';
+import NothingView from '@/components/common/NothingView.vue';
 import PostItem from '@/components/post/PostItem.vue';
 import AlertButton from '@/components/report/AlertButton.vue';
 import CourseEditor from '@/components/course/CourseEditor.vue';
@@ -217,6 +234,7 @@ export default {
         EmojiPicker,
         CourseHistoryCard,
         PartLoadingView,
+        NothingView,
         ManageButton,
         WithLinkContainer,
         PosterDisplayer,

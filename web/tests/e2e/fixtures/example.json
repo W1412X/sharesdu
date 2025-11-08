@@ -1,0 +1,17 @@
+{
+  "users": {
+    "testUser": {
+      "username": "testuser",
+      "password": "testpass",
+      "email": "test@example.com"
+    }
+  },
+  "articles": [
+    {
+      "id": "1",
+      "title": "测试文章",
+      "summary": "这是一篇测试文章"
+    }
+  ]
+}
+

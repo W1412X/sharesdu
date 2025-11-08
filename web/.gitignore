@@ -22,3 +22,13 @@ pnpm-debug.log*
 *.sln
 *.sw?
 *.pem
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+tests/e2e/videos/
+tests/e2e/screenshots/

@@ -88,8 +88,16 @@
       <div v-if="choose === 'chat'">
         <part-loading-view :state="!loadState.message" :text="'正在加载聊天列表...'"></part-loading-view>
         <div v-if="loadState.message">
-          <chat-item v-for="(item, index) in this.chatList" :init-data="item" :key="index" style="margin: 5px;"
-            @alert="alert"></chat-item>
+          <template v-if="chatList.length > 0">
+            <chat-item v-for="(item, index) in this.chatList" :init-data="item" :key="index" style="margin: 5px;"
+              @alert="alert"></chat-item>
+          </template>
+          <nothing-view v-else 
+              icon="mdi-chat-outline" 
+              text="暂无私聊" 
+              :icon-size="80"
+              text-size="18px"
+              min-height="300px"></nothing-view>
         </div>
       </div>
       <div v-if="choose === 'notification'">
@@ -98,12 +106,20 @@
           <v-btn :loading="loading.clearNotification" :disabled="loading.clearNotification" @click="clearNotification"
             prepend-icon="mdi-delete" color="grey" class="text-small" variant="text" text="清空此页通知"></v-btn>
         </div>
-        <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item" @alert="alert"
-          @set_loading="setLoading"></notification-item>
-        <v-btn :loading="loading.loadNotification" :disabled="loading.loadNotification" @click="getNotificationList"
-          variant="tonal" rounded width="100%">
-          加载更多
-        </v-btn>
+        <template v-if="notificationList.length > 0">
+          <notification-item v-for="(item, index) in this.notificationList" :key="index" :init-data="item" @alert="alert"
+            @set_loading="setLoading"></notification-item>
+          <v-btn :loading="loading.loadNotification" :disabled="loading.loadNotification" @click="getNotificationList"
+            variant="tonal" rounded width="100%">
+            加载更多
+          </v-btn>
+        </template>
+        <nothing-view v-else
+            icon="mdi-bell-outline" 
+            text="暂无通知" 
+            :icon-size="80"
+            text-size="18px"
+            min-height="300px"></nothing-view>
       </div>
       <!-- account part  -->
       <div v-if="choose === 'account'">
@@ -148,6 +164,7 @@ import { getCookie } from '@/utils/cookie';
 import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 import { ref, computed } from 'vue';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import NothingView from '@/components/common/NothingView.vue';
 export default {
   name: 'SelfPage',
   setup() {
@@ -230,6 +247,7 @@ export default {
     CreatePreviewAndList,
     ChatItem,
     PartLoadingView,
+    NothingView,
   },
   data() {
     return {

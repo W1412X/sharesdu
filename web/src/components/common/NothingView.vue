@@ -1,7 +1,7 @@
 <template>
-    <div style="width: 100%;height: 100%;flex-direction: row;align-items: center;justify-content: center;">
-        <v-empty-state :color="color" text-color="" :icon="icon">
-            <span :style="{ color: color }">{{text}}</span>
+    <div class="nothing-view-container" :style="{ width: width, height: height, minHeight: minHeight }">
+        <v-empty-state :color="color" text-color="" :icon="icon" :icon-size="iconSize">
+            <span :style="{ color: textColor || color, fontSize: textSize }">{{text}}</span>
         </v-empty-state>
     </div>
 </template>
@@ -21,7 +21,39 @@ export default{
         color:{
             type:String,
             default:hexToRgba('#8a8a8a',0.2)
+        },
+        textColor:{
+            type:String,
+            default:null
+        },
+        iconSize:{
+            type:[Number, String],
+            default:64
+        },
+        textSize:{
+            type:String,
+            default:"16px"
+        },
+        width:{
+            type:String,
+            default:"100%"
+        },
+        height:{
+            type:String,
+            default:"100%"
+        },
+        minHeight:{
+            type:String,
+            default:"200px"
         }
     },
 }
 </script>
+<style scoped>
+.nothing-view-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+</style>

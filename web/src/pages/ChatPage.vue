@@ -51,29 +51,37 @@
             </div>
             <div id="chat-container" v-if="deviceType == 'desktop'" style="display: flex;flex-direction: row;flex:1;">
                 <div id="user-list" class="user-list">
-                    <v-list density="compact" nav :color="themeColor" v-model="choose">
-                        <v-list-item base-color="#dddddd" variant="outlined" @click="selectUser(index)"
-                            v-for="(user, index) in chatUsers" :key="index" :value="user.id">
-                            <div class="row-div">
-                                <avatar-name :clickable="false" :if-show-name="false" :size="45"
-                                    :init-data="{ id: user.id, name: user.name }"></avatar-name>
-                                <div class="column-div">
-                                    <div class="msg-summary-div text-small-bold">
-                                        {{ user.name }}
-                                    </div>
-                                    <div class="msg-summary-div text-small">
-                                        {{ (user.lastMsg.isSelf ? '' : user.name + ' : ') + user.lastMsg.content }}
-                                    </div>
-                                    <div class="msg-time-div text-min">
-                                        {{ user.lastMsg.time }}
+                    <template v-if="chatUsers.length > 0">
+                        <v-list density="compact" nav :color="themeColor" v-model="choose">
+                            <v-list-item base-color="#dddddd" variant="outlined" @click="selectUser(index)"
+                                v-for="(user, index) in chatUsers" :key="index" :value="user.id">
+                                <div class="row-div">
+                                    <avatar-name :clickable="false" :if-show-name="false" :size="45"
+                                        :init-data="{ id: user.id, name: user.name }"></avatar-name>
+                                    <div class="column-div">
+                                        <div class="msg-summary-div text-small-bold">
+                                            {{ user.name }}
+                                        </div>
+                                        <div class="msg-summary-div text-small">
+                                            {{ (user.lastMsg.isSelf ? '' : user.name + ' : ') + user.lastMsg.content }}
+                                        </div>
+                                        <div class="msg-time-div text-min">
+                                            {{ user.lastMsg.time }}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <template v-if="user.msgNum > 0" v-slot:append>
-                                <v-badge color="error" :content="user.msgNum" inline></v-badge>
-                            </template>
-                        </v-list-item>
-                    </v-list>
+                                <template v-if="user.msgNum > 0" v-slot:append>
+                                    <v-badge color="error" :content="user.msgNum" inline></v-badge>
+                                </template>
+                            </v-list-item>
+                        </v-list>
+                    </template>
+                    <nothing-view v-else-if="ifMounted" 
+                        icon="mdi-chat-outline" 
+                        text="暂无私聊" 
+                        :icon-size="80"
+                        text-size="18px"
+                        min-height="300px"></nothing-view>
                 </div>
                 <div id="desktop-message-editor-container" style="flex:1;display: flex;flex-direction: column;">
                     <div id="message-container" class="message-container">
@@ -115,6 +123,7 @@ import { getChatHistory, getChatUsers, markMessageAsRead, sendPrivateMessage } f
 import { ref } from 'vue';
 import AvatarName from '@/components/common/AvatarName.vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
+import NothingView from '@/components/common/NothingView.vue';
 export default {
     setup() {
         /**
@@ -141,6 +150,7 @@ export default {
         ChatMessage,
         SensitiveTextArea,
         AvatarName,
+        NothingView,
     },
     data() {
         let receiverId = null;

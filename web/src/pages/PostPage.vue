@@ -118,12 +118,20 @@
             </div>
             <div id="comments-container" class="comments-container">
                 <div class="column-div">
-                    <reply-item v-for="comment in replyList" :init-data="comment" @show_parent="getParentReply"
-                        @reply="addReply" :post-id="this.post.id" :key="comment.id" @alert="alert"
-                        @set_loading="setLoading">
-                    </reply-item>
-                    <v-btn v-if="!allLoad.reply" :loading="loading.loadReply" :disabled="loading.loadReply"
-                        variant="text" class="load-btn" :color="themeColor" @click="loadMoreReply">加载更多</v-btn>
+                    <template v-if="replyList.length > 0">
+                        <reply-item v-for="comment in replyList" :init-data="comment" @show_parent="getParentReply"
+                            @reply="addReply" :post-id="this.post.id" :key="comment.id" @alert="alert"
+                            @set_loading="setLoading">
+                        </reply-item>
+                        <v-btn v-if="!allLoad.reply" :loading="loading.loadReply" :disabled="loading.loadReply"
+                            variant="text" class="load-btn" :color="themeColor" @click="loadMoreReply">加载更多</v-btn>
+                    </template>
+                    <nothing-view v-else
+                        icon="mdi-comment-outline" 
+                        text="暂无回复" 
+                        :icon-size="80"
+                        text-size="18px"
+                        min-height="300px"></nothing-view>
                 </div>
             </div>
         </div>
@@ -142,6 +150,7 @@ import { createReplyUnderPost, getPostDetailById, getReplyDetailById, getReplyLi
 import LikeButton from '@/components/common/LikeButton.vue';
 import ReplyItem from '@/components/post/ReplyItem.vue';
 import DeleteButton from '@/components/common/DeleteButton.vue';
+import NothingView from '@/components/common/NothingView.vue';
 import { addHistory } from '@/utils/history';
 import EmojiPicker from '@/components/common/EmojiPicker.vue';
 import ImgCard from '@/components/common/ImgCard.vue';
@@ -159,6 +168,7 @@ export default {
         AvatarName,
         LikeButton,
         DeleteButton,
+        NothingView,
         EmojiPicker,
         ImgCard,
         PartLoadingView,

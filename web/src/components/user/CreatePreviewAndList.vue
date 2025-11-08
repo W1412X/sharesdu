@@ -14,23 +14,47 @@
         </v-tabs>
         <div v-if="itemType == 'article'" class="column-div-scroll">
           <div class="column-div">
-            <star-item :if-star-type="false" v-for="(item, index) in this.articleList" :key="index" :init-data="item">
-          </star-item>
-          <v-btn :disabled="loading.article" :loading="loading.article" v-if="this.type=='all'" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
+            <template v-if="articleList.length > 0">
+                <star-item :if-star-type="false" v-for="(item, index) in this.articleList" :key="index" :init-data="item">
+                </star-item>
+                <v-btn :disabled="loading.article" :loading="loading.article" v-if="this.type=='all'" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
+            </template>
+            <nothing-view v-else
+                icon="mdi-book-open-outline" 
+                text="暂无文章" 
+                :icon-size="80"
+                text-size="18px"
+                min-height="300px"></nothing-view>
           </div>
         </div>
         <div v-if="itemType == 'post'" class="column-div-scroll">
             <div class="column-div">
-                <star-item :if-star-type="false" v-for="(item, index) in this.postList" :key="index" :init-data="item">
-          </star-item>
-          <v-btn :loading="loading.post" :disabled="loading.post" v-if="this.type=='all'" width="100%"  @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
+                <template v-if="postList.length > 0">
+                    <star-item :if-star-type="false" v-for="(item, index) in this.postList" :key="index" :init-data="item">
+                    </star-item>
+                    <v-btn :loading="loading.post" :disabled="loading.post" v-if="this.type=='all'" width="100%"  @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
+                </template>
+                <nothing-view v-else
+                    icon="mdi-forum-outline" 
+                    text="暂无帖子" 
+                    :icon-size="80"
+                    text-size="18px"
+                    min-height="300px"></nothing-view>
             </div>
         </div>
         <div v-if="itemType == 'reply'" class="column-div-scroll">
           <div class="column-div">
-            <star-item :if-star-type="false" v-for="(item, index) in this.replyList" :key="index" :init-data="item" :postId="item.postId" :if-preview="true">
-          </star-item>
-          <v-btn :loading="loading.reply" :disabled="loading.reply" v-if="this.type=='all'" width="100%"  @click="loadMore('reply')" variant="tonal" class="load-btn">加载更多</v-btn>
+            <template v-if="replyList.length > 0">
+                <star-item :if-star-type="false" v-for="(item, index) in this.replyList" :key="index" :init-data="item" :postId="item.postId" :if-preview="true">
+                </star-item>
+                <v-btn :loading="loading.reply" :disabled="loading.reply" v-if="this.type=='all'" width="100%"  @click="loadMore('reply')" variant="tonal" class="load-btn">加载更多</v-btn>
+            </template>
+            <nothing-view v-else
+                icon="mdi-comment-outline" 
+                text="暂无回复" 
+                :icon-size="80"
+                text-size="18px"
+                min-height="300px"></nothing-view>
           </div>
         </div>
     </v-card>
@@ -40,6 +64,7 @@ import { extractTime, getNormalInfoAlert } from '@/utils/other';
 import { getUserContent, getUserPreview } from '@/api/modules/account';
 import StarItem from '@/components/star/StarItem.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import NothingView from '@/components/common/NothingView.vue';
 
 export default{
     props:{
@@ -55,6 +80,7 @@ export default{
     components:{
         StarItem,
         PartLoadingView,
+        NothingView,
     },
     data() {
         return {

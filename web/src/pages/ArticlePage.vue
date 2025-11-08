@@ -130,11 +130,19 @@
                 <v-btn @click="setPostEditorState(true)" variant="tonal" :color="themeColor">
                     发表帖子
                 </v-btn>
-                <post-item v-for="(item) in postItems" :init-data="item" :key="item.id"
-                    :if-parent-author="userId == article.authorId" @alert="alert" @set_post_top="setPostTop">
-                </post-item>
-                <v-btn v-if="!allLoad.post" @click="loadMorePost" :loading="this.loading.post" :disabled="loading.post"
-                    variant="text" class="load-btn" :color="themeColor">加载更多</v-btn>
+                <template v-if="postItems.length > 0">
+                    <post-item v-for="(item) in postItems" :init-data="item" :key="item.id"
+                        :if-parent-author="userId == article.authorId" @alert="alert" @set_post_top="setPostTop">
+                    </post-item>
+                    <v-btn v-if="!allLoad.post" @click="loadMorePost" :loading="this.loading.post" :disabled="loading.post"
+                        variant="text" class="load-btn" :color="themeColor">加载更多</v-btn>
+                </template>
+                <nothing-view v-else-if="postItems.length <= 0" 
+                    icon="mdi-forum-outline" 
+                    text="暂无帖子" 
+                    :icon-size="80"
+                    text-size="18px"
+                    min-height="300px"></nothing-view>
             </div>
         </div>
     </v-overlay>
@@ -160,6 +168,7 @@ import ManageButton from '@/components/manage/ManageButton.vue';
 import { setArticleTop } from '@/api/modules/top';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
+import NothingView from '@/components/common/NothingView.vue';
 export default {
     name: 'ArticlePage',
     components: {
@@ -173,6 +182,7 @@ export default {
         AvatarName,
         DeleteButton,
         LikeButton,
+        NothingView,
         ManageButton,
     },
     setup() {

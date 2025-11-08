@@ -179,6 +179,7 @@ export default {
         SearchItem,
         HybridSearchItem,
         SensitiveTextField,
+        NothingView,
     },
     watch: {
         courseCollege:{

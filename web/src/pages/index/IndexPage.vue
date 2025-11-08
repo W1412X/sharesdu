@@ -53,22 +53,46 @@
                         </v-btn>
                         <v-spacer />
                     </div>
-                    <article-item v-for="item in this.articleList[articleSortMethod]" :key="item.id" :init-data="item">
-                    </article-item>
-                    <v-btn v-if="!allLoad.article[articleSortMethod]" @click="loadMore('article')" variant="text"
-                        :loading="loading.article" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    <template v-if="articleList[articleSortMethod].length > 0">
+                        <article-item v-for="item in this.articleList[articleSortMethod]" :key="item.id" :init-data="item">
+                        </article-item>
+                        <v-btn v-if="!allLoad.article[articleSortMethod]" @click="loadMore('article')" variant="text"
+                            :loading="loading.article" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    </template>
+                    <nothing-view v-else-if="articlePageNum[articleSortMethod] > 1" 
+                        icon="mdi-book-open-outline" 
+                        text="暂无文章" 
+                        :icon-size="80"
+                        text-size="18px"
+                        min-height="300px"></nothing-view>
                 </div>
                 <div v-if="itemType == 'post'" class="item-container">
-                    <post-item v-for="item in this.postList" :key="item.id" :init-data="item">
-                    </post-item>
-                    <v-btn v-if="!allLoad.post" @click="loadMore('post')" :variant="'text'" :loading="loading.post"
-                        class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    <template v-if="postList.length > 0">
+                        <post-item v-for="item in this.postList" :key="item.id" :init-data="item">
+                        </post-item>
+                        <v-btn v-if="!allLoad.post" @click="loadMore('post')" :variant="'text'" :loading="loading.post"
+                            class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    </template>
+                    <nothing-view v-else-if="postPageNum > 1" 
+                        icon="mdi-forum-outline" 
+                        text="暂无帖子" 
+                        :icon-size="80"
+                        text-size="18px"
+                        min-height="300px"></nothing-view>
                 </div>
                 <div v-if="itemType == 'course'" class="item-container">
-                    <course-item v-for="item in this.courseList" :key="item.id" :init-data="item">
-                    </course-item>
-                    <v-btn v-if="!allLoad.course" @click="loadMore('course')" :variant="'text'"
-                        :loading="loading.course" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    <template v-if="courseList.length > 0">
+                        <course-item v-for="item in this.courseList" :key="item.id" :init-data="item">
+                        </course-item>
+                        <v-btn v-if="!allLoad.course" @click="loadMore('course')" :variant="'text'"
+                            :loading="loading.course" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    </template>
+                    <nothing-view v-else-if="coursePageNum > 1" 
+                        icon="mdi-school-outline" 
+                        text="暂无课程" 
+                        :icon-size="80"
+                        text-size="18px"
+                        min-height="300px"></nothing-view>
                 </div>
             </v-pull-to-refresh>
             <v-spacer></v-spacer>
@@ -82,6 +106,7 @@ import { ref, computed, shallowRef } from 'vue';
 import ArticleItem from '@/components/article/ArticleItem.vue';
 import CourseItem from '@/components/course/CourseItem.vue';
 import PostItem from '@/components/post/PostItem.vue';
+import NothingView from '@/components/common/NothingView.vue';
 import { getCookie } from '@/utils/cookie';
 import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, isElementAtBottom, openPage } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/api/modules/article';
@@ -96,6 +121,7 @@ export default {
         ArticleItem,
         CourseItem,
         PostItem,
+        NothingView,
         VPullToRefresh,
     },
     setup() {
