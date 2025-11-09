@@ -111,7 +111,7 @@ import HybridSearchItem from '@/components/search/HybridSearchItem.vue';
 import SearchItem from '@/components/search/SearchItem.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
-import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, isElementAtBottom, openPage } from '@/utils/other';
+import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, hexToRgba, isElementAtBottom, openPage } from '@/utils/other';
 import { computed } from 'vue';
 import { getCookie } from '@/utils/cookie';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
@@ -780,6 +780,9 @@ export default {
                 this.alert(getNormalErrorAlert(response.message));
             }
             releaseLock('search'+this.searchType+this.sortType+this.query)
+        },
+        hexToRgba(hex,alpha){
+            return hexToRgba(hex,alpha);
         },
         async loadAll() {
             acquireLock('search'+this.searchType+this.sortType+this.query);
