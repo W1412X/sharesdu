@@ -113,13 +113,17 @@ export default {
             /**
              * check global cache first  
              */
-            let tmp = globalProfileCacher.getImage(globalProperties.$apiUrl + '/image/user?user_id=' + this.initData.id);
-            if (tmp) {
-                this.profileUrl = this.optimizeImageUrl(tmp);
-                return;
-            } else {
-                let url = await getProfileUrl(this.initData.id);
+            const cacheKey = globalProperties.$apiUrl + '/image/user?user_id=' + this.initData.id;
+            try {
+                const url = await globalProfileCacher.remember(cacheKey, async () => {
+                    const profileUrl = await getProfileUrl(this.initData.id);
+                    return profileUrl;
+                });
                 this.profileUrl = this.optimizeImageUrl(url);
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.error('AvatarName: 获取头像失败', error);
+                this.profileUrl = null;
             }
         },
         /**

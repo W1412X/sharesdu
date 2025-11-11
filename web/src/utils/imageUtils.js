@@ -2,8 +2,9 @@
  * 图片处理相关工具函数
  * 包含图片压缩和图片获取处理函数
  */
-import config from '@/config';
 import { globalProperties } from '@/main';
+import config from '@/config';
+import { globalImageCacher } from '@/utils/global_img_cache';
 
 /**
  * 压缩图片
@@ -70,40 +71,119 @@ export async function compressImage(file, maxSizeKB) {
  * @param {String} url - 图片 URL
  * @returns {Promise<String>} 处理后的图片 URL
  */
-export async function fetchImgAndDeal(imgUrl,type='svg'){
-  if(imgUrl==null){
-    return globalProperties.$imgDict['svg']['empty'];
-  }
-  if(imgUrl==globalProperties.$imgDict['svg']['upload']){
-    return globalProperties.$imgDict['svg']['empty'];
-  }
-  let response = await fetch(imgUrl);
-  let resultUrl=null;
-  if (!response.ok) {
-    resultUrl=globalProperties.$imgDict[type]['empty'];
-  }
-  const contentType = response.headers.get('Content-Type');
-  if (contentType && contentType.startsWith('image/')) {
-    //got
-    let blob = await response.blob();
-    resultUrl=URL.createObjectURL(blob);
-  } else if (contentType && contentType.includes('application/json')) {
-    const jsonData = await response.json();
-    if (jsonData.status == 403) {
-      if (jsonData['message'].includes('FROZEN')) {
-        //ing
-        resultUrl=globalProperties.$imgDict[type]['reviewing'];
-      } else {
-        //failed
-        resultUrl = globalProperties.$imgDict[type]['unreviewed'];
-      }
-    } else if (jsonData.status == 404) {
-      resultUrl = globalProperties.$imgDict[type]['notFound'];
+const SUCCESS_CACHE_TTL = 45 * 60 * 1000; // 45 分钟
+const ERROR_CACHE_TTL = 5 * 60 * 1000; // 5 分钟
+const imageInFlightRequests = new Map();
+
+const resolvePlaceholder = (type = 'svg', state = 'empty') => {
+    const dict = globalProperties?.$imgDict || {};
+    return (
+        dict?.[type]?.[state] ||
+        dict?.svg?.[state] ||
+        globalProperties?.$imgLazy ||
+        '/resource/default_img.svg'
+    );
+};
+
+export async function fetchImgAndDeal(imgUrl, type = 'svg') {
+    if (!imgUrl) {
+        return resolvePlaceholder(type, 'empty');
     }
-  } else {
-    resultUrl = globalProperties.$imgDict[type]['empty'];
-  }
-  return resultUrl;
+    if (imgUrl === resolvePlaceholder(type, 'upload')) {
+        return resolvePlaceholder(type, 'empty');
+    }
+
+    const cached = globalImageCacher.getImage(imgUrl);
+    if (cached) {
+        return cached;
+    }
+
+    if (imageInFlightRequests.has(imgUrl)) {
+        return imageInFlightRequests.get(imgUrl);
+    }
+
+    const requestPromise = (async () => {
+        try {
+            const { url: resultUrl, ttl } = await fetchAndNormalizeImage(imgUrl, type);
+            globalImageCacher.addImage(imgUrl, resultUrl, { ttl });
+            return resultUrl;
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error(`fetchImgAndDeal: 获取图片 ${imgUrl} 失败`, error);
+            const fallback = resolvePlaceholder(type, 'empty');
+            globalImageCacher.addImage(imgUrl, fallback, { ttl: ERROR_CACHE_TTL });
+            return fallback;
+        } finally {
+            imageInFlightRequests.delete(imgUrl);
+        }
+    })();
+
+    imageInFlightRequests.set(imgUrl, requestPromise);
+    return requestPromise;
+}
+
+async function fetchAndNormalizeImage(imgUrl, type) {
+    const response = await fetch(imgUrl);
+    if (!response.ok) {
+        return handleErrorResponse(response, type);
+    }
+
+    const contentType = response.headers.get('Content-Type') || '';
+    if (contentType.startsWith('image/')) {
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        return { url: blobUrl, ttl: SUCCESS_CACHE_TTL };
+    }
+
+    if (contentType.includes('application/json')) {
+        return handleJsonResponse(await response.json(), type);
+    }
+
+    return { url: resolvePlaceholder(type, 'empty'), ttl: ERROR_CACHE_TTL };
+}
+
+function handleErrorResponse(response, type) {
+    if (response.status === 404) {
+        return {
+            url: resolvePlaceholder(type, 'notFound'),
+            ttl: ERROR_CACHE_TTL,
+        };
+    }
+    if (response.status === 403) {
+        return {
+            url: resolvePlaceholder(type, 'unreviewed'),
+            ttl: ERROR_CACHE_TTL,
+        };
+    }
+    return {
+        url: resolvePlaceholder(type, 'empty'),
+        ttl: ERROR_CACHE_TTL,
+    };
+}
+
+function handleJsonResponse(jsonData, type) {
+    if (jsonData?.status === 403) {
+        if (jsonData?.message?.includes('FROZEN')) {
+            return {
+                url: resolvePlaceholder(type, 'reviewing'),
+                ttl: ERROR_CACHE_TTL,
+            };
+        }
+        return {
+            url: resolvePlaceholder(type, 'unreviewed'),
+            ttl: ERROR_CACHE_TTL,
+        };
+    }
+    if (jsonData?.status === 404) {
+        return {
+            url: resolvePlaceholder(type, 'notFound'),
+            ttl: ERROR_CACHE_TTL,
+        };
+    }
+    return {
+        url: resolvePlaceholder(type, 'empty'),
+        ttl: ERROR_CACHE_TTL,
+    };
 }
 
 /**

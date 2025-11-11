@@ -1,41 +1,46 @@
-export class ResponseBuffer {
-    constructor(maxCapacity, expirationTime) {
-        this.maxCapacity = maxCapacity;
-        this.expirationTime = expirationTime;//ms
-        this.cache = new Map();
-        this.timeouts = new Map();
-    }
-    addResponse(key, response) {
-        if (this.cache.size >= this.maxCapacity) {
-            const oldestKey = this.cache.keys().next().value;
-            this._removeCache(oldestKey);
-        }
+import { LRUCache } from '@/utils/lru_cache';
 
-        const expirationTimeout = setTimeout(() => {
-            this._removeCache(key);
-        }, this.expirationTime);
-        this.cache.set(key, response);
-        this.timeouts.set(key, expirationTimeout);
+export class ResponseBuffer {
+    /**
+     * @param {number} maxCapacity
+     * @param {number} expirationTime 毫秒
+     */
+    constructor(maxCapacity, expirationTime) {
+        this.cache = new LRUCache({
+            maxEntries: maxCapacity,
+            ttl: expirationTime,
+        });
+    }
+
+    addResponse(key, response, options = {}) {
+        this.cache.set(key, response, options);
     }
 
     getResponse(key) {
-        const cachedResponse = this.cache.get(key);
-        if (!cachedResponse) {
-            return null;
-        }
-        clearTimeout(this.timeouts.get(key));
-        const expirationTimeout = setTimeout(() => {
-            this._removeCache(key);
-        }, this.expirationTime);
-        this.timeouts.set(key, expirationTimeout);
-        return cachedResponse;
+        return this.cache.get(key);
     }
-    _removeCache(key) {
+
+    deleteResponse(key) {
         this.cache.delete(key);
-        clearTimeout(this.timeouts.get(key));
-        this.timeouts.delete(key);
+    }
+
+    clear() {
+        this.cache.clear();
+    }
+
+    /**
+     * 批量失效
+     * @param {(key: string) => boolean} predicate
+     */
+    invalidateBy(predicate) {
+        const keysToDelete = [];
+        for (const key of this.cache.keys()) {
+            if (predicate(key)) {
+                keysToDelete.push(key);
+            }
+        }
+        keysToDelete.forEach((key) => this.cache.delete(key));
     }
 }
-export const responseCacheUrls=[
-    
-]
+
+export const responseCacheUrls = [];
