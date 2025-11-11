@@ -75,10 +75,8 @@
         </v-btn>
       </div>
       <v-tabs v-if="!mobileIfShowSearchInput" v-model="itemType" fixed-tabs class="select-bar" hide-slider>
-        <v-tab :style="{ background: 'rgba(255,255,255,0)', 'color': this.itemType == 'index' ? 'white' : 'grey' }"
-          height="40px" value="index" text="推荐" class="title-bold"></v-tab>
-        <v-tab :style="{ background: 'rgba(255,255,255,0)', 'color': this.itemType == 'service' ? 'white' : 'grey' }"
-          height="40px" value="service" text="微服务" class="title-bold"></v-tab>
+        <v-tab height="40px" value="index" text="推荐" :class="['title-bold', 'nav-tab', { 'nav-tab--active': itemType === 'index' }]"></v-tab>
+        <v-tab height="40px" value="service" text="微服务" :class="['title-bold', 'nav-tab', { 'nav-tab--active': itemType === 'service' }]"></v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
       <v-btn v-if="ifShowHomeBtn && !ifShowBottomNav && mobileIfShowSearchInput" @click="toHomePage" icon="mdi-home" variant="text" size="38"
@@ -369,6 +367,25 @@ export default {
   flex-direction: column;
   height: 100%;
   align-items: center;
+}
+.nav-tab {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  text-transform: none;
+  letter-spacing: 1px;
+  padding: 0 12px;
+  min-height: 40px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  border-radius: 12px;
+}
+.nav-tab:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+.nav-tab--active {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 /** desktop */

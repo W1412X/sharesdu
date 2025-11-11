@@ -10,7 +10,7 @@
 import AuthorCard from '@/components/user/AuthorCard.vue';
 import CreatePreviewAndList from '@/components/user/CreatePreviewAndList.vue';
 import { getCookie } from '@/utils/cookie';
-import { getCancelLoadMsg, openPage } from '@/utils/other';
+import { getCancelLoadMsg, getLoadMsg, openPage } from '@/utils/other';
 
 export default{
     name:'AuthorPage',
@@ -41,12 +41,13 @@ export default{
         }
     },
     async mounted(){
-        this.setLoading(getCancelLoadMsg());
+        this.setLoading(getLoadMsg("正在加载作者信息..."));
         if(this.$route.params.id==getCookie("userId")){
             openPage("router",{name:'SelfPage',params:{id:getCookie("userId")}})
             return;
         }
         this.id=this.$route.params.id;
+        this.setLoading(getCancelLoadMsg());
     },
 }
 </script>

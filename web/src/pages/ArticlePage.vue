@@ -442,14 +442,12 @@ export default {
         }
     },
     async mounted() {
-        this.setLoading(getCancelLoadMsg());
+        this.setLoading(getLoadMsg("正在加载文章信息..."));
         /**
          * get the route params and fetch data
          */
         if (this.$route.params.id) {
-            this.setLoading(getLoadMsg("正在加载文章信息..."));
             let response = await getArticleDetail(this.$route.params.id);
-            this.setLoading(getCancelLoadMsg());
             if (response.status == 200) {
                 this.articleResponse = response;
                 try {
@@ -473,7 +471,6 @@ export default {
         } else {
             openPage("router",{ name: "ErrorPage", params: { reason: "缺少参数" } })
         }
-        this.setLoading(getCancelLoadMsg());
         /**
          * restore scan state
          */
@@ -491,6 +488,7 @@ export default {
                 }
             }, 10);
         }
+        this.setLoading(getCancelLoadMsg());
     },
     unmounted() {
         window.removeEventListener('scroll', this.glideLoad);

@@ -1,19 +1,18 @@
 <template>
-    <v-dialog v-model="ifShowDialog"
-        style="display: flex;flex-direction: row;align-items: center;justify-content: center;width: 100%;height: 100%;">
-        <div style="width: 100%;height:100%;justify-content: center;display: flex">
+    <v-dialog v-model="ifShowDialog" class="reply-dialog">
+        <div class="dialog-wrapper">
             <v-card v-if="ifShowReplyEditor" class="dialog-card">
                 <div class="title-bold">
                     回复评论
                 </div>
-                <div class="row-div">
-                    <SensitiveTextArea v-model="replyContent" style="margin-top: 10px;" variant="outlined" density="compact"
+                <div class="row-div editor-row">
+                    <SensitiveTextArea v-model="replyContent" class="reply-textarea" variant="outlined" density="compact"
                     label="输入评论内容" />
                     <EmojiPicker @emoji="addEmoji"></EmojiPicker>
                 </div>
                 <div class="dialog-bottom-btn-bar">
-                    <v-btn @click="reply" variant="text">发表</v-btn>
-                    <v-btn @click="setReplyEditorState(false)" variant="text">取消</v-btn>
+                    <v-btn @click="reply" variant="text" class="dialog-action-btn primary">发表</v-btn>
+                    <v-btn @click="setReplyEditorState(false)" variant="text" class="dialog-action-btn">取消</v-btn>
                 </div>
             </v-card>
         </div>
@@ -21,50 +20,54 @@
     </v-dialog>
     <v-card elevation="0" v-if="!ifDeleted" class="container">
         <div v-if="data.postTitle" class="text-medium-bold post-title-div"> {{ '回复帖子: '+data.postTitle }}</div>
-        <div v-if="!ifPreview" class="name text-medium">
+        <div v-if="!ifPreview" class="name text-medium meta-row">
             <avatar-name v-if="data.authorId" :initData="{ id: data.authorId, name: data.authorName }"></avatar-name>
+            <div class="meta-divider"></div>
+            <div class="time text-small muted">
+                <v-icon size="16" icon="mdi-clock-outline"></v-icon>
+                <span>{{ this.data.publishTime }}</span>
+            </div>
         </div>
-        <div @click="click" class="comment text-medium content">
+        <div @click="click" class="comment text-medium content comment-body">
             <span v-if="this.ifChild == true" @click="showParent" class="text-medium-bold"
                 :style="{ 'color': themeColor }">{{ parentAuthorName + '： ' }}</span>
-            <div ref="contentContainer"
-                :class="['content-wrapper', { collapsed: isCollapsed && showToggle }]">
-                <with-link-container :initData="{'content':data.content}" class="key-text"></with-link-container>
+            <div class="content-wrapper-container">
+                <div ref="contentContainer"
+                    :class="['content-wrapper', { collapsed: isCollapsed && showToggle }]">
+                    <with-link-container :initData="{'content':data.content}" class="key-text"></with-link-container>
+                </div>
+                <div v-if="showToggle && isCollapsed" class="content-gradient"></div>
             </div>
             <div v-if="showToggle" class="collapse-toggle text-small" :style="{ color: themeColor }"
                 @click.stop="toggleCollapse">
                 {{ isCollapsed ? '展开' : '收起' }}
-                <v-icon size="18" :icon="isCollapsed ? 'mdi-chevron-down' : 'mdi-chevron-up'"></v-icon>
+                <v-icon size="16" :icon="isCollapsed ? 'mdi-chevron-down' : 'mdi-chevron-up'"></v-icon>
             </div>
         </div>
         <div class="bottom-bar">
-            <div class="time text-small">
-                <v-icon size="18" icon="mdi-clock-outline" style="margin-right: 5px;"></v-icon>
+            <div class="bottom-actions text-small">
+                <div v-if="!ifPreview" class="bottom-btn-container">
+                    <like-button @alert="alert" @set_loading="setLoading" :size="'20'" :id="this.data.id"
+                        :state="this.data.ifLike" :type="'reply'"></like-button>
+                </div>
+                <div class="like-num text-small">
+                    {{ this.data.likeNum }}
+                </div>
+            </div>
+            <div class="bottom-time text-small muted" v-if="ifPreview">
+                <v-icon size="16" icon="mdi-clock-outline"></v-icon>
                 <span>{{ this.data.publishTime }}</span>
             </div>
             <v-spacer></v-spacer>
-            <div v-if="!ifPreview" class="bottom-btn-container">
-                <like-button @alert="alert" @set_loading="setLoading" :size="'20'" :id="this.data.id"
-                    :state="this.data.ifLike" :type="'reply'"></like-button>
-            </div>
-            <div class="like-num text-small">
-                {{ this.data.likeNum }}
-            </div>
-            <div v-if="!ifPreview" style="margin-right: 10px;">
-                <v-btn @click="setReplyEditorState(true)" elevation="0" icon :style="{
-                    'width': '20px',
-                    'height': '20px',
-                    'color': '#8a8a8a',
-                    'background-color': 'rgba(0,0,0,0)',
-                    'margin-bottom': '5px'
-                }">
+            <div v-if="!ifPreview" class="bottom-icon-btn">
+                <v-btn @click="setReplyEditorState(true)" elevation="0" icon class="icon-btn">
                     <v-icon :size="'23'" icon="mdi-reply-outline"></v-icon>
                 </v-btn>
             </div>
-            <div v-if="userId != data.authorId" style="margin-right: 10px;">
+            <div v-if="userId != data.authorId" class="bottom-icon-btn">
                 <alert-button :size="'20'" :id="this.data.id" :type="'reply'"></alert-button>
             </div>
-            <div v-else style="margin-right: 10px;">
+            <div v-else class="bottom-icon-btn">
                 <delete-button @delete="deleteSelf" :id="this.data.id" :type="'reply'" :size="20" @alert="alert"
                     @set_loading="setLoading"></delete-button>
             </div>
@@ -213,10 +216,8 @@ export default {
                 this.showToggle = needCollapse;
                 if (!needCollapse) {
                     this.isCollapsed = false;
-                } else {
-                    if (!previousShowToggle) {
-                        this.isCollapsed = true;
-                    }
+                } else if (!previousShowToggle) {
+                    this.isCollapsed = true;
                 }
             });
         },
@@ -297,7 +298,15 @@ export default {
 .content{
     white-space: pre-line;
 }
+.comment-body {
+    padding: 12px 14px;
+    border-radius: 10px;
+}
 .content-wrapper {
+    width: 100%;
+}
+.content-wrapper-container{
+    position: relative;
     width: 100%;
 }
 .content-wrapper.collapsed {
@@ -307,13 +316,35 @@ export default {
     line-clamp: 3;
     overflow: hidden;
 }
+.content-gradient{
+    pointer-events: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 65%, rgba(255,255,255,1) 100%);
+}
 .collapse-toggle {
     display: flex;
     align-items: center;
     width: fit-content;
     cursor: pointer;
-    margin-top: 4px;
+    margin-top: 6px;
     gap: 2px;
+}
+.reply-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+.dialog-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
 }
 .dialog-card {
     padding: 10px;
@@ -321,12 +352,44 @@ export default {
     max-width: 400px;
     flex-direction: column;
 }
-
+.reply-textarea {
+    margin-top: 10px;
+    flex: 1;
+}
+.editor-row {
+    gap: 10px;
+    align-items: stretch;
+}
 .dialog-bottom-btn-bar {
     display: flex;
     flex-direction: row-reverse;
+    gap: 8px;
+    margin-top: 12px;
 }
-
+.dialog-action-btn {
+    min-width: 72px;
+    color: #666666;
+}
+.dialog-action-btn.primary {
+    color: var(--theme-color);
+}
+.meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #666666;
+}
+.meta-divider {
+    width: 1px;
+    height: 14px;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+.muted {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #8a8a8a;
+}
 .like-num {
     display: flex;
     align-items: center;
@@ -341,8 +404,35 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.bottom-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.bottom-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 10px;
+}
+.bottom-icon-btn {
+    margin-right: 10px;
+    display: flex;
+}
+.icon-btn {
+    width: 28px;
+    height: 28px;
+    color: #8a8a8a;
+    background-color: transparent;
+}
+.icon-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
 
 @media screen and (min-width: 1000px) {
+    .content-gradient{
+        background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 65%, rgba(255,255,255,1) 100%);
+    }
     .post-title-div{
         color:grey;
         max-width: 80%;
@@ -354,6 +444,7 @@ export default {
         text-overflow: ellipsis;
     }
     .container {
+        transition: background-color 0.2s ease;
         width: 880px;
         display: flex;
         flex-direction: column;
@@ -362,6 +453,9 @@ export default {
         padding-right: 10px;
         border-bottom: 0.5px #dddddd solid;
         border-radius: 0px;
+    }
+    .container:hover {
+        background-color: rgba(0, 0, 0, 0.04);
     }
 
     .name {
@@ -381,8 +475,12 @@ export default {
 }
 
 @media screen and (max-width: 1000px) {
+    .content-gradient{
+        background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 65%, rgba(255,255,255,1) 100%);
+    }
     .container {
         width: 100%;
+        transition: background-color 0.2s ease;
         display: flex;
         flex-direction: column;
         padding-top: 10px;
@@ -390,6 +488,9 @@ export default {
         padding-right: 10px;
         border-bottom: 0.5px #dddddd solid;
         border-radius: 0px;
+    }
+    .container:hover {
+        background-color: rgba(0, 0, 0, 0.04);
     }
     .post-title-div{
         color:grey;

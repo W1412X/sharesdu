@@ -25,6 +25,7 @@ export default {
     },
     created(){
     },
+    
     async mounted() {
         this.$emit("set_loading",getLoadMsg("正在加载..."));
         const route = useRoute();

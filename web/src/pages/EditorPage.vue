@@ -318,15 +318,14 @@ export default {
         },
     },
     async mounted() {
+        this.setLoading(getLoadMsg("正在加载编辑器..."))
         window.addEventListener('beforeunload', this.handleBeforeUnload);
-        this.setLoading(getCancelLoadMsg());
         /**
          * check if with id
          * if yes, get the data and set the data,which means editing 
          * else do nothing
          */
         this.articleId=this.$route.params.id;
-        this.setLoading(getLoadMsg("正在加载文章信息..."))
          if(this.$route.params.id){
             //try to get the detail of the article
             let response=await getArticleDetail(this.$route.params.id);

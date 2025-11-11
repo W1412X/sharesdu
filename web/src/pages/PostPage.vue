@@ -1,26 +1,26 @@
 <template>
-    <v-dialog v-model="ifShowDialog" style="width: 100%;height:100%;justify-content: center;">
-        <div v-if="ifShowComment" style="width: 100%;height:100%;justify-content: center;display: flex">
-            <v-card class="dialog-card">
+    <v-dialog v-model="ifShowDialog" class="post-dialog">
+        <div v-if="ifShowComment" class="dialog-layer">
+            <v-card class="dialog-card comment-dialog-card">
                 <div class="title-bold">
                     评论帖子
                 </div>
-                <div class="row-div">
-                    <SensitiveTextArea v-model="inputingComment" style="margin-top: 10px;" variant="outlined"
+                <div class="row-div editor-row">
+                    <SensitiveTextArea v-model="inputingComment" class="comment-textarea" variant="outlined"
                         density="compact" label="输入评论内容" />
                     <EmojiPicker @emoji="addEmoji"></EmojiPicker>
                 </div>
                 <div class="dialog-bottom-btn-bar">
                     <v-btn :disabled="loading.submitReply" :loading="loading.submitReply" @click="submitComment"
-                        variant="text">发表</v-btn>
-                    <v-btn @click="setCommentState(false)" variant="text">取消</v-btn>
+                        variant="text" class="dialog-action-btn primary">发表</v-btn>
+                    <v-btn @click="setCommentState(false)" variant="text" class="dialog-action-btn">取消</v-btn>
                 </div>
             </v-card>
         </div>
-        <div v-if="ifShowTmpParentReply" style="width: 100%;height:100%;justify-content: center;display: flex;">
-            <div style="display: flex;flex-direction: column;">
-                <div style="display: flex;flex-direction: row-reverse;">
-                    <v-btn @click="closeParentReply" color="#00000000" variant="text" size="25">
+        <div v-if="ifShowTmpParentReply" class="dialog-layer parent-reply-layer">
+            <div class="parent-reply-wrapper">
+                <div class="parent-reply-header">
+                    <v-btn @click="closeParentReply" color="#00000000" variant="text" size="25" class="close-btn">
                         <v-icon type="mdi" icon="mdi-close" :color="themeColor"></v-icon>
                         <v-tooltip activator="parent">关闭</v-tooltip>
                     </v-btn>
@@ -34,7 +34,7 @@
     <div class="full-center">
         <div class="column-div">
             <part-loading-view :state="!loadState.post" class="top-bar" :text="'正在加载帖子信息...'"></part-loading-view>
-            <div v-if="loadState.post" class="top-bar">
+            <div v-if="loadState.post" class="top-bar surface-card">
                 <div class="top-bar-msg-div">
                     <div class="full-column-center text-medium name-font">
                         <avatar-name v-if="this.post.authorId"
@@ -52,7 +52,7 @@
                 <div class="title-container title-bold">
                     {{ post.title }}
                 </div>
-                <div class="detail-text text-medium">
+                <div class="detail-text text-medium detail-panel">
                     <WithLinkContainer :init-data="{ content: post.content }" :type="'post'"></WithLinkContainer>
                 </div>
                 <div class="row-div-scroll">
@@ -91,7 +91,7 @@
                 <v-btn v-if="this.post.relativeLink !== null" @click="toRelativePage" class="link-btn" variant="tonal"
                     :color="themeColor">{{ relativeText }}</v-btn>
             </div>
-            <div class="bottom-bar">
+            <div class="bottom-bar toolbar">
                 <div class="column-center user-name text-medium">
                     {{ userName }}
                 </div>
@@ -109,14 +109,14 @@
                             @set_loading="setLoading" :state="post.ifLike"></like-button>
                     </div>
                     <div class="column-center padding-right-10px">
-                        <v-btn elevation="0" @click="setCommentState(true)" icon class="bottom-btn">
+                        <v-btn elevation="0" @click="setCommentState(true)" icon class="bottom-btn icon-btn">
                             <v-icon size="23" icon="mdi-comment-outline"></v-icon>
                             <v-tooltip activator="parent">添加评论</v-tooltip>
                         </v-btn>
                     </div>
                 </div>
             </div>
-            <div id="comments-container" class="comments-container">
+            <div id="comments-container" class="comments-container surface-card">
                 <div class="column-div">
                     <template v-if="replyList.length > 0">
                         <reply-item v-for="comment in replyList" :init-data="comment" @show_parent="getParentReply"
@@ -467,6 +467,79 @@ export default {
 }
 </script>
 <style scoped>
+.post-dialog {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dialog-layer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.comment-dialog-card {
+    max-width: 520px;
+}
+.editor-row {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 10px;
+}
+.comment-textarea {
+    flex: 1;
+}
+.dialog-action-btn {
+    min-width: 80px;
+    color: #666666;
+}
+.dialog-action-btn.primary {
+    color: var(--theme-color);
+}
+.parent-reply-layer {
+    align-items: flex-start;
+}
+.parent-reply-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.parent-reply-header {
+    display: flex;
+    flex-direction: row-reverse;
+}
+.close-btn {
+    color: #8a8a8a;
+}
+.surface-card {
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+.detail-panel {
+    padding: 12px 16px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+.toolbar {
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    color: #8a8a8a;
+    background-color: transparent;
+}
+.icon-btn:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
 .column-center {
     display: flex;
     flex-direction: column;

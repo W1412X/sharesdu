@@ -33,11 +33,14 @@
              <div class="text-small detail-container">{{ data.content }}</div>
             -->
             <div class="text-medium detail-expand-wrapper" @click="click()">
-                <div ref="detailContent"
-                    :class="['detail-expand', 'key-text', 'link-text', { collapsed: isContentCollapsed && showContentToggle }]">
-                    <with-link-container :init-data="{'content':data.content,'keywords':this.searchQuery}" :clickable="false"
-                        :type="'post'">
-                    </with-link-container>
+                <div class="detail-expand-container">
+                    <div ref="detailContent"
+                        :class="['detail-expand', 'key-text', 'link-text', { collapsed: isContentCollapsed && showContentToggle }]">
+                        <with-link-container :init-data="{'content':data.content,'keywords':this.searchQuery}" :clickable="false"
+                            :type="'post'">
+                        </with-link-container>
+                    </div>
+                    <div v-if="showContentToggle && isContentCollapsed" class="detail-gradient"></div>
                 </div>
                 <div v-if="showContentToggle" class="collapse-toggle text-small" :style="{ color: themeColor }"
                     @click.stop="toggleContentCollapse">
@@ -281,11 +284,26 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 .detail-expand.collapsed{
     -webkit-line-clamp: 3;
     line-clamp: 3;
     overflow: hidden;
+    
+}
+.detail-expand-container{
+    position: relative;
+    width: 100%;
+}
+.detail-gradient{
+    pointer-events: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 65%, rgba(255,255,255,1) 100%);
 }
 .collapse-toggle{
     display: flex;
@@ -314,6 +332,9 @@ export default {
         margin-top: 5px;
         border-bottom: #eeeeee 1px solid;
         border-radius: 0px;
+    }
+    .card:hover {
+        background-color: rgba(0, 0, 0, 0.04);
     }
     .container {
         display: flex;
@@ -353,6 +374,9 @@ export default {
         -webkit-box-orient: vertical;
         text-overflow: ellipsis;
     }
+    .detail-gradient{
+        background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 65%, rgba(255,255,255,1) 100%);
+    }
     .bottom-bar {
         width: 740px;
         display: flex;
@@ -377,6 +401,9 @@ export default {
         border-radius: 0px;
         width: 100vw;
         margin-top: 1px;
+    }
+    .card:hover {
+        background-color: rgba(0, 0, 0, 0.04);
     }
     .container {
         width: 100%;
@@ -416,6 +443,9 @@ export default {
         line-height: 1.2;
         display: -webkit-box;
         -webkit-box-orient: vertical;
+    }
+    .detail-gradient{
+        background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 65%, rgba(255,255,255,1) 100%);
     }
     .bottom-bar {
         display: flex;
