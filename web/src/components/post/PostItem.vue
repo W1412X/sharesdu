@@ -32,9 +32,18 @@
             <!--
              <div class="text-small detail-container">{{ data.content }}</div>
             -->
-            <div @click="click()" class="text-medium detail-expand key-text link-text">
-                <with-link-container :init-data="{'content':data.content,'keywords':this.searchQuery}" :clickable="false"  :type="'post'">
-                </with-link-container>
+            <div class="text-medium detail-expand-wrapper" @click="click()">
+                <div ref="detailContent"
+                    :class="['detail-expand', 'key-text', 'link-text', { collapsed: isContentCollapsed && showContentToggle }]">
+                    <with-link-container :init-data="{'content':data.content,'keywords':this.searchQuery}" :clickable="false"
+                        :type="'post'">
+                    </with-link-container>
+                </div>
+                <div v-if="showContentToggle" class="collapse-toggle text-small" :style="{ color: themeColor }"
+                    @click.stop="toggleContentCollapse">
+                    {{ isContentCollapsed ? '展开' : '收起' }}
+                    <v-icon size="18" :icon="isContentCollapsed ? 'mdi-chevron-down' : 'mdi-chevron-up'"></v-icon>
+                </div>
             </div>
             <div class="row-div-scroll">
                 <img-card v-for="(img,index) in data.imgList" :height="100" :width="100" :src="img" :key="index"></img-card>
@@ -110,7 +119,9 @@ export default {
             parent:{
                 type:null,//article/course  
                 id:null,
-            }
+            },
+            isContentCollapsed: true,
+            showContentToggle: false,
         }
     },
     methods:{
@@ -191,7 +202,60 @@ export default {
                 this.alert(getNormalWarnAlert("请设置父级类型和父级ID"));
             }
             this.loading.untop=false;
+        },
+        toggleContentCollapse() {
+            if (!this.showContentToggle) {
+                return;
+            }
+            this.isContentCollapsed = !this.isContentCollapsed;
+        },
+        evaluateDetailContent() {
+            this.$nextTick(() => {
+                if (typeof window === 'undefined') {
+                    return;
+                }
+                const el = this.$refs.detailContent;
+                if (!el) {
+                    this.showContentToggle = false;
+                    this.isContentCollapsed = false;
+                    return;
+                }
+                const computedStyle = window.getComputedStyle(el);
+                let lineHeightValue = parseFloat(computedStyle.lineHeight);
+                if ((!lineHeightValue || isNaN(lineHeightValue)) && computedStyle.fontSize) {
+                    const fontSize = parseFloat(computedStyle.fontSize);
+                    if (fontSize && !isNaN(fontSize)) {
+                        lineHeightValue = fontSize * 1.2;
+                    }
+                }
+                if (!lineHeightValue || isNaN(lineHeightValue)) {
+                    this.showContentToggle = false;
+                    this.isContentCollapsed = false;
+                    return;
+                }
+                const maxVisibleHeight = lineHeightValue * 3 + 1;
+                const scrollHeight = el.scrollHeight;
+                const needCollapse = scrollHeight - maxVisibleHeight > 1;
+                const previousShowToggle = this.showContentToggle;
+                this.showContentToggle = needCollapse;
+                if (!needCollapse) {
+                    this.isContentCollapsed = false;
+                } else if (!previousShowToggle) {
+                    this.isContentCollapsed = true;
+                }
+            });
         }
+    },
+    watch:{
+        'data.content':{
+            handler(){
+                this.evaluateDetailContent();
+            },
+            immediate:true,
+        }
+    },
+    mounted(){
+        this.evaluateDetailContent();
     },
     beforeMount(){
         this.data =copy(this.initData);
@@ -212,6 +276,24 @@ export default {
     align-items: center;
     margin-top:5px;
     margin-bottom:5px;
+}
+.detail-expand-wrapper{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.detail-expand.collapsed{
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+}
+.collapse-toggle{
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    cursor: pointer;
+    margin-top: 4px;
+    gap: 2px;
 }
 .row-div-scroll{
     margin: 5px;
@@ -258,6 +340,7 @@ export default {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
+        line-clamp: 3;
         text-overflow: ellipsis;
     }
     .detail-expand{
@@ -265,7 +348,6 @@ export default {
         white-space: pre-line;
         word-break: break-all;
         color: #6a6a6a;
-        overflow: hidden;
         line-height: 1.2;
         display: -webkit-box;
         -webkit-box-orient: vertical;
@@ -323,6 +405,7 @@ export default {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         text-overflow: ellipsis;
     }
     .detail-expand{
@@ -330,7 +413,6 @@ export default {
         padding-top: 2px;
         white-space: pre-line;
         word-break: break-all;
-        overflow: hidden;
         line-height: 1.2;
         display: -webkit-box;
         -webkit-box-orient: vertical;

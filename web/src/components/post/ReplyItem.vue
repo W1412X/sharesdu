@@ -27,7 +27,15 @@
         <div @click="click" class="comment text-medium content">
             <span v-if="this.ifChild == true" @click="showParent" class="text-medium-bold"
                 :style="{ 'color': themeColor }">{{ parentAuthorName + '： ' }}</span>
-            <with-link-container :initData="{'content':data.content}" class="key-text"></with-link-container>
+            <div ref="contentContainer"
+                :class="['content-wrapper', { collapsed: isCollapsed && showToggle }]">
+                <with-link-container :initData="{'content':data.content}" class="key-text"></with-link-container>
+            </div>
+            <div v-if="showToggle" class="collapse-toggle text-small" :style="{ color: themeColor }"
+                @click.stop="toggleCollapse">
+                {{ isCollapsed ? '展开' : '收起' }}
+                <v-icon size="18" :icon="isCollapsed ? 'mdi-chevron-down' : 'mdi-chevron-up'"></v-icon>
+            </div>
         </div>
         <div class="bottom-bar">
             <div class="time text-small">
@@ -138,6 +146,8 @@ export default {
             parentReplyId: null,
             childReplys: [],
             replyContent: "",
+            isCollapsed: true,
+            showToggle: false,
         }
     },
     methods: {
@@ -166,6 +176,50 @@ export default {
         showParent() {
             this.$emit('show_parent', this.parentReplyId);
         },
+        toggleCollapse() {
+            if (!this.showToggle) {
+                return;
+            }
+            this.isCollapsed = !this.isCollapsed;
+        },
+        evaluateContent() {
+            this.$nextTick(() => {
+                if (typeof window === 'undefined') {
+                    return;
+                }
+                const el = this.$refs.contentContainer;
+                if (!el) {
+                    this.showToggle = false;
+                    this.isCollapsed = false;
+                    return;
+                }
+                const computedStyle = window.getComputedStyle(el);
+                let lineHeightValue = parseFloat(computedStyle.lineHeight);
+                if ((!lineHeightValue || isNaN(lineHeightValue)) && computedStyle.fontSize) {
+                    const fontSize = parseFloat(computedStyle.fontSize);
+                    if (fontSize && !isNaN(fontSize)) {
+                        lineHeightValue = fontSize * 1.2;
+                    }
+                }
+                if (!lineHeightValue || isNaN(lineHeightValue)) {
+                    this.showToggle = false;
+                    this.isCollapsed = false;
+                    return;
+                }
+                const maxVisibleHeight = lineHeightValue * 3 + 1;
+                const scrollHeight = el.scrollHeight;
+                const needCollapse = scrollHeight - maxVisibleHeight > 1;
+                const previousShowToggle = this.showToggle;
+                this.showToggle = needCollapse;
+                if (!needCollapse) {
+                    this.isCollapsed = false;
+                } else {
+                    if (!previousShowToggle) {
+                        this.isCollapsed = true;
+                    }
+                }
+            });
+        },
         async reply() {
             if (this.replyContent.length <= 5) {
                 this.alert(getNormalWarnAlert("评论内容过短"));
@@ -191,6 +245,17 @@ export default {
                 this.alert(getNormalErrorAlert(response.message));
             }
         }
+    },
+    watch: {
+        'data.content': {
+            handler() {
+                this.evaluateContent();
+            },
+            immediate: true,
+        }
+    },
+    mounted() {
+        this.evaluateContent();
     },
     async created() {
         //deal with the reply with parent  
@@ -231,6 +296,24 @@ export default {
 }
 .content{
     white-space: pre-line;
+}
+.content-wrapper {
+    width: 100%;
+}
+.content-wrapper.collapsed {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+}
+.collapse-toggle {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    cursor: pointer;
+    margin-top: 4px;
+    gap: 2px;
 }
 .dialog-card {
     padding: 10px;
