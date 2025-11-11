@@ -930,7 +930,6 @@ export default {
         padding: 1px;
         margin-bottom: 40px;
         height: fit-content;
-        overflow-y: auto;
     }
 
     .comment-column{
@@ -1060,7 +1059,6 @@ export default {
         padding: 1px;
         margin-bottom: 40px;
         height: fit-content;
-        overflow-y: auto;
     }
     .comment-column{
         width: 100vw;
