@@ -58,6 +58,9 @@ export function openPage(type, data, newTab = null) {
     }
     if (type === 'url') {
         //window.open(url, "_self");
+        if(data.url.includes("article")||data.url.includes("post")||data.url.includes("course")||data.url.includes("search")){
+            target = '_self';
+        }
         if (isDebugHashPath(window.location.href)) {
             data.url = addDebugToPath(data.url);
         }
@@ -67,6 +70,9 @@ export function openPage(type, data, newTab = null) {
             window.open(data.url, target);
         }
     } else if (type === 'router') {
+        if(data.name.includes("ArticlePage")||data.name.includes("PostPage")||data.name.includes("CoursePage")||data.name.includes("SearchPage")){
+            target = '_self';
+        }
         if (isDebugHashPath(window.location.href)) {
             if (data.name.endsWith("Debug")) {
                 //eslint-disable-next-line

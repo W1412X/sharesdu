@@ -61,7 +61,7 @@
     </div>
   </v-dialog>
   <div class="img-card-container">
-    <v-img @click="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover
+    <v-img @click.stop="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover
       :src="ifNeedDeal ? imgUrl : src" :max-width="width" :min-width="width">
       <template v-slot:placeholder>
         <v-row align="center" class="fill-height ma-0" justify="center">

@@ -1,38 +1,38 @@
 <template>
-    <v-card class="card" :variant="data.ifTop?'variant':'none'" :color="data.ifTop?themeColor:'none'" elevation="0">
+    <v-card class="card" @click="click()" :variant="data.ifTop?'variant':'none'" :color="data.ifTop?themeColor:'none'" elevation="0">
         <div class="if-top-bar">
             <v-chip v-if="initData.ifTop" variant="text" class="ma-2 text-small-bold" :color="themeColor" prependIcon="mdi-format-vertical-align-top" style="max-height: 28px;" label>
                 置顶
             </v-chip>
             <v-spacer></v-spacer>
-            <v-btn @click="unTop" :loading="loading.untop" :disabled="loading.untop" v-if="initData.ifTop&&ifParentAuthor" color="grey" variant="text">取消置顶</v-btn>
-            <v-btn @click="top" :loading="loading.top" :disabled="loading.top" v-if="!initData.ifTop&&ifParentAuthor" :color="themeColor" variant="text">置顶帖子</v-btn>
+            <v-btn @click.stop="unTop" :loading="loading.untop" :disabled="loading.untop" v-if="initData.ifTop&&ifParentAuthor" color="grey" variant="text">取消置顶</v-btn>
+            <v-btn @click.stop="top" :loading="loading.top" :disabled="loading.top" v-if="!initData.ifTop&&ifParentAuthor" :color="themeColor" variant="text">置顶帖子</v-btn>
         </div>
         <div class="container">
             <div class="text-small bottom-bar avatar-name-column-center">
                 <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
                 <v-spacer></v-spacer>
-                <div @click="click()" v-if="data.likeNum!=null" class="bottom-item">
+                <div v-if="data.likeNum!=null" class="bottom-item">
                     <v-icon icon="mdi-heart" size="19"></v-icon>
                     <div>{{ data.likeNum }}</div>
                 </div>
-                <div @click="click()" v-if="data.viewNum!=null" class="bottom-item">
+                <div v-if="data.viewNum!=null" class="bottom-item">
                     <v-icon icon="mdi-eye" size="20"></v-icon>
                     <div>{{ data.viewNum }}</div>
                 </div>
-                <div @click="click()" v-if="data.replyNum!=null" class="bottom-item">
+                <div v-if="data.replyNum!=null" class="bottom-item">
                     <v-icon icon="mdi-comment" size="18" style="margin-top: 2px;"></v-icon>
                     <div>{{ data.replyNum }}</div>
                 </div>
             </div>
-            <div @click="click()" class="title title-container key-text">
+            <div class="title title-container key-text">
                 <with-link-container :init-data="{'content':data.title,'keywords':this.searchQuery}" :clickable="false">
                 </with-link-container>
             </div>
             <!--
              <div class="text-small detail-container">{{ data.content }}</div>
             -->
-            <div class="text-medium detail-expand-wrapper" @click="click()">
+            <div class="text-medium detail-expand-wrapper">
                 <div class="detail-expand-container">
                     <div ref="detailContent"
                         :class="['detail-expand', 'key-text', 'link-text', { collapsed: isContentCollapsed && showContentToggle }]">
