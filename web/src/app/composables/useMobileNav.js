@@ -9,7 +9,7 @@ export function useMobileNav(page, deviceType) {
   
   // 移动端是否显示搜索输入框
   const mobileIfShowSearchInput = computed(() => {
-    if (['IndexPage', 'ServicePage'].includes(page.value)) {
+    if (['IndexPage', 'ServicePage', 'RagChatPage'].includes(page.value)) {
       return false;
     }
     return true;

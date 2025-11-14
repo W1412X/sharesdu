@@ -37,6 +37,13 @@
         </div>
         <v-tooltip activator="parent">返回首页</v-tooltip>
       </v-btn>
+      <v-btn v-if="ifShowService&&!ifMobile" @click="toRagChatPage" icon="mdi-home" variant="text" size="38"
+        :color="navIconColor">
+        <div class="icon-container">
+          <v-icon type="mdi" icon="mdi-head-dots-horizontal-outline" :color="navIconColor" size="25"></v-icon>
+        </div>
+        <v-tooltip activator="parent">问AI</v-tooltip>
+      </v-btn>
       <v-btn v-if="ifShowService&&!ifMobile" @click="toServicePage" icon="mdi-home" variant="text" size="38"
         :color="navIconColor">
         <div class="icon-container">
@@ -77,6 +84,7 @@
       <v-tabs v-if="!mobileIfShowSearchInput" v-model="itemType" fixed-tabs class="select-bar" hide-slider>
         <v-tab height="40px" value="index" text="推荐" :class="['title-bold', 'nav-tab', { 'nav-tab--active': itemType === 'index' }]"></v-tab>
         <v-tab height="40px" value="service" text="微服务" :class="['title-bold', 'nav-tab', { 'nav-tab--active': itemType === 'service' }]"></v-tab>
+        <v-tab height="40px" value="rag" text="问AI" :class="['title-bold', 'nav-tab', { 'nav-tab--active': itemType === 'rag' }]"></v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
       <v-btn v-if="ifShowHomeBtn && !ifShowBottomNav && mobileIfShowSearchInput" @click="toHomePage" icon="mdi-home" variant="text" size="38"
@@ -209,7 +217,9 @@ export default {
     const toServicePage = () => {
       openPage("url", { url: "#/service" });
     };
-    
+    const toRagChatPage = () => {
+      openPage("url", { url: "#/rag_chat" });
+    };
     // 监听 itemType 变化
     watch(itemType, (newVal, oldVal) => {
       if (newVal == oldVal) {
@@ -300,6 +310,7 @@ export default {
       showDialog,
       openUrl,
       hexToRgba,
+      toRagChatPage,
     };
   },
   components: {

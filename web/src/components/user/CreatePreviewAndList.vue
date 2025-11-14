@@ -12,7 +12,7 @@
             :style="{ background: 'rgba(255,255,255,1)', 'color': this.itemType == 'reply' ? '#000000' : '#8a8a8a' }"
             height="40px" value="reply" text="回复"></v-tab>
         </v-tabs>
-        <div v-if="itemType == 'article'" class="column-div-scroll">
+        <div v-if="loadState&&itemType == 'article'" class="column-div-scroll">
           <div class="column-div">
             <template v-if="articleList.length > 0">
                 <star-item :if-star-type="false" v-for="(item, index) in this.articleList" :key="index" :init-data="item">

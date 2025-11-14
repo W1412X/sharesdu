@@ -22,6 +22,7 @@ import {
   DevPage,
   TestPage,
   SearchMobilePage,
+  RagChatPage
 } from './asyncComponents';
 
 // 原始路由配置
@@ -147,7 +148,13 @@ const originalRoutes = [
     path: '/service',
     name: 'ServicePage',
     component: ServicePage,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/rag_chat',
+    name: 'RagChatPage',
+    component: RagChatPage,
+    meta: { requiresAuth: true },
   },
   {
     path: '/:pathMatch(.*)*',

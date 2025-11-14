@@ -5,7 +5,7 @@
     </v-dialog>
     <div class="full-screen">
         <div v-if="!ifMobile" class="row-center">
-            <v-tabs v-model="itemType" fixed-tabs class="select-bar">
+            <v-tabs v-model="itemType" fixed-tabs class="select-bar" :color="themeColor">
                 <v-tab
                     :style="{ background: 'rgba(255,255,255,1)', 'color': this.itemType == 'article' ? '#000000' : '#8a8a8a' }"
                     height="40px" value="article" text="文章"></v-tab>
@@ -56,10 +56,10 @@
                     <template v-if="articleList[articleSortMethod].length > 0">
                         <article-item v-for="item in this.articleList[articleSortMethod]" :key="item.id" :init-data="item">
                         </article-item>
-                        <v-btn v-if="!allLoad.article[articleSortMethod]" @click="loadMore('article')" variant="text"
-                            :loading="loading.article" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
                     </template>
-                    <nothing-view v-else-if="articlePageNum[articleSortMethod] > 1" 
+                    <v-btn v-if="!allLoad.article[articleSortMethod]" @click="loadMore('article')" variant="text"
+                    :loading="loading.article" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    <nothing-view v-if="!loading.article&&articleList[articleSortMethod].length == 0" 
                         icon="mdi-book-open-outline" 
                         text="暂无文章" 
                         :icon-size="80"
@@ -70,10 +70,10 @@
                     <template v-if="postList.length > 0">
                         <post-item v-for="item in this.postList" :key="item.id" :init-data="item">
                         </post-item>
-                        <v-btn v-if="!allLoad.post" @click="loadMore('post')" :variant="'text'" :loading="loading.post"
-                            class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
                     </template>
-                    <nothing-view v-else-if="postPageNum > 1" 
+                    <v-btn v-if="!allLoad.post" @click="loadMore('post')" :variant="'text'" :loading="loading.post"
+                    class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    <nothing-view v-if="!loading.post&&postList.length == 0" 
                         icon="mdi-forum-outline" 
                         text="暂无帖子" 
                         :icon-size="80"
@@ -84,10 +84,10 @@
                     <template v-if="courseList.length > 0">
                         <course-item v-for="item in this.courseList" :key="item.id" :init-data="item">
                         </course-item>
-                        <v-btn v-if="!allLoad.course" @click="loadMore('course')" :variant="'text'"
-                            :loading="loading.course" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
                     </template>
-                    <nothing-view v-else-if="coursePageNum > 1" 
+                    <v-btn v-if="!allLoad.course" @click="loadMore('course')" :variant="'text'"
+                    :loading="loading.course" class="load-btn" :color="themeColor">{{ "加载更多" }}</v-btn>
+                    <nothing-view v-if="!loading.course&&courseList.length == 0" 
                         icon="mdi-school-outline" 
                         text="暂无课程" 
                         :icon-size="80"

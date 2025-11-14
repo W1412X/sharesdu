@@ -123,4 +123,5 @@ export const ServicePage = load('ServicePage');
 export const DevPage = load('DevPage');
 export const TestPage = load('TestPage');
 export const SearchMobilePage = load('search/SearchMobilePage');
+export const RagChatPage = load('RagChatPage');
 
