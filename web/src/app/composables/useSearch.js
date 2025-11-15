@@ -65,6 +65,7 @@ export function useSearch(ifMobile, mobileIfShowSearchInput, alert) {
     
     openPage("router", {
       path: '/search',
+      name: 'SearchPage',
       query: {
         type: type,
         query: dealedString
