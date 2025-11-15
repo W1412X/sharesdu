@@ -684,10 +684,10 @@ export default {
             await Promise.all([this.initCourse(),this.getSelfComment(),this.getCourseCommentList()]);
         }
         //comment container scroll listener
-        window.addEventListener('scroll',this.glideLoad);
+        document.getElementById('router-view-container').addEventListener('scroll',this.glideLoad);
     },
     unmounted() {
-        window.removeEventListener('scroll',this.glideLoad);
+        document.getElementById('router-view-container').removeEventListener('scroll',this.glideLoad);
     },
 }
 </script>

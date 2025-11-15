@@ -459,10 +459,10 @@ export default {
         /**
          * add roll listener
          */
-        window.addEventListener('scroll', this.glideLoad)
+        document.getElementById('router-view-container').addEventListener('scroll', this.glideLoad)
     },
     unmounted() {
-        window.removeEventListener('scroll', this.glideLoad);
+        document.getElementById('router-view-container').removeEventListener('scroll', this.glideLoad);
     },
 }
 </script>

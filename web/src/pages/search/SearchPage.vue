@@ -935,14 +935,14 @@ export default {
         }
         this.ifMounted=true;
         //add scroll listener
-        window.addEventListener("scroll",this.glideLoad);
+        document.getElementById('router-view-container').addEventListener('scroll',this.glideLoad);
 
         //add search histroy
         addToSearchHistory(this.query[0]);
 
     },
     unmounted(){
-        window.removeEventListener("scroll",this.glideLoad);
+        document.getElementById('router-view-container').removeEventListener('scroll',this.glideLoad);
     }
 }
 </script>

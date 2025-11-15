@@ -8,7 +8,7 @@
         @set_loading="setLoading"></course-editor>
     </div>
   </v-dialog>
-  <v-app style="display: flex;">
+  <v-app style="display: flex;height: 100vh;flex-direction: column;">
     <loading-view :init-data="loadMsg" class="z-index-loading absolute-position">
     </loading-view>
     <v-snackbar class="z-index-msg absolute-position" :timeout="3000" :color="alertMsg.color" v-model="alertMsg.state">
@@ -103,7 +103,8 @@
       </div>
     </div>
     <div
-      :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': routerMarginBottom }">
+      id="router-view-container"
+      :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': routerMarginBottom, 'flex': 1 ,'overflow-y': 'auto'}">
       <router-view id="router-view" :key="$route.fullPath" class="router-view" @alert="alert" @set_loading="setLoading"
         @search_type_changed="handleSearchTypeChanged" />
     </div>
@@ -416,7 +417,6 @@ export default {
   .router-view {
     width: 100vw;
     max-width: 100vw;
-    overflow-y: auto;
     background-color: white;
   }
 }
@@ -442,7 +442,6 @@ export default {
   .router-view {
     width: 100vw;
     max-width: 100vw;
-    overflow-y: auto;
     background-color: white;
   }
 
