@@ -71,52 +71,52 @@ export const loadLarge = (path, options = {}) => {
  */
 
 // 超大型组件（>1000行）
-export const WelcomePage = loadLarge('WelcomePage', {
+export const WelcomePage = loadLarge('welcome/index', {
   delay: 100,
   timeout: 15000,
 });
 
-export const SearchPage = loadLarge('search/SearchPage', {
-  delay: 100,
-  timeout: 12000,
-});
-
-export const CoursePage = loadLarge('CoursePage', {
+export const SearchPage = loadLarge('search/index', {
   delay: 100,
   timeout: 12000,
 });
 
 // 大型组件（500-1000行）
-export const ArticlePage = loadLarge('ArticlePage', {
+export const ArticlePage = loadLarge('article/index', {
   delay: 150,
   timeout: 10000,
 });
 
-export const PostPage = loadLarge('PostPage', {
+export const PostPage = loadLarge('post/index', {
   delay: 150,
   timeout: 10000,
 });
 
-export const IndexPage = loadLarge('index/IndexPage', {
+export const IndexPage = loadLarge('index/index', {
   delay: 150,
   timeout: 10000,
 });
 
-export const LoginPage = loadLarge('LoginPage', {
+export const LoginPage = loadLarge('login/index', {
   delay: 150,
   timeout: 10000,
 });
 
-export const ChatPage = loadLarge('ChatPage', {
+export const ChatPage = loadLarge('chat/index', {
+  delay: 150,
+  timeout: 10000,
+});
+
+export const CoursePage = loadLarge('course/index', {
   delay: 150,
   timeout: 10000,
 });
 
 // 中型组件（使用基础懒加载）
-export const SelfPage = load('SelfPage');
-export const EditorPage = load('EditorPage');
-export const ManagePage = load('ManagePage');
-export const AuthorPage = load('AuthorPage');
+export const SelfPage = load('self/index');
+export const EditorPage = load('editor/index');
+export const ManagePage = load('manage/index');
+export const AuthorPage = load('author/index');
 export const DocumentPage = load('DocumentPage');
 export const ErrorPage = load('ErrorPage');
 export const ServicePage = load('ServicePage');

@@ -37,7 +37,7 @@ export function useNavigation(page, deviceType, loadState) {
   // 路由上边距
   const routerMarginTop = computed(() => {
     if (ifShowNav.value) {
-      return '41px';
+      return '45px';
     } else {
       return '0px';
     }

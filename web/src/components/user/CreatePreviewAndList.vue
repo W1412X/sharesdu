@@ -17,9 +17,9 @@
             <template v-if="articleList.length > 0">
                 <star-item :if-star-type="false" v-for="(item, index) in this.articleList" :key="index" :init-data="item">
                 </star-item>
-                <v-btn :disabled="loading.article" :loading="loading.article" v-if="this.type=='all'" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
             </template>
-            <nothing-view v-else
+            <v-btn :disabled="loading.article" :loading="loading.article" v-if="this.type=='all'" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
+            <nothing-view v-else-if="articleList.length == 0"
                 icon="mdi-book-open-outline" 
                 text="暂无文章" 
                 :icon-size="80"
