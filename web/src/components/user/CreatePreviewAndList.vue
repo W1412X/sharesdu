@@ -18,7 +18,7 @@
                 <star-item :if-star-type="false" v-for="(item, index) in this.articleList" :key="index" :init-data="item">
                 </star-item>
             </template>
-            <v-btn :disabled="loading.article" :loading="loading.article" v-if="this.type=='all'" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
+            <v-btn :disabled="loading.article" :loading="loading.article" v-if="this.type=='all'&&this.articleList.length>0" width="100%"  @click="loadMore('article')" variant="tonal" class="load-btn">加载更多</v-btn>
             <nothing-view v-else-if="articleList.length == 0"
                 icon="mdi-book-open-outline" 
                 text="暂无文章" 
@@ -32,8 +32,8 @@
                 <template v-if="postList.length > 0">
                     <star-item :if-star-type="false" v-for="(item, index) in this.postList" :key="index" :init-data="item">
                     </star-item>
-                    <v-btn :loading="loading.post" :disabled="loading.post" v-if="this.type=='all'" width="100%"  @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
                 </template>
+                <v-btn :loading="loading.post" :disabled="loading.post" v-if="this.type=='all'&&this.postList.length>0" width="100%"  @click="loadMore('post')" variant="tonal" class="load-btn">加载更多</v-btn>
                 <nothing-view v-else
                     icon="mdi-forum-outline" 
                     text="暂无帖子" 
@@ -47,8 +47,8 @@
             <template v-if="replyList.length > 0">
                 <star-item :if-star-type="false" v-for="(item, index) in this.replyList" :key="index" :init-data="item" :postId="item.postId" :if-preview="true">
                 </star-item>
-                <v-btn :loading="loading.reply" :disabled="loading.reply" v-if="this.type=='all'" width="100%"  @click="loadMore('reply')" variant="tonal" class="load-btn">加载更多</v-btn>
             </template>
+            <v-btn :loading="loading.reply" :disabled="loading.reply" v-if="this.type=='all'&&this.replyList.length>0" width="100%"  @click="loadMore('reply')" variant="tonal" class="load-btn">加载更多</v-btn>
             <nothing-view v-else
                 icon="mdi-comment-outline" 
                 text="暂无回复" 

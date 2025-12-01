@@ -1,8 +1,8 @@
 <!--star button-->
 <template>
-    <v-card @click="click()" class="card" elevation="1" variant="tonal" :color="ifStarType?themeColor:'white'">
+    <v-card @click="click()" class="card" variant="tonal" :color="ifStarType?themeColor:'white'">
         <div class="div-2">
-            <v-icon :color="ifStarType?themeColor:'grey'" :icon="getIcon(this.data.type)" style="margin-right: 20px;margin-left: 5pxz;"/>
+            <v-icon :color="ifStarType?themeColor:'grey'" :icon="getIcon(this.data.type)" class="item-icon"/>
             <div class="div-1">
                 <div class="title-container title">
                     {{ data.title }}
@@ -91,50 +91,65 @@ export default {
 }
 </script>
 <style scoped>
-    .title-container{
-        color: #000;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 80%;
-    }
-    .time-container{
-        color:grey;
-        margin-top:0px;
-    }
+.card {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important; /* 防止内容溢出 */
+    margin: 0 !important;
+}
+
+.div-2 {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-width: 0; /* 允许 flex 子元素收缩 */
+    overflow: hidden; /* 防止内容溢出 */
+}
+
+.div-1 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* 允许 flex 子元素收缩 */
+    overflow: hidden;
+}
+
+.title-container {
+    color: #000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    max-width: 100%;
+}
+
+.time-container {
+    color: grey;
+    margin-top: 4px;
+    font-size: var(--font-size-tiny);
+}
+
+.item-icon {
+    margin-right: 12px;
+    flex-shrink: 0; /* 图标不收缩 */
+}
+
+/* PC 端样式 */
 @media screen and (min-width: 1000px) {
     .card {
-        padding: 5px;
-        width: 100%;
-    }
-    .div-1 {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    .div-2{
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+        padding: 8px 12px;
     }
 }
 
+/* 移动端样式 */
 @media screen and (max-width: 1000px) {
     .card {
-        padding: 3px;
-        width: 100%;
-    }
-    .div-1 {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    .div-2{
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+        padding: 6px 10px;
     }
 }
 </style>

@@ -35,6 +35,11 @@ export function adjustAlpha(hexColor, alpha = 0.1) {
  * @returns {String} RGBA 颜色字符串
  */
 export function hexToRgba(hex, opacity) {
+    // 如果 hex 为 undefined 或 null，使用默认颜色
+    if (!hex || typeof hex !== 'string') {
+        return hexToRgba("#9c0c13", opacity !== undefined ? opacity : 0.1);
+    }
+    
     hex = hex.replace('#', '');
     if (hex.length === 8) {
         let r = parseInt(hex.substr(0, 2), 16);
@@ -54,7 +59,7 @@ export function hexToRgba(hex, opacity) {
         return `rgba(${r}, ${g}, ${b}, ${a})`;
     }
     else {
-        return hexToRgba("#9c0c13", 0.1);
+        return hexToRgba("#9c0c13", opacity !== undefined ? opacity : 0.1);
     }
 }
 

@@ -2,9 +2,10 @@
   <v-card class="course-card">
     <part-loading-view :state="!loadState" :text="'正在加载课程...'"></part-loading-view>
     <div v-if="loadState" class="row-div">
-      <div class="course-name">{{ course.name }}</div>
+      <div class="course-name text-big-title-bold">{{ course.name }}</div>
       <v-spacer></v-spacer>
       <v-btn
+        v-if="!ifMobile"
         @click="$emit('generate-share-image')"
         style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"
         elevation="0"
@@ -15,6 +16,7 @@
         <v-tooltip activator="parent">生成本课程的分享图片</v-tooltip>
       </v-btn>
       <v-btn
+        v-if="!ifMobile"
         @click="$emit('edit-course')"
         style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"
         elevation="0"
@@ -32,7 +34,7 @@
         :state="course.ifStar"
       />
     </div>
-    <div v-if="loadState" class="msg-container">
+    <div v-if="loadState" class="msg-container text-medium">
       <div class="row-div">
         <div class="msg-item">课程类型:{{ course.type }}</div>
         <div class="msg-item">授课教师:{{ course.teacher }}</div>
@@ -96,6 +98,7 @@ import { computed } from 'vue';
 import StarButton from '@/components/star/StarButton.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import { formatRelativeTime } from '@/utils/other';
+import { getDeviceType } from '@/utils/device';
 
 const props = defineProps({
   course: {
@@ -121,7 +124,7 @@ const props = defineProps({
 });
 
 defineEmits(['generate-share-image', 'edit-course', 'show-history', 'alert', 'set-loading']);
-
+const ifMobile=getDeviceType()=='mobile';
 const formattedPublishTime = computed(() => {
   return formatRelativeTime(props.course.publishTime);
 });
@@ -227,7 +230,6 @@ const formattedPublishTime = computed(() => {
 @media screen and (min-width: 1000px) {
   .course-name {
     font-weight: bold;
-    font-size: 22px;
     padding-left: 10px;
     width: 750px;
     white-space: normal;
@@ -250,8 +252,6 @@ const formattedPublishTime = computed(() => {
     flex-direction: column;
   }
   .course-name {
-    font-size: 20px;
-    font-weight: bold;
     padding-left: 10px;
     width: 85vw;
     white-space: normal;

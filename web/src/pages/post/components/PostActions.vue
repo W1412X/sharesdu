@@ -10,6 +10,7 @@
       </div>
       <div v-else class="column-center margin-right-15px">
         <delete-button
+          v-if="!ifMobile"
           @delete="$emit('delete-post')"
           :id="post.id"
           :type="'post'"
@@ -42,6 +43,7 @@
 import LikeButton from '@/components/common/LikeButton.vue';
 import AlertButton from '@/components/report/AlertButton.vue';
 import DeleteButton from '@/components/common/DeleteButton.vue';
+import { getDeviceType } from '@/utils/device';
 
 defineProps({
   post: {
@@ -57,7 +59,7 @@ defineProps({
     default: null,
   },
 });
-
+const ifMobile=getDeviceType()=='mobile';
 defineEmits(['delete-post', 'alert', 'set-loading', 'show-comment-editor']);
 </script>
 

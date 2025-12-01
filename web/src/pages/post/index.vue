@@ -80,6 +80,7 @@ import {
   usePostLoad,
   usePostRestore,
 } from './utils';
+import { moreOptionEventBus } from '@/utils/eventBus';
 
 // 定义组件名称
 defineOptions({
@@ -246,6 +247,7 @@ const initPage = async () => {
       loadMoreReply(postId.value),
     ]);
   }
+
 };
 
 // 保存状态
@@ -280,7 +282,8 @@ onUnmounted(() => {
 // 页面加载时初始化
 onMounted(async () => {
   await initPage();
-  
+  //帖子加载完成后，提交帖子页面事件
+  moreOptionEventBus.emit("post",post.value)
   // 添加滚动监听
   const routerContainer = document.getElementById('router-view-container');
   if (routerContainer) {

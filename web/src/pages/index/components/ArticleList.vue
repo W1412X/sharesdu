@@ -33,7 +33,7 @@
 <script setup>
 import ArticleSortBar from './ArticleSortBar.vue';
 import LoadMoreButton from './LoadMoreButton.vue';
-import ArticleItem from '@/components/article/ArticleItem.vue';
+import ArticleItem from '@/components/article/ArticleItem';
 import NothingView from '@/components/common/NothingView.vue';
 
 defineProps({

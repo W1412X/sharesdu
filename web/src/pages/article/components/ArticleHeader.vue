@@ -104,7 +104,7 @@
 import { computed } from 'vue';
 import TagButton from '@/components/article/TagButton.vue';
 import SourceBar from '@/components/article/SourceBar.vue';
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 import { formatRelativeTime } from '@/utils/other';
 
 const props = defineProps({

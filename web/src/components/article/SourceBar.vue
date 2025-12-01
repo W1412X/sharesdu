@@ -7,7 +7,7 @@
     >
       <div style="display: flex; flex-direction: row">
         <v-icon icon="mdi-paperclip" size="20" :color="themeColor"></v-icon>
-        <span style="font-size: 18px; color: #8a8a8a;font-size: 14px;margin-left:10px;font-weight: 600;" :style="{color:themeColor}"
+        <span class="text-small-bold" style="color: #8a8a8a;margin-left:10px;" :style="{color:themeColor}"
           >{{ '资源 : '+articleTitle }}</span
         >
       </div>

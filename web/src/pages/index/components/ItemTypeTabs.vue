@@ -34,29 +34,44 @@
   
   <!-- 移动端显示 -->
   <div v-else class="select-bar">
-    <div class="row-div-bottom">
-      <v-btn 
-        variant="text" 
-        :color="localItemType == 'article' ? themeColor : '#8a8a8a'" 
+    <v-tabs v-model="localItemType" fixed-tabs class="mobile-tabs" :color="themeColor" hide-slider>
+      <v-tab
+        :style="{ 
+          background: 'rgba(255,255,255,1)', 
+          color: localItemType == 'article' ? themeColor : '#8a8a8a',
+          fontWeight: localItemType == 'article' ? '600' : '400'
+        }"
+        height="40px" 
+        value="article" 
         text="文章" 
-        class="mobile-select-button text-small" 
-        @click="localItemType = 'article'"
-      ></v-btn>
-      <v-btn 
-        variant="text" 
-        :color="localItemType == 'post' ? themeColor : '#8a8a8a'" 
+        class="mobile-tab"
+        :class="{ 'mobile-tab--active': localItemType == 'article' }"
+      ></v-tab>
+      <v-tab
+        :style="{ 
+          background: 'rgba(255,255,255,1)', 
+          color: localItemType == 'post' ? themeColor : '#8a8a8a',
+          fontWeight: localItemType == 'post' ? '600' : '400'
+        }"
+        height="40px" 
+        value="post" 
         text="帖子" 
-        class="mobile-select-button text-small" 
-        @click="localItemType = 'post'"
-      ></v-btn>
-      <v-btn 
-        variant="text" 
-        :color="localItemType == 'course' ? themeColor : '#8a8a8a'" 
+        class="mobile-tab"
+        :class="{ 'mobile-tab--active': localItemType == 'post' }"
+      ></v-tab>
+      <v-tab
+        :style="{ 
+          background: 'rgba(255,255,255,1)', 
+          color: localItemType == 'course' ? themeColor : '#8a8a8a',
+          fontWeight: localItemType == 'course' ? '600' : '400'
+        }"
+        height="40px" 
+        value="course" 
         text="课程" 
-        class="mobile-select-button text-small" 
-        @click="localItemType = 'course'"
-      ></v-btn>
-    </div>
+        class="mobile-tab"
+        :class="{ 'mobile-tab--active': localItemType == 'course' }"
+      ></v-tab>
+    </v-tabs>
   </div>
 </template>
 
@@ -88,14 +103,6 @@ const localItemType = computed({
 </script>
 
 <style scoped>
-.row-div-bottom {
-  display: flex;
-  flex-direction: row;
-  align-items: end;
-  width: fit-content;
-  height: 100%;
-}
-
 /** desktop */
 @media screen and (min-width: 1000px) {
   .select-bar {
@@ -121,13 +128,36 @@ const localItemType = computed({
     position: fixed;
     background-color: white;
     height: 40px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
-  .mobile-select-button {
-    height: 28px;
-    width: 40px;
-    margin-left: 5px;
-    margin-right: 5px;
+  .mobile-tabs {
+    width: 100%;
+    height: 100%;
+  }
+
+  .mobile-tab {
+    text-transform: none;
+    letter-spacing: 0.5px;
+    font-size: var(--font-size-small);
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .mobile-tab--active {
+    position: relative;
+  }
+
+  .mobile-tab--active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background-color: currentColor;
+    border-radius: 2px;
   }
 }
 </style>

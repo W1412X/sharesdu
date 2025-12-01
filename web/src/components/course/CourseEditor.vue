@@ -291,7 +291,6 @@ export default {
 
 @media screen and (max-width: 1000px) {
     .card {
-        width: 400px;
         border-width: 2px;
         border-color: #8a8a8a;
         padding: 10px;

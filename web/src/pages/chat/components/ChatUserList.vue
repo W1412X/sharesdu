@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 import NothingView from '@/components/common/NothingView.vue';
 
 defineProps({

@@ -3,11 +3,11 @@
     <div class="column-center user-name text-medium">{{ userName }}</div>
     <v-spacer class="spacer"></v-spacer>
     <div class="row-reverse">
-      <div v-if="!ifMaster" class="column-center padding-right-5px">
+      <div v-if="!ifMaster&&!ifMobile" class="column-center padding-right-5px">
         <alert-button :id="course.id" :type="'course'"></alert-button>
       </div>
       <manage-button
-        v-if="ifMaster"
+        v-if="ifMaster&&!ifMobile"
         :id="course.id"
         :type="'course'"
         style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"
@@ -25,6 +25,7 @@
 <script setup>
 import AlertButton from '@/components/report/AlertButton.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
+import { getDeviceType } from '@/utils/device';
 
 defineProps({
   course: {
@@ -40,7 +41,7 @@ defineProps({
     default: false,
   },
 });
-
+const ifMobile=getDeviceType()=='mobile';
 defineEmits(['show-post']);
 </script>
 

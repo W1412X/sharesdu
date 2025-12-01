@@ -118,6 +118,7 @@ import {
   useCourseLoad,
   useCourseRestore,
 } from './utils';
+import { moreOptionEventBus } from '@/utils/eventBus';
 
 // 定义组件名称
 defineOptions({
@@ -405,7 +406,7 @@ onUnmounted(() => {
 // 页面加载时初始化
 onMounted(async () => {
   await initPage();
-  
+  moreOptionEventBus.emit("course",course.value);
   // 添加滚动监听
   const routerContainer = document.getElementById('router-view-container');
   if (routerContainer) {

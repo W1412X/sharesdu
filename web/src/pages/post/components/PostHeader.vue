@@ -24,7 +24,7 @@
         ></star-button>
       </div>
     </div>
-    <div class="title-container title-bold">
+    <div class="title-container text-title-bold">
       {{ post.title }}
     </div>
     <div class="text-medium">
@@ -33,15 +33,18 @@
         :type="'post'"
       ></with-link-container>
     </div>
-    <div class="row-div-scroll">
-      <img-card
-        v-for="(img, index) in post.imgList"
-        :key="index"
-        :height="140"
-        :width="140"
-        :src="img"
-      ></img-card>
-    </div>
+    <grid-image-gallery 
+      v-if="post.imgList && post.imgList.length > 0"
+      :image-list="post.imgList"
+      @image-click="handleImageClick"
+    ></grid-image-gallery>
+    <!-- 图片查看器 -->
+    <image-viewer
+      v-model="showImageViewer"
+      :image-list="post.imgList || []"
+      :initial-index="currentImageIndex"
+      @close="showImageViewer = false"
+    ></image-viewer>
     <div class="full-column-center text-small grey-font">
       <div class="comment-star-display-div">
         <div class="row-right-20px-column-center">
@@ -84,11 +87,12 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import AvatarName from '@/components/common/AvatarName.vue';
+import { computed, ref } from 'vue';
+import AvatarName from '@/components/common/AvatarName';
 import StarButton from '@/components/star/StarButton.vue';
 import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
-import ImgCard from '@/components/common/ImgCard.vue';
+import GridImageGallery from '@/components/common/GridImageGallery.vue';
+import ImageViewer from '@/components/common/ImageViewer.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import { formatRelativeTime } from '@/utils/other';
 
@@ -117,18 +121,27 @@ const relativeText = computed(() => {
 const formattedPublishTime = computed(() => {
   return formatRelativeTime(props.post.publishTime);
 });
+
+// 图片查看器状态
+const showImageViewer = ref(false);
+const currentImageIndex = ref(0);
+
+const handleImageClick = ({ index }) => {
+  currentImageIndex.value = index;
+  showImageViewer.value = true;
+};
 </script>
 
 <style scoped>
 .surface-card {
-  border-radius: 12px;
+  border-radius: 0px;
   background-color: #ffffff;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
 }
 
 .detail-panel {
   padding: 12px 16px;
-  border-radius: 10px;
+  border-radius: 0px;
   background-color: rgba(0, 0, 0, 0.02);
 }
 
@@ -188,14 +201,6 @@ const formattedPublishTime = computed(() => {
   overflow: hidden;
 }
 
-.row-div-scroll {
-  margin: 5px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  overflow-x: auto;
-  width: 100%;
-}
 
 .comment-star-display-div {
   overflow-x: auto;

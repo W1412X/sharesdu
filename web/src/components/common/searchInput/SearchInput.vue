@@ -118,6 +118,8 @@ export default {
         }, 3000)
       }
       setLock("search-suggestion-click-show", false);
+      //提交事件：搜索输入框失去焦点
+      this.$emit('blur');
       this.isFocused = false;
     },
     onInput() {

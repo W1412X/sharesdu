@@ -1,6 +1,6 @@
 <!-- use the old version design -->
 <template>
-    <v-card style="width: 500px; padding: 5px">
+    <v-card style="padding: 5px">
         <div style="display: flex; flex-direction: row">
             <v-icon icon="mdi-alert-circle-outline" size="25"></v-icon>
             <div class="title-bold title-alert">
@@ -8,10 +8,10 @@
             </div>
         </div>
         <div class="type-alert text-medium-bold">
-            类型: {{ report.type }}
+            类型: {{ type }}
         </div>
         <div class="id-alert text-medium-bold">
-            举报项目ID: {{ report.id }}
+            举报项目ID: {{ id }}
         </div>
         <sensitive-text-area class="text-area" label="填写你的举报理由(不多于100字)" variant="outlined" v-model="reason"></sensitive-text-area>
         <div class="btn-container">
@@ -27,14 +27,13 @@ import { defineAsyncComponent } from 'vue'
 
 export default {
     props: {
-        report: {
-            type: Object,
-            default: function () {
-                return {
-                    type: '文章',
-                    id: '00000000',
-                }
-            },
+        type:{
+            type: String,
+            default: null,
+        },
+        id:{
+            type: String,
+            default: null,
         },
     },
     components: {
@@ -67,8 +66,8 @@ export default {
                 }
                 // eslint-disable-next-line
                 const report = {
-                    type: this.report.type,
-                    id: this.report.id,
+                    type: this.type,
+                    id: this.id,
                     reason: this.report.reason,
                 }
             }

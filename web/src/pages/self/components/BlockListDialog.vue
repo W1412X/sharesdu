@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 
 // Props
 defineProps({

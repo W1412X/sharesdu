@@ -63,7 +63,7 @@
 import { deletePrivateMessage } from '@/api/modules/chat';
 import { formatRelativeTime, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { ref } from 'vue';
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 import { globalProperties } from '@/main';
 export default {
     name: 'ChatMessage',

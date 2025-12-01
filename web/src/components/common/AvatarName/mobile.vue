@@ -1,8 +1,8 @@
-<!--  -->
+<!-- 移动端头像名称组件 -->
 <template>
     <div class="avatar-name" @click="toAuthorPage">
-        <v-icon v-if="this.profileUrl == null || this.imageLoading" icon="mdi-account-circle" :size="size" color='#bbbbbb'></v-icon>
-        <v-avatar v-if="this.profileUrl != null" :size="size">
+        <v-icon v-if="this.profileUrl == null || this.imageLoading" icon="mdi-account-circle" :size="mobileSize" color='#bbbbbb'></v-icon>
+        <v-avatar v-if="this.profileUrl != null" :size="mobileSize">
             <v-img 
                 :src="this.profileUrl" 
                 :lazy-src="lazyImgUrl"
@@ -14,7 +14,7 @@
                 <template v-slot:placeholder>
                     <div class="avatar-placeholder">
                         <v-progress-circular 
-                            :size="parseInt(size) * 0.6" 
+                            :size="parseInt(mobileSize) * 0.6" 
                             :width="2"
                             :color="'#bbbbbb'" 
                             indeterminate
@@ -23,7 +23,7 @@
                 </template>
             </v-img>
         </v-avatar>
-        <div v-if="ifShowName" :style="{ color: color, 'font-size': nameSize + 'px' }">
+        <div v-if="ifShowName" class="name-text" :style="{ color: color, 'font-size': mobileNameSize + 'px' }">
             {{ initData.name }}
         </div>
     </div>
@@ -38,6 +38,7 @@ import { getProfileUrl } from '@/utils/profile'
 import { ref } from 'vue'
 
 export default {
+    name: 'AvatarNameMobile',
     props: {
         initData: {
             type: Object,
@@ -80,6 +81,25 @@ export default {
             lazyImgUrl,
             imageLoading,
         }
+    },
+    computed: {
+        // 移动端头像大小（适当缩小）
+        mobileSize() {
+            const baseSize = parseInt(this.size);
+            // 移动端头像缩小到 85% 左右
+            return Math.max(24, Math.floor(baseSize * 0.85)).toString();
+        },
+        // 移动端名称字体大小（使用响应式字体系统）
+        mobileNameSize() {
+            // 如果指定了 nameSize，则使用指定值，否则使用响应式字体
+            if (this.nameSize && this.nameSize !== '16') {
+                const baseSize = parseInt(this.nameSize);
+                // 移动端字体缩小到 90% 左右
+                return Math.max(12, Math.floor(baseSize * 0.9)).toString();
+            }
+            // 默认使用 text-small 的移动端大小（13px）
+            return '13';
+        },
     },
     data() {
         return {
@@ -195,7 +215,6 @@ export default {
             }
         },
     },
-    // mounted()
     async mounted() {
         if (!this.lazy) {
             // 非懒加载模式，立即加载
@@ -212,7 +231,16 @@ export default {
 .avatar-name {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.name-text {
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
 }
 
 .avatar-placeholder {
@@ -224,3 +252,4 @@ export default {
     background-color: #f5f5f5;
 }
 </style>
+

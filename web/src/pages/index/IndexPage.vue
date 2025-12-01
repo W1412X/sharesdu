@@ -103,9 +103,9 @@
 <script>
 import { globalProperties } from '@/main';
 import { ref, computed, shallowRef } from 'vue';
-import ArticleItem from '@/components/article/ArticleItem.vue';
-import CourseItem from '@/components/course/CourseItem.vue';
-import PostItem from '@/components/post/PostItem.vue';
+import ArticleItem from '@/components/article/ArticleItem';
+import CourseItem from '@/components/course/CourseItem';
+import PostItem from '@/components/post/PostItem';
 import NothingView from '@/components/common/NothingView.vue';
 import { getCookie } from '@/utils/cookie';
 import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, isElementAtBottom, openPage } from '@/utils/other';

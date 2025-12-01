@@ -29,8 +29,19 @@
             </div>
         </div>
         <div @click="click" class="comment text-medium content comment-body">
-            <span v-if="this.ifChild == true" @click="showParent" class="text-medium-bold"
-                :style="{ 'color': themeColor }">{{ parentAuthorName + '： ' }}</span>
+            <!-- 父级回复内容显示区域 -->
+            <div v-if="this.ifChild && localParentReplyContent" class="parent-reply-container" @click.stop="showParent">
+                <div class="parent-reply-content">
+                    <span class="parent-reply-author" :style="{ 'color': themeColor }">@{{ parentAuthorName }}</span>
+                    <span class="parent-reply-separator">：</span>
+                    <span class="parent-reply-text">{{ localParentReplyContent }}</span>
+                </div>
+            </div>
+            <!-- 如果没有父级回复内容，只显示作者名（可点击跳转） -->
+            <div v-else-if="this.ifChild" class="parent-reply-author-only" @click.stop="showParent">
+                <span class="text-medium-bold" :style="{ 'color': themeColor }">@{{ parentAuthorName }}：</span>
+            </div>
+            <!-- 当前回复内容 -->
             <div class="content-wrapper-container">
                 <div ref="contentContainer"
                     :class="['content-wrapper', { collapsed: isCollapsed && showToggle }]">
@@ -77,14 +88,14 @@
 <script>
 import AlertButton from '@/components/report/AlertButton.vue';
 import LikeButton from '@/components/common/LikeButton.vue';
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 import { getCookie } from '@/utils/cookie';
 import DeleteButton from '@/components/common/DeleteButton.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import { addHeaderToReply, formatRelativeTime, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader, openPage } from '@/utils/other';
-import { createReplyUnderPost } from '@/api/modules/post';
+import { createReplyUnderPost, getReplyDetailById } from '@/api/modules/post';
 import EmojiPicker from '@/components/common/EmojiPicker.vue';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
@@ -110,6 +121,10 @@ export default {
         ifPreview:{
             type: Boolean,
             default: false,
+        },
+        parentReplyContent: {
+            type: String,
+            default: null
         },
     },
     setup() {
@@ -150,6 +165,8 @@ export default {
             ifChild: false,
             parentAuthorName: null,
             parentReplyId: null,
+            localParentReplyContent: null, // 使用 local 前缀避免与 prop 冲突
+            loadingParentReply: false,
             childReplys: [],
             replyContent: "",
             isCollapsed: true,
@@ -224,6 +241,29 @@ export default {
                 }
             });
         },
+        async loadParentReplyContent() {
+            if (!this.parentReplyId || this.loadingParentReply) {
+                return;
+            }
+            
+            this.loadingParentReply = true;
+            try {
+                const response = await getReplyDetailById(this.parentReplyId);
+                if (response.status === 200 || response.status === 201) {
+                    // 提取父级回复的实际内容（去掉 @ 格式的头部）
+                    let parentContent = response.reply_detail?.reply_content || '';
+                    if (parentContent.startsWith("@")) {
+                        parentContent = getReplyContentWithoutHeader(parentContent);
+                    }
+                    this.localParentReplyContent = parentContent;
+                }
+            } catch (error) {
+                // 加载失败时，不显示父级回复内容，只显示作者名
+                console.warn('加载父级回复内容失败:', error);
+            } finally {
+                this.loadingParentReply = false;
+            }
+        },
         async reply() {
             if (this.replyContent.length <= 5) {
                 this.alert(getNormalWarnAlert("评论内容过短"));
@@ -256,6 +296,16 @@ export default {
                 this.evaluateContent();
             },
             immediate: true,
+        },
+        // 监听 parentReplyContent prop 的变化
+        parentReplyContent: {
+            handler(newVal) {
+                if (newVal && this.ifChild) {
+                    // 如果 prop 提供了父级回复内容，使用 prop 的值
+                    this.localParentReplyContent = newVal;
+                }
+            },
+            immediate: true
         }
     },
     mounted() {
@@ -269,11 +319,22 @@ export default {
                 this.parentReplyId = getParentReplyIdFromReply(this.data.content);
                 this.data.content = getReplyContentWithoutHeader(this.data.content);
                 this.ifChild = true;
+                
+                // 如果提供了 parentReplyContent prop，直接使用
+                if (this.parentReplyContent) {
+                    this.localParentReplyContent = this.parentReplyContent;
+                    return;
+                }
+                
+                // 否则尝试自动加载父级回复内容
+                if (this.parentReplyId) {
+                    this.loadParentReplyContent();
+                }
             } catch (e) {
                 return;
             }
         }
-    }
+    },
 }
 </script>
 <style scoped>
@@ -281,7 +342,7 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-top: 5px;
+    margin-top: 8px;
 }
 
 .bottom-line {
@@ -302,8 +363,65 @@ export default {
     white-space: pre-line;
 }
 .comment-body {
-    padding: 12px 14px;
-    border-radius: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+/* 父级回复容器 */
+.parent-reply-container {
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-left: 3px solid var(--theme-color, #1976d2);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.parent-reply-container:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.parent-reply-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px;
+    line-height: 1.5;
+}
+
+.parent-reply-author {
+    font-weight: 600;
+    font-size: var(--font-size-small);
+}
+
+.parent-reply-separator {
+    color: #8a8a8a;
+    font-size: var(--font-size-small);
+}
+
+.parent-reply-text {
+    color: #666666;
+    font-size: var(--font-size-small);
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.parent-reply-author-only {
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.parent-reply-author-only:hover {
+    opacity: 0.8;
 }
 .content-wrapper {
     width: 100%;
@@ -333,7 +451,7 @@ export default {
     align-items: center;
     width: fit-content;
     cursor: pointer;
-    margin-top: 6px;
+    margin-top: 4px;
     gap: 2px;
 }
 .reply-dialog {
@@ -356,7 +474,7 @@ export default {
     flex-direction: column;
 }
 .reply-textarea {
-    margin-top: 10px;
+    margin-top: 4px;
     flex: 1;
 }
 .editor-row {
@@ -367,7 +485,7 @@ export default {
     display: flex;
     flex-direction: row-reverse;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 4px;
 }
 .dialog-action-btn {
     min-width: 72px;
@@ -379,8 +497,9 @@ export default {
 .meta-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     color: #666666;
+    margin-bottom: 6px;
 }
 .meta-divider {
     width: 1px;
@@ -397,11 +516,9 @@ export default {
     display: flex;
     align-items: center;
     height: 100%;
-    margin-left: 3px;
-    margin-right: 15px;
-    margin-top: 2px;
+    margin-left: 4px;
+    margin-right: 12px;
     max-width: 100px;
-    align-items: center;
     color: grey;
     white-space: nowrap;
     overflow: hidden;
@@ -410,16 +527,16 @@ export default {
 .bottom-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
 }
 .bottom-time {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-left: 10px;
+    margin-left: 8px;
 }
 .bottom-icon-btn {
-    margin-right: 10px;
+    margin-right: 8px;
     display: flex;
 }
 .icon-btn {
@@ -439,8 +556,8 @@ export default {
     .post-title-div{
         color:grey;
         max-width: 80%;
-        margin-top: 5px;
-        margin-bottom: 5px;
+        margin-top: 4px;
+        margin-bottom: 6px;
         width: fit-content;
         white-space: nowrap;
         overflow: hidden;
@@ -451,9 +568,10 @@ export default {
         width: 880px;
         display: flex;
         flex-direction: column;
-        padding-top: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-top: 8px;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-bottom: 8px;
         border-bottom: 0.5px #dddddd solid;
         border-radius: 0px;
     }
@@ -464,7 +582,7 @@ export default {
     .name {
         width: 100%;
         display: flex;
-        margin-bottom: 5px;
+        margin-bottom: 0;
     }
 
     .time {
@@ -472,7 +590,7 @@ export default {
         display: flex;
         color: grey;
         width: fit-content;
-        margin-right: 5px;
+        margin-right: 0;
         align-items: center;
     }
 }
@@ -481,14 +599,28 @@ export default {
     .content-gradient{
         background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 65%, rgba(255,255,255,1) 100%);
     }
+    .parent-reply-container {
+        padding: 6px 8px;
+        margin-bottom: 6px;
+    }
+    .parent-reply-author {
+        font-size: var(--font-size-tiny);
+    }
+    .parent-reply-separator {
+        font-size: var(--font-size-tiny);
+    }
+    .parent-reply-text {
+        font-size: var(--font-size-tiny);
+    }
     .container {
         width: 100%;
         transition: background-color 0.2s ease;
         display: flex;
         flex-direction: column;
-        padding-top: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-top: 8px;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-bottom: 8px;
         border-bottom: 0.5px #dddddd solid;
         border-radius: 0px;
     }
@@ -497,8 +629,8 @@ export default {
     }
     .post-title-div{
         color:grey;
-        margin-top: 5px;
-        margin-bottom: 5px;
+        margin-top: 4px;
+        margin-bottom: 6px;
         max-width: 80vw;
         width: fit-content;
         white-space: nowrap;
@@ -508,16 +640,16 @@ export default {
     .name {
         width: 100%;
         display: flex;
-        margin-bottom: 5px;
+        margin-bottom: 0;
     }
 
     .time {
         flex-direction: row;
         display: flex;
-        margin-top: 5px;
+        margin-top: 0;
         color: grey;
         width: fit-content;
-        margin-right: 5px;
+        margin-right: 0;
         align-items: center;
     }
 }

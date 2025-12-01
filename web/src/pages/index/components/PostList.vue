@@ -26,7 +26,7 @@
 
 <script setup>
 import LoadMoreButton from './LoadMoreButton.vue';
-import PostItem from '@/components/post/PostItem.vue';
+import PostItem from '@/components/post/PostItem';
 import NothingView from '@/components/common/NothingView.vue';
 
 defineProps({

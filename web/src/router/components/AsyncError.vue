@@ -53,14 +53,14 @@ export default {
 .error-title {
   margin: 16px 0 8px;
   color: #333;
-  font-size: 20px;
+  font-size: var(--font-size-logo);
   font-weight: 500;
 }
 
 .error-message {
   margin: 0 0 24px;
   color: #666;
-  font-size: 14px;
+  font-size: var(--font-size-small);
   max-width: 500px;
 }
 </style>

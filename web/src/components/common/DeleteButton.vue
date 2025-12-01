@@ -1,6 +1,11 @@
 <!--alert button-->
 <template>
-    <v-btn :loading="loading" :disabled="loading" elevation="0" @click="click" icon :style="{
+    <v-dialog v-model="ifShowDialog" max-width="320" persistent style="width: 100%;height:100%;justify-content: center;">
+        <div v-if="ifShowDeleteCard" style="width: 100%;height:100%;justify-content: center;display: flex">
+            <component :is="AsyncDeleteConfirmCard" :type="type" :id="id" @close="close()" @delete="handleDelete()" @alert="alert($event)"></component>
+        </div>
+    </v-dialog>
+    <v-btn elevation="0" @click="click" icon :style="{
         'width': size+'px',
         'height': size+'px',
         'color': color,
@@ -11,10 +16,8 @@
     </v-btn>
 </template>
 <script>
-import { deleteArticle } from '@/api/modules/article';
-import { deleteCourse } from '@/api/modules/course';
-import { deletePostById, deleteReplyById } from '@/api/modules/post';
-import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { computed, defineAsyncComponent, ref } from 'vue';
+
 export default {
     props: {
         id: {
@@ -35,10 +38,19 @@ export default {
         }
     },
     setup() {
-    },
-    data(){
+        const ifShowDeleteCard = ref(false);
+        const ifShowDialog = computed(() => {
+            return ifShowDeleteCard.value;
+        })
+        const setDeleteCardState = (state) => {
+            ifShowDeleteCard.value = state;
+        }
+        const AsyncDeleteConfirmCard = defineAsyncComponent(() => import('@/components/common/DeleteConfirmCard.vue'))
         return {
-            loading: false,
+            ifShowDialog,
+            ifShowDeleteCard,
+            setDeleteCardState,
+            AsyncDeleteConfirmCard,
         }
     },
     methods: {
@@ -48,33 +60,14 @@ export default {
         alert(msg) {
             this.$emit('alert', msg)
         },
-        async click() {
-            this.loading=true;
-            let response={status:-1,message:"网络错误"};
-            switch(this.type){
-                case 'article':
-                    response=await deleteArticle(this.id);
-                    break;
-                case 'post':
-                    response=await deletePostById(this.id);
-                    break;
-                case 'course':
-                    response=await deleteCourse(this.id);
-                    break;
-                case 'reply':
-                    response=await deleteReplyById(this.id);
-                    break;
-               default:
-                    this.alert(getNormalErrorAlert("未知的删除类型"));
-                    return;
-            }
-            this.loading=false;
-            if(response.status==200){
-                this.alert(getNormalSuccessAlert('删除成功'));
-                this.$emit('delete');
-            }else{
-                this.alert(getNormalErrorAlert(response.message));
-            }
+        click() {
+            this.setDeleteCardState(true);
+        },
+        close() {
+            this.setDeleteCardState(false);
+        },
+        handleDelete() {
+            this.$emit('delete');
         },
     }
 }

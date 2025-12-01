@@ -38,7 +38,7 @@
 </template>
 <script>
 import AlertButton from '@/components/report/AlertButton.vue';
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 import { globalProperties } from '@/main';
 import { formatRelativeTime } from '@/utils/other';
 import WithLinkContainer from '../common/WithLinkContainer.vue';

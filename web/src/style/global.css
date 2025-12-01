@@ -5,53 +5,114 @@
     justify-content: center;
 }
 /**
- * font style defination
- * use span contain the  
+ * 响应式字体大小系统
+ * 使用 CSS 变量实现 PC 端和移动端的统一管理
+ * PC 端保持原有大小，移动端适当缩小以提升观感
  */
-.title-big{
-    font-size:24px;
+
+:root {
+  /* PC 端字体大小（默认，>= 1000px） */
+  --font-size-title-big: 24px;
+  --font-size-page-title: 22px;
+  --font-size-logo: 20px;
+  --font-size-title: 18px;
+  --font-size-medium: 16px;
+  --font-size-small: 14px;
+  --font-size-tiny: 12px;
+  --font-size-min: 10px;
+}
+
+/* 移动端字体大小（< 1000px） */
+@media screen and (max-width: 1000px) {
+  :root {
+    --font-size-title-big: 20px;      /* 24px * 0.833 */
+    --font-size-page-title: 18px;     /* 22px * 0.818 */
+    --font-size-logo: 18px;            /* 20px * 0.9 */
+    --font-size-title: 16px;           /* 18px * 0.889 */
+    --font-size-medium: 14px;          /* 16px * 0.875 */
+    --font-size-small: 13px;            /* 14px * 0.929 */
+    --font-size-tiny: 11px;            /* 12px * 0.917 */
+    --font-size-min: 9px;              /* 10px * 0.9 */
+  }
+}
+
+/**
+ * 字体样式定义
+ * 使用统一的 CSS 变量，自动适配 PC 端和移动端
+ */
+.title-big {
+    font-size: var(--font-size-title-big);
 }
 .title-big-bold{
-    font-size:24px;
+    font-size: var(--font-size-title-big);
     font-weight: bold;
 }
-.page-title-bold{
-    font-size: 22px;
+.text-big-title{
+    font-size: var(--font-size-title-big);
+}
+.text-big-title-bold{
+    font-size: var(--font-size-title-big);
     font-weight: bold;
 }
+.text-title {
+    font-size: var(--font-size-title);
+}
+.text-title-bold {
+    font-size: var(--font-size-title);
+    font-weight: bold;
+}
+.title-big-bold {
+    font-size: var(--font-size-title-big);
+    font-weight: bold;
+}
+
+.page-title-bold {
+    font-size: var(--font-size-page-title);
+    font-weight: bold;
+}
+
 .title {
-    font-size:18px;
+    font-size: var(--font-size-title);
 }
-.title-bold{
-    font-weight: bold;
-    font-size: 18px;
-}
-.text-medium{
-    font-size: 16px;
-}
-.text-medium-bold{
-    font-size: 16px;
+
+.title-bold {
+    font-size: var(--font-size-title);
     font-weight: bold;
 }
-.text-small{
-    font-size: 14px;
+
+.text-medium {
+    font-size: var(--font-size-medium);
 }
-.text-small-bold{
-    font-size: 14px;
+
+.text-medium-bold {
+    font-size: var(--font-size-medium);
     font-weight: bold;
 }
-.text-tiny{
-    font-size: 12px;
+
+.text-small {
+    font-size: var(--font-size-small);
 }
-.text-tiny-bold{
-    font-size: 12px;
+
+.text-small-bold {
+    font-size: var(--font-size-small);
     font-weight: bold;
 }
-.text-min{
-    font-size: 10px;
+
+.text-tiny {
+    font-size: var(--font-size-tiny);
 }
-.text-min-bold{
-    font-size: 10px;
+
+.text-tiny-bold {
+    font-size: var(--font-size-tiny);
+    font-weight: bold;
+}
+
+.text-min {
+    font-size: var(--font-size-min);
+}
+
+.text-min-bold {
+    font-size: var(--font-size-min);
     font-weight: bold;
 }
 /**
@@ -61,18 +122,20 @@
 /**
  * logo text
  */
-.logo-text{
-    font-size: 20px;
+.logo-text {
+    font-size: var(--font-size-logo);
     font-weight: bold;
-    color:var(--theme-color);
+    color: var(--theme-color);
 }
-.logo-line{
+
+.logo-line {
     width: 100%;
     height: 2px;
     background-color: var(--theme-color);
 }
-.logo-text-white{
-    font-size: 20px;
+
+.logo-text-white {
+    font-size: var(--font-size-logo);
     font-weight: bold;
     color: white;
 }

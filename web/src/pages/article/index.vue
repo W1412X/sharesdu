@@ -80,6 +80,7 @@ import {
   useArticleLoad,
   useArticleRestore,
 } from './utils';
+import { moreOptionEventBus } from '@/utils/eventBus';
 
 // 定义组件名称
 defineOptions({
@@ -375,7 +376,7 @@ onMounted(async () => {
   } else {
     restoreComplete.value = true;
   }
-  
+  moreOptionEventBus.emit("article",article.value);
   emit('set_loading', getCancelLoadMsg());
 });
 

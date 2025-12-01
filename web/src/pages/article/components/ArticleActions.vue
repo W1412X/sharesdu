@@ -4,17 +4,17 @@
     <v-spacer class="spacer"></v-spacer>
     <div class="row-reverse">
       <!-- 管理员按钮 -->
-      <div v-if="ifMaster" class="column-center padding-right-5px">
+      <div v-if="ifMaster && !ifMobile" class="column-center padding-right-5px">
         <manage-button :id="article.id" :type="'article'" size="23" />
       </div>
       
       <!-- 举报按钮 -->
-      <div v-if="userId != article.authorId" class="column-center padding-right-5px">
+      <div v-if="userId != article.authorId && !ifMobile" class="column-center padding-right-5px">
         <alert-button :id="article.id" :type="'article'" />
       </div>
       
       <!-- 编辑和删除按钮（作者） -->
-      <div v-else class="row-div">
+      <div v-else-if="!ifMobile" class="row-div">
         <div class="column-center padding-right-5px">
           <v-btn elevation="0" @click="$emit('edit')" icon class="bottom-btn">
             <v-icon icon="mdi-pencil-outline" size="23"></v-icon>
@@ -73,6 +73,7 @@ import AlertButton from '@/components/report/AlertButton.vue';
 import DeleteButton from '@/components/common/DeleteButton.vue';
 import StarButton from '@/components/star/StarButton.vue';
 import LikeButton from '@/components/common/LikeButton.vue';
+import { getDeviceType } from '@/utils/device';
 
 defineProps({
   article: {
@@ -92,7 +93,7 @@ defineProps({
     default: false,
   },
 });
-
+const ifMobile=getDeviceType()=='mobile';
 defineEmits(['edit', 'delete', 'comment', 'alert', 'set-loading']);
 </script>
 

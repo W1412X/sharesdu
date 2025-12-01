@@ -24,7 +24,7 @@
 </template>
 <script>
 import { copy, formatRelativeTime, getNormalWarnAlert, openPage } from '@/utils/other';
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 
 export default {
     props: {

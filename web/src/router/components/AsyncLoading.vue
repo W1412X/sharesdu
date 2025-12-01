@@ -42,7 +42,7 @@ export default {
 
 .loading-text {
   color: #666;
-  font-size: 14px;
+  font-size: var(--font-size-small);
   margin: 0;
 }
 </style>

@@ -19,7 +19,7 @@
         </v-card>
       </div>
     </v-dialog>
-    <v-card class="card">
+    <v-card class="card text-medium">
         <div class="column-div">
             <div class="row-div">
                 <div class="before-container">
@@ -171,12 +171,37 @@ export default {
         ImgCard: defineAsyncComponent(() => import('@/components/common/ImgCard.vue')),
     },
     data() {
-        let data=this.initData;
+        let data=this.initData ? JSON.parse(JSON.stringify(this.initData)) : {
+            summary: "",
+            type: "",
+            tags: [],
+            originLink: "",
+            coverLink:"",
+            sourceUrl:"",
+        };
         const file=null;
         return{
             data,
             file,
             tmpCoverImage:null,
+        }
+    },
+    watch: {
+        initData: {
+            handler(newVal) {
+                if (newVal) {
+                    this.data = {
+                        summary: newVal.summary || "",
+                        type: newVal.type || "",
+                        tags: Array.isArray(newVal.tags) ? [...newVal.tags] : [],
+                        originLink: newVal.originLink || "",
+                        coverLink: newVal.coverLink || "",
+                        sourceUrl: newVal.sourceUrl || "",
+                    };
+                }
+            },
+            deep: true,
+            immediate: false,
         }
     },
     methods: {
@@ -360,7 +385,6 @@ export default {
 <style scoped>
 .before-text {
     color: #8a8a8a;
-    font-size: 16px;
 }
 
 .before-container {
@@ -419,7 +443,6 @@ export default {
     border-radius: 50px;
     height: 15px;
     margin: 5px;
-    font-size: 12px;
     color: #8a8a8a;
     font-weight: 600;
     padding-top: 0px;

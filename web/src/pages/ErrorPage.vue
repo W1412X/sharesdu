@@ -62,7 +62,7 @@ export default {
     }
     .title {
         width: fit-content;
-        font-size: 28px;
+        font-size: var(--font-size-title-big);
         font-weight: 600;
         margin: 10px;
     }
@@ -81,7 +81,7 @@ export default {
     }
     .title {
         width: fit-content;
-        font-size: 28px;
+        font-size: var(--font-size-title-big);
         font-weight: 600;
         margin: 10px;
     }

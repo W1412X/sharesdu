@@ -25,6 +25,7 @@ class EventBus {
   //发送事件
   emit(event, data) {
     this.emitter.emit(this.getEventName(event), data);
+    console.log('emit', event, data);
   }
 
   //监听事件（只触发一次）
@@ -92,4 +93,5 @@ export function deleteEventBus(name){
     eventBusDict[name].clearAll();
     eventBusDict[name]=null;
 }
+export const moreOptionEventBus=createEventBus('moreOption');
 export default EventBus;

@@ -26,7 +26,7 @@
 
 <script setup>
 import LoadMoreButton from './LoadMoreButton.vue';
-import CourseItem from '@/components/course/CourseItem.vue';
+import CourseItem from '@/components/course/CourseItem';
 import NothingView from '@/components/common/NothingView.vue';
 
 defineProps({

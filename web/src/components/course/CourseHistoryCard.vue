@@ -44,7 +44,7 @@
 </template>
 <script>
 import { formatRelativeTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 import { getCourseHistory, rollbackCourse } from '@/api/modules/course';
 
 export default {

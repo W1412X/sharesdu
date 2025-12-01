@@ -70,7 +70,7 @@
 
 <script>
 import { globalProperties } from '@/main';
-import AvatarName from '@/components/common/AvatarName.vue';
+import AvatarName from '@/components/common/AvatarName';
 import { getAuthorInfo } from '@/api/modules/account';
 import { formatRelativeTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 import { blockUser } from '@/api/modules/block';
