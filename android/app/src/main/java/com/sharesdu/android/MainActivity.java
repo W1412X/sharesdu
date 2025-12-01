@@ -1,409 +1,575 @@
 package com.sharesdu.android;
 
-import android.os.Bundle;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.sharesdu.android.feature.index.IndexFragment;
-import com.sharesdu.android.feature.self.SelfFragment;
-import com.sharesdu.android.feature.service.ServiceFragment;
-import com.sharesdu.android.core.network.ApiClient;
-import com.sharesdu.android.core.network.ErrorHandlerInterceptor;
-import com.sharesdu.android.core.network.LoginCallback;
-import com.sharesdu.android.core.navigation.NavigationCallback;
-import com.sharesdu.android.core.navigation.NavigationManager;
-import com.sharesdu.android.core.utils.TokenManager;
-import com.sharesdu.android.common.dialog.ImageViewerDialog;
-import com.sharesdu.android.feature.author.AuthorActivity;
-import com.sharesdu.android.common.dialog.PostEditorDialog;
-import com.sharesdu.android.common.dialog.CourseEditorDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
-import com.sharesdu.android.R;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-/**
- * 主 Activity
- * 包含底部导航和顶部搜索功能
- */
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.Uri;
+import android.net.http.SslError;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.webkit.ConsoleMessage;
+import android.webkit.JsResult;
+import android.webkit.PermissionRequest;
+import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebChromeClient.FileChooserParams;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+    private static final int PERMISSION_REQUEST_CODE = 1001;
+    private static final int FILE_CHOOSER_REQUEST_CODE = 1002;
     
-    private BottomNavigationView bottomNavigation;
-    private ImageButton btnCreate;
-    private ImageButton btnSearch;
-    private TextInputLayout searchInputLayout;
-    private TextInputEditText etSearch;
-    private TextView btnCancelSearch;
+    private WebView web;
+    private ValueCallback<Uri[]> fileUploadCallback;
     
-    private Fragment currentFragment;
-    private IndexFragment indexFragment;
-    private ServiceFragment serviceFragment;
-    private SelfFragment selfFragment;
-    
-    private PostEditorDialog postEditorDialog;
-    private CourseEditorDialog courseEditorDialog;
-    private ImageViewerDialog imageViewerDialog;
+    // 需要申请的权限列表
+    private String[] permissions = {
+        Manifest.permission.INTERNET,
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        // 初始化 ApiClient（用于错误处理拦截器）
-        ApiClient.init(this);
-        
-        // 设置登录回调接口
-        ErrorHandlerInterceptor.setLoginCallback(new LoginCallback() {
-            @Override
-            public void navigateToLogin(Context context) {
-                Intent intent = new Intent(context, com.sharesdu.android.feature.auth.LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                context.startActivity(intent);
-            }
-        });
-        
-        // 设置导航回调接口
-        NavigationManager.getInstance().setNavigationCallback(new NavigationCallback() {
-            @Override
-            public void navigateToImageViewer(Context context, String imageUrl) {
-                // 使用对话框组件替代Activity
-                if (imageViewerDialog != null && context == MainActivity.this) {
-                    imageViewerDialog.show(imageUrl);
-                } else if (context instanceof FragmentActivity) {
-                    // 如果context是FragmentActivity，创建新的对话框实例
-                    ImageViewerDialog dialog = new ImageViewerDialog((FragmentActivity) context);
-                    dialog.show(imageUrl);
-                }
-            }
-            
-            @Override
-            public void navigateToAuthor(Context context, String userId) {
-                try {
-                    Integer authorId = Integer.parseInt(userId);
-                    Intent intent = new Intent();
-                    intent.setClassName(context, "com.sharesdu.android.feature.author.AuthorActivity");
-                    intent.putExtra("author_id", authorId);
-                    context.startActivity(intent);
-                } catch (Exception e) {
-                    android.util.Log.e("MainActivity", "无法跳转到作者页面", e);
-                }
-            }
-            
-            @Override
-            public void navigateToArticle(Context context, String articleId) {
-                // TODO: 实现文章详情页面导航
-                // 目前使用字符串形式避免循环依赖
-                try {
-                    Intent intent = new Intent();
-                    intent.setClassName(context, "com.sharesdu.android.feature.article.ArticleActivity");
-                    intent.putExtra("article_id", articleId);
-                    context.startActivity(intent);
-                } catch (Exception e) {
-                    android.util.Log.e("MainActivity", "无法跳转到文章页面（可能尚未实现）: " + articleId, e);
-                    // 如果Activity不存在，可以显示Toast提示
-                    android.widget.Toast.makeText(context, "文章详情功能开发中", android.widget.Toast.LENGTH_SHORT).show();
-                }
-            }
-            
-            @Override
-            public void navigateToCourse(Context context, String courseId) {
-                // TODO: 实现课程详情页面导航
-                try {
-                    Intent intent = new Intent();
-                    intent.setClassName(context, "com.sharesdu.android.feature.course.CourseActivity");
-                    intent.putExtra("course_id", courseId);
-                    context.startActivity(intent);
-                } catch (Exception e) {
-                    android.util.Log.e("MainActivity", "无法跳转到课程页面（可能尚未实现）: " + courseId, e);
-                    android.widget.Toast.makeText(context, "课程详情功能开发中", android.widget.Toast.LENGTH_SHORT).show();
-                }
-            }
-            
-            @Override
-            public void navigateToPost(Context context, String postId) {
-                // TODO: 实现帖子详情页面导航
-                try {
-                    Intent intent = new Intent();
-                    intent.setClassName(context, "com.sharesdu.android.feature.post.PostActivity");
-                    intent.putExtra("post_id", postId);
-                    context.startActivity(intent);
-                } catch (Exception e) {
-                    android.util.Log.e("MainActivity", "无法跳转到帖子页面（可能尚未实现）: " + postId, e);
-                    android.widget.Toast.makeText(context, "帖子详情功能开发中", android.widget.Toast.LENGTH_SHORT).show();
-                }
-            }
-            
-            @Override
-            public void navigateToExternalLink(Context context, String url) {
-                // 使用浏览器打开外部链接
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    context.startActivity(intent);
-                } catch (Exception e) {
-                    android.util.Log.e("MainActivity", "无法打开外部链接: " + url, e);
-                    android.widget.Toast.makeText(context, "无法打开链接", android.widget.Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        
         setContentView(R.layout.activity_main);
         
-        initViews();
-        setupToolbar();
-        setupBottomNavigation();
-        setupSearch();
+        // 初始化WebView
+        web = findViewById(R.id.web);
         
-        // 初始化对话框
-        postEditorDialog = new PostEditorDialog(this);
-        courseEditorDialog = new CourseEditorDialog(this);
-        imageViewerDialog = new ImageViewerDialog(this);
+        // 检查并申请权限
+        checkAndRequestPermissions();
         
-        // 默认显示首页
-        showFragment(0);
+        // 初始化WebView配置
+        initWeb(web);
+        
+        // 设置状态栏和导航栏
+        setNavigationStatusColor(Color.TRANSPARENT);
     }
     
-    private void initViews() {
-        bottomNavigation = findViewById(R.id.bottom_navigation);
-        btnCreate = findViewById(R.id.btn_create);
-        btnSearch = findViewById(R.id.btn_search);
-        searchInputLayout = findViewById(R.id.search_input_layout);
-        etSearch = findViewById(R.id.et_search);
-        btnCancelSearch = findViewById(R.id.btn_cancel_search);
-        
-        // 初始化 Fragment
-        indexFragment = new IndexFragment();
-        serviceFragment = new ServiceFragment();
-        selfFragment = new SelfFragment();
-    }
-    
-    private void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-    }
-    
-    private void setupBottomNavigation() {
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_index) {
-                showFragment(0);
-                return true;
-            } else if (itemId == R.id.nav_service) {
-                showFragment(1);
-                return true;
-            } else if (itemId == R.id.nav_self) {
-                showFragment(2);
-                return true;
+    /**
+     * 检查并申请权限
+     */
+    private void checkAndRequestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            List<String> permissionsToRequest = new ArrayList<>();
+            
+            // 基础权限检查
+            for (String permission : permissions) {
+                // Android 13+ (API 33+) 不再需要READ/WRITE_EXTERNAL_STORAGE权限
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                        permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        continue;
+                    }
+                }
+                
+                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    permissionsToRequest.add(permission);
+                }
             }
-            return false;
-        });
-    }
-    
-    private void setupSearch() {
-        // 创作按钮点击事件
-        btnCreate.setOnClickListener(v -> {
-            showCreateChoiceDialog();
-        });
-        
-        // 搜索按钮点击事件
-        btnSearch.setOnClickListener(v -> showSearchBar());
-        
-        // 取消搜索按钮点击事件
-        btnCancelSearch.setOnClickListener(v -> hideSearchBar());
-        
-        // 搜索输入框回车事件
-        etSearch.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                performSearch();
-                return true;
+            
+            // Android 13+ (API 33+) 需要检查媒体权限
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                String[] mediaPermissions = {
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_AUDIO
+                };
+                
+                for (String permission : mediaPermissions) {
+                    if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                        permissionsToRequest.add(permission);
+                    }
+                }
             }
-            return false;
-        });
-    }
-    
-    /**
-     * 显示搜索栏
-     */
-    private void showSearchBar() {
-        btnCreate.setVisibility(View.GONE);
-        btnSearch.setVisibility(View.GONE);
-        searchInputLayout.setVisibility(View.VISIBLE);
-        btnCancelSearch.setVisibility(View.VISIBLE);
-        
-        // 聚焦到搜索输入框
-        etSearch.requestFocus();
-        // 显示软键盘
-        android.view.inputmethod.InputMethodManager imm = 
-            (android.view.inputmethod.InputMethodManager) getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.showSoftInput(etSearch, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-    
-    /**
-     * 隐藏搜索栏
-     */
-    private void hideSearchBar() {
-        btnCreate.setVisibility(View.VISIBLE);
-        btnSearch.setVisibility(View.VISIBLE);
-        searchInputLayout.setVisibility(View.GONE);
-        btnCancelSearch.setVisibility(View.GONE);
-        
-        // 清空搜索内容
-        etSearch.setText("");
-        
-        // 隐藏软键盘
-        android.view.inputmethod.InputMethodManager imm = 
-            (android.view.inputmethod.InputMethodManager) getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
-        }
-    }
-    
-    /**
-     * 执行搜索
-     */
-    private void performSearch() {
-        String query = etSearch.getText().toString().trim();
-        if (!query.isEmpty()) {
-            // TODO: 实现搜索逻辑
-            // 暂时隐藏搜索栏
-            hideSearchBar();
-        }
-    }
-    
-    /**
-     * 显示指定的 Fragment
-     * @param position 0: 首页, 1: 服务, 2: 我的
-     */
-    private void showFragment(int position) {
-        Fragment fragment = null;
-        
-        switch (position) {
-            case 0:
-                fragment = indexFragment;
-                break;
-            case 1:
-                fragment = serviceFragment;
-                break;
-            case 2:
-                fragment = selfFragment;
-                break;
-        }
-        
-        if (fragment == null || fragment == currentFragment) {
-            return;
-        }
-        
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        
-        if (currentFragment != null) {
-            transaction.hide(currentFragment);
-        }
-        
-        if (fragment.isAdded()) {
-            transaction.show(fragment);
+            
+            if (!permissionsToRequest.isEmpty()) {
+                // 显示权限说明对话框
+                showPermissionExplanationDialog(permissionsToRequest.toArray(new String[0]));
+            } else {
+                // 权限已授予，加载网页
+                loadWebPage();
+            }
         } else {
-            transaction.add(R.id.fragment_container, fragment);
+            // Android 6.0以下直接加载
+            loadWebPage();
+        }
+    }
+    
+    /**
+     * 显示权限说明对话框
+     */
+    private void showPermissionExplanationDialog(final String[] permissions) {
+        new AlertDialog.Builder(this)
+            .setTitle("需要权限")
+            .setMessage("应用需要以下权限才能正常运行：\n" +
+                       "• 网络访问：用于加载网页内容\n" +
+                       "• 存储权限：用于文件上传、下载和缓存")
+            .setPositiveButton("授予权限", (dialog, which) -> {
+                ActivityCompat.requestPermissions(MainActivity.this, permissions, PERMISSION_REQUEST_CODE);
+            })
+            .setNegativeButton("取消", (dialog, which) -> {
+                Toast.makeText(this, "部分功能可能无法正常使用", Toast.LENGTH_LONG).show();
+                loadWebPage();
+            })
+            .setCancelable(false)
+            .show();
+    }
+    
+    /**
+     * 权限申请结果回调
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            boolean allGranted = true;
+            List<String> deniedPermissions = new ArrayList<>();
+            
+            for (int i = 0; i < permissions.length; i++) {
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    deniedPermissions.add(permissions[i]);
+                }
+            }
+            
+            if (allGranted) {
+                Toast.makeText(this, "权限已授予", Toast.LENGTH_SHORT).show();
+                loadWebPage();
+            } else {
+                // 检查是否有权限被永久拒绝
+                boolean shouldShowRationale = false;
+                for (String permission : deniedPermissions) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                        shouldShowRationale = true;
+                        break;
+                    }
+                }
+                
+                if (shouldShowRationale) {
+                    // 用户拒绝了权限，但可以再次请求
+                    new AlertDialog.Builder(this)
+                        .setTitle("权限被拒绝")
+                        .setMessage("应用需要这些权限才能正常工作，请在设置中授予权限")
+                        .setPositiveButton("重新申请", (dialog, which) -> {
+                            checkAndRequestPermissions();
+                        })
+                        .setNegativeButton("稍后", (dialog, which) -> {
+                            loadWebPage();
+                        })
+                        .show();
+                } else {
+                    // 权限被永久拒绝，引导用户到设置页面
+                    new AlertDialog.Builder(this)
+                        .setTitle("权限被拒绝")
+                        .setMessage("请在系统设置中手动授予权限，否则部分功能可能无法使用")
+                        .setPositiveButton("去设置", (dialog, which) -> {
+                            openAppSettings();
+                        })
+                        .setNegativeButton("稍后", (dialog, which) -> {
+                            loadWebPage();
+                        })
+                        .show();
+                }
+            }
+        }
+    }
+    
+    /**
+     * 打开应用设置页面
+     */
+    private void openAppSettings() {
+        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(android.net.Uri.parse("package:" + getPackageName()));
+        startActivity(intent);
+    }
+    
+    /**
+     * 加载网页
+     */
+    private void loadWebPage() {
+        if (web != null) {
+            web.loadUrl("https://sharesdu.com/#/index");
+        }
+    }
+    
+    /**
+     * 初始化WebView配置
+     */
+    private void initWeb(WebView web) {
+        WebSettings webSettings = web.getSettings();
+        
+        // 基础设置
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setDatabaseEnabled(true);
+        // setAppCacheEnabled 已在 API 33+ 中移除，使用默认缓存策略即可
+        
+        // 文件访问设置
+        webSettings.setAllowFileAccess(true);
+        webSettings.setAllowContentAccess(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            webSettings.setAllowFileAccessFromFileURLs(true);
+            webSettings.setAllowUniversalAccessFromFileURLs(true);
         }
         
-        transaction.commit();
-        currentFragment = fragment;
+        // 媒体设置
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
+        
+        // 缓存设置
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        // setAppCachePath 已在较新 API 中移除，使用默认缓存路径即可
+        
+        // 其他优化设置
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setBuiltInZoomControls(false);
+        webSettings.setDisplayZoomControls(false);
+        webSettings.setSupportZoom(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setSupportMultipleWindows(true);
+        
+        // 设置User-Agent
+        webSettings.setUserAgentString(webSettings.getUserAgentString() + " SharesduApp/1.0");
+        
+        // 设置WebViewClient
+        web.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+                // 处理特殊协议
+                if (url.startsWith("tel:") || url.startsWith("mailto:") || url.startsWith("sms:")) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url));
+                        startActivity(intent);
+                        return true;
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error handling special URL: " + url, e);
+                    }
+                }
+                return super.shouldOverrideUrlLoading(view, request);
+            }
+            
+            @Override
+            public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+                // 自动允许SSL证书错误，无提示
+                handler.proceed();
+            }
+            
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                if (request.isForMainFrame()) {
+                    String errorHtml = "<html><body style='text-align:center;padding:50px;'>" +
+                                     "<h2>加载失败</h2>" +
+                                     "<p>无法连接到服务器</p>" +
+                                     "<p style='color:#999;font-size:12px;'>错误代码: " + error.getErrorCode() + "</p>" +
+                                     "<button onclick='location.reload()' style='padding:10px 20px;margin-top:20px;'>重试</button>" +
+                                     "</body></html>";
+                    view.loadDataWithBaseURL(null, errorHtml, "text/html", "UTF-8", null);
+                }
+            }
+            
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                Log.d(TAG, "Page started: " + url);
+            }
+            
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                Log.d(TAG, "Page finished: " + url);
+            }
+        });
+        
+        // 设置WebChromeClient
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage msg) {
+                Log.d(TAG, "Console: " + msg.message() + " -- From line " + msg.lineNumber() + " of " + msg.sourceId());
+                return super.onConsoleMessage(msg);
+            }
+            
+            @Override
+            public void onPermissionRequest(PermissionRequest request) {
+                // 处理WebView内的权限请求（如摄像头、麦克风等）
+                String[] requestedResources = request.getResources();
+                List<String> grantedResources = new ArrayList<>();
+                
+                for (String resource : requestedResources) {
+                    if (resource.equals(PermissionRequest.RESOURCE_VIDEO_CAPTURE) ||
+                        resource.equals(PermissionRequest.RESOURCE_AUDIO_CAPTURE)) {
+                        // 检查系统权限
+                        String permission = resource.equals(PermissionRequest.RESOURCE_VIDEO_CAPTURE) 
+                            ? Manifest.permission.CAMERA 
+                            : Manifest.permission.RECORD_AUDIO;
+                        
+                        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) 
+                            == PackageManager.PERMISSION_GRANTED) {
+                            grantedResources.add(resource);
+                        } else {
+                            // 请求权限
+                            ActivityCompat.requestPermissions(MainActivity.this, 
+                                new String[]{permission}, PERMISSION_REQUEST_CODE);
+                        }
+                    } else {
+                        grantedResources.add(resource);
+                    }
+                }
+                
+                if (!grantedResources.isEmpty()) {
+                    request.grant(grantedResources.toArray(new String[0]));
+                } else {
+                    request.deny();
+                }
+            }
+            
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(view.getContext())
+                    .setTitle("提示")
+                    .setMessage(message)
+                    .setPositiveButton("确认", (dialog, which) -> result.confirm())
+                    .setCancelable(false)
+                    .show();
+                return true;
+            }
+            
+            @Override
+            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(view.getContext())
+                    .setTitle("确认")
+                    .setMessage(message)
+                    .setPositiveButton("确定", (dialog, which) -> result.confirm())
+                    .setNegativeButton("取消", (dialog, which) -> result.cancel())
+                    .show();
+                return true;
+            }
+            
+            // 文件上传支持
+            @Override
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, 
+                                           FileChooserParams fileChooserParams) {
+                if (fileUploadCallback != null) {
+                    fileUploadCallback.onReceiveValue(null);
+                }
+                fileUploadCallback = filePathCallback;
+                
+                Intent intent = fileChooserParams.createIntent();
+                try {
+                    startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE);
+                } catch (Exception e) {
+                    fileUploadCallback = null;
+                    Toast.makeText(MainActivity.this, "无法打开文件选择器", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                return true;
+            }
+            
+            // 下载进度
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                // 可以在这里显示加载进度
+            }
+            
+            // 文件下载处理
+            // 注意：onDownloadStart 在某些 API 级别可能不可用，使用条件编译
+            public void onDownloadStart(String url, String userAgent, String contentDisposition,
+                                      String mimeType, long contentLength) {
+                // 检查存储权限
+                boolean hasPermission = false;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    // Android 13+ 不需要存储权限
+                    hasPermission = true;
+                } else {
+                    hasPermission = ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+                }
+                
+                if (!hasPermission) {
+                    Toast.makeText(MainActivity.this, "需要存储权限才能下载文件", Toast.LENGTH_SHORT).show();
+                    // 请求权限
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            PERMISSION_REQUEST_CODE);
+                    }
+                    return;
+                }
+                
+                // 使用系统下载管理器下载文件
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    // 如果无法直接打开，使用下载管理器
+                    try {
+                        android.app.DownloadManager.Request request = new android.app.DownloadManager.Request(Uri.parse(url));
+                        request.setMimeType(mimeType);
+                        String fileName = contentDisposition;
+                        if (fileName != null && fileName.contains("filename=")) {
+                            fileName = fileName.substring(fileName.indexOf("filename=") + 9);
+                            if (fileName.startsWith("\"") && fileName.endsWith("\"")) {
+                                fileName = fileName.substring(1, fileName.length() - 1);
+                            }
+                        } else {
+                            // 从URL提取文件名
+                            fileName = url.substring(url.lastIndexOf("/") + 1);
+                            if (fileName.contains("?")) {
+                                fileName = fileName.substring(0, fileName.indexOf("?"));
+                            }
+                        }
+                        request.addRequestHeader("User-Agent", userAgent);
+                        request.setDescription("正在下载: " + fileName);
+                        request.setTitle(fileName);
+                        request.allowScanningByMediaScanner();
+                        request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
+                        
+                        android.app.DownloadManager downloadManager = (android.app.DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                        downloadManager.enqueue(request);
+                        Toast.makeText(MainActivity.this, "开始下载: " + fileName, Toast.LENGTH_SHORT).show();
+                    } catch (Exception ex) {
+                        Log.e(TAG, "Download failed", ex);
+                        Toast.makeText(MainActivity.this, "下载失败: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
+    
+    /**
+     * 处理文件选择结果
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == FILE_CHOOSER_REQUEST_CODE) {
+            if (fileUploadCallback != null) {
+                Uri[] results = null;
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    String dataString = data.getDataString();
+                    if (dataString != null) {
+                        results = new Uri[]{android.net.Uri.parse(dataString)};
+                    } else if (data.getClipData() != null) {
+                        // 多文件选择
+                        int count = data.getClipData().getItemCount();
+                        results = new Uri[count];
+                        for (int i = 0; i < count; i++) {
+                            results[i] = data.getClipData().getItemAt(i).getUri();
+                        }
+                    }
+                }
+                fileUploadCallback.onReceiveValue(results);
+                fileUploadCallback = null;
+            }
+        }
+    }
+    
+    /**
+     * 处理返回键
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && web != null && web.canGoBack()) {
+            web.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    
+    /**
+     * 设置全屏模式
+     */
+    public void setFullscreen(boolean isShowStatusBar, boolean isShowNavigationBar) {
+        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+        if (!isShowStatusBar) {
+            uiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+        }
+        if (!isShowNavigationBar) {
+            uiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        }
+        getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+        setNavigationStatusColor(Color.TRANSPARENT);
+    }
+
+    /**
+     * 设置导航栏和状态栏颜色
+     */
+    public void setNavigationStatusColor(int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setNavigationBarColor(color);
+            getWindow().setStatusBarColor(color);
+        }
+    }
+    
+    /**
+     * 设置状态栏文字颜色
+     */
+    private static void setAndroidNativeLightStatusBar(Activity activity, boolean dark) {
+        View decor = activity.getWindow().getDecorView();
+        if (dark) {
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        } else {
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
     }
     
     @Override
-    public void onBackPressed() {
-        // 如果搜索栏显示，先隐藏搜索栏
-        if (searchInputLayout.getVisibility() == View.VISIBLE) {
-            hideSearchBar();
-            return;
+    protected void onDestroy() {
+        if (web != null) {
+            web.destroy();
         }
-        
-        // 如果 SelfFragment 正在显示子页面，先返回主菜单
-        if (selfFragment != null && selfFragment.isAdded()) {
-            if (selfFragment.onBackPressed()) {
-                return; // SelfFragment 已处理返回键
-            }
-        }
-        
-        // 否则执行默认返回操作
-        super.onBackPressed();
+        super.onDestroy();
     }
     
-    /**
-     * 显示创作选择对话框
-     */
-    private void showCreateChoiceDialog() {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_create_choice, null);
-        
-        AlertDialog dialog = new AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create();
-        
-        // 发布帖子
-        View cardPost = dialogView.findViewById(R.id.card_post);
-        cardPost.setOnClickListener(v -> {
-            dialog.dismiss();
-            // 跳转到帖子编辑器页面
-            com.sharesdu.android.feature.index.PostEditorActivity.start(this, null, null);
-        });
-        
-        // 创建课程
-        View cardCourse = dialogView.findViewById(R.id.card_course);
-        cardCourse.setOnClickListener(v -> {
-            dialog.dismiss();
-            // 跳转到课程编辑器页面
-            com.sharesdu.android.feature.index.CourseEditorActivity.start(this, null);
-        });
-        
-        // 取消按钮
-        View btnCancel = dialogView.findViewById(R.id.btn_cancel);
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
-        
-        dialog.show();
-    }
-    
-    /**
-     * 显示帖子编辑器对话框
-     * @param type 类型（article/course/null表示普通帖子）
-     * @param id 关联ID（如果type不为null）
-     */
-    private void showPostEditorDialog(String type, String id) {
-        if (postEditorDialog != null) {
-            postEditorDialog.show(type, id, (postId, title, content) -> {
-                // 帖子创建成功回调
-                Toast.makeText(this, "帖子发布成功", Toast.LENGTH_SHORT).show();
-                // TODO: 可以刷新页面或显示新帖子
-            });
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (web != null) {
+            web.onPause();
         }
     }
     
-    /**
-     * 显示课程编辑器对话框
-     */
-    private void showCourseEditorDialog() {
-        if (courseEditorDialog != null) {
-            courseEditorDialog.show(null, (courseId, courseName) -> {
-                // 课程创建成功回调
-                Toast.makeText(this, "课程创建成功", Toast.LENGTH_SHORT).show();
-                // TODO: 可以刷新页面或显示新课程
-            });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (web != null) {
+            web.onResume();
         }
     }
 }

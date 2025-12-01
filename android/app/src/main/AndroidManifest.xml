@@ -2,12 +2,35 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- 网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    
+    <!-- 存储权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    
+    <!-- Android 13+ (API 33+) 媒体权限 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    
+    <!-- 摄像头和麦克风权限（用于WebView中的媒体功能） -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    
+    <!-- 文件访问权限（Android 11+） -->
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+    
+    <!-- 功能声明 -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -19,52 +42,22 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
 
-        android:theme="@style/Theme.ShareSDU"
+        android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
         <activity
             android:name=".SplashActivity"
             android:exported="false" />
         <activity
-            android:name="com.sharesdu.android.feature.auth.LaunchActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.ShareSDU">
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name="com.sharesdu.android.feature.auth.LoginActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ShareSDU" />
-        <activity
-            android:name="com.sharesdu.android.feature.author.AuthorActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ShareSDU" />
-        <activity
-            android:name="com.sharesdu.android.feature.index.PostEditorActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ShareSDU" />
-        <activity
-            android:name="com.sharesdu.android.feature.index.CourseEditorActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ShareSDU" />
-        <activity
-            android:name="com.sharesdu.android.feature.index.PostHtmlWebViewActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ShareSDU" />
-        <activity
-            android:name="com.sharesdu.android.feature.index.PostDetailActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ShareSDU" />
-        <activity
-            android:name="com.sharesdu.android.feature.index.CourseDetailActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ShareSDU" />
     </application>
 
 </manifest>

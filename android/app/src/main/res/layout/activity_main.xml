@@ -1,121 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background_color">
-
-    <!-- 顶部工具栏 -->
-    <com.google.android.material.appbar.AppBarLayout
+    tools:context=".MainActivity">
+    <WebView
+        android:id="@+id/web"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:elevation="0dp">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:minHeight="48dp"
-            android:background="@color/background_primary"
-            app:titleTextColor="@color/text_color_primary"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <!-- 创作按钮（+号） -->
-                    <ImageButton
-                        android:id="@+id/btn_create"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_add"
-                        android:contentDescription="创作"
-                        android:tint="@color/primary_theme_color"
-                        android:layout_marginEnd="8dp" />
-
-                <!-- 搜索按钮（默认显示） -->
-                    <ImageButton
-                        android:id="@+id/btn_search"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_search"
-                        android:contentDescription="搜索"
-                        android:tint="@color/primary_theme_color"
-                        android:visibility="visible" />
-
-                <!-- 搜索栏（点击搜索按钮后显示） -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/search_input_layout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:visibility="gone"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopStart="20dp"
-                    app:boxCornerRadiusTopEnd="20dp"
-                    app:boxCornerRadiusBottomStart="20dp"
-                    app:boxCornerRadiusBottomEnd="20dp"
-                    app:boxStrokeColor="@color/primary_theme_color"
-                    app:hintTextColor="@color/text_color_secondary"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_search"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="搜索"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:textSize="14sp" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- 取消按钮（搜索栏显示时显示） -->
-                <TextView
-                    android:id="@+id/btn_cancel_search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="取消"
-                    android:textColor="@color/primary_theme_color"
-                    android:textSize="14sp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:visibility="gone" />
-            </LinearLayout>
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Fragment 容器 -->
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- 底部导航栏 -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:minHeight="56dp"
-        android:background="@color/background_primary"
-        app:itemIconTint="@color/bottom_nav_color_selector"
-        app:itemTextColor="@color/bottom_nav_color_selector"
-        app:labelVisibilityMode="unlabeled"
-        app:menu="@menu/bottom_navigation_menu"
-        app:elevation="8dp" />
-
-</LinearLayout>
+        android:layout_height="match_parent">
+    </WebView>
+</RelativeLayout>
