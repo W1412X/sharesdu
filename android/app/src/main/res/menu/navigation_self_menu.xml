@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_self_info"
+            android:icon="@drawable/ic_account"
+            android:title="资料" />
+
+        <item
+            android:id="@+id/nav_self_write"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="创作" />
+
+        <item
+            android:id="@+id/nav_self_star"
+            android:icon="@android:drawable/btn_star_big_on"
+            android:title="收藏" />
+
+        <item
+            android:id="@+id/nav_self_notification"
+            android:icon="@android:drawable/ic_menu_view"
+            android:title="通知" />
+
+        <item
+            android:id="@+id/nav_self_chat"
+            android:icon="@android:drawable/ic_menu_recent_history"
+            android:title="私信" />
+
+        <item
+            android:id="@+id/nav_self_account"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:title="账户" />
+
+        <item
+            android:id="@+id/nav_self_setting"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="设置" />
+    </group>
+</menu>
+

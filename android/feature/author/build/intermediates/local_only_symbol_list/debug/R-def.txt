@@ -1,0 +1,13 @@
+R_DEF: Internal format may change without notice
+local
+id author_card
+id fragment_container
+id loading_view
+id progress_bar
+id recycler_view
+id tab_layout
+id toolbar
+id tv_empty
+id tv_loading
+layout activity_author
+layout fragment_author_content

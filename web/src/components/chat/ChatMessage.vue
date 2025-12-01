@@ -61,7 +61,7 @@
 </template>
 <script>
 import { deletePrivateMessage } from '@/api/modules/chat';
-import { extractTime, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { formatRelativeTime, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { ref } from 'vue';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { globalProperties } from '@/main';
@@ -100,7 +100,7 @@ export default {
     },
     data(){
         let data=this.initData;
-        data.time=extractTime(data.time);
+        data.time=formatRelativeTime(data.time);
         return{
             data,
             loading:{

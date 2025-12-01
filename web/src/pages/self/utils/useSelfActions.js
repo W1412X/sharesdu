@@ -5,7 +5,7 @@ import { getBlockList, unblockUser } from '@/api/modules/block';
 import { getChatUsers } from '@/api/modules/chat';
 import { fetchNotificationsList, markAsReadNotification } from '@/api/modules/notification';
 import { getNetworkErrorResponse } from '@/api/modules/statusCodeMessages';
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
+import { formatRelativeTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 
 export function useSelfActions(
   user,
@@ -97,7 +97,7 @@ export function useSelfActions(
           msgNum: response.chat_users[i].unread_count,
           lastMsg: {
             content: response.chat_users[i].last_message.content,
-            time: extractTime(response.chat_users[i].last_message.sent_at),
+            time: formatRelativeTime(response.chat_users[i].last_message.sent_at),
             isSelf: response.chat_users[i].last_message.is_sender,
           },
         });

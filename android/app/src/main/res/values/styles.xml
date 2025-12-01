@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 按钮样式 -->
+    <style name="Button.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/primary_theme_color</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+    
+    <style name="Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">@color/primary_theme_color</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:textColor">@color/primary_theme_color</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+    
+    <style name="Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/primary_theme_color</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+    
+    <!-- Widget.ShareSDU 按钮样式（用于布局文件引用） -->
+    <style name="Widget.ShareSDU.Button.Primary" parent="Button.Primary" />
+    <style name="Widget.ShareSDU.Button.Secondary" parent="Button.Secondary" />
+    <style name="Widget.ShareSDU.Button.Text" parent="Button.Text" />
+    
+    <!-- 卡片样式 -->
+    <style name="Card.Default" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="cardBackgroundColor">@color/background_primary</item>
+        <item name="android:layout_margin">@dimen/margin_medium</item>
+    </style>
+    
+    <!-- Material3 CardView 样式（如果使用 Material3） -->
+    <style name="Widget.Material3.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/corner_radius_medium</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardBackgroundColor">@color/background_primary</item>
+    </style>
+    
+    <!-- 输入框样式 -->
+    <style name="TextInputLayout.Default" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">@dimen/corner_radius_medium</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/corner_radius_medium</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/corner_radius_medium</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/corner_radius_medium</item>
+        <item name="boxStrokeColor">@color/theme_color</item>
+        <item name="hintTextColor">@color/text_secondary</item>
+    </style>
+    
+    <!-- 工具栏样式 -->
+    <style name="Toolbar.Default" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/theme_color</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="subtitleTextColor">@color/white</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+    
+    <!-- 底部导航栏样式 -->
+    <style name="BottomNavigation.Default" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/background_primary</item>
+        <item name="itemIconTint">@color/theme_color</item>
+        <item name="itemTextColor">@color/theme_color</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+    
+    <!-- 分割线样式 -->
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_height</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+    
+    <style name="Divider.Default" parent="Divider">
+        <item name="android:layout_height">@dimen/divider_height</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+    
+    <!-- Logo 线条样式 -->
+    <style name="LogoLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/logo_line_height</item>
+        <item name="android:background">@color/theme_color</item>
+    </style>
+    
+    <style name="LogoLine.Default" parent="LogoLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/logo_line_height</item>
+        <item name="android:background">@color/theme_color</item>
+    </style>
+    
+    <!-- 文本样式 - 对应 web 项目的字体大小 -->
+    <!-- 基础 TextStyle 样式 -->
+    <style name="TextStyle">
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.TitleBig" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_title_big</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.TitleBigBold" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_title_big</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.PageTitleBold" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_page_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.Title" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_title</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.TitleBold" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.Medium" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.MediumBold" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.Small" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.SmallBold" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.Tiny" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_tiny</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+    
+    <style name="TextStyle.TinyBold" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_tiny</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <style name="TextStyle.Min" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_min</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+    
+    <style name="TextStyle.MinBold" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_min</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    
+    <!-- Logo 文本样式 -->
+    <style name="TextStyle.LogoText" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_logo</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/theme_color</item>
+    </style>
+    
+    <style name="TextStyle.LogoTextWhite" parent="TextStyle">
+        <item name="android:textSize">@dimen/text_size_logo</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>
+

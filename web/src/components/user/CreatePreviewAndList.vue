@@ -60,7 +60,7 @@
     </v-card>
 </template>
 <script>
-import { extractTime, getNormalInfoAlert } from '@/utils/other';
+import { formatRelativeTime, getNormalInfoAlert } from '@/utils/other';
 import { getUserContent, getUserPreview } from '@/api/modules/account';
 import StarItem from '@/components/star/StarItem.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
@@ -147,7 +147,7 @@ export default{
                                 summary:response.results[i].summary,
                                 hotScore:response.results[i].hot_score,
                                 replyNum:response.results[i].reply_count,
-                                time:extractTime(response.results[i].publish_time),
+                                time:formatRelativeTime(response.results[i].publish_time),
                             })
                         }
                         this.articlePageNum++;
@@ -166,7 +166,7 @@ export default{
                                     id:response.results[i].id,
                                     title:response.results[i].title,
                                     content:response.results[i].content_preview,
-                                    time:extractTime(response.results[i].publish_time)
+                                    time:formatRelativeTime(response.results[i].publish_time)
                                })
                             }
                             this.postPageNum++;
@@ -184,7 +184,7 @@ export default{
                                 type:'reply',
                                 id:response.results[i].id,
                                 title:response.results[i].content_preview,
-                                time:extractTime(response.results[i].publish_time),
+                                time:formatRelativeTime(response.results[i].publish_time),
                                 postId:response.results[i].post_id,
                             })
                             this.replyPageNum++;
@@ -216,7 +216,7 @@ export default{
                         summary:response.articles[i].summary,
                         hotScore:response.articles[i].hot_score,
                         replyNum:response.articles[i].reply_count,
-                        time:extractTime(response.articles[i].publish_time),
+                        time:formatRelativeTime(response.articles[i].publish_time),
                     })
                 }
                 for(let i=0;i<response.posts.length;i++){
@@ -225,7 +225,7 @@ export default{
                         id:response.posts[i].id,
                         title:response.posts[i].title,
                         content:response.posts[i].content_preview,
-                        time:extractTime(response.posts[i].publish_time)
+                        time:formatRelativeTime(response.posts[i].publish_time)
                    })
                 }
                 for(let i=0;i<response.replies.length;i++){
@@ -233,7 +233,7 @@ export default{
                         type:'reply',
                         id:response.replies[i].id,
                         title:response.replies[i].content_preview,
-                        time:extractTime(response.replies[i].publish_time),
+                        time:formatRelativeTime(response.replies[i].publish_time),
                         postId:response.replies[i].post_id,
                     })
                 }

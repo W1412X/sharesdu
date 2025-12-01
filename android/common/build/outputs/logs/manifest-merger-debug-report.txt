@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml:2:13-83
+INJECTED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml:2:13-83
+	package
+		INJECTED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml
+	xmlns:android
+		ADDED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml:2:23-81
+uses-sdk
+INJECTED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml reason: use-sdk injection requested
+INJECTED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml
+INJECTED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml
+	android:targetSdkVersion
+		INJECTED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml
+	android:minSdkVersion
+		INJECTED from /home/wangxv/Files/web/sharesdu/android/common/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6259704860670928869.xml

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.sharesdu.android.common-merged_res-32:/layout-watch-v20/abc_alert_dialog_title_material.xml",
+        "source": "com.sharesdu.android.common-appcompat-1.7.0-18:/layout-watch-v20/abc_alert_dialog_title_material.xml"
+    },
+    {
+        "merged": "com.sharesdu.android.common-merged_res-32:/layout-watch-v20/abc_alert_dialog_button_bar_material.xml",
+        "source": "com.sharesdu.android.common-appcompat-1.7.0-18:/layout-watch-v20/abc_alert_dialog_button_bar_material.xml"
+    }
+]

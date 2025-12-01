@@ -72,7 +72,7 @@
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { getAuthorInfo } from '@/api/modules/account';
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
+import { formatRelativeTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 import { blockUser } from '@/api/modules/block';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
@@ -183,7 +183,7 @@ export default{
                 replyNum: response.data.all_replys,
                 blockStatus: response.data.block_status,
                 blockEndTime: response.data.block_end_time,
-                registerTime: extractTime(response.data.created_at),
+                registerTime: formatRelativeTime(response.data.created_at),
                 registerYear: response.data.registration_year,
             };
             if(!this.data.campus){

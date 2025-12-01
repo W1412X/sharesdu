@@ -21,7 +21,7 @@
 <script>
 import { markAsReadNotification } from '@/api/modules/notification';
 import { globalProperties } from '@/main';
-import { copy, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
+import { copy, formatRelativeTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
 import { computed } from 'vue';
 
 export default {
@@ -52,6 +52,9 @@ export default {
     },
     data() {
         let data=copy(this.initData);
+        if (data.time) {
+            data.time = formatRelativeTime(data.time);
+        }
         const color=computed(()=>{
             if(this.data.state){
                 return "grey";

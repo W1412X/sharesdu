@@ -17,7 +17,7 @@
 
 <script>
 import { globalProperties } from '@/main';
-import { openPage } from '@/utils/other';
+import { formatRelativeTime, openPage } from '@/utils/other';
 
 export default {
     props: {
@@ -41,6 +41,9 @@ export default {
     },
     data() {
         const data = this.initData;
+        if (data.time) {
+            data.time = formatRelativeTime(data.time);
+        }
         return {
             data,
             ifStar: true,

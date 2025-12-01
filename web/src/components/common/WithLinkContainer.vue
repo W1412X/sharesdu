@@ -1,5 +1,5 @@
 <template>
-  <span v-if="!ifHtml">
+  <span v-if="!ifHtml" class="text-medium">
     <span v-for="(item, index) in processedContent" :key="index">
     <span v-if="!item.isLink && !item.isKey">{{ item.text }}</span>
     <span v-if="item.isKey" :style="{ 'color': themeColor, 'font-weight': 'bold' }">{{ item.text }}</span>

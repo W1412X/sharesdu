@@ -1,7 +1,7 @@
 /**
  * ChatPage 操作管理 Composable
  */
-import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalInfoAlert, extractTime, copy } from '@/utils/other';
+import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalInfoAlert, formatRelativeTime, copy } from '@/utils/other';
 import { sendPrivateMessage } from '@/api/modules/chat';
 
 export function useChatActions(
@@ -61,7 +61,7 @@ export function useChatActions(
         updateChatUser(receiverId.value, {
           lastMsg: {
             content: editingMessage.value,
-            time: extractTime(new Date().toISOString()),
+            time: formatRelativeTime(new Date().toISOString()),
             isSelf: true,
           },
         });

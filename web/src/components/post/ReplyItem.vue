@@ -83,7 +83,7 @@ import DeleteButton from '@/components/common/DeleteButton.vue';
 import { globalProperties } from '@/main';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
-import { addHeaderToReply, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader, openPage } from '@/utils/other';
+import { addHeaderToReply, formatRelativeTime, getAuthorNameFromReply, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, getParentReplyIdFromReply, getReplyContentWithoutHeader, openPage } from '@/utils/other';
 import { createReplyUnderPost } from '@/api/modules/post';
 import EmojiPicker from '@/components/common/EmojiPicker.vue';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
@@ -141,6 +141,9 @@ export default {
     },
     data() {
         const data = this.initData;
+        if (data.publishTime) {
+            data.publishTime = formatRelativeTime(data.publishTime);
+        }
         return {
             data,
             ifDeleted: false,

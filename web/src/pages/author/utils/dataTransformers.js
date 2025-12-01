@@ -2,7 +2,7 @@
  * AuthorPage 数据转换工具函数
  * 将 API 响应数据转换为组件所需格式
  */
-import { extractTime } from '@/utils/other';
+import { formatRelativeTime } from '@/utils/other';
 
 /**
  * 转换作者信息数据
@@ -31,7 +31,7 @@ export function transformAuthorData(response) {
     replyNum: data.all_replys,
     blockStatus: data.block_status,
     blockEndTime: data.block_end_time,
-    registerTime: extractTime(data.created_at),
+    registerTime: formatRelativeTime(data.created_at),
     registerYear: data.registration_year,
   };
 }
@@ -53,7 +53,7 @@ export function transformArticlePreviewList(articles) {
     summary: item.summary,
     hotScore: item.hot_score,
     replyNum: item.reply_count,
-    time: extractTime(item.publish_time),
+    time: formatRelativeTime(item.publish_time),
   }));
 }
 
@@ -72,7 +72,7 @@ export function transformPostPreviewList(posts) {
     id: item.id,
     title: item.title,
     content: item.content_preview,
-    time: extractTime(item.publish_time),
+    time: formatRelativeTime(item.publish_time),
   }));
 }
 
@@ -90,7 +90,7 @@ export function transformReplyPreviewList(replies) {
     type: 'reply',
     id: item.id,
     title: item.content_preview,
-    time: extractTime(item.publish_time),
+    time: formatRelativeTime(item.publish_time),
     postId: item.post_id,
   }));
 }
@@ -115,7 +115,7 @@ export function transformUserContentList(results, contentType) {
         summary: item.summary,
         hotScore: item.hot_score,
         replyNum: item.reply_count,
-        time: extractTime(item.publish_time),
+        time: formatRelativeTime(item.publish_time),
       }));
       
     case 'post':
@@ -124,7 +124,7 @@ export function transformUserContentList(results, contentType) {
         id: item.id,
         title: item.title,
         content: item.content_preview,
-        time: extractTime(item.publish_time),
+        time: formatRelativeTime(item.publish_time),
       }));
       
     case 'reply':
@@ -132,7 +132,7 @@ export function transformUserContentList(results, contentType) {
         type: 'reply',
         id: item.id,
         title: item.content_preview,
-        time: extractTime(item.publish_time),
+        time: formatRelativeTime(item.publish_time),
         postId: item.post_id,
       }));
       

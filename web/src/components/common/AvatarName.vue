@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-    <div class="avatar-name" @click.stop="toAuthorPage">
+    <div class="avatar-name" @click="toAuthorPage">
         <v-icon v-if="this.profileUrl == null || this.imageLoading" icon="mdi-account-circle" :size="size" color='#bbbbbb'></v-icon>
         <v-avatar v-if="this.profileUrl != null" :size="size">
             <v-img 

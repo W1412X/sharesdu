@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 课程名称和操作按钮 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tv_course_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_color_primary"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:lineSpacingExtra="4dp"
+            android:paddingStart="0dp" />
+
+        <!-- 操作按钮容器 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- 收藏按钮 -->
+            <ImageButton
+                android:id="@+id/btn_star"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_star"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="收藏"
+                android:tint="@color/text_color_secondary"
+                android:padding="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 课程基本信息 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="8dp">
+
+        <!-- 第一行：类型、教师、教学方式、学分 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:id="@+id/tv_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:layout_marginEnd="20dp" />
+
+            <TextView
+                android:id="@+id/tv_teacher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:layout_marginEnd="20dp" />
+
+            <TextView
+                android:id="@+id/tv_method"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:layout_marginEnd="20dp" />
+
+            <TextView
+                android:id="@+id/tv_credit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary" />
+        </LinearLayout>
+
+        <!-- 第二行：校区、学院、考核方式 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_campus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:layout_marginEnd="20dp" />
+
+            <TextView
+                android:id="@+id/tv_college"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:layout_marginEnd="20dp" />
+
+            <TextView
+                android:id="@+id/tv_assessment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 发布时间 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@android:drawable/ic_menu_recent_history"
+            android:tint="@color/text_color_secondary"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/tv_publish_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/text_color_secondary" />
+    </LinearLayout>
+
+    <!-- 评分可视化卡片 -->
+    <LinearLayout
+        android:id="@+id/layout_score_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/theme_color_transparent"
+        android:padding="16dp"
+        android:layout_marginTop="20dp">
+
+        <!-- 左侧：平均分和星级 -->
+        <LinearLayout
+            android:id="@+id/layout_score_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:minHeight="216dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tv_avg_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/theme_color" />
+
+                <TextView
+                    android:id="@+id/tv_score_base"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="/5"
+                    android:textSize="20sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="0.5"
+                android:rating="0"
+                android:isIndicator="true"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_evaluate_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/text_color_secondary" />
+        </LinearLayout>
+
+        <!-- 右侧：评分分布 -->
+        <LinearLayout
+            android:id="@+id/layout_score_distribution"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp">
+
+            <!-- 评分分布项（1-5分） -->
+            <LinearLayout
+                android:id="@+id/layout_score_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_star"
+                    android:tint="@color/theme_color"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginEnd="4dp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_score_5"
+                    android:layout_width="0dp"
+                    android:layout_height="6dp"
+                    android:layout_weight="1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="@color/theme_color" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_score_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_star"
+                    android:tint="@color/theme_color"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginEnd="4dp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_score_4"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_weight="1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="@color/theme_color" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_score_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_star"
+                    android:tint="@color/theme_color"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginEnd="4dp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_score_3"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_weight="1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="@color/theme_color" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_score_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_star"
+                    android:tint="@color/theme_color"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginEnd="4dp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_score_2"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_weight="1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="@color/theme_color" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_score_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_star"
+                    android:tint="@color/theme_color"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginEnd="4dp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_score_1"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_weight="1"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressTint="@color/theme_color" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 加载状态指示器 -->
+    <ProgressBar
+        android:id="@+id/progress_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        android:indeterminateTint="@color/theme_color" />
+
+</LinearLayout>
+

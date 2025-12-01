@@ -60,7 +60,7 @@
 <script>
 import { globalProperties } from '@/main';
 import StarItem from '@/components/star/StarItem.vue';
-import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
+import { formatRelativeTime, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert } from '@/utils/other';
 import { createStarFolder, getStarFolders, getStarList, starContent } from '@/api/modules/star';
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
@@ -229,7 +229,7 @@ export default {
                     name: response.folders[i].name,
                     description: response.folders[i].description,
                     starNum: response.folders[i].star_count,
-                    createTime: extractTime(response.folders[i].created_at),
+                    createTime: formatRelativeTime(response.folders[i].created_at),
                     items: []
                 })
             }

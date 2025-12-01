@@ -1,0 +1,19 @@
+R_DEF: Internal format may change without notice
+local
+id btn_get_email_code
+id btn_login_email
+id btn_login_username
+id cb_save_password
+id content_frame
+id et_email
+id et_email_code
+id et_password
+id et_username
+id login_email_form
+id login_username_form
+id logo
+id progress_bar
+id tab_layout
+id til_password
+layout activity_launch
+layout activity_login

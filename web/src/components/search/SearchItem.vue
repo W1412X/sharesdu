@@ -8,7 +8,7 @@
     
 </template>
 <script>
-import { copy, extractTime, openPage } from '@/utils/other';
+import { copy, formatRelativeTime, openPage } from '@/utils/other';
 import ArticleItem from '@/components/article/ArticleItem.vue';
 import PostItem from '@/components/post/PostItem.vue';
 import CourseItem from '@/components/course/CourseItem.vue';
@@ -44,7 +44,9 @@ export default{
     },
     data(){
         let data=copy(this.initData);
-        data["publishTime"]=extractTime(data["publishTime"]);
+        if (data["publishTime"]) {
+            data["publishTime"]=formatRelativeTime(data["publishTime"]);
+        }
         return {
             data,
         }

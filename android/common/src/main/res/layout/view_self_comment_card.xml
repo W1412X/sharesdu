@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/background_secondary"
+    android:padding="16dp"
+    android:layout_marginTop="0dp">
+
+    <!-- 加载状态指示器 -->
+    <ProgressBar
+        android:id="@+id/progress_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        android:indeterminateTint="@color/theme_color" />
+
+    <!-- 内容区域 -->
+    <LinearLayout
+        android:id="@+id/layout_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- 评分和标题 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="1"
+                android:rating="0"
+                android:isIndicator="true"
+                android:layout_marginEnd="8dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/theme_color" />
+        </LinearLayout>
+
+        <!-- 评价内容 -->
+        <TextView
+            android:id="@+id/tv_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/text_color_primary"
+            android:visibility="gone"
+            android:layout_marginBottom="10dp"
+            android:lineSpacingExtra="4dp" />
+
+        <!-- 评价按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_edit_comment"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="评价此课程"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            style="@style/Widget.ShareSDU.Button.Primary" />
+    </LinearLayout>
+
+</LinearLayout>
+

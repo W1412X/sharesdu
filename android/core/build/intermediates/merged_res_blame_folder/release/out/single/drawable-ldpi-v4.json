@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.sharesdu.android.core-merged_res-22:/drawable-ldpi-v4/ic_call_answer_low.png",
+        "source": "com.sharesdu.android.core-core-1.13.0-16:/drawable-ldpi-v4/ic_call_answer_low.png"
+    },
+    {
+        "merged": "com.sharesdu.android.core-merged_res-22:/drawable-ldpi-v4/ic_call_answer_video_low.png",
+        "source": "com.sharesdu.android.core-core-1.13.0-16:/drawable-ldpi-v4/ic_call_answer_video_low.png"
+    },
+    {
+        "merged": "com.sharesdu.android.core-merged_res-22:/drawable-ldpi-v4/ic_call_answer_video.png",
+        "source": "com.sharesdu.android.core-core-1.13.0-16:/drawable-ldpi-v4/ic_call_answer_video.png"
+    },
+    {
+        "merged": "com.sharesdu.android.core-merged_res-22:/drawable-ldpi-v4/ic_call_answer.png",
+        "source": "com.sharesdu.android.core-core-1.13.0-16:/drawable-ldpi-v4/ic_call_answer.png"
+    },
+    {
+        "merged": "com.sharesdu.android.core-merged_res-22:/drawable-ldpi-v4/ic_call_decline.png",
+        "source": "com.sharesdu.android.core-core-1.13.0-16:/drawable-ldpi-v4/ic_call_decline.png"
+    },
+    {
+        "merged": "com.sharesdu.android.core-merged_res-22:/drawable-ldpi-v4/ic_call_decline_low.png",
+        "source": "com.sharesdu.android.core-core-1.13.0-16:/drawable-ldpi-v4/ic_call_decline_low.png"
+    }
+]

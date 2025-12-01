@@ -73,7 +73,7 @@
     <!-- 发布时间 -->
     <div class="row-div">
       <div class="row-right-20px" style="margin: 2px;">
-        <div class="column-center text-small grey-font">{{ article.publishTime }}</div>
+        <div class="column-center text-small grey-font">{{ formattedPublishTime }}</div>
         <v-icon class="icon-left-5px" color="#8a8a8a" icon="mdi-clock-outline" size="17"></v-icon>
       </div>
     </div>
@@ -101,11 +101,13 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import TagButton from '@/components/article/TagButton.vue';
 import SourceBar from '@/components/article/SourceBar.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
+import { formatRelativeTime } from '@/utils/other';
 
-defineProps({
+const props = defineProps({
   article: {
     type: Object,
     required: true,
@@ -125,6 +127,10 @@ defineProps({
 });
 
 defineEmits(['set-article-top', 'to-origin-link', 'alert', 'set-loading']);
+
+const formattedPublishTime = computed(() => {
+  return formatRelativeTime(props.article.publishTime);
+});
 </script>
 
 <style scoped>

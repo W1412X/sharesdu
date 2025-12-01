@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.sharesdu.android.data-merged_res-23:/drawable-v21/abc_btn_colored_material.xml",
+        "source": "com.sharesdu.android.data-appcompat-1.7.0-11:/drawable-v21/abc_btn_colored_material.xml"
+    },
+    {
+        "merged": "com.sharesdu.android.data-merged_res-23:/drawable-v21/abc_list_divider_material.xml",
+        "source": "com.sharesdu.android.data-appcompat-1.7.0-11:/drawable-v21/abc_list_divider_material.xml"
+    },
+    {
+        "merged": "com.sharesdu.android.data-merged_res-23:/drawable-v21/abc_edit_text_material.xml",
+        "source": "com.sharesdu.android.data-appcompat-1.7.0-11:/drawable-v21/abc_edit_text_material.xml"
+    },
+    {
+        "merged": "com.sharesdu.android.data-merged_res-23:/drawable-v21/notification_action_background.xml",
+        "source": "com.sharesdu.android.data-core-1.13.0-16:/drawable-v21/notification_action_background.xml"
+    },
+    {
+        "merged": "com.sharesdu.android.data-merged_res-23:/drawable-v21/abc_action_bar_item_background_material.xml",
+        "source": "com.sharesdu.android.data-appcompat-1.7.0-11:/drawable-v21/abc_action_bar_item_background_material.xml"
+    },
+    {
+        "merged": "com.sharesdu.android.data-merged_res-23:/drawable-v21/abc_dialog_material_background.xml",
+        "source": "com.sharesdu.android.data-appcompat-1.7.0-11:/drawable-v21/abc_dialog_material_background.xml"
+    }
+]

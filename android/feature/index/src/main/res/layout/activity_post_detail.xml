@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_primary">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:titleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+        app:titleTextColor="@android:color/white" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <!-- 帖子内容 -->
+            <com.sharesdu.android.common.view.PostItemView
+                android:id="@+id/post_item_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+
+            <!-- 评论列表标题 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="评论"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_color_primary"
+                android:layout_marginBottom="8dp" />
+
+            <!-- 评论列表 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_comments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- 空状态提示 -->
+            <TextView
+                android:id="@+id/tv_empty_comments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="暂无评论"
+                android:textSize="16sp"
+                android:textColor="@color/text_color_secondary"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="gone" />
+
+            <!-- 加载指示器 -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                android:indeterminateTint="@color/theme_color" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- 底部控制栏 -->
+    <LinearLayout
+        android:id="@+id/layout_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/background_primary"
+        android:elevation="8dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:gravity="center_vertical"
+        android:minHeight="56dp">
+
+        <!-- 用户头像 -->
+        <com.sharesdu.android.common.view.UserAvatarView
+            android:id="@+id/user_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- 中间留白分隔 -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- 右侧操作按钮容器 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- 点赞按钮 -->
+            <ImageButton
+                android:id="@+id/btn_like_post"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_like"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="点赞"
+                android:tint="@color/text_color_secondary"
+                android:padding="8dp"
+                android:layout_marginEnd="4dp" />
+
+            <!-- 评论按钮 -->
+            <ImageButton
+                android:id="@+id/btn_comment"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_reply"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="评论"
+                android:tint="@color/text_color_secondary"
+                android:padding="8dp"
+                android:layout_marginEnd="4dp" />
+
+            <!-- 删除按钮（仅自己的帖子显示） -->
+            <ImageButton
+                android:id="@+id/btn_delete_post"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="删除帖子"
+                android:visibility="gone"
+                android:tint="@color/text_color_secondary"
+                android:padding="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 评论输入栏（默认隐藏） -->
+    <LinearLayout
+        android:id="@+id/layout_comment_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/background_primary"
+        android:elevation="8dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:minHeight="56dp">
+
+        <!-- 评论输入框 -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopStart="6dp"
+            app:boxCornerRadiusTopEnd="6dp"
+            app:boxCornerRadiusBottomStart="6dp"
+            app:boxCornerRadiusBottomEnd="6dp"
+            app:boxStrokeColor="@color/theme_color"
+            app:hintTextColor="@color/text_color_secondary"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="40dp"
+                android:hint="写评论..."
+                android:inputType="textMultiLine"
+                android:maxLines="2"
+                android:minLines="1"
+                android:textSize="13sp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 发送按钮 -->
+        <ImageButton
+            android:id="@+id/btn_send"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_send"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="发送"
+            android:tint="@color/theme_color"
+            android:padding="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp" />
+
+        <!-- 取消按钮 -->
+        <ImageButton
+            android:id="@+id/btn_cancel"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_close"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="取消"
+            android:tint="@color/text_color_secondary"
+            android:padding="8dp" />
+    </LinearLayout>
+
+</LinearLayout>
+

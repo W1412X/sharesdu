@@ -17,7 +17,7 @@
 
 <script>
 import { globalProperties } from '@/main';
-import { getReplyContentWithoutHeader, openPage } from '@/utils/other';
+import { formatRelativeTime, getReplyContentWithoutHeader, openPage } from '@/utils/other';
 
 export default {
     props: {
@@ -47,6 +47,9 @@ export default {
         const data = this.initData;
         if(data.type=='reply'){
             data.title=getReplyContentWithoutHeader(data.title);
+        }
+        if (data.time) {
+            data.time = formatRelativeTime(data.time);
         }
         return {
             data,

@@ -27,7 +27,7 @@
     <div class="title-container title-bold">
       {{ post.title }}
     </div>
-    <div class="detail-text text-medium detail-panel">
+    <div class="text-medium">
       <with-link-container
         :init-data="{ content: post.content }"
         :type="'post'"
@@ -66,7 +66,7 @@
         <div class="time-div grey-font text-small">
           <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="17"></v-icon>
           <div class="column-center">
-            {{ post.publishTime }}
+            {{ formattedPublishTime }}
           </div>
         </div>
       </div>
@@ -90,6 +90,7 @@ import StarButton from '@/components/star/StarButton.vue';
 import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
 import ImgCard from '@/components/common/ImgCard.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import { formatRelativeTime } from '@/utils/other';
 
 const props = defineProps({
   post: {
@@ -111,6 +112,10 @@ defineEmits(['alert', 'set-loading', 'to-relative']);
 const relativeText = computed(() => {
   if (!props.post.relativeLink) return '';
   return props.post.relativeLink.includes('course') ? '关联课程' : '关联文章';
+});
+
+const formattedPublishTime = computed(() => {
+  return formatRelativeTime(props.post.publishTime);
 });
 </script>
 

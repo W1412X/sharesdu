@@ -111,7 +111,7 @@ import HybridSearchItem from '@/components/search/HybridSearchItem.vue';
 import SearchItem from '@/components/search/SearchItem.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { globalProperties } from '@/main';
-import { extractTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, hexToRgba, isElementAtBottom, openPage } from '@/utils/other';
+import { formatRelativeTime, getNormalErrorAlert, getNormalInfoAlert, getNormalWarnAlert, hexToRgba, isElementAtBottom, openPage } from '@/utils/other';
 import { computed } from 'vue';
 import { getCookie } from '@/utils/cookie';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
@@ -769,7 +769,7 @@ export default {
                         postTitle:response.results[i].post_title,
                         authorName:response.results[i].replier_name,
                         authorId:response.results[i].replier_id,
-                        publishTime:extractTime(response.results[i].reply_time),
+                        publishTime:formatRelativeTime(response.results[i].reply_time),
                     })
                 }
                 this.searchPage['回复'][this.sortType]++;

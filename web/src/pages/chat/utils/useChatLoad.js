@@ -1,7 +1,7 @@
 /**
  * ChatPage 加载逻辑 Composable
  */
-import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, extractTime } from '@/utils/other';
+import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, formatRelativeTime } from '@/utils/other';
 import { getChatHistory, getChatUsers, markMessageAsRead } from '@/api/modules/chat';
 
 export function useChatLoad(
@@ -129,7 +129,7 @@ export function useChatLoad(
             msgNum: response.chat_users[i].unread_count,
             lastMsg: {
               content: response.chat_users[i].last_message.content,
-              time: extractTime(response.chat_users[i].last_message.sent_at),
+              time: formatRelativeTime(response.chat_users[i].last_message.sent_at),
               isSelf: response.chat_users[i].last_message.is_sender,
             },
           });
@@ -145,7 +145,7 @@ export function useChatLoad(
             msgNum: 0,
             lastMsg: {
               content: '新的聊天',
-              time: extractTime(new Date().toISOString()),
+              time: formatRelativeTime(new Date().toISOString()),
               isSelf: true,
             },
           });

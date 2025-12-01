@@ -23,7 +23,7 @@
     </v-card>
 </template>
 <script>
-import { copy, getNormalWarnAlert, openPage } from '@/utils/other';
+import { copy, formatRelativeTime, getNormalWarnAlert, openPage } from '@/utils/other';
 import AvatarName from '@/components/common/AvatarName.vue';
 
 export default {
@@ -49,6 +49,9 @@ export default {
     },
     data() {
         const data=copy(this.initData);
+        if (data.lastMsg && data.lastMsg.time) {
+            data.lastMsg.time = formatRelativeTime(data.lastMsg.time);
+        }
         return {
             data,
         }

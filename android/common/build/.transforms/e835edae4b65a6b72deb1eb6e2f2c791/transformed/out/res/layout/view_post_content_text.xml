@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- 内容容器（FrameLayout用于重叠显示TextView/WebView和进度条） -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="40dp">
+
+        <!-- 普通文本内容 -->
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/text_color_secondary"
+            android:autoLink="none"
+            android:linksClickable="true"
+            android:textIsSelectable="false" />
+
+        <!-- HTML内容WebView -->
+        <WebView
+            android:id="@+id/webview_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="200dp"
+            android:visibility="gone" />
+
+        <!-- 加载进度条（用于WebView） -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/theme_color"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- 父级依赖链接容器 -->
+    <LinearLayout
+        android:id="@+id/parent_link_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:paddingTop="4dp"
+        android:background="#F5F5F5"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:minHeight="36dp">
+
+        <TextView
+            android:id="@+id/parent_link_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:textColor="@color/theme_color"
+            android:text="查看相关内容" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="→"
+            android:textSize="14sp"
+            android:textColor="@color/theme_color"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+</LinearLayout>
+

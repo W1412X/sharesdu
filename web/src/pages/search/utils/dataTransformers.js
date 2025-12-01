@@ -2,7 +2,7 @@
  * 搜索数据转换工具函数
  * 将 API 响应数据转换为组件所需格式
  */
-import { extractTime } from '@/utils/other';
+import { formatRelativeTime } from '@/utils/other';
 
 /**
  * 转换文章搜索结果
@@ -132,7 +132,7 @@ export function transformReplyResults(results) {
     postTitle: item.post_title,
     authorName: item.replier_name,
     authorId: item.replier_id,
-    publishTime: extractTime(item.reply_time),
+    publishTime: formatRelativeTime(item.reply_time),
   }));
 }
 

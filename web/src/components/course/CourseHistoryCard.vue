@@ -43,7 +43,7 @@
     </v-card>
 </template>
 <script>
-import { extractTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { formatRelativeTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { getCourseHistory, rollbackCourse } from '@/api/modules/course';
 
@@ -103,7 +103,7 @@ export default {
                 for (let i = 0; i < response.data.histories.length; i++) {
                     this.courses.push({
                         operator: response.data.histories[i].operator,
-                        time: extractTime(response.data.histories[i].modified_at),
+                        time: formatRelativeTime(response.data.histories[i].modified_at),
                         preview: response.data.histories[i].snapshot_preview,
                         version: response.data.histories[i].version,
                         operator_id: response.data.histories[i].operator_id,

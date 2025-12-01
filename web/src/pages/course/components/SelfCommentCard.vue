@@ -77,7 +77,7 @@ defineEmits(['edit-comment']);
   .self-comment-container-card {
     margin-top: 10px;
     padding: 10px;
-    width: 770px;
+    width: 800px;
     display: flex;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.05);

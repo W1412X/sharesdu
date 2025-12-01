@@ -20,7 +20,7 @@
  */
 
 // 格式化相关
-export { extractTime, getCurrentFormattedTime } from './format';
+export { extractTime, getCurrentFormattedTime, formatRelativeTime } from './format';
 
 // 颜色处理
 export { adjustAlpha, hexToRgba } from './color';

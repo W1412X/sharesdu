@@ -27,7 +27,7 @@
             </div>
         </div>
         <div style="display:flex;flex-direction: row;margin-top:5px;color:#8a8a8a">
-            <span style="font-size: 16px;">{{ data.time }}</span>
+            <span class="text-small">{{ data.time }}</span>
             <v-spacer></v-spacer>
             <!--
             <like-button :id="data.id" :type="'evaluation'" style="margin-right:10px;"></like-button>
@@ -40,6 +40,7 @@
 import AlertButton from '@/components/report/AlertButton.vue';
 import AvatarName from '@/components/common/AvatarName.vue';
 import { globalProperties } from '@/main';
+import { formatRelativeTime } from '@/utils/other';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
     name: 'CourseComment',
@@ -73,6 +74,9 @@ export default {
     },
     data() {
         const data=this.initData;
+        if (data.time) {
+            data.time = formatRelativeTime(data.time);
+        }
         return {
             data,
             isContentCollapsed: true,

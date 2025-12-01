@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- 左上角：头像 -->
+    <com.sharesdu.android.common.view.UserAvatarView
+        android:id="@+id/avatar_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <!-- 右上角：注册时间 -->
+    <TextView
+        android:id="@+id/tv_register_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:textSize="12sp"
+        android:textColor="@color/text_color_secondary" />
+
+    <!-- 头像下方：用户等级 -->
+    <LinearLayout
+        android:id="@+id/layout_reputation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/avatar_view"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_reputation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_color_primary" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_reputation_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/theme_color"
+            android:textSize="12sp"
+            app:chipBackgroundColor="@color/theme_color_transparent"
+            app:chipMinHeight="24dp" />
+    </LinearLayout>
+
+    <!-- 校区 -->
+    <TextView
+        android:id="@+id/tv_campus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_reputation"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        android:textColor="@color/text_color_secondary" />
+
+    <!-- 学院 -->
+    <TextView
+        android:id="@+id/tv_college"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_campus"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="4dp"
+        android:textSize="14sp"
+        android:textColor="@color/text_color_secondary" />
+
+    <!-- 专业 -->
+    <TextView
+        android:id="@+id/tv_major"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_college"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="4dp"
+        android:textSize="14sp"
+        android:textColor="@color/text_color_secondary" />
+
+    <!-- 右下角：管理员标志 -->
+    <LinearLayout
+        android:id="@+id/layout_master"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/tv_major"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_master_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/theme_color"
+            android:background="@drawable/master_badge_bg"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp" />
+    </LinearLayout>
+</RelativeLayout>

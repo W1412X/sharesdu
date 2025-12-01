@@ -47,7 +47,7 @@
     </div>
     <div v-if="loadState" class="time-container">
       <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="18"></v-icon>
-      <div class="text-small">{{ course.publishTime }}</div>
+      <div class="text-small">{{ formattedPublishTime }}</div>
       <v-spacer></v-spacer>
       <span class="history-text text-small" @click="$emit('show-history')">查看历史版本</span>
     </div>
@@ -92,10 +92,12 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import StarButton from '@/components/star/StarButton.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import { formatRelativeTime } from '@/utils/other';
 
-defineProps({
+const props = defineProps({
   course: {
     type: Object,
     required: true,
@@ -119,6 +121,10 @@ defineProps({
 });
 
 defineEmits(['generate-share-image', 'edit-course', 'show-history', 'alert', 'set-loading']);
+
+const formattedPublishTime = computed(() => {
+  return formatRelativeTime(props.course.publishTime);
+});
 </script>
 
 <style scoped>

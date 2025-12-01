@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common 模块使用的颜色资源 -->
+    <!-- 这些颜色与 app 模块共享，保持命名一致以便于复用 -->
+    
+    <!-- 基础颜色 -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- 文本颜色 -->
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#8a8a8a</color>
+    <color name="text_hint">#CCCCCC</color>
+    <!-- 兼容性别名 -->
+    <color name="text_color_primary">@color/text_primary</color>
+    <color name="text_color_secondary">@color/text_secondary</color>
+    
+    <!-- 背景颜色 -->
+    <color name="background_primary">#FFFFFF</color>
+    <color name="background_secondary">#F5F5F5</color>
+    <!-- 兼容性别名 -->
+    <color name="background_color">@color/background_secondary</color>
+    
+    <!-- 主题颜色 -->
+    <color name="theme_color">#9c0c13</color>
+    <color name="theme_color_primary">#9c0c13</color>
+    <color name="primary_theme_color">@color/theme_color</color>
+    
+    <!-- 主题颜色透明度变体 -->
+    <color name="theme_color_alpha_10">#1A9c0c13</color>
+    <color name="theme_color_transparent">@color/theme_color_alpha_10</color>
+    
+    <!-- 分隔线颜色 -->
+    <color name="divider_color">#E0E0E0</color>
+    <color name="divider">@color/divider_color</color>
+</resources>
+

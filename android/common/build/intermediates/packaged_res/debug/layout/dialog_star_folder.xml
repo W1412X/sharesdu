@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/background_primary"
+    android:minHeight="400dp">
+
+    <!-- 拖拽指示器 -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bottom_sheet_indicator"
+        android:backgroundTint="@color/text_color_secondary" />
+
+    <!-- 标题 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择收藏夹"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_color_primary"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp" />
+
+    <!-- 创建新收藏夹按钮 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_create_folder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="新建收藏夹"
+        android:textSize="14sp"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/theme_color"
+        style="@style/Widget.ShareSDU.Button.Secondary"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 收藏夹列表 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_folders"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" />
+
+    <!-- 空状态提示 -->
+    <TextView
+        android:id="@+id/tv_empty_folders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="暂无收藏夹，请先创建"
+        android:textSize="16sp"
+        android:textColor="@color/text_color_secondary"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone" />
+
+    <!-- 加载指示器 -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:indeterminateTint="@color/theme_color" />
+
+</LinearLayout>
+

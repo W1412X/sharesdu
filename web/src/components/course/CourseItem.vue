@@ -53,7 +53,7 @@
 //import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiComment, mdiStar } from '@mdi/js';
 import { globalProperties } from '@/main';
-import { openPage, roundNumber } from '@/utils/other';
+import { formatRelativeTime, openPage, roundNumber } from '@/utils/other';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
 export default {
     name: 'CourseItem',
@@ -104,6 +104,9 @@ export default {
     data(){
         const data=this.initData;
         data.score=roundNumber(data.score,1);
+        if (data.publishTime) {
+            data.publishTime = formatRelativeTime(data.publishTime);
+        }
         return {
             data,
             star:mdiStar,
