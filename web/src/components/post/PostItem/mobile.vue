@@ -52,7 +52,7 @@
 import { globalProperties } from '@/main';
 import { ref } from 'vue';
 import { copy, extractImageLinksInBrackets, getLinkInPost, getNormalErrorAlert, getNormalWarnAlert, openPage } from '@/utils/other';
-import GridImageGallery from '@/components/common/GridImageGallery.vue';
+import GridImageGallery from '@/components/common/GridImageGallery/index.vue';
 import ImageViewer from '@/components/common/ImageViewer.vue';
 import { setPostTopInArticle, setPostTopInCourse } from '@/api/modules/top';
 import WithLinkContainer from '../../common/WithLinkContainer.vue';

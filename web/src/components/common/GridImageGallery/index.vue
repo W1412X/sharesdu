@@ -8,12 +8,8 @@
             :class="getItemClass(imageList.length, index)"
             @click="handleImageClick(index)"
         >
-            <v-img
+            <img-card-for-grid
                 :src="img"
-                :lazy-src="lazyImgUrl"
-                cover
-                class="grid-image"
-                :alt="`图片 ${index + 1}`"
             >
                 <template v-slot:placeholder>
                     <div class="image-placeholder">
@@ -24,7 +20,7 @@
                         ></v-progress-circular>
                     </div>
                 </template>
-            </v-img>
+            </img-card-for-grid>
             <!-- 超过9张时显示更多提示 -->
             <div v-if="index === 8 && imageList.length > 9" class="more-images-overlay">
                 <span class="more-images-text">+{{ imageList.length - 9 }}</span>
@@ -35,9 +31,13 @@
 
 <script>
 import { globalProperties } from '@/main';
+import ImgCardForGrid from './ImgCardForGrid.vue';
 
 export default {
     name: 'GridImageGallery',
+    components: {
+        ImgCardForGrid
+    },
     props: {
         imageList: {
             type: Array,

@@ -91,7 +91,7 @@ import { computed, ref } from 'vue';
 import AvatarName from '@/components/common/AvatarName';
 import StarButton from '@/components/star/StarButton.vue';
 import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
-import GridImageGallery from '@/components/common/GridImageGallery.vue';
+import GridImageGallery from '@/components/common/GridImageGallery/index.vue';
 import ImageViewer from '@/components/common/ImageViewer.vue';
 import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import { formatRelativeTime } from '@/utils/other';
