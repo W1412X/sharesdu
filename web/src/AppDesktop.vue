@@ -29,13 +29,16 @@
         </div>
         <v-tooltip activator="parent">返回首页</v-tooltip>
       </v-btn>
-      <v-btn v-if="ifShowService" @click="toRagChatPage" icon="mdi-home" variant="text" size="38"
+      <!--
+            <v-btn v-if="ifShowService" @click="toRagChatPage" icon="mdi-home" variant="text" size="38"
         :color="navIconColor">
         <div class="icon-container">
           <v-icon type="mdi" icon="mdi-head-dots-horizontal-outline" :color="navIconColor" size="25"></v-icon>
         </div>
         <v-tooltip activator="parent">问AI</v-tooltip>
       </v-btn>
+      -->
+
       <v-btn v-if="ifShowService" @click="toServicePage" icon="mdi-home" variant="text" size="38"
         :color="navIconColor">
         <div class="icon-container">
