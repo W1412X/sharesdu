@@ -286,13 +286,7 @@ public class MainActivity extends AppCompatActivity {
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
                 if (request.isForMainFrame()) {
-                    String errorHtml = "<html><body style='text-align:center;padding:50px;'>" +
-                                     "<h2>加载失败</h2>" +
-                                     "<p>无法连接到服务器</p>" +
-                                     "<p style='color:#999;font-size:12px;'>错误代码: " + error.getErrorCode() + "</p>" +
-                                     "<button onclick='location.reload()' style='padding:10px 20px;margin-top:20px;'>重试</button>" +
-                                     "</body></html>";
-                    view.loadDataWithBaseURL(null, errorHtml, "text/html", "UTF-8", null);
+                    //do nothing
                 }
             }
             

@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- 允许所有域名的明文流量（HTTP） -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- 特定域名的配置（可选，保留用于未来扩展） -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">sharesdu.com</domain>
     </domain-config>
