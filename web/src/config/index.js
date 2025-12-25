@@ -156,6 +156,82 @@ export const getImageDict = () => {
   };
 };
 
+// 服务卡片配置
+export const services = [
+  {
+    title: '信息服务平台',
+    link: 'https://service.sdu.edu.cn',
+    description: '山东大学统一信息服务平台，提供各类校园信息服务',
+    category: '信息服务',
+    source: '山东大学',
+    icon: 'mdi-web',
+  },
+  {
+    title: '山大云盘',
+    link: 'https://icloud.qd.sdu.edu.cn:7777/#/',
+    description: '山东大学云存储服务，安全便捷的文件存储与分享',
+    category: '云服务',
+    source: '山东大学',
+    icon: 'mdi-cloud-outline',
+  },
+  {
+    title: '青岛校区微公交',
+    link: 'http://101.76.229.73',
+    description: '青岛校区微公交查询系统，方便师生出行',
+    category: '交通',
+    source: '山东大学',
+    icon: 'mdi-bus',
+  },
+  {
+    title: '山大公交查询',
+    link: 'http://www.sd114.sdu.edu.cn:8080/web/bus/index',
+    description: '山东大学各校区班车时刻表查询，实时掌握班车信息',
+    category: '交通',
+    source: '山东大学',
+    icon: 'mdi-bus-clock',
+  },
+  {
+    title: '山大缴费平台',
+    link: 'https://pay.sdu.edu.cn/payment/login.jsp',
+    description: '在线缴费服务平台，支持各类费用缴纳',
+    category: '财务',
+    source: '山东大学',
+    icon: 'mdi-credit-card-outline',
+  },
+  {
+    title: '山大AI助手',
+    link: 'https://aiassist.sdu.edu.cn/page/',
+    description: '智能AI助手，提供智能问答和辅助服务',
+    category: 'AI服务',
+    source: '山东大学',
+    icon: 'mdi-robot-outline',
+  },
+  {
+    title: '山大Agent平台',
+    link: 'https://agentlab.sdu.edu.cn',
+    description: '智能Agent实验平台，探索AI智能体应用',
+    category: 'AI服务',
+    source: '山东大学',
+    icon: 'mdi-brain',
+  },
+  {
+    title: '山大学生邮箱',
+    link: 'http://mail.sdu.edu.cn/',
+    description: '山东大学学生邮箱，提供邮箱服务',
+    category: '邮箱',
+    source: '山东大学',
+    icon: 'mdi-email-outline',
+  },
+  {
+    title: '拓展培养系统',
+    link: 'http://222.194.64.76/',
+    description: '山东大学拓展培养系统，可以查询志愿时长等信息',
+    category: '拓展培养',
+    source: '山东大学',
+    icon: 'mdi-school',
+  }
+];
+
 // 导出所有配置
 export default {
   api: apiConfig,
@@ -166,6 +242,7 @@ export default {
   examineMethods,
   theme: themeConfig,
   version: versionConfig,
+  services,
   getImageDict,
 };
 

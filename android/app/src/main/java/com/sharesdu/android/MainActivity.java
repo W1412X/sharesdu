@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     
     private WebView web;
     private ValueCallback<Uri[]> fileUploadCallback;
+    private boolean isJavaScriptHistoryAvailable = false;
     
     // 需要申请的权限列表
     private String[] permissions = {
@@ -305,6 +306,9 @@ public class MainActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 Log.d(TAG, "Page finished: " + url);
+                
+                // 注入JavaScript来监听路由变化并支持返回键
+                injectHistorySupport(view);
             }
         });
         
@@ -496,12 +500,106 @@ public class MainActivity extends AppCompatActivity {
     }
     
     /**
+     * 注入JavaScript支持，用于处理SPA路由的返回键
+     */
+    private void injectHistorySupport(WebView view) {
+        String js = "(function() {" +
+            "var originalPushState = history.pushState;" +
+            "var originalReplaceState = history.replaceState;" +
+            "window.historyStateStack = window.historyStateStack || [window.location.href];" +
+            "history.pushState = function() {" +
+            "  window.historyStateStack.push(window.location.href);" +
+            "  originalPushState.apply(history, arguments);" +
+            "};" +
+            "history.replaceState = function() {" +
+            "  if (window.historyStateStack.length > 0) {" +
+            "    window.historyStateStack[window.historyStateStack.length - 1] = window.location.href;" +
+            "  } else {" +
+            "    window.historyStateStack.push(window.location.href);" +
+            "  }" +
+            "  originalReplaceState.apply(history, arguments);" +
+            "};" +
+            "window.addEventListener('popstate', function() {" +
+            "  if (window.historyStateStack.length > 0) {" +
+            "    window.historyStateStack.pop();" +
+            "  }" +
+            "});" +
+            "window.addEventListener('hashchange', function() {" +
+            "  if (window.historyStateStack.indexOf(window.location.href) === -1) {" +
+            "    window.historyStateStack.push(window.location.href);" +
+            "  }" +
+            "});" +
+            "window.canGoBackInHistory = function() {" +
+            "  return window.historyStateStack.length > 1 || window.history.length > 1;" +
+            "};" +
+            "window.goBackInHistory = function() {" +
+            "  if (window.historyStateStack.length > 1) {" +
+            "    window.historyStateStack.pop();" +
+            "  }" +
+            "  if (window.history.length > 1) {" +
+            "    window.history.back();" +
+            "    return true;" +
+            "  }" +
+            "  return false;" +
+            "};" +
+            "})();";
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            view.evaluateJavascript(js, null);
+        } else {
+            view.loadUrl("javascript:" + js);
+        }
+        isJavaScriptHistoryAvailable = true;
+    }
+    
+    /**
      * 处理返回键
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && web != null && web.canGoBack()) {
-            web.goBack();
+        if (keyCode == KeyEvent.KEYCODE_BACK && web != null) {
+            // 先检查WebView的历史记录（适用于传统页面跳转）
+            if (web.canGoBack()) {
+                web.goBack();
+                return true;
+            }
+            
+            // 如果WebView没有历史记录，尝试JavaScript的history.back()（适用于SPA路由）
+            if (isJavaScriptHistoryAvailable) {
+                // 先尝试执行JavaScript的history.back()
+                String backJs = "if (window.history.length > 1) { window.history.back(); return true; } return false;";
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    web.evaluateJavascript(backJs, result -> {
+                        // 如果JavaScript返回false，检查自定义历史记录栈
+                        if (result == null || result.equals("false")) {
+                            String checkJs = "(window.canGoBackInHistory && window.canGoBackInHistory()) ? 'true' : 'false'";
+                            web.evaluateJavascript(checkJs, hasHistory -> {
+                                if (hasHistory != null && hasHistory.equals("true")) {
+                                    // 有JavaScript历史记录，执行返回
+                                    String goBackJs = "window.goBackInHistory();";
+                                    web.evaluateJavascript(goBackJs, null);
+                                } else {
+                                    // 没有历史记录，退出应用
+                                    finish();
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    // 对于旧版本Android，直接执行history.back()
+                    web.loadUrl("javascript:if(window.history.length > 1) window.history.back();");
+                    // 延迟检查是否需要退出
+                    web.postDelayed(() -> {
+                        if (web != null && !web.canGoBack()) {
+                            finish();
+                        }
+                    }, 200);
+                }
+                return true;
+            }
+            
+            // 如果JavaScript不可用且WebView也没有历史记录，退出应用
+            finish();
             return true;
         }
         return super.onKeyDown(keyCode, event);
