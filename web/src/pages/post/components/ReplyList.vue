@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import ReplyItem from '@/components/post/ReplyItem.vue';
+import ReplyItem from '@/components/post/ReplyItem';
 import NothingView from '@/components/common/NothingView.vue';
 
 defineProps({

@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import ReplyItem from '@/components/post/ReplyItem.vue';
+import ReplyItem from '@/components/post/ReplyItem';
 
 defineProps({
   ifShow: {

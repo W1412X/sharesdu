@@ -150,7 +150,8 @@ const { loadPost, loadMoreReply, submitReply, loadParentReply, glideLoad } = use
 );
 
 // 处理提交回复
-const handleSubmitReply = async () => {
+const handleSubmitReply = async (value) => {
+  inputingComment.value = value;
   const success = await submitReply(postId.value);
   if (success) {
     setCommentEditorState(false);

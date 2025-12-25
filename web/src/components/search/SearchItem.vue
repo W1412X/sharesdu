@@ -13,7 +13,7 @@ import ArticleItem from '@/components/article/ArticleItem';
 import PostItem from '@/components/post/PostItem';
 import CourseItem from '@/components/course/CourseItem';
 import { globalProperties } from '@/main';
-import ReplyItem from '@/components/post/ReplyItem.vue';
+import ReplyItem from '@/components/post/ReplyItem';
 
 export default{
     props:{
