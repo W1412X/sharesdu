@@ -32,14 +32,14 @@
             <!-- 父级回复内容显示区域 -->
             <div v-if="this.ifChild && localParentReplyContent" class="parent-reply-container" @click.stop="showParent">
                 <div class="parent-reply-content">
-                    <span class="parent-reply-author" :style="{ 'color': themeColor }">@{{ parentAuthorName }}</span>
+                    <span class="parent-reply-author" :style="{ 'color': themeColor }">{{ parentAuthorName }}</span>
                     <span class="parent-reply-separator">：</span>
                     <span class="parent-reply-text">{{ localParentReplyContent }}</span>
                 </div>
             </div>
             <!-- 如果没有父级回复内容，只显示作者名（可点击跳转） -->
             <div v-else-if="this.ifChild" class="parent-reply-author-only" @click.stop="showParent">
-                <span class="text-medium-bold" :style="{ 'color': themeColor }">@{{ parentAuthorName }}：</span>
+                <span class="text-medium-bold" :style="{ 'color': themeColor }">{{ parentAuthorName }}：</span>
             </div>
             <!-- 当前回复内容 -->
             <div class="content-wrapper-container">
@@ -564,8 +564,9 @@ export default {
         text-overflow: ellipsis;
     }
     .container {
+        background-color: white;
         transition: background-color 0.2s ease;
-        width: 880px;
+        width: 900px;
         display: flex;
         flex-direction: column;
         padding-top: 8px;
@@ -574,9 +575,6 @@ export default {
         padding-bottom: 8px;
         border-bottom: 0.5px #dddddd solid;
         border-radius: 0px;
-    }
-    .container:hover {
-        background-color: rgba(0, 0, 0, 0.04);
     }
 
     .name {
@@ -613,6 +611,7 @@ export default {
         font-size: var(--font-size-tiny);
     }
     .container {
+        background-color: white;
         width: 100%;
         transition: background-color 0.2s ease;
         display: flex;
@@ -623,9 +622,6 @@ export default {
         padding-bottom: 8px;
         border-bottom: 0.5px #dddddd solid;
         border-radius: 0px;
-    }
-    .container:hover {
-        background-color: rgba(0, 0, 0, 0.04);
     }
     .post-title-div{
         color:grey;

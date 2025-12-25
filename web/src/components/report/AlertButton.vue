@@ -2,7 +2,7 @@
 <template>
     <v-dialog v-model="ifShowDialog" style="width: 100%;height:100%;justify-content: center;">
         <div v-if="ifShowReportCard" style="width: 100%;height:100%;justify-content: center;display: flex">
-            <component :is="AsyncReportCard" type="type" id="id" @close="close()"></component>
+            <component :is="AsyncReportCard" :type="type" :id="id" @close="close()"></component>
         </div>
     </v-dialog>
     <v-btn elevation="0" @click="click" icon :style="{

@@ -50,7 +50,7 @@ export function transformReplyList(response) {
     authorName: item.replier_name,
     authorId: item.replier_id,
     likeNum: item.like_count,
-    publishTime: item.reply_time,
+    publishTime: item.publish_time,
     ifLike: item.if_like || false,
   }));
 }
