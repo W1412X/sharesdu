@@ -55,7 +55,7 @@ export default {
     }
   },
   data() {
-    let data = this.initData;
+    let data = { ...this.initData };
     if (!data.keywords) {
       data.keywords = [];
     }
@@ -197,22 +197,54 @@ export default {
           console.error('注入 Cookie 拦截脚本失败:', error);
         }
       }
+    },
+    updateData(newInitData) {
+      // 释放旧的 URL
+      if (this.tmpUrl) {
+        URL.revokeObjectURL(this.tmpUrl);
+        this.tmpUrl = null;
+      }
+      
+      // 更新 data
+      let newData = { ...newInitData };
+      if (!newData.keywords) {
+        newData.keywords = [];
+      }
+      this.data = newData;
+      
+      // 重新处理内容
+      if(this.type=='post'){
+        this.data.content = getPostWithoutLink(this.data.content);
+        if(this.data.content.startsWith("SELF-DEFINE-HTML")){
+          this.data.content = this.data.content.substring(16);
+          this.ifHtml = true;
+          this.tmpUrl = URL.createObjectURL(new Blob([this.data.content], { type: "text/html" }));
+          this.$nextTick(() => {
+            this.setupIframeResize();
+            this.setupIframeCookieBlock();
+          });
+        }else{
+          this.data.content = removeImageLinksInBrackets(this.data.content);
+          this.processedContent = this.processContent();
+          this.ifHtml = false;
+        }
+      }else{
+        this.processedContent = this.processContent();
+        this.ifHtml = false;
+      }
+    }
+  },
+  watch: {
+    initData: {
+      handler(newVal) {
+        this.updateData(newVal);
+      },
+      deep: true,
+      immediate: false
     }
   },
   beforeMount(){
-    if(this.type=='post'){
-      this.data.content=getPostWithoutLink(this.data.content);
-      if(this.data.content.startsWith("SELF-DEFINE-HTML")){
-        this.data.content=this.data.content.substring(16);
-        this.ifHtml=true;
-        this.tmpUrl=URL.createObjectURL(new Blob([this.data.content], { type: "text/html" }));
-      }else{
-        this.data.content=removeImageLinksInBrackets(this.data.content);
-        this.processedContent=this.processContent(this.data.content);
-      }
-    }else{
-      this.processedContent=this.processContent(this.data.content);
-    }
+    this.updateData(this.initData);
   },
   mounted(){
     if(this.ifHtml){
@@ -224,7 +256,9 @@ export default {
     }
   },
   beforeUnmount(){
-    URL.revokeObjectURL(this.tmpUrl);
+    if (this.tmpUrl) {
+      URL.revokeObjectURL(this.tmpUrl);
+    }
   }
 };
 </script>

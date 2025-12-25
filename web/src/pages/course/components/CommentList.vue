@@ -1,9 +1,9 @@
 <template>
   <div id="comments-container" class="comments-container">
     <div class="comment-column">
-      <template v-if="commentList.length > 0">
+      <template v-if="filteredCommentList.length > 0">
         <course-comment
-          v-for="(item, index) in commentList"
+          v-for="(item, index) in filteredCommentList"
           :key="index"
           :init-data="item"
         ></course-comment>
@@ -20,7 +20,7 @@
         加载更多
       </v-btn>
       <nothing-view
-        v-else-if="commentList.length <= 0 && !loading"
+        v-else-if="filteredCommentList.length <= 0 && !loading"
         icon="mdi-comment-text-outline"
         text="暂无评论"
         :icon-size="80"
@@ -32,10 +32,12 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { getCookie } from '@/utils/cookie';
 import CourseComment from '@/components/course/CourseComment.vue';
 import NothingView from '@/components/common/NothingView.vue';
 
-defineProps({
+const props = defineProps({
   commentList: {
     type: Array,
     required: true,
@@ -55,6 +57,17 @@ defineProps({
 });
 
 defineEmits(['load-more']);
+
+// 获取当前用户ID
+const currentUserId = getCookie('userId');
+
+// 过滤掉当前用户的评论
+const filteredCommentList = computed(() => {
+  if (!currentUserId) {
+    return props.commentList;
+  }
+  return props.commentList.filter(comment => comment.authorId !== currentUserId);
+});
 </script>
 
 <style scoped>

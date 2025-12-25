@@ -245,7 +245,7 @@ export function useCourseLoad(
         });
       }
       
-      if (response.status === 200 || response.status === 201) {
+      if (response.status == 200 || response.status == 201) {
         oriSelfComment.value = copy(selfComment.value);
         alert(getNormalSuccessAlert('提交成功'));
         setIfRated(true);

@@ -99,7 +99,7 @@ const addEmoji = (emoji) => {
 };
 
 const handleSubmit = () => {
-  emit('submit', { ...localComment.value });
+  emit('submit', localComment.value);
 };
 
 const handleClose = () => {

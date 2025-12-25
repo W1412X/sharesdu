@@ -228,7 +228,8 @@ const {
 );
 
 // 处理提交评价
-const handleSubmitComment = async () => {
+const handleSubmitComment = async (value) => {
+  selfComment.value = value;
   const success = await submitComment(courseId.value);
   if (success) {
     setCommentEditorState(false);
