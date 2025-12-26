@@ -176,7 +176,7 @@ export const services = [
   },
   {
     title: '青岛校区微公交',
-    link: 'http://101.76.229.73',
+    link: 'https://101.76.229.73',
     description: '青岛校区微公交查询系统，方便师生出行',
     category: '交通',
     source: '山东大学',
