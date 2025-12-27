@@ -44,10 +44,20 @@
       variant="outlined"
       text="个性化主题"
     ></v-btn>
+    <v-btn
+      @click="handleToggleDarkMode"
+      :prepend-icon="darkModeEnabled ? 'mdi-weather-night' : 'mdi-weather-sunny'"
+      color="grey"
+      variant="outlined"
+      :text="darkModeEnabled ? '黑夜模式' : '白天模式'"
+    ></v-btn>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import { toggleDarkMode, isDarkModeEnabled } from '@/utils/darkMode';
+
 // Props
 defineProps({
   loading: {
@@ -61,6 +71,14 @@ defineProps({
 // Emits
 const emit = defineEmits(['to-url', 'show-block-list', 'show-color-selector']);
 
+// 暗色模式状态
+const darkModeEnabled = ref(false);
+
+// 初始化暗色模式状态
+onMounted(() => {
+  darkModeEnabled.value = isDarkModeEnabled();
+});
+
 // 处理方法
 const handleToUrl = (url) => {
   emit('to-url', url);
@@ -72,6 +90,10 @@ const handleShowBlockList = () => {
 
 const handleShowColorSelector = () => {
   emit('show-color-selector');
+};
+
+const handleToggleDarkMode = () => {
+  darkModeEnabled.value = toggleDarkMode();
 };
 </script>
 

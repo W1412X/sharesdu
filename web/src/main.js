@@ -19,6 +19,7 @@ import { getDeviceType } from './utils/device';
 import { adjustAlpha } from './utils/color';
 import { selfDefinedSessionStorage } from './utils/sessionStorage';
 import { selfDefineLocalStorage } from './utils/localStorage';
+import { initDarkMode } from './utils/darkMode';
 import config from './config';
 
 const vuetify = createVuetify({
@@ -136,6 +137,11 @@ if(selfDefineLocalStorage.getItem("version")!=globalVersion){
   selfDefineLocalStorage.clear();
 }
 selfDefineLocalStorage.setItem("version",globalVersion);
+
+/**
+ * 初始化暗色模式
+ */
+initDarkMode();
 
 app.provide(store);
 app.use(router)

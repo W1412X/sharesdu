@@ -26,6 +26,7 @@
     "@wangeditor/plugin-formula": "^1.0.11",
     "aos": "^2.3.4",
     "axios": "^1.7.2",
+    "darkreader": "^4.9.118",
     "dexie": "^4.0.11",
     "html2canvas": "^1.4.1",
     "katex": "^0.15.6",
@@ -76,9 +77,15 @@
     },
     "rules": {
       "no-useless-escape": 0,
-      "vue/multi-word-component-names": ["error", {
-        "ignores": ["index", "IndexPage"]
-      }]
+      "vue/multi-word-component-names": [
+        "error",
+        {
+          "ignores": [
+            "index",
+            "IndexPage"
+          ]
+        }
+      ]
     }
   },
   "browserslist": [
