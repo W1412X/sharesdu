@@ -15,7 +15,7 @@
             <div class="comment-expand-container">
                 <div ref="commentContent" :class="['comment-expand', 'support-line-feed', { collapsed: isContentCollapsed && showContentToggle }]">
                     <with-link-container :initData="{
-                        'content':data.comment
+                        'content':displayContent
                     }"></with-link-container>
                 </div>
                 <div v-if="showContentToggle && isContentCollapsed" class="comment-gradient"></div>
@@ -25,6 +25,30 @@
                 {{ isContentCollapsed ? '展开' : '收起' }}
                 <v-icon size="18" :icon="isContentCollapsed ? 'mdi-chevron-down' : 'mdi-chevron-up'"></v-icon>
             </div>
+            <!-- 图片列表（最多3张） -->
+            <div v-if="displayImgList && displayImgList.length > 0" class="comment-image-list">
+                <div
+                    v-for="(src, index) in displayImgList"
+                    :key="index"
+                    class="comment-image-item"
+                    @click="handleImageClick(index)"
+                >
+                    <img-card
+                        :src="src"
+                        :width="80"
+                        :height="80"
+                        :editable="false"
+                        :clickable="false"
+                    ></img-card>
+                </div>
+            </div>
+            <!-- 图片查看器 -->
+            <image-viewer
+                v-model="showImageViewer"
+                :image-list="imgList || []"
+                :initial-index="currentImageIndex"
+                @close="showImageViewer = false"
+            ></image-viewer>
         </div>
         <div style="display:flex;flex-direction: row;margin-top:5px;color:#8a8a8a">
             <span class="text-small">{{ data.time }}</span>
@@ -40,8 +64,11 @@
 import AlertButton from '@/components/report/AlertButton.vue';
 import AvatarName from '@/components/common/AvatarName';
 import { globalProperties } from '@/main';
-import { formatRelativeTime } from '@/utils/other';
+import { formatRelativeTime, extractImageLinksInBrackets } from '@/utils/other';
+import { removeImageLinksInBrackets } from '@/utils/imageUtils';
 import WithLinkContainer from '../common/WithLinkContainer.vue';
+import ImgCard from '@/components/common/ImgCard.vue';
+import ImageViewer from '@/components/common/ImageViewer.vue';
 export default {
     name: 'CourseComment',
     props: {
@@ -64,6 +91,8 @@ export default {
         AlertButton,
         AvatarName,
         WithLinkContainer,
+        ImgCard,
+        ImageViewer,
     },
     setup() {
         const themeColor=globalProperties.$themeColor;
@@ -77,13 +106,33 @@ export default {
         if (data.time) {
             data.time = formatRelativeTime(data.time);
         }
+        // 提取图片链接
+        const imgList = extractImageLinksInBrackets(data.comment || '');
+        const displayContent = removeImageLinksInBrackets(data.comment || '');
         return {
             data,
+            imgList,
+            displayContent,
             isContentCollapsed: true,
             showContentToggle: false,
+            showImageViewer: false,
+            currentImageIndex: 0,
+        }
+    },
+    computed: {
+        // 最多显示3张图片
+        displayImgList() {
+            if (!this.imgList || this.imgList.length === 0) {
+                return [];
+            }
+            return this.imgList.slice(0, 3);
         }
     },
     methods: {
+        handleImageClick(index) {
+            this.currentImageIndex = index;
+            this.showImageViewer = true;
+        },
         toggleContentCollapse() {
             if (!this.showContentToggle) {
                 return;
@@ -129,7 +178,10 @@ export default {
     },
     watch: {
         'data.comment': {
-            handler() {
+            handler(newComment) {
+                // 重新提取图片链接和文本内容
+                this.imgList = extractImageLinksInBrackets(newComment || '');
+                this.displayContent = removeImageLinksInBrackets(newComment || '');
                 this.evaluateCommentContent();
             },
             immediate: true,
@@ -195,6 +247,22 @@ export default {
     cursor: pointer;
     margin-top: 4px;
     gap: 2px;
+}
+
+.comment-image-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.comment-image-item {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.comment-image-item:hover {
+    transform: scale(1.05);
 }
 @media screen and (min-width: 1000px) {
     .container {
