@@ -159,6 +159,14 @@ export const getImageDict = () => {
 // 服务卡片配置
 export const services = [
   {
+    title:'计算机资料分享',
+    link: 'https://github.com/SDUCSGuide/SDUCSGuide',
+    description: '山东大学计算机专业的一些资料，评价，讨论等，需要访问github',
+    category: '计算机',
+    source: '山东大学',
+    icon: 'mdi-laptop',
+  },
+  {
     title: '信息服务平台',
     link: 'https://service.sdu.edu.cn',
     description: '山东大学统一信息服务平台，提供各类校园信息服务',
