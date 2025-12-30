@@ -151,7 +151,7 @@ export default {
     const showDialog = (type) => {
       switch (type) {
         case 'article':
-          openPage("url", "#/edit");
+          openPage("url", { url: "#/editor" });
           break;
         case 'course':
           setCourseEditorState(true);

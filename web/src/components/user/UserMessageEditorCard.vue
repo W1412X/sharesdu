@@ -273,7 +273,7 @@ export default {
       const response = await logout();
       if (response.status == 200) {
         clearTokenCookies();
-          openPage("url",'#/login');
+          openPage("url", { url: "#/login" }, "_self");
       } else {
         this.alert({
           state: true,
