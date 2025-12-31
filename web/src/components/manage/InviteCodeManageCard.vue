@@ -1,15 +1,81 @@
 
 <template>
-    <v-card class="card column-div-scroll">
-        <div>
-            <SensitiveTextField v-model="createData.capacity" density="compact" variant="outlined"
-                v-model.number="newCapacity" :label="'邀请码容量(1-20)'" type="number" min="1" step="1" />
-            <SensitiveTextField v-model="createData.days" density="compact" variant="outlined"
-                v-model.number="newExpiresDays" :label="'有效期（天）'" type="number" min="1" step="1" />
-            <v-btn @click="createCode" :loading="loading.createCode" :disabled="loading.createCode" width="100%"
-                variant="outlined" :color="themeColor">确认创建</v-btn>
+    <v-card class="manage-card invite-code-card" elevation="2">
+        <v-card-title class="card-header">
+            <v-icon icon="mdi-account-plus" :color="themeColor" size="24" class="header-icon"></v-icon>
+            <span class="header-title">邀请码管理</span>
+        </v-card-title>
+        
+        <v-divider></v-divider>
+        
+        <v-card-text class="card-content">
+            <!-- 创建邀请码表单 -->
+            <div class="form-section">
+                <div class="section-title-wrapper">
+                    <h3 class="section-title">创建邀请码</h3>
+                </div>
+                <div class="form-fields">
+                    <SensitiveTextField 
+                        v-model.number="createData.capacity" 
+                        density="comfortable" 
+                        variant="outlined"
+                        label="邀请码容量(1-20)" 
+                        type="number" 
+                        min="1" 
+                        max="20"
+                        step="1"
+                        class="form-field"
+                        prepend-inner-icon="mdi-account-group"
+                        hide-details="auto"
+                        hint="请输入1-20之间的整数"
+                        persistent-hint
+                    />
+                    <SensitiveTextField 
+                        v-model.number="createData.days" 
+                        density="comfortable" 
+                        variant="outlined"
+                        label="有效期（天）" 
+                        type="number" 
+                        min="1" 
+                        step="1"
+                        class="form-field"
+                        prepend-inner-icon="mdi-calendar-clock"
+                        hide-details="auto"
+                        hint="请输入有效期天数"
+                        persistent-hint
+                    />
+                </div>
+                <div class="action-section">
+                    <v-btn 
+                        @click="createCode" 
+                        :loading="loading.createCode" 
+                        :disabled="loading.createCode" 
+                        variant="elevated"
+                        :color="themeColor"
+                        size="large"
+                        prepend-icon="mdi-plus-circle"
+                        class="create-btn"
+                    >
+                        创建邀请码
+                    </v-btn>
+                </div>
+            </div>
+            
+            <v-divider class="section-divider"></v-divider>
+            
+            <!-- 邀请码列表 -->
+            <div class="table-section">
+                <div class="section-title-wrapper">
+                    <h3 class="section-title">邀请码列表</h3>
         </div>
-        <v-data-table :items="inviteCodeList" fixed-header hover>
+                <div class="table-container">
+                    <v-data-table 
+                        :items="inviteCodeList" 
+                        fixed-header 
+                        hover
+                        class="data-table"
+                        :items-per-page="10"
+                    >
             <!-- bug but can run -->
             <template v-slot:[`item.激活状态`]="{ item }">
                 <v-switch
@@ -34,8 +100,10 @@
                 <v-icon :icon="item.是否可用?'mdi-check-bold':'mdi-close-thick'" :color="item.是否可用?'success':'error'"></v-icon>
             </template>
         </v-data-table>
+                </div>
+            </div>
+        </v-card-text>
     </v-card>
-
 </template>
 <script>
 import { globalProperties } from '@/main';
@@ -155,35 +223,120 @@ export default {
 }
 </script>
 <style scoped>
-@media screen and (min-width: 1000px) {
-    .card {
-        margin: 20px;
-        width: 1000px;
-        max-height: 800px;
-        padding: 20px;
-    }
-
-    .column-div-scroll {
-        display: flex;
-        flex-direction: column;
-        max-height: 650px;
-        overflow: auto;
-    }
-
+.invite-code-card {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-@media screen and (max-width: 1000px) {
-    .card {
-        width: 90vw;
-        max-height: 90vh;
-        padding: 15px;
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.header-icon {
+    margin-right: 4px;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.card-content {
+    padding: 24px;
+}
+
+.form-section {
+    margin-bottom: 32px;
+}
+
+.section-title-wrapper {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #555;
+    margin: 0;
+}
+
+.form-fields {
+    margin-bottom: 24px;
+}
+
+.form-field {
+    margin-bottom: 20px;
     }
 
-    .column-div-scroll {
+.form-field:last-child {
+    margin-bottom: 0;
+}
+
+.action-section {
         display: flex;
-        flex-direction: column;
-        max-height: 80vh;
-        overflow: auto;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.create-btn {
+    min-width: 160px;
+}
+
+.section-divider {
+    margin: 32px 0;
+}
+
+.table-section {
+    margin-top: 0;
+}
+
+.table-container {
+    overflow-x: auto;
+    }
+
+.data-table {
+    width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    .invite-code-card {
+        max-width: 100%;
+    }
+    
+    .card-header {
+        padding: 16px 20px;
+    }
+
+    .header-title {
+        font-size: 18px;
+    }
+    
+    .card-content {
+        padding: 20px 16px;
+    }
+    
+    .form-fields {
+        margin-bottom: 20px;
+    }
+    
+    .action-section {
+        justify-content: stretch;
+    }
+    
+    .create-btn {
+        width: 100%;
+        min-width: unset;
+    }
+    
+    .section-divider {
+        margin: 24px 0;
     }
 }
 </style>

@@ -84,6 +84,32 @@ const useOptionShowSheet = (type,authorId=undefined) => {
             });
     }
     }
+    else if(type === 'section') {
+        sheetOptions.push({
+            icon: 'mdi-link-variant',
+            text: '复制板块链接',
+            type: 'section-share',
+        });
+        if(ifAuthor){
+            sheetOptions.push({
+                icon: 'mdi-pencil',
+                text: '编辑板块',
+                type: 'section-edit',
+            });
+            sheetOptions.push({
+                icon: 'mdi-delete',
+                text: '删除板块',
+                type: 'section-delete',
+            });
+        }
+        if(!ifAuthor){
+            sheetOptions.push({
+                icon: 'mdi-alert',
+                text: '举报板块',
+                type: 'section-alert',
+            });
+        }
+    }
     return sheetOptions;
 }
 export default useOptionShowSheet;

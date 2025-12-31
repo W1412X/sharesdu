@@ -29,6 +29,15 @@
         value="course" 
         text="课程"
       ></v-tab>
+      <v-tab
+        :style="{ 
+          background: 'rgba(255,255,255,1)', 
+          color: localItemType == 'section' ? '#000000' : '#8a8a8a' 
+        }"
+        height="40px" 
+        value="section" 
+        text="板块"
+      ></v-tab>
     </v-tabs>
   </div>
   
@@ -71,6 +80,18 @@
         class="mobile-tab"
         :class="{ 'mobile-tab--active': localItemType == 'course' }"
       ></v-tab>
+      <v-tab
+        :style="{ 
+          background: 'rgba(255,255,255,1)', 
+          color: localItemType == 'section' ? themeColor : '#8a8a8a',
+          fontWeight: localItemType == 'section' ? '600' : '400'
+        }"
+        height="40px" 
+        value="section" 
+        text="板块" 
+        class="mobile-tab"
+        :class="{ 'mobile-tab--active': localItemType == 'section' }"
+      ></v-tab>
     </v-tabs>
   </div>
 </template>
@@ -82,7 +103,7 @@ const props = defineProps({
   modelValue: {
     type: String,
     required: true,
-    validator: (value) => ['article', 'post', 'course'].includes(value),
+    validator: (value) => ['article', 'post', 'course', 'section'].includes(value),
   },
   ifMobile: {
     type: Boolean,

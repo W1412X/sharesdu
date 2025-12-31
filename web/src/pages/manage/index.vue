@@ -1,5 +1,5 @@
 <template>
-  <div class="full-center">
+  <div class="manage-page-container">
     <!-- 对话框 -->
     <ManageDialog
       :if-show-dialog="ifShowDialog"
@@ -30,31 +30,63 @@
       @update:choose="handleChooseChange">
     </ManageNavigationDrawer>
     
-    <!-- 对象管理卡片 -->
-    <ItemManageCard
-      v-if="choose === 'item'"
-      :item-type="itemType"
+    <!-- 内容区域 -->
+    <div class="content-area" :class="{ 'with-drawer': drawer && !rail }">
+    <UserManageCard
+      v-if="choose === 'user'"
       :item-id="itemId"
       :block-days="blockDays"
-      :block-reason="blockReason"
-      :if-show-user-list="ifShowUserList"
-      :if-show-block-user-list="ifShowBlockUserList"
-      :user-list="userList"
-      :total-user-num="totalUserNum"
       :block-user-list="blockUserList"
       :theme-color="themeColor"
-      @update:itemType="itemType = $event"
       @update:itemId="itemId = $event"
       @update:blockDays="blockDays = $event"
-      @update:blockReason="blockReason = $event"
       @show-confirm="handleShowConfirm"
       @unblock="handleUnblock"
+      @load-block-user="handleLoadBlockUser">
+    </UserManageCard>
+    
+    <!-- 用户列表管理卡片 -->
+    <UserListManageCard
+      v-if="choose === 'user-list'"
+      :user-list="userList"
+      :total-user-num="totalUserNum"
+      :page-size="userPageSize"
+      :theme-color="themeColor"
+      @load-user="handleLoadUser"
+      @update:page-size="handlePageSizeChange">
+    </UserListManageCard>
+    
+    <!-- 文章管理卡片 -->
+    <ArticleManageCard
+      v-if="choose === 'article'"
+      :item-id="itemId"
+      :block-reason="blockReason"
+      :theme-color="themeColor"
+      @update:itemId="itemId = $event"
+      @update:blockReason="blockReason = $event"
+      @show-confirm="handleShowConfirm"
+      @unblock="handleUnblock">
+    </ArticleManageCard>
+    
+    <!-- 板块列表管理卡片 -->
+    <SectionListManageCard
+      v-if="choose === 'section-list'"
+      :section-list="sectionList"
+      :theme-color="themeColor"
+      :loading="isLoadingSectionList"
+      @refresh="handleRefreshSectionList">
+    </SectionListManageCard>
+    
+    <!-- 课程管理卡片 -->
+    <CourseManageCard
+      v-if="choose === 'course'"
+      :item-id="itemId"
+      :theme-color="themeColor"
+      @update:itemId="itemId = $event"
+      @show-confirm="handleShowConfirm"
       @unfreeze="handleUnfreeze"
-      @rollback="handleRollback"
-      @show-user-list="handleShowUserList"
-      @show-block-user-list="handleShowBlockUserList"
-      @load-user="handleLoadUser">
-    </ItemManageCard>
+      @rollback="handleRollback">
+    </CourseManageCard>
     
     <!-- 邀请码管理卡片 -->
     <invite-code-manage-card
@@ -62,15 +94,20 @@
       @alert="handleAlert"
       @set_loading="handleSetLoading">
     </invite-code-manage-card>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { watch, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import InviteCodeManageCard from '@/components/manage/InviteCodeManageCard.vue';
 import {
   ManageNavigationDrawer,
-  ItemManageCard,
+  UserManageCard,
+  UserListManageCard,
+  ArticleManageCard,
+  CourseManageCard,
+  SectionListManageCard,
   ManageDialog,
 } from './components';
 import {
@@ -110,12 +147,8 @@ const {
   ifShowWebCard,
   ifShowCourseHistory,
   ifShowDialog,
-  ifShowUserList,
-  ifShowBlockUserList,
   setWebCardState,
   setCourseHistoryState,
-  setUserListState,
-  setBlockUserListState,
 } = useManageState();
 
 const {
@@ -127,12 +160,15 @@ const {
   userPageNum,
   maxUserPageNum,
   totalUserNum,
+  userPageSize,
   blockUserList,
   blockUserPageNum,
   nowShowUrl,
+  sectionList,
   addUsers,
   addBlockUsers,
   unshiftBlockUser,
+  setSectionList,
 } = useManageData();
 
 // 操作处理
@@ -144,6 +180,7 @@ const {
   rollback,
   loadUser,
   loadBlockUser,
+  loadSectionList,
 } = useManageActions(
   itemType,
   itemId,
@@ -153,12 +190,14 @@ const {
   userPageNum,
   maxUserPageNum,
   totalUserNum,
+  userPageSize,
   blockUserList,
   blockUserPageNum,
   nowShowUrl,
   addUsers,
   addBlockUsers,
   unshiftBlockUser,
+  setSectionList,
   setWebCardState,
   setCourseHistoryState,
   (msg) => emit('set_loading', msg),
@@ -168,9 +207,11 @@ const {
 // 事件处理
 const handleChooseChange = (newChoose) => {
   choose.value = newChoose;
-  if (choose.value === 'item' && userList.value.length === 0) {
-    handleLoadUser();
+  // 根据选择的模块更新 itemType，用于操作逻辑
+  if (newChoose === 'user' || newChoose === 'article' || newChoose === 'course') {
+    itemType.value = newChoose;
   }
+  // 注意：加载逻辑由 watch(choose) 处理，避免重复加载
 };
 
 const handleShowConfirm = () => {
@@ -205,22 +246,21 @@ const handleCloseCourseHistory = () => {
   setCourseHistoryState(false);
 };
 
-const handleShowUserList = () => {
-  setUserListState(true);
-  if (userList.value.length === 0) {
-    handleLoadUser();
-  }
-};
-
-const handleShowBlockUserList = () => {
-  setBlockUserListState(true);
-  if (blockUserList.value.length === 0) {
-    handleLoadBlockUser();
-  }
-};
-
 const handleLoadUser = async () => {
   await loadUser();
+};
+
+const handlePageSizeChange = (newSize) => {
+  userPageSize.value = newSize;
+  // 改变每页数量时，重置列表并重新加载
+  userList.value = [];
+  userPageNum.value = 1;
+  maxUserPageNum.value = null;
+  handleLoadUser();
+};
+
+const handleRefreshSectionList = async () => {
+  await loadSectionList();
 };
 
 const handleLoadBlockUser = async () => {
@@ -235,67 +275,102 @@ const handleSetLoading = (msg) => {
   emit('set_loading', msg);
 };
 
+// 使用 ref 标记是否正在加载，防止重复加载
+const isLoadingUserList = ref(false);
+const isLoadingSectionList = ref(false);
+
 // 监听 choose 变化
-watch(choose, (newVal) => {
-  if (newVal === 'item' && userList.value.length === 0) {
-    handleLoadUser();
+watch(choose, (newVal, oldVal) => {
+  // 根据选择的模块更新 itemType
+  if (newVal === 'user' || newVal === 'article' || newVal === 'course') {
+    itemType.value = newVal;
   }
-}, { immediate: true });
+  // 切换到用户列表管理时，如果列表为空且不在加载中，则加载
+  // 只在真正切换时加载（oldVal 不为 undefined 且与 newVal 不同）
+  if (newVal === 'user-list' && oldVal !== undefined && newVal !== oldVal && userList.value.length === 0 && !isLoadingUserList.value) {
+    isLoadingUserList.value = true;
+    handleLoadUser().finally(() => {
+      isLoadingUserList.value = false;
+    });
+  }
+  // 切换到板块列表管理时，如果列表为空且不在加载中，则加载
+  if (newVal === 'section-list' && oldVal !== undefined && newVal !== oldVal && sectionList.value.length === 0 && !isLoadingSectionList.value) {
+    isLoadingSectionList.value = true;
+    handleRefreshSectionList().finally(() => {
+      isLoadingSectionList.value = false;
+    });
+  }
+}, { immediate: false });
 
 // 挂载时初始化
 onMounted(() => {
   if (props.init_type) {
     itemType.value = props.init_type;
+    // 根据 init_type 设置默认的 choose 值
+    if (props.init_type === 'user' || props.init_type === 'article' || props.init_type === 'course') {
+      choose.value = props.init_type;
+    }
   }
   if (props.init_id) {
     itemId.value = props.init_id;
+  }
+  // 如果初始选择是用户列表管理且列表为空，则加载
+  if (choose.value === 'user-list' && userList.value.length === 0 && !isLoadingUserList.value) {
+    isLoadingUserList.value = true;
+    handleLoadUser().finally(() => {
+      isLoadingUserList.value = false;
+    });
+  }
+  // 如果初始选择是板块列表管理且列表为空，则加载
+  if (choose.value === 'section-list' && sectionList.value.length === 0 && !isLoadingSectionList.value) {
+    isLoadingSectionList.value = true;
+    handleRefreshSectionList().finally(() => {
+      isLoadingSectionList.value = false;
+    });
   }
 });
 </script>
 
 <style scoped>
-.full-center {
+.manage-page-container {
   width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  height: 100%;
+  padding: 20px;
+  overflow-y: auto;
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
 }
 
 .card {
-  margin: 20px;
-  width: 1000px;
-  max-height: 800px;
-  padding: 20px;
-}
-
-.column-div-scroll {
-  display: flex;
-  flex-direction: column;
-  max-height: 650px;
-  overflow: auto;
-}
-
-@media screen and (min-width: 1000px) {
-  .full-center {
     width: 100%;
-  }
+  max-width: 1200px;
+  height: fit-content;
+  padding: 24px;
+  margin: 0;
 }
 
 @media screen and (max-width: 1000px) {
-  .full-center {
+  .manage-page-container {
     width: 100vw;
     height: 100vh;
   }
 
-  .card {
-    width: 90vw;
-    max-height: 90vh;
+  .content-area {
     padding: 15px;
   }
 
-  .column-div-scroll {
-    max-height: 80vh;
+  .card {
+    padding: 15px;
   }
 }
 </style>

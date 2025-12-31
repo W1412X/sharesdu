@@ -15,7 +15,7 @@ export function useManageState() {
   const drawer = ref(true);
   const rail = ref(true);
   const navVisible = ref(false);
-  const choose = ref('item'); // 'item' | 'invite'
+  const choose = ref('user'); // 'user' | 'user-list' | 'article' | 'section-list' | 'course' | 'invite'
   
   // 对话框状态
   const ifShowWebCard = ref(false);

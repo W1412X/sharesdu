@@ -223,7 +223,7 @@ import axiosInstance from '@/api/request';
 
 ## 注意事项
 
-1. 所有 API 函数都返回 Promise，需要使用 `await` 或 `.then()` 处理
+1. 所有 API 函数都返回 Promise，需要使用 `await` 处理
 2. 错误处理由各模块统一处理，返回标准格式的错误对象
 3. GET 请求默认启用缓存，可通过 `useCache` 参数控制
 4. 所有需要认证的请求会自动添加 Authorization header

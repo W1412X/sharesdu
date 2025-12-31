@@ -15,6 +15,7 @@ export function useManageData() {
   const userPageNum = ref(1);
   const maxUserPageNum = ref(null);
   const totalUserNum = ref(null);
+  const userPageSize = ref(20); // 每页加载数量，默认20
   
   // 封禁用户列表数据
   const blockUserList = ref([]);
@@ -22,6 +23,9 @@ export function useManageData() {
   
   // 对话框数据
   const nowShowUrl = ref(null);
+  
+  // 板块列表数据
+  const sectionList = ref([]);
   
   /**
    * 添加用户到列表
@@ -65,6 +69,14 @@ export function useManageData() {
     blockUserPageNum.value = 1;
   };
   
+  /**
+   * 设置板块列表
+   * @param {Array} sections - 板块数组
+   */
+  const setSectionList = (sections) => {
+    sectionList.value = sections;
+  };
+  
   return {
     itemType,
     itemId,
@@ -74,14 +86,17 @@ export function useManageData() {
     userPageNum,
     maxUserPageNum,
     totalUserNum,
+    userPageSize,
     blockUserList,
     blockUserPageNum,
     nowShowUrl,
+    sectionList,
     addUsers,
     addBlockUsers,
     unshiftBlockUser,
     resetUserList,
     resetBlockUserList,
+    setSectionList,
   };
 }
 

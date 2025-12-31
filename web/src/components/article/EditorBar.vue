@@ -167,7 +167,10 @@ export default {
     },
     components: {
         SensitiveTextArea: defineAsyncComponent(() => import('@/components/common/SensitiveTextArea.vue')),
-        VFileUpload: defineAsyncComponent(() => import('vuetify/lib/labs/components.mjs').then(module => module.VFileUpload)),
+        VFileUpload: defineAsyncComponent(async () => {
+            const module = await import('vuetify/lib/labs/components.mjs');
+            return module.VFileUpload;
+        }),
         ImgCard: defineAsyncComponent(() => import('@/components/common/ImgCard.vue')),
     },
     data() {

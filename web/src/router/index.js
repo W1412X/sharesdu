@@ -22,7 +22,9 @@ import {
   DevPage,
   TestPage,
   SearchMobilePage,
-  RagChatPage
+  RagChatPage,
+  SectionEditorPage,
+  SectionPage
 } from './asyncComponents';
 
 // 原始路由配置
@@ -57,6 +59,12 @@ const originalRoutes = [
     path: '/post/:id/:reply?',
     name: 'PostPage',
     component: PostPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/section/:id',
+    name: 'SectionPage',
+    component: SectionPage,
     meta: { requiresAuth: true },
   },
   {
@@ -154,6 +162,12 @@ const originalRoutes = [
     path: '/rag_chat',
     name: 'RagChatPage',
     component: RagChatPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/section_editor/:id?',
+    name: 'SectionEditorPage',
+    component: SectionEditorPage,
     meta: { requiresAuth: true },
   },
   {

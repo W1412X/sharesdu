@@ -59,20 +59,17 @@ export class ImageCacher {
         if (this.inFlight.has(imgKey)) {
             return this.inFlight.get(imgKey);
         }
-        const promise = Promise.resolve()
-            .then(loader)
-            .then((result) => {
+        const promise = (async () => {
+            try {
+                const result = await loader();
                 if (result != null) {
                     this.addImage(imgKey, result, options);
                 }
                 return result;
-            })
-            .catch((error) => {
-                throw error;
-            })
-            .finally(() => {
+            } finally {
                 this.inFlight.delete(imgKey);
-            });
+            }
+        })();
         this.inFlight.set(imgKey, promise);
         return promise;
     }

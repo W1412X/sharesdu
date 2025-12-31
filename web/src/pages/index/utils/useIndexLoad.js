@@ -3,6 +3,7 @@
  */
 import { getArticleList, getPostListByArticleId } from '@/api/modules/article';
 import { getCourseList } from '@/api/modules/course';
+import { getSectionList } from '@/api/modules/manage';
 import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 
@@ -12,9 +13,11 @@ export function useIndexLoad(
   articleList,
   postList,
   courseList,
+  sectionList,
   articlePageNum,
   postPageNum,
   coursePageNum,
+  sectionPageNum,
   loading,
   allLoad,
   setArticles,
@@ -23,6 +26,8 @@ export function useIndexLoad(
   addPosts,
   setCourses,
   addCourses,
+  setSections,
+  addSections,
   alert
 ) {
   /**
@@ -66,6 +71,17 @@ export function useIndexLoad(
           alert(getNormalErrorAlert(response.message));
         }
         break;
+        
+      case 'section':
+        response = await getSectionList();
+        if (response.status === 200 || response.status === 201) {
+          sectionPageNum.value = 2;
+          setSections(response.section_articles || []);
+          allLoad.value.section = false;
+        } else {
+          alert(getNormalErrorAlert(response.message || '加载板块列表失败'));
+        }
+        break;
     }
     
     return response;
@@ -76,12 +92,13 @@ export function useIndexLoad(
    * @param {String} type - 内容类型
    */
   const loadMore = async (type) => {
-    // 基于用户体验，设置所有的视图加载
-    loading.value.article = true;
-    loading.value.post = true;
-    loading.value.course = true;
-    //获取锁，防止由于快速滚动导致重复加载
-    await acquireLock('index-load-more');
+      // 基于用户体验，设置所有的视图加载
+      loading.value.article = true;
+      loading.value.post = true;
+      loading.value.course = true;
+      loading.value.section = true;
+      //获取锁，防止由于快速滚动导致重复加载
+      await acquireLock('index-load-more');
     try {
       if (type === 'article') {
         if (allLoad.value.article[articleSortMethod.value]) {
@@ -136,6 +153,24 @@ export function useIndexLoad(
         } else {
           alert(getNormalErrorAlert(response.message));
         }
+      } else if (type === 'section') {
+        if (allLoad.value.section) {
+          return;
+        }
+        // 板块列表不需要分页，只加载一次
+        if (sectionPageNum.value > 1) {
+          allLoad.value.section = true;
+          return;
+        }
+        const response = await getSectionList();
+        if (response.status === 200 || response.status === 201) {
+          addSections(response.section_articles || []);
+          sectionPageNum.value++;
+          allLoad.value.section = true; // 板块列表一次性加载完
+          alert(getNormalSuccessAlert('加载成功'));
+        } else {
+          alert(getNormalErrorAlert(response.message || '加载板块列表失败'));
+        }
       }
     } finally {
       releaseLock('index-load-more');
@@ -143,6 +178,7 @@ export function useIndexLoad(
       loading.value.article = false;
       loading.value.post = false;
       loading.value.course = false;
+      loading.value.section = false;
     }
   };
 
@@ -221,6 +257,10 @@ export function useIndexLoad(
             break;
           }
         }
+        break;
+        
+      case 'section':
+        // 板块列表一次性加载，无需恢复
         break;
     }
     

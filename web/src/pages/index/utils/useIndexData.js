@@ -2,7 +2,7 @@
  * IndexPage 数据管理 Composable
  */
 import { ref, shallowRef } from 'vue';
-import { transformArticleList, transformPostList, transformCourseList } from './dataTransformers';
+import { transformArticleList, transformPostList, transformCourseList, transformSectionList } from './dataTransformers';
 
 export function useIndexData() {
   // 文章列表（按排序方式分类）
@@ -19,6 +19,9 @@ export function useIndexData() {
   // 课程列表
   const courseList = ref([]);
 
+  // 板块列表
+  const sectionList = ref([]);
+
   // 分页信息
   const articlePageNum = ref({
     time: 1,
@@ -29,12 +32,14 @@ export function useIndexData() {
 
   const postPageNum = ref(1);
   const coursePageNum = ref(1);
+  const sectionPageNum = ref(1);
 
   // 加载状态
   const loading = ref({
     article: false,
     course: false,
     post: false,
+    section: false,
   });
 
   // 是否全部加载完成
@@ -47,6 +52,7 @@ export function useIndexData() {
     },
     course: false,
     post: false,
+    section: false,
   });
 
   /**
@@ -110,13 +116,32 @@ export function useIndexData() {
     postList.value.unshift(post);
   };
 
+  /**
+   * 添加板块到列表
+   * @param {Array} sections - 板块数组
+   */
+  const addSections = (sections) => {
+    const transformed = transformSectionList(sections);
+    sectionList.value.push(...transformed);
+  };
+
+  /**
+   * 设置板块列表
+   * @param {Array} sections - 板块数组
+   */
+  const setSections = (sections) => {
+    sectionList.value = transformSectionList(sections);
+  };
+
   return {
     articleList,
     postList,
     courseList,
+    sectionList,
     articlePageNum,
     postPageNum,
     coursePageNum,
+    sectionPageNum,
     loading,
     allLoad,
     addArticles,
@@ -125,6 +150,8 @@ export function useIndexData() {
     setPosts,
     addCourses,
     setCourses,
+    addSections,
+    setSections,
     addPost,
   };
 }

@@ -62,6 +62,7 @@ const typeNow=ref(null);
 const postData=ref(null);
 const articleData=ref(null);
 const courseData=ref(null);
+const sectionData=ref(null);
 const ifShowReportCard = ref(false);
 const ifShowDeleteConfirmCard = ref(false);
 const ifShowCourseEditor = ref(false);
@@ -77,6 +78,8 @@ const sheetToShow=computed(()=>{
       return useOptionShowSheet("article",articleData.value?.authorId);
     case "course":
       return useOptionShowSheet("course",courseData.value?.authorId);
+    case "section":
+      return useOptionShowSheet("section",sectionData.value?.authorId);
     default:
       return [];
   }
@@ -89,6 +92,8 @@ const itemId=computed(()=>{
       return articleData.value?.id;
     case "course":
       return courseData.value?.id;
+    case "section":
+      return sectionData.value?.id;
     default:
       return null;
   }
@@ -128,6 +133,21 @@ const handleOptionClick = (option) => {
       break;
     case "course-edit":
       ifShowCourseEditor.value = true;
+      break;
+    case "section-edit":
+      openPage("router",{
+        name:"SectionEditorPage",
+        params:{
+          id:sectionData.value?.id,
+        }
+      });
+      break;
+    case "section-delete":
+      ifShowDeleteConfirmCard.value = true;
+      break;
+    case "section-share":
+      navigator.clipboard.writeText(window.location.href) 
+      emit('alert',getNormalSuccessAlert("复制成功"));
       break;
     case "article-edit":
       openPage("router",{
@@ -189,6 +209,10 @@ onMounted(() => {
   moreOptionEventBus.on("course",(data) => {
     typeNow.value = 'course';
     courseData.value = data;
+  });
+  moreOptionEventBus.on("section",(data) => {
+    typeNow.value = 'section';
+    sectionData.value = data;
   });
 });
 </script>

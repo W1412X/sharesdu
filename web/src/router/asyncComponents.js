@@ -124,4 +124,9 @@ export const DevPage = load('DevPage');
 export const TestPage = load('TestPage');
 export const SearchMobilePage = load('search/SearchMobilePage');
 export const RagChatPage = load('RagChatPage');
+export const SectionEditorPage = load('section_editor/index');
+export const SectionPage = loadLarge('section/index', {
+  delay: 150,
+  timeout: 10000,
+});
 

@@ -83,4 +83,26 @@ export function transformCourseList(courseList) {
   }));
 }
 
+/**
+ * 转换板块列表数据
+ * @param {Array} sectionList - API 返回的板块列表
+ * @returns {Array} 转换后的板块列表
+ */
+export function transformSectionList(sectionList) {
+  if (!Array.isArray(sectionList)) {
+    return [];
+  }
+  
+  return sectionList.map(item => ({
+    id: item.article_id,
+    title: item.article_title || '未命名板块',
+    summary: item.article_summary || '暂无简介',
+    coverLink: item.cover_link || null,
+    publishTime: item.publish_time || '',
+    sectionName: item.article_section || 'default',
+    ifTop: item.if_top || false,
+    postCount: 0, // 暂时设为0，如果API返回则使用实际值
+  }));
+}
+
 

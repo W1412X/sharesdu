@@ -4,6 +4,24 @@ import { waitForLock } from "@/utils/lock";
 import axiosInstance from "../request";
 
 /**
+ * 获取板块列表
+ * @returns 
+ */
+export const getSectionList = async () => {
+    try {
+        await waitForLock('token');
+        const response = await axiosInstance.get('/article/sections');
+        return response.data;
+    } catch (error) {
+        let dealResult = await dealAxiosError(error);
+        if (dealResult.status == 1412) {
+            return await getSectionList();
+        }
+        return dealResult;
+    }
+};
+
+/**
  * 获取用户列表
  * @returns 
  */

@@ -170,7 +170,7 @@ const handleSubmit = async () => {
     isUploading.value = false;
     emit('submit', finalContent);
   } else {
-    emit('submit', localComment.value);
+  emit('submit', localComment.value);
   }
 };
 

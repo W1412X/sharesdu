@@ -46,6 +46,12 @@
           :loading="loading.course"
           @load-more="handleLoadMore('course')"
         />
+        <SectionList
+          v-if="itemType === 'section'"
+          :section-list="sectionList"
+          :theme-color="themeColor"
+          :loading="loading.section"
+        />
       </v-pull-to-refresh>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
@@ -58,7 +64,7 @@ import { watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
 import { isElementAtBottom } from '@/utils/other';
-import { ItemTypeTabs, ArticleList, PostList, CourseList } from './components';
+import { ItemTypeTabs, ArticleList, PostList, CourseList, SectionList } from './components';
 import { useIndexState, useIndexData, useIndexLoad, useIndexRestore } from './utils';
 
 // 定义组件名称
@@ -90,9 +96,11 @@ const {
   articleList,
   postList,
   courseList,
+  sectionList,
   articlePageNum,
   postPageNum,
   coursePageNum,
+  sectionPageNum,
   loading,
   allLoad,
   setArticles,
@@ -101,6 +109,8 @@ const {
   addPosts,
   setCourses,
   addCourses,
+  setSections,
+  addSections,
   addPost,
 } = useIndexData();
 
@@ -117,9 +127,11 @@ const { refresh, loadMore, restoreScrollAndLoad, canLoadMore } = useIndexLoad(
   articleList,
   postList,
   courseList,
+  sectionList,
   articlePageNum,
   postPageNum,
   coursePageNum,
+  sectionPageNum,
   loading,
   allLoad,
   setArticles,
@@ -128,6 +140,8 @@ const { refresh, loadMore, restoreScrollAndLoad, canLoadMore } = useIndexLoad(
   addPosts,
   setCourses,
   addCourses,
+  setSections,
+  addSections,
   (msg) => emit('alert', msg)
 );
 
@@ -162,6 +176,11 @@ watch(itemType, (newVal) => {
     case 'course':
       if (courseList.value.length === 0) {
         handleLoadMore('course');
+      }
+      break;
+    case 'section':
+      if (sectionList.value.length === 0) {
+        handleLoadMore('section');
       }
       break;
   }

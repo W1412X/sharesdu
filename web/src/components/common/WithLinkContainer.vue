@@ -213,9 +213,9 @@ export default {
       this.data = newData;
       
       // 重新处理内容
-      if(this.type=='post'){
+    if(this.type=='post'){
         this.data.content = getPostWithoutLink(this.data.content);
-        if(this.data.content.startsWith("SELF-DEFINE-HTML")){
+      if(this.data.content.startsWith("SELF-DEFINE-HTML")){
           this.data.content = this.data.content.substring(16);
           this.ifHtml = true;
           this.tmpUrl = URL.createObjectURL(new Blob([this.data.content], { type: "text/html" }));
@@ -257,7 +257,7 @@ export default {
   },
   beforeUnmount(){
     if (this.tmpUrl) {
-      URL.revokeObjectURL(this.tmpUrl);
+    URL.revokeObjectURL(this.tmpUrl);
     }
   }
 };

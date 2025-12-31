@@ -2,8 +2,9 @@
  * ManagePage 操作管理 Composable
  */
 import { freezeUnfreezeCourse } from '@/api/modules/course';
-import { blockArticle, blockUser, getBlockedUserList, getUserList, unblockArticle, unblockUser } from '@/api/modules/manage';
+import { blockArticle, blockUser, getBlockedUserList, getUserList, unblockArticle, unblockUser, getSectionList } from '@/api/modules/manage';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert } from '@/utils/other';
+import { formatRelativeTime } from '@/utils/format';
 
 export function useManageActions(
   itemType,
@@ -14,12 +15,14 @@ export function useManageActions(
   userPageNum,
   maxUserPageNum,
   totalUserNum,
+  userPageSize,
   blockUserList,
   blockUserPageNum,
   nowShowUrl,
   addUsers,
   addBlockUsers,
   unshiftBlockUser,
+  setSectionList,
   setWebCardState,
   setCourseHistoryState,
   setLoading,
@@ -176,7 +179,7 @@ export function useManageActions(
     }
     
     setLoading(getLoadMsg('正在加载用户列表...'));
-    const response = await getUserList(userPageNum.value);
+    const response = await getUserList(userPageNum.value, userPageSize.value);
     setLoading(getCancelLoadMsg());
     
     if (response.status === 200 || response.status === 201) {
@@ -227,6 +230,31 @@ export function useManageActions(
     }
   };
   
+  /**
+   * 加载板块列表
+   */
+  const loadSectionList = async () => {
+    setLoading(getLoadMsg('正在加载板块列表...'));
+    const response = await getSectionList();
+    setLoading(getCancelLoadMsg());
+    
+    if (response.status === 200 || response.status === 201) {
+      const sections = (response.section_articles || []).map((section) => ({
+        id: section.article_id,
+        title: section.article_title || '未命名板块',
+        summary: section.article_summary || '暂无简介',
+        coverLink: section.cover_link || null,
+        publishTime: formatRelativeTime(section.publish_time || ''),
+        sectionName: section.article_section || 'default',
+        ifTop: section.if_top || false,
+      }));
+      
+      setSectionList(sections);
+    } else {
+      alertHandler(getNormalErrorAlert(response.message || '加载板块列表失败'));
+    }
+  };
+  
   return {
     showConfirm,
     block,
@@ -237,6 +265,7 @@ export function useManageActions(
     rollback,
     loadUser,
     loadBlockUser,
+    loadSectionList,
   };
 }
 

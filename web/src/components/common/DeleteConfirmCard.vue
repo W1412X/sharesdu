@@ -81,6 +81,9 @@ export default {
                 case 'reply':
                     response = await deleteReplyById(this.id);
                     break;
+                case 'section':
+                    response = await deleteArticle(this.id);
+                    break;
                 default:
                     this.alert(getNormalErrorAlert("未知的删除类型"));
                     this.loading = false;

@@ -171,7 +171,7 @@ export default {
     
     // 特殊页面状态
     const isSpecialPage = computed(() => {
-      return ['PostPage', 'ArticlePage', 'CoursePage'].includes(page.value);
+      return ['PostPage', 'ArticlePage', 'CoursePage', 'SectionPage'].includes(page.value);
     });
     
     // 特殊页面搜索框状态

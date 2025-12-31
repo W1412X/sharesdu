@@ -298,6 +298,7 @@ onBeforeRouteLeave((to, from, next) => {
 
 // 挂载时恢复状态
 onMounted(async () => {
+
   emit('set_loading', getLoadMsg('正在加载文章信息...'));
   
   if (!route.params.id) {
@@ -311,6 +312,14 @@ onMounted(async () => {
   
   // 加载文章详情
   const result = await loadArticle(route.params.id);
+  if(result.section!='default'){
+    openPage('router', {
+      name: 'SectionPage',
+      params: { id: result.id },
+    });
+    emit('set_loading', getCancelLoadMsg());
+    return;
+  }
   if (!result.success) {
     emit('set_loading', getCancelLoadMsg());
     return;

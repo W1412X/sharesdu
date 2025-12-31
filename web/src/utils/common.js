@@ -42,7 +42,7 @@ export async function responseToArticle(response) {
     article.type = response.article_detail.article_type;
     article.tags = response.article_detail.article_tags;
     article.originLink = response.article_detail.origin_link;
-    article.coverLink = response.article_detail.article_cover_link;
+    article.coverLink = response.article_detail.cover_link;
     article.content = getContentWithoutEditorType(response.article_detail.article_content);
     //check the image data  
     article.content = await formatImageLinkInArticle(article.content);
@@ -58,6 +58,7 @@ export async function responseToArticle(response) {
     article.ifLike = response.article_detail.if_like;
     article.ifStar = response.article_detail.if_star;
     article.ifTop = response.article_detail.if_top;
+    article.section=response.article_detail.article_section;
     return [
         article,
         editorType,

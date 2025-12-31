@@ -68,8 +68,9 @@ class AxiosWithCache {
             }
         }
 
-        const requestPromise = this.axiosInstance.get(url, axiosConfig)
-            .then((response) => {
+        const requestPromise = (async () => {
+            try {
+                const response = await this.axiosInstance.get(url, axiosConfig);
                 if (useCache && this._isCacheableResponse(response)) {
                     const normalized = this._normalizeResponse(response);
                     const ttl = typeof cacheTTL === 'number' ? cacheTTL : this._resolveTTL(url);
@@ -77,15 +78,12 @@ class AxiosWithCache {
                     return this._cloneCachedResponse(normalized);
                 }
                 return response;
-            })
-            .catch((error) => {
-                throw error;
-            })
-            .finally(() => {
+            } finally {
                 if (useCache) {
                     this.inFlightRequests.delete(cacheKey);
                 }
-            });
+            }
+        })();
 
         if (useCache) {
             this.inFlightRequests.set(cacheKey, requestPromise);
