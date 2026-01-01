@@ -24,7 +24,8 @@ import {
   SearchMobilePage,
   RagChatPage,
   SectionEditorPage,
-  SectionPage
+  SectionPage,
+  SectionSetPage
 } from './asyncComponents';
 
 // 原始路由配置
@@ -65,6 +66,12 @@ const originalRoutes = [
     path: '/section/:id',
     name: 'SectionPage',
     component: SectionPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/section_set',
+    name: 'SectionSetPage',
+    component: SectionSetPage,
     meta: { requiresAuth: true },
   },
   {

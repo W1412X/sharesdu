@@ -10,6 +10,7 @@ import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 export function useIndexLoad(
   itemType,
   articleSortMethod,
+  selectedSectionId,
   articleList,
   postList,
   courseList,
@@ -51,7 +52,7 @@ export function useIndexLoad(
         break;
         
       case 'post':
-        response = await getPostListByArticleId(20, 1, false);
+        response = await getPostListByArticleId(selectedSectionId.value, 1, false);
         if (response.status === 200) {
           postPageNum.value = 2;
           setPosts(response.post_list || []);
@@ -140,7 +141,7 @@ export function useIndexLoad(
         if (allLoad.value.post) {
           return;
         }
-        const response = await getPostListByArticleId(20, postPageNum.value);
+        const response = await getPostListByArticleId(selectedSectionId.value, postPageNum.value);
         
         if (response.status === 200) {
           addPosts(response.post_list || []);

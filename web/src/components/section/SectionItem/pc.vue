@@ -8,6 +8,8 @@
                 :height="750" 
                 :lazy-src="lazyImgUrl" 
                 :src="data.coverLink"
+                :clickable="false"
+                @click="handleImgClick"
                 cover 
                 aspect-ratio="4/3"
             ></img-card>
@@ -25,7 +27,7 @@
                 <!-- 创建时间 -->
                 <div class="stat-item">
                     <v-icon icon="mdi-clock-outline" size="16" class="stat-icon"></v-icon>
-                    <span class="stat-text">{{ data.publishTime || '未知时间' }}</span>
+                    <span class="stat-text">{{ formattedPublishTime }}</span>
                 </div>
                 
                 <v-spacer></v-spacer>
@@ -42,6 +44,7 @@
 <script>
 import { globalProperties } from '@/main';
 import { openPage } from '@/utils/other';
+import { formatRelativeTime } from '@/utils/format';
 import { defineAsyncComponent } from 'vue';
 
 export default {
@@ -63,10 +66,18 @@ export default {
             data: this.initData,
         }
     },
+    computed: {
+        formattedPublishTime() {
+            return formatRelativeTime(this.data.publishTime);
+        }
+    },
     components: {
         ImgCard: defineAsyncComponent(() => import('@/components/common/ImgCard.vue')),
     },
     methods: {
+        handleImgClick() {
+            this.handleClick();
+        },
         handleClick() {
             if (!this.data.id) {
                 openPage("url", { url: "#/error/无法找到此资源" });
@@ -125,7 +136,7 @@ export default {
 }
 
 .section-name {
-    font-size: 16px;
+    font-size: var(--font-size-medium);
     font-weight: 600;
     color: #333;
     line-height: 1.4;
@@ -154,7 +165,7 @@ export default {
 }
 
 .stat-text {
-    font-size: 13px;
+    font-size: var(--font-size-small);
     line-height: 1;
 }
 

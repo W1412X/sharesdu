@@ -14,6 +14,9 @@ export function useIndexState() {
   // 文章排序方式：time, star, view, hot
   const articleSortMethod = ref('time');
   
+  // 当前选中的板块ID（默认20）
+  const selectedSectionId = ref(20);
+  
   // 是否已挂载
   const ifMounted = ref(false);
   
@@ -87,6 +90,7 @@ export function useIndexState() {
   return {
     itemType,
     articleSortMethod,
+    selectedSectionId,
     ifMounted,
     lastPageNum,
     ifMobile,

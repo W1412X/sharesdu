@@ -11,9 +11,16 @@
       <avatar-name id="avatar-name" v-if="ifAvatarState && ifShowAvatar"
         :init-data="{ id: userId, name: userName }" :color="'#ffffff'"></avatar-name>
       <v-spacer></v-spacer>
+      <item-type-tabs 
+        v-if="ifPCShowIndexTypeTab" 
+        v-model="indexItemType"
+        :if-mobile="false"
+        :theme-color="navIconColor"
+      ></item-type-tabs>
+      <v-spacer v-if="ifPCShowIndexTypeTab"></v-spacer>
       <search-input id="search-box-listen" v-model="searchContent" :borderColor="navIconColor"
         :boxShadowColor="hexToRgba(navIconColor, 0.5)" :placeholderColor="navIconColor"
-        :inputStyle="{ 'border-radius': '20px', height: '35px', width: '500px', 'padding-left': '15px' }"></search-input>
+        :inputStyle="{ 'border-radius': '20px', height: '35px',width: ifPCShowIndexTypeTab ? '300px' : '500px', 'padding-left': '15px' }"></search-input>
       <div class="search-btn-container">
         <v-btn id="search-btn" @click="search" icon="mdi-magnify" variant="text" :color="navIconColor" size="35">
           <div class="icon-container">
@@ -75,14 +82,16 @@ import AvatarName from '@/components/common/AvatarName';
 import CreateChoiceCard from './components/common/CreateChoiceCard.vue';
 import SearchInput from './components/common/searchInput/SearchInput.vue';
 import { hexToRgba, openPage } from './utils/other';
+import { ItemTypeTabs } from './pages/index/pc/components';
 import {
   useRouteState,
   useUser,
   useNavigation,
   useSearch,
   useMessage,
+  usePCAppIndexPage
 } from './app/composables';
-import { inject } from 'vue';
+import { inject, provide, ref, watch } from 'vue';
 
 export default {
   name: 'AppDesktop',
@@ -93,7 +102,6 @@ export default {
     
     // 路由状态
     const { page, ifAvatarState } = useRouteState();
-    
     // 用户信息
     const { userId, userName } = useUser();
     
@@ -113,6 +121,21 @@ export default {
       ifShowService,
       ifCanSearchInputSuggestion,
     } = useNavigation(page, deviceType, loadState);
+    // PC端的index页面的特殊标志
+    const ifPCShowIndexTypeTab = usePCAppIndexPage(deviceType, page);
+    
+    // 首页 itemType 状态管理（用于导航栏的 ItemTypeTabs）
+    const indexItemType = ref('article');
+    
+    // 监听路由变化，当离开 IndexPage 时重置 itemType
+    watch(page, (newPage) => {
+      if (newPage !== 'IndexPage') {
+        indexItemType.value = 'article';
+      }
+    });
+    
+    // 提供 itemType 给子组件使用
+    provide('indexItemType', indexItemType);
     
     // 从父组件注入对话框方法
     const dialog = inject('dialog', {
@@ -193,6 +216,8 @@ export default {
       ifShowTopEditBtns,
       ifShowService,
       ifCanSearchInputSuggestion,
+      ifPCShowIndexTypeTab,
+      indexItemType,
       // 对话框方法
       setPostEditorState,
       setCourseEditorState,
@@ -218,6 +243,7 @@ export default {
     AvatarName,
     CreateChoiceCard,
     SearchInput,
+    ItemTypeTabs
   },
   methods: {
     addPost() {

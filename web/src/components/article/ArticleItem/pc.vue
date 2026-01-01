@@ -6,8 +6,8 @@
             <span style="margin-left: 10px;" class="text-small-bold">置顶</span>
         </v-chip>
         <div class="container">
-            <img-card :width="140" :height="130" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
-                cover aspect-ratio="7/6"></img-card>
+            <img-card :width="140" :clickable="false" :height="130" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
+                cover aspect-ratio="7/6" @click="handleImgClick"></img-card>
             <div class="row-div padding-left-5">
                 <div class="title title-container key-text">
                     <with-link-container :init-data="{'content':data.title,'keywords':this.searchQuery}" :clickable="false">
@@ -81,6 +81,9 @@ export default {
         WithLinkContainer,
     },
     methods: {
+        handleImgClick() {
+            this.click();
+        },
         click() {
             if (!this.data.id) {
                 openPage("url", { url: "#/error/无法找到此资源" });

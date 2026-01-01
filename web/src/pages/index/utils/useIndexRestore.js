@@ -46,6 +46,7 @@ export function useIndexRestore() {
         pageNum: lastScanMsg.pageNum,
         scrollPosition: lastScanMsg.scrollPosition || 0,
         articleSortMethod: lastScanMsg.articleSortMethod || 'time',
+        selectedSectionId: lastScanMsg.selectedSectionId || 20,
         timestamp: lastScanMsg.timestamp,
       };
     } catch (e) {
@@ -76,6 +77,7 @@ export function useIndexRestore() {
         pageNum: state.pageNum,
         scrollPosition: state.scrollPosition || 0,
         articleSortMethod: state.articleSortMethod || 'time',
+        selectedSectionId: state.selectedSectionId || 20,
         timestamp: Date.now(), // 添加时间戳
       };
 

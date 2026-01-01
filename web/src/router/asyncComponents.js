@@ -129,4 +129,4 @@ export const SectionPage = loadLarge('section/index', {
   delay: 150,
   timeout: 10000,
 });
-
+export const SectionSetPage = load('section_set/index');

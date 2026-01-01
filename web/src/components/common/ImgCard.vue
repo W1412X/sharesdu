@@ -198,6 +198,9 @@ export default {
     imgClick() {
       if (this.clickable) {
         this.setImgDetailState(true);
+      }else{
+        //点击父级元素
+        this.$emit('click');
       }
     },
     saveImage() {

@@ -4,8 +4,8 @@
         <div v-if="data.ifTop" elevation="0" width="100%" class="text-tiny-bold" :style="{'border-radius': '0px', 'height': '2px', 'width': '100%', 'justify-content': 'center','background-color': themeColor}">
         </div>
         <div class="container">
-            <img-card :width="90" :height="90" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
-                cover aspect-ratio="1/1"></img-card>
+            <img-card :width="90" :clickable="false" :height="90" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
+                cover aspect-ratio="1/1" @click="handleImgClick"></img-card>
             <div class="row-div padding-left-5">
                 <div class="text-title-bold title-container key-text">
                     <with-link-container :init-data="{'content':data.title,'keywords':this.searchQuery}" :clickable="false">
@@ -90,6 +90,9 @@ export default {
         WithLinkContainer,
     },
     methods: {
+        handleImgClick() {
+            this.click();
+        },
         click() {
             if (!this.data.id) {
                 openPage("url", { url: "#/error/无法找到此资源" });

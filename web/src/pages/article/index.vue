@@ -312,7 +312,8 @@ onMounted(async () => {
   
   // 加载文章详情
   const result = await loadArticle(route.params.id);
-  if(result.section!='default'){
+  console.log(article.value);
+  if(article.value.section!='default'){
     openPage('router', {
       name: 'SectionPage',
       params: { id: result.id },
