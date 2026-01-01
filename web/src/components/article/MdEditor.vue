@@ -1,5 +1,5 @@
 <template>
-    <div style="border: 1px solid #ccc">
+    <div>
         <MdEditor v-model="data.content" @onUploadImg="handleUploadImage"/>
     </div>
 </template>

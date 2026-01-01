@@ -1,7 +1,13 @@
 <!-- this page use to display all the md document -->
 <template>
     <div class="full-center">
-        <article-display v-if="loadState" :initData="data"/>
+        <transition name="fade" mode="out-in">
+            <article-display 
+                v-if="loadState" 
+                :key="docName"
+                :initData="data"
+            />
+        </transition>
     </div>
 </template>
 <script>
@@ -21,6 +27,7 @@ export default {
         return {
             data,
             loadState:false,
+            docName:'',
         }
     },
     created(){
@@ -33,6 +40,7 @@ export default {
         if ('name' in route.params) {
             doc = route.params['name'];
         }
+        this.docName = doc;
         doc+='.md';
         try {
             const response = await fetch('/doc/'+doc);
@@ -69,5 +77,21 @@ export default {
         align-items: flex-start;
         height: 100vh;
     }
+}
+
+/* 过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+    opacity: 1;
 }
 </style>

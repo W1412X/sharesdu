@@ -48,7 +48,8 @@ export default {
     .container {
         width: 1000px;
         padding: 5px;
-        border: #8a8a8a 1px solid;
+        border: #e0e0e0 1px solid;
+        background-color: #ffffff;
     }
     .displayer {
         width: 100%;
@@ -62,6 +63,7 @@ export default {
 @media screen and (max-width: 1000px) {
     .container {
         width: 100vw;
+        background-color: #ffffff;
     }
     .displayer{
         width: 100%;

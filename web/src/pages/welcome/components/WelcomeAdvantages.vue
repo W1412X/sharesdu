@@ -4,19 +4,23 @@
     <div class="advantage-list">
       <div class="advantage-item">
         <v-icon color="success">mdi-check-circle</v-icon>
-        <span><strong>精准实时</strong> - 本校学生创作，信息准确及时</span>
+        <span><strong>精准实时</strong> - 所有内容均由本校学生创作，确保信息准确及时</span>
       </div>
       <div class="advantage-item">
         <v-icon color="success">mdi-check-circle</v-icon>
-        <span><strong>用户纯净</strong> - 校园邮箱认证，可筛选非本校人员</span>
+        <span><strong>用户纯净</strong> - 校园邮箱认证，用户均来自本校，可筛选非本校人员</span>
       </div>
       <div class="advantage-item">
         <v-icon color="success">mdi-check-circle</v-icon>
-        <span><strong>方便快捷</strong> - 强大搜索功能，快速获取信息</span>
+        <span><strong>方便快捷</strong> - 强大的搜索功能，快速获取想要的特定信息</span>
       </div>
       <div class="advantage-item">
         <v-icon color="success">mdi-check-circle</v-icon>
-        <span><strong>开放灵活</strong> - 支持邮箱换绑，毕业后账户不丢失</span>
+        <span><strong>开放灵活</strong> - 支持邮箱换绑，避免毕业因校园邮箱失效导致账户丢失</span>
+      </div>
+      <div class="advantage-item">
+        <v-icon color="success">mdi-check-circle</v-icon>
+        <span><strong>无网络限制</strong> - 采用校园邮箱认证，无需校园网即可访问</span>
       </div>
     </div>
   </div>

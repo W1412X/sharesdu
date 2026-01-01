@@ -22,6 +22,13 @@
       text="关于我们"
     ></v-btn>
     <v-btn
+      @click="handleToUrl('/#/developer')"
+      prepend-icon="mdi-code-braces"
+      color="grey"
+      variant="outlined"
+      text="开发者文档"
+    ></v-btn>
+    <v-btn
       :loading="loading.loadBlock"
       :disabled="loading.loadBlock"
       @click="handleShowBlockList"

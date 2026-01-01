@@ -9,7 +9,7 @@ export function useNavigation(page, deviceType, loadState) {
   
   // 是否显示导航栏
   const ifShowNav = computed(() => {
-    if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage', 'DocumentPage', 'DevPage', undefined, null].includes(page.value)) {
+    if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage', 'DocumentPage', 'DeveloperPage', 'DevPage', undefined, null].includes(page.value)) {
       return false;
     } else {
       return true;

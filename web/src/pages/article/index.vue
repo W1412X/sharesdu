@@ -14,11 +14,14 @@
       />
       
       <!-- 文章内容 -->
+      <transition name="fade" mode="out-in">
       <article-display
         v-if="loadState"
+          :key="article.id"
         class="margin-bottom-40px"
         :init-data="displayMsg"
       />
+      </transition>
       
       <!-- 文章操作栏 -->
       <ArticleActions
@@ -427,6 +430,22 @@ onUnmounted(() => {
     align-items: flex-start;
     height: 100vh;
   }
+}
+
+/* 过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
 }
 </style>
 

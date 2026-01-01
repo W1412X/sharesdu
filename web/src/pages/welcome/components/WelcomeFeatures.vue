@@ -3,24 +3,24 @@
     <div class="section-title-small">核心功能</div>
     <div class="features-grid">
       <div class="feature-item">
-        <v-icon color="primary" size="40">mdi-post</v-icon>
-        <div class="feature-title">文章博客</div>
-        <div class="feature-desc">分享知识与经验</div>
+        <v-icon color="primary" size="40">mdi-book-open-variant</v-icon>
+        <div class="feature-title">文章资源分享</div>
+        <div class="feature-desc">分享学习笔记、经验总结与优质资源</div>
       </div>
       <div class="feature-item">
         <v-icon color="primary" size="40">mdi-forum</v-icon>
-        <div class="feature-title">帖子论坛</div>
-        <div class="feature-desc">交流讨论互动</div>
+        <div class="feature-title">帖子论坛社区</div>
+        <div class="feature-desc">校园话题讨论，互动交流平台</div>
       </div>
       <div class="feature-item">
-        <v-icon color="primary" size="40">mdi-star</v-icon>
-        <div class="feature-title">课程评分</div>
-        <div class="feature-desc">精准课程评价</div>
+        <v-icon color="primary" size="40">mdi-school</v-icon>
+        <div class="feature-title">课程评价参考</div>
+        <div class="feature-desc">真实课程评价，选课参考指南</div>
       </div>
       <div class="feature-item">
-        <v-icon color="primary" size="40">mdi-file-document</v-icon>
-        <div class="feature-title">资源共享</div>
-        <div class="feature-desc">学习资料分享</div>
+        <v-icon color="primary" size="40">mdi-apps</v-icon>
+        <div class="feature-title">个性化微服务</div>
+        <div class="feature-desc">学生开发者创建的便捷校园服务</div>
       </div>
     </div>
   </div>

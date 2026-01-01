@@ -1,9 +1,24 @@
 <template>
   <div class="hero-section">
-    <div class="title-big-bold intro-text-div hero-title">ShareSDU</div>
-    <div class="hero-subtitle">大学交流分享平台</div>
-    <div class="title intro-text-div hero-description">
-      为大学生活提供一个分享、交流与学习的平台
+    <div class="hero-content">
+      <div class="title-big-bold intro-text-div hero-title">ShareSDU</div>
+      <div class="hero-subtitle">大学交流分享平台</div>
+      <div class="title intro-text-div hero-description">
+        为大学生活提供一个分享、交流与学习的平台
+      </div>
+      <!-- 注册按钮区域 -->
+      <div class="hero-cta">
+        <v-btn
+          to="/login"
+          size="x-large"
+          prepend-icon="mdi-account-plus"
+          color="primary"
+          class="hero-register-btn"
+          elevation="4">
+          立即注册账号
+        </v-btn>
+        <div class="hero-cta-hint">开启你的 ShareSDU 之旅</div>
+      </div>
     </div>
   </div>
 </template>
@@ -25,6 +40,14 @@
   position: relative;
   overflow: hidden;
   animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero-section::before {
@@ -68,10 +91,85 @@
   font-size: 1.25rem;
   color: #4a5568;
   max-width: 680px;
-  margin: 0 auto;
+  margin: 0 auto 32px;
   line-height: 1.8;
   position: relative;
   z-index: 1;
+}
+
+.hero-cta {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-register-btn {
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  padding: 18px 48px !important;
+  letter-spacing: 0.5px;
+  text-transform: none !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, var(--welcome-theme-gradient-start, #667eea) 0%, var(--welcome-theme-color, #764ba2) 100%) !important;
+  box-shadow: 0 8px 24px var(--welcome-theme-rgba-40, rgba(102, 126, 234, 0.4)),
+              0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+  line-height: 1.5 !important;
+  min-height: auto !important;
+  height: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.hero-register-btn :deep(.v-btn__content) {
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.hero-register-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-register-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.hero-register-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 32px var(--welcome-theme-rgba-50, rgba(102, 126, 234, 0.5)),
+              0 6px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.hero-register-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.hero-cta-hint {
+  font-size: 1rem;
+  color: #718096;
+  font-style: italic;
+  opacity: 0.8;
 }
 
 .intro-text-div {
@@ -130,6 +228,21 @@
   .hero-description {
     font-size: 1.35rem;
     max-width: 720px;
+    margin-bottom: 40px;
+  }
+
+  .hero-cta {
+    margin-top: 12px;
+    gap: 16px;
+  }
+
+  .hero-register-btn {
+    font-size: 1.4rem !important;
+    padding: 22px 64px !important;
+  }
+
+  .hero-cta-hint {
+    font-size: 1.05rem;
   }
 }
 
@@ -155,6 +268,25 @@
     font-size: 1rem;
     padding: 0 8px;
     line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .hero-cta {
+    margin-top: 8px;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .hero-register-btn {
+    font-size: 1.1rem !important;
+    padding: 16px 36px !important;
+    width: 100%;
+    max-width: 320px;
+    border-radius: 14px !important;
+  }
+
+  .hero-cta-hint {
+    font-size: 0.9rem;
   }
 }
 </style>

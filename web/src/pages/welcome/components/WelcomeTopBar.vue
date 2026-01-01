@@ -2,6 +2,7 @@
   <div class="top-bar">
     <span class="logo-text logo-margin">ShareSDU</span>
     <div class="top-btn-div">
+      <button @click="handleDeveloperClick" class="custom-nav-btn">开发者文档</button>
       <button @click="$emit('show-contact')" class="custom-nav-btn">联系我们</button>
       <button @click="$emit('download-app')" class="custom-nav-btn">APP</button>
     </div>
@@ -9,7 +10,13 @@
 </template>
 
 <script setup>
+import { openPage } from '@/utils/other';
+
 defineEmits(['show-contact', 'download-app']);
+
+const handleDeveloperClick = () => {
+  openPage('router', { name: 'DeveloperPage' });
+};
 </script>
 
 <style scoped>

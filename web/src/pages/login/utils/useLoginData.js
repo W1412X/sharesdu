@@ -104,6 +104,20 @@ export function useLoginData() {
       ],
       background: 'linear-gradient(135deg, rgba(156, 39, 176, 0.15) 0%, rgba(123, 31, 162, 0.15) 100%)',
       accentColor: '#9C27B0'
+    },
+    {
+      icon: 'mdi-web',
+      title: '校园微服务',
+      subtitle: '便捷校园生活',
+      description: '支持学生开发者通过Web开发创建便于学生生活的微服务，如二手市场、天气服务、搭子寻找等基于学校学习、生活等的方便服务',
+      features: [
+        { icon: 'mdi-code-tags', text: 'Web开发支持' },
+        { icon: 'mdi-shield-account', text: '身份认证接口' },
+        { icon: 'mdi-post', text: '数据共享平台' },
+        { icon: 'mdi-api', text: 'API文档完善' }
+      ],
+      background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.15) 0%, rgba(3, 169, 244, 0.15) 100%)',
+      accentColor: '#2196F3'
     }
   ];
   

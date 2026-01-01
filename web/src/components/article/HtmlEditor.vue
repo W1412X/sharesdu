@@ -1,5 +1,5 @@
 <template>
-    <div style="border: 1px solid #ccc">
+    <div>
         <Toolbar v-if="type=='edit'" class="tool-bar" :editor="editorRef" :defaultConfig="toolbarConfig"
             :mode="mode" />
         <div id="html-editor-container" class="editor-container">
