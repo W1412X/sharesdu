@@ -103,10 +103,7 @@
 
 ### 相关文档
 
-- [微服务开发介绍](introduction.md)
-- [身份认证](authentication.md)
-- [数据共享](data_sharing.md)
-- [平台适配开发指南](platform/adaptation.md) - 帖子格式参考
+详细的微服务开发介绍、身份认证、数据共享和平台适配开发指南请查看相关文档。
 
 ## 注意事项
 

@@ -6,33 +6,6 @@
     "file": "introduction.md"
   },
   {
-    "key": "microservice",
-    "title": "微服务开发",
-    "icon": "mdi-web",
-    "children": [
-      {
-        "key": "microservice_introduction",
-        "title": "介绍",
-        "file": "microservice/introduction.md"
-      },
-      {
-        "key": "microservice_forms",
-        "title": "微服务开发形式",
-        "file": "microservice/forms.md"
-      },
-      {
-        "key": "microservice_authentication",
-        "title": "身份认证",
-        "file": "microservice/authentication.md"
-      },
-      {
-        "key": "microservice_data_sharing",
-        "title": "数据共享",
-        "file": "microservice/data_sharing.md"
-      }
-    ]
-  },
-  {
     "key": "platform",
     "title": "平台开发",
     "icon": "mdi-code-braces",
@@ -61,6 +34,55 @@
         "key": "platform_other",
         "title": "其他工作",
         "file": "platform/other.md"
+      }
+    ]
+  },
+  {
+    "key": "microservice",
+    "title": "微服务开发",
+    "icon": "mdi-web",
+    "children": [
+      {
+        "key": "microservice_introduction",
+        "title": "介绍",
+        "file": "microservice/introduction.md"
+      },
+      {
+        "key": "microservice_authentication",
+        "title": "身份认证",
+        "file": "microservice/authentication.md"
+      },
+      {
+        "key": "microservice_data_sharing",
+        "title": "数据共享",
+        "file": "microservice/data_sharing.md"
+      },
+      {
+        "key": "microservice_forms",
+        "title": "开发形式",
+        "file": "microservice/forms.md"
+      }
+    ]
+  },
+  {
+    "key": "agent",
+    "title": "Agent 开发",
+    "icon": "mdi-robot",
+    "children": [
+      {
+        "key": "agent_introduction",
+        "title": "介绍",
+        "file": "agent/introduction.md"
+      },
+      {
+        "key": "agent_development",
+        "title": "开发指南",
+        "file": "agent/development.md"
+      },
+      {
+        "key": "agent_guidelines",
+        "title": "开发规范",
+        "file": "agent/guidelines.md"
       }
     ]
   },
