@@ -15,13 +15,10 @@ export default {
         e1.emit("1e1-event","e1");
         e1.emit("2e2-event","e2");
         e1.on("1e1-event",(data)=>{
-            console.log(data);
         })
         e2.on("2e2-event",(data)=>{
-            console.log(data);
         })
         e1.on("2e2-event",(data)=>{
-            console.log(data);
         })
     },
     components:{
@@ -29,7 +26,6 @@ export default {
     },
     methods:{
         click(){
-            console.log("click");
         }
     }
 }

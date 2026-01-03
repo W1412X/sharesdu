@@ -4,7 +4,7 @@
     <div class="text-medium row-center">您的文章已上传，正在审核中...</div>
     <div class="row-center">
       <v-btn
-        @click="$emit('to-self-page')"
+        @click="$emit('to-index-page')"
         variant="outlined"
         :color="themeColor"
         class="dialog-bottom-bar-btn"
@@ -35,7 +35,7 @@ defineProps({
   },
 });
 
-defineEmits(['to-self-page', 'to-article-page']);
+defineEmits(['to-index-page', 'to-article-page']);
 </script>
 
 <style scoped>

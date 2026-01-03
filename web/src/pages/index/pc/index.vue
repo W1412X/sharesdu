@@ -37,6 +37,8 @@
               @load-more="handleLoadMore('post')"
             />
           </div>
+          <!-- PC端分割线 -->
+          <div class="post-section-divider"></div>
           <!-- 右侧：板块列表 -->
           <div class="section-list-column">
             <div class="section-list-header">
@@ -253,7 +255,6 @@ const glideLoad = () => {
 onBeforeRouteLeave((to, from, next) => {
   try {
     const scrollPosition = document.getElementById('router-view-container').scrollTop; 
-    console.log('scrollPosition', scrollPosition);
     saveState({
       itemType: itemType.value,
       pageNum: {
@@ -395,7 +396,7 @@ defineExpose({
     flex-direction: row;
     width: 1200px;
     max-width: 1200px;
-    gap: 24px;
+    gap: 0;
     margin: 0 auto;
     padding: 0 16px;
   }
@@ -403,6 +404,12 @@ defineExpose({
   .post-list-column {
     flex: 1;
     min-width: 0; /* 允许 flex 子元素收缩 */
+  }
+
+  .post-section-divider {
+    width: 1px;
+    background-color: #e0e0e0;
+    flex-shrink: 0;
   }
 
   .section-list-column {
@@ -460,6 +467,10 @@ defineExpose({
     flex-direction: row;
     width: 100vw;
     justify-content: center;
+  }
+
+  .post-section-divider {
+    display: none;
   }
 }
 </style>

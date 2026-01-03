@@ -13,17 +13,24 @@
       
       <!-- PC端：帖子列表和操作栏并列 -->
       <div class="content-wrapper">
-        <!-- 帖子列表 -->
-        <PostList
-          :post-items="postItems"
-          :if-parent-author="userId === section.authorId"
-          :loading="loading.post"
-          :all-load="allLoad.post"
-          :theme-color="themeColor"
-          @load-more="handleLoadMorePost"
-          @alert="handleAlert"
-          @set-post-top="handleSetPostTop"
-        />
+        <!-- 帖子列表（支持下拉刷新） -->
+        <v-pull-to-refresh 
+          id="post-list-container" 
+          :pull-down-threshold="64" 
+          @load="handleRefresh" 
+          style="flex: 1;"
+        >
+          <PostList
+            :post-items="postItems"
+            :if-parent-author="userId === section.authorId"
+            :loading="loading.post"
+            :all-load="allLoad.post"
+            :theme-color="themeColor"
+            @load-more="handleLoadMorePost"
+            @alert="handleAlert"
+            @set-post-top="handleSetPostTop"
+          />
+        </v-pull-to-refresh>
         
         <!-- PC端分割线 -->
         <div class="content-divider"></div>
@@ -77,6 +84,7 @@
 <script setup>
 import { watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
 import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
 import { setArticleTop } from '@/api/modules/top';
 import { usePostPolling } from '@/app/composables';
@@ -126,12 +134,13 @@ const {
   setSection,
   addPost,
   addPosts,
+  setPosts,
   setPostTop,
   resetPosts,
 } = useSectionData();
 
 // 加载逻辑
-const { loadSection, loadMorePost } = useSectionLoad(
+const { loadSection, loadMorePost, refreshPost } = useSectionLoad(
   section,
   sectionResponse,
   postItems,
@@ -140,6 +149,7 @@ const { loadSection, loadMorePost } = useSectionLoad(
   loading,
   setSection,
   addPosts,
+  setPosts,
   (msg) => emit('alert', msg)
 );
 
@@ -210,6 +220,18 @@ const handleAddPost = (post) => {
   setPostEditorState(false);
 };
 
+// 处理刷新
+const handleRefresh = async ({ done }) => {
+  await refreshPost(sectionId.value);
+  
+  // 如果是帖子列表，重置轮询基准
+  if (postPollingController) {
+    postPollingController.resetBaseline();
+  }
+  
+  done('ok');
+};
+
 // 处理加载更多帖子
 const handleLoadMorePost = () => {
   loadMorePost(sectionId.value);
@@ -225,17 +247,14 @@ let postPollingController = null;
 
 // 初始化帖子轮询
 const initPostPolling = () => {
-  console.log('[SectionPage] 初始化帖子轮询，sectionId:', sectionId.value);
   
   // 如果轮询控制器已存在，先停止
   if (postPollingController) {
-    console.log('[SectionPage] 停止旧的轮询控制器');
     postPollingController.stopPolling();
   }
   
   // 创建获取帖子列表的函数
   const fetchPostList = async (pageIndex, useCache) => {
-    console.log('[SectionPage] 获取帖子列表，sectionId:', sectionId.value, 'pageIndex:', pageIndex, 'useCache:', useCache);
     return await getPostListByArticleId(sectionId.value, pageIndex, useCache);
   };
   
@@ -246,7 +265,6 @@ const initPostPolling = () => {
   
   // 创建设置帖子列表的函数（在列表顶部插入新帖子）
   const setPostList = (newPosts) => {
-    console.log('[SectionPage] 插入新帖子到列表顶部，数量:', newPosts.length);
     postItems.value.unshift(...newPosts);
   };
   
@@ -264,10 +282,8 @@ const initPostPolling = () => {
     { interval: 60000 } // 1 分钟
   );
   
-  console.log('[SectionPage] 轮询控制器已创建:', postPollingController);
   
   // 启动轮询
-  console.log('[SectionPage] 启动轮询');
   postPollingController.startPolling();
 };
 
@@ -289,7 +305,6 @@ watch(
         loadState.value = true;
         // 初始加载帖子列表
         await loadMorePost(newId);
-        console.log('[SectionPage] 帖子列表加载完成，帖子数量:', postItems.value.length);
         
         // 重新初始化轮询（使用新的 sectionId）
         initPostPolling();
@@ -308,13 +323,11 @@ const initPage = async () => {
     loadState.value = true;
     // 初始加载帖子列表（等待完成）
     await loadMorePost(sectionId.value);
-    console.log('[SectionPage] initPage 完成，帖子数量:', postItems.value.length);
   }
   handleSetLoading(getCancelLoadMsg());
 };
 // 组件挂载
 onMounted(async() => {
-  console.log('[SectionPage] mounted，准备初始化');
   await initPage();
   moreOptionEventBus.emit("section",section.value);
   // 初始化帖子轮询（在帖子列表加载完成后）
@@ -323,7 +336,6 @@ onMounted(async() => {
 
 // 组件卸载前停止轮询
 onBeforeUnmount(() => {
-  console.log('[SectionPage] beforeUnmount，停止轮询');
   if (postPollingController) {
     postPollingController.stopPolling();
   }

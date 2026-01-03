@@ -16,6 +16,7 @@ export function useSectionLoad(
   loading,
   setSection,
   addPosts,
+  setPosts,
   alert
 ) {
   /**
@@ -112,9 +113,48 @@ export function useSectionLoad(
     }
   };
   
+  /**
+   * 刷新帖子列表
+   * @param {String} sectionId - 板块ID（文章ID）
+   * @returns {Promise<Boolean>} 是否刷新成功
+   */
+  const refreshPost = async (sectionId) => {
+    if (loading.value.post) {
+      return false;
+    }
+    
+    loading.value.post = true;
+    
+    try {
+      // 不使用缓存，强制刷新
+      const response = await getPostListByArticleId(sectionId, 1, false);
+      
+      if (response.status === 200) {
+        const posts = transformPostList(response.post_list || []);
+        
+        // 重置帖子列表
+        setPosts(posts);
+        postPageNum.value = 2;
+        allLoad.value.post = posts.length === 0;
+        
+        loading.value.post = false;
+        return true;
+      } else {
+        alert(getNormalErrorAlert(response.message || '刷新帖子列表失败'));
+        loading.value.post = false;
+        return false;
+      }
+    } catch (error) {
+      alert(getNormalErrorAlert(error.message || '刷新帖子列表失败'));
+      loading.value.post = false;
+      return false;
+    }
+  };
+  
   return {
     loadSection,
     loadMorePost,
+    refreshPost,
   };
 }
 

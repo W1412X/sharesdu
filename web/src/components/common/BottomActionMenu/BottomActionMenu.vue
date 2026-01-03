@@ -120,7 +120,6 @@ const close = () => {
   emit('update:modelValue', false);
 };
 const handleOptionClick = (option) => {
-  console.log(option);
   switch(option.type){
     case "post-alert":
       ifShowReportCard.value = true;

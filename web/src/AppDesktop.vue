@@ -218,7 +218,6 @@ export default {
           interval: 60000, // 1 分钟
         });
         notificationPollingController.startPolling();
-        console.log('[AppDesktop] 消息轮询已启动');
       }
     };
 
@@ -231,7 +230,6 @@ export default {
     onBeforeUnmount(() => {
       if (notificationPollingController) {
         notificationPollingController.stopPolling();
-        console.log('[AppDesktop] 消息轮询已停止');
       }
     });
     

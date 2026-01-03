@@ -68,7 +68,6 @@ export function useNotificationPolling(alert, options = {}) {
    */
   const pollForNewNotifications = async () => {
     try {
-      console.log('[NotificationPolling] 开始轮询新消息...');
       
       // 获取第一页消息（只获取未读消息）
       const response = await fetchNotificationsList(1, 10);
@@ -81,7 +80,6 @@ export function useNotificationPolling(alert, options = {}) {
       const notificationList = response.notification_list || [];
       
       if (notificationList.length === 0) {
-        console.log('[NotificationPolling] 没有新消息');
         return;
       }
 
@@ -94,7 +92,6 @@ export function useNotificationPolling(alert, options = {}) {
       );
 
       if (newNotifications.length === 0) {
-        console.log('[NotificationPolling] 没有未通知的新消息');
         return;
       }
 
@@ -107,7 +104,6 @@ export function useNotificationPolling(alert, options = {}) {
         ? `您有 1 条新消息`
         : `您有 ${newNotifications.length} 条新消息`;
       
-      console.log('[NotificationPolling] 发现新消息:', newNotifications.length, '条');
       
       // 使用消息通知类型的 alert
       alert(getNormalNotificationAlert(message));
@@ -121,11 +117,9 @@ export function useNotificationPolling(alert, options = {}) {
    */
   const startPolling = () => {
     if (isPolling.value) {
-      console.log('[NotificationPolling] 轮询已在进行中');
       return;
     }
 
-    console.log('[NotificationPolling] 启动消息轮询，间隔:', interval, 'ms');
     isPolling.value = true;
 
     // 立即执行一次
@@ -141,13 +135,11 @@ export function useNotificationPolling(alert, options = {}) {
    * 停止轮询
    */
   const stopPolling = () => {
-    console.log('[NotificationPolling] 停止消息轮询，pollingTimer:', pollingTimer.value);
     
     // 先清除定时器，避免内存泄漏
     if (pollingTimer.value) {
       clearInterval(pollingTimer.value);
       pollingTimer.value = null;
-      console.log('[NotificationPolling] 定时器已清除');
     }
     
     isPolling.value = false;
@@ -159,7 +151,6 @@ export function useNotificationPolling(alert, options = {}) {
   const resetNotifiedIds = () => {
     try {
       selfDefinedSessionStorage.removeItem(STORAGE_KEY);
-      console.log('[NotificationPolling] 已重置已通知的消息 ID');
     } catch (e) {
       console.error('[NotificationPolling] 重置已通知消息 ID 失败:', e);
     }

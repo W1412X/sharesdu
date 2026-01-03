@@ -62,8 +62,6 @@ export function isClickInsideElement(event, element) {
     const rect = element.getBoundingClientRect();
     const x = event.clientX;
     const y = event.clientY;
-    console.log(x,y)
-    console.log(rect)
     return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 

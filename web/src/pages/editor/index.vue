@@ -4,7 +4,7 @@
       <EditFinishDialog
         :if-show="ifShowEditFinishCard"
         :theme-color="themeColor"
-        @to-self-page="handleToSelfPage"
+        @to-index-page="handleToIndexPage"
         @to-article-page="handleToArticlePage"
       />
       <ConfirmLeaveDialog
@@ -166,9 +166,9 @@ const handleSubmit = async () => {
 };
 
 // 处理跳转到主页
-const handleToSelfPage = () => {
+const handleToIndexPage = () => {
   openPage('router', {
-    name: 'SelfPage',
+    name: 'IndexPage',
   });
 };
 

@@ -144,7 +144,6 @@ configureLogger({
 import { getLoggerConfig } from '@/utils/logger';
 
 const config = getLoggerConfig();
-console.log(config);
 // {
 //   enabled: true,
 //   minLevel: 0,

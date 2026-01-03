@@ -5,7 +5,6 @@ class SessionStorage{
         this.sessionStorage = window.sessionStorage;
     }
     getItem(key) {
-        console.log(key);
         key=encrypt(key);
         return decrypt(this.sessionStorage.getItem(key));
     }

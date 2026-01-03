@@ -73,7 +73,6 @@
 import { computed } from 'vue';
 import { globalProperties } from '@/main';
 const deviceType=globalProperties.$deviceType;
-console.log(deviceType);
 const currentYear = computed(() => new Date().getFullYear());
 </script>
 

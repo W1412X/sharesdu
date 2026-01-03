@@ -178,7 +178,6 @@ export default {
                     case 'article':
                         // 停止帖子轮询
                         if (this.postPollingController) {
-                            console.log('[IndexPage] 切换到文章列表，停止轮询');
                             this.postPollingController.stopPolling();
                         }
                         if (this.articleList[this.articleSortMethod].length == 0) {
@@ -188,7 +187,6 @@ export default {
                     case 'post':
                         // 启动帖子轮询（如果轮询控制器已创建）
                         if (this.postPollingController) {
-                            console.log('[IndexPage] 切换到帖子列表，启动轮询');
                             this.postPollingController.startPolling();
                         }
                         if (this.postList.length == 0) {
@@ -198,7 +196,6 @@ export default {
                     case 'course':
                         // 停止帖子轮询
                         if (this.postPollingController) {
-                            console.log('[IndexPage] 切换到课程列表，停止轮询');
                             this.postPollingController.stopPolling();
                         }
                         if (this.courseList.length == 0) {
@@ -227,7 +224,6 @@ export default {
         try {
             // 停止帖子轮询
             if (this.postPollingController) {
-                console.log('[IndexPage] 路由离开，停止轮询');
                 this.postPollingController.stopPolling();
             }
             
@@ -299,11 +295,9 @@ export default {
          * 初始化帖子轮询
          */
         initPostPolling() {
-            console.log('[IndexPage] 初始化帖子轮询，当前 itemType:', this.itemType);
             
             // 创建获取帖子列表的函数（IndexPage 使用 article_id = 20）
             const fetchPostList = async (pageIndex, useCache) => {
-                console.log('[IndexPage] 获取帖子列表，pageIndex:', pageIndex, 'useCache:', useCache);
                 return await getPostListByArticleId(20, pageIndex, useCache);
             };
             
@@ -314,7 +308,6 @@ export default {
             
             // 创建设置帖子列表的函数（在列表顶部插入新帖子）
             const setPostList = (newPosts) => {
-                console.log('[IndexPage] 插入新帖子到列表顶部，数量:', newPosts.length);
                 this.postList.unshift(...newPosts);
             };
             
@@ -332,14 +325,11 @@ export default {
                 { interval: 60000 } // 1 分钟
             );
             
-            console.log('[IndexPage] 轮询控制器已创建:', this.postPollingController);
             
             // 仅在当前是帖子列表时启动轮询
             if (this.itemType === 'post') {
-                console.log('[IndexPage] 当前是帖子列表，启动轮询');
                 this.postPollingController.startPolling();
             } else {
-                console.log('[IndexPage] 当前不是帖子列表，不启动轮询');
             }
         },
         editArticle() {
@@ -613,7 +603,6 @@ this.alert(getNormalErrorAlert(response.message));
         /**
          * 初始化帖子轮询（仅在帖子列表时启用）
          */
-        console.log('[IndexPage] mounted，准备初始化轮询，itemType:', this.itemType);
         this.initPostPolling();
     },
     unmounted() {

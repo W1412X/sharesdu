@@ -133,17 +133,14 @@ let postPollingController = null;
  * 初始化帖子轮询服务
  */
 const initPostPolling = () => {
-  console.log('[IndexPageMobile] 初始化帖子轮询，selectedSectionId:', selectedSectionId.value);
   
   // 如果轮询控制器已存在，先停止
   if (postPollingController) {
-    console.log('[IndexPageMobile] 停止旧的轮询控制器');
     postPollingController.stopPolling();
   }
   
   // 创建获取帖子列表的函数（使用当前选中的板块ID）
   const fetchPostList = async (pageIndex, useCache) => {
-    console.log('[IndexPageMobile] 获取帖子列表，selectedSectionId:', selectedSectionId.value, 'pageIndex:', pageIndex, 'useCache:', useCache);
     return await getPostListByArticleId(selectedSectionId.value, pageIndex, useCache);
   };
   
@@ -154,7 +151,6 @@ const initPostPolling = () => {
   
   // 创建设置帖子列表的函数（在列表顶部插入新帖子）
   const setPostList = (newPosts) => {
-    console.log('[IndexPageMobile] 插入新帖子到列表顶部，数量:', newPosts.length);
     postList.value.unshift(...newPosts);
   };
   
@@ -172,14 +168,11 @@ const initPostPolling = () => {
     { interval: 60000 } // 1 分钟
   );
   
-  console.log('[IndexPageMobile] 轮询控制器已创建:', postPollingController);
   
   // 仅在当前是帖子列表时启动轮询
   if (itemType.value === 'post') {
-    console.log('[IndexPageMobile] 当前是帖子列表，启动轮询');
     postPollingController.startPolling();
   } else {
-    console.log('[IndexPageMobile] 当前不是帖子列表，不启动轮询');
   }
 };
 
@@ -215,7 +208,6 @@ const handleRefresh = async ({ done }) => {
   
   // 如果是帖子列表，重置轮询基准
   if (itemType.value === 'post' && postPollingController) {
-    console.log('[IndexPageMobile] 刷新后重置轮询基准');
     postPollingController.resetBaseline();
   }
   
@@ -237,7 +229,6 @@ watch(itemType, (newVal) => {
     case 'article':
       // 停止帖子轮询
       if (postPollingController) {
-        console.log('[IndexPageMobile] 切换到文章列表，停止轮询');
         postPollingController.stopPolling();
       }
       if (articleList.value[articleSortMethod.value].length === 0) {
@@ -255,7 +246,6 @@ watch(itemType, (newVal) => {
       }
       // 启动帖子轮询（如果轮询控制器已创建）
       if (postPollingController) {
-        console.log('[IndexPageMobile] 切换到帖子列表，启动轮询');
         postPollingController.startPolling();
       } else {
         // 如果轮询控制器还未创建，初始化它
@@ -265,7 +255,6 @@ watch(itemType, (newVal) => {
     case 'course':
       // 停止帖子轮询
       if (postPollingController) {
-        console.log('[IndexPageMobile] 切换到课程列表，停止轮询');
         postPollingController.stopPolling();
       }
       if (courseList.value.length === 0) {
@@ -298,7 +287,6 @@ watch(selectedSectionId, (newId, oldId) => {
     handleLoadMore('post');
     
     // 重新初始化轮询（使用新的板块ID）
-    console.log('[IndexPageMobile] 板块切换，重新初始化轮询，新板块ID:', newId);
     initPostPolling();
   }
 });
@@ -320,12 +308,10 @@ onBeforeRouteLeave((to, from, next) => {
   try {
     // 停止帖子轮询
     if (postPollingController) {
-      console.log('[IndexPageMobile] 路由离开，停止轮询');
       postPollingController.stopPolling();
     }
     
     const scrollPosition = document.getElementById('router-view-container').scrollTop; 
-    console.log('scrollPosition', scrollPosition);
     saveState({
       itemType: itemType.value,
       pageNum: {
@@ -422,7 +408,6 @@ onMounted(async () => {
   
   // 初始化帖子轮询（仅在帖子列表时启用）
   if (itemType.value === 'post') {
-    console.log('[IndexPageMobile] mounted，准备初始化轮询，selectedSectionId:', selectedSectionId.value);
     initPostPolling();
   }
   
@@ -437,7 +422,6 @@ onMounted(async () => {
 onUnmounted(() => {
   // 停止帖子轮询
   if (postPollingController) {
-    console.log('[IndexPageMobile] unmounted，停止轮询');
     postPollingController.stopPolling();
   }
   

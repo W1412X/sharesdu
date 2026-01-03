@@ -5,7 +5,7 @@
                 <div class="title-bold row-center">编辑成功</div>
                 <div class="text-medium row-center">您的文章已上传，正在审核中...</div>
                 <div class="row-center">
-                    <v-btn @click="toPage('SelfPage')" variant="outlined" :color="themeColor" class="dialog-bottom-bar-btn" >返回主页</v-btn>
+                    <v-btn @click="toPage('IndexPage')" variant="outlined" :color="themeColor" class="dialog-bottom-bar-btn" >返回主页</v-btn>
                     <v-btn @click="toPage('ArticlePage',{id:this.articleId})" class="dialog-bottom-bar-btn" :color="themeColor" variant="outlined" >查看文章</v-btn>
                 </div>
             </v-card>

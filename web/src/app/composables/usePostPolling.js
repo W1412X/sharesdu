@@ -51,20 +51,16 @@ export function usePostPolling(fetchFn, getPostList, setPostList, alert, options
    */
   const pollForNewPosts = async () => {
     if (isPolling.value) {
-      console.log('[PostPolling] 轮询进行中，跳过本次执行');
       return; // 防止重复轮询
     }
 
     try {
-      console.log('[PostPolling] 开始轮询新帖子...');
       isPolling.value = true;
       
       // 获取第一页帖子列表（不使用缓存）
       const response = await fetchFn(1, false);
-      console.log('[PostPolling] 获取帖子列表响应:', response.status, response.post_list?.length || 0, '条');
       
       if (response.status !== 200) {
-        console.log('[PostPolling] 请求失败，状态码:', response.status);
         // 如果请求失败，静默处理，不干扰用户
         return;
       }
@@ -112,7 +108,6 @@ export function usePostPolling(fetchFn, getPostList, setPostList, alert, options
 
       // 如果有新帖子，插入到列表顶部并提示用户
       if (newPostItems.length > 0) {
-        console.log('[PostPolling] 发现', newPostItems.length, '条新帖子，ID:', newPostItems.map(p => p.id));
         // 将新帖子插入到列表顶部
         setPostList(newPostItems);
         
@@ -120,18 +115,15 @@ export function usePostPolling(fetchFn, getPostList, setPostList, alert, options
         const updatedList = getPostList();
         if (updatedList.length > 0) {
           lastFirstPostId.value = updatedList[0].id;
-          console.log('[PostPolling] 更新基准 ID:', lastFirstPostId.value);
         }
         
         // 提示用户
         const message = `发现 ${newPostItems.length} 条新帖子`;
         alert(getNormalInfoAlert(message));
       } else {
-        console.log('[PostPolling] 没有新帖子');
         // 即使没有新帖子，也要更新基准 ID（防止基准 ID 过期）
         if (newPosts.length > 0) {
           lastFirstPostId.value = newPosts[0].id;
-          console.log('[PostPolling] 更新基准 ID:', lastFirstPostId.value);
         }
       }
     } catch (error) {
@@ -146,46 +138,36 @@ export function usePostPolling(fetchFn, getPostList, setPostList, alert, options
    * 启动轮询
    */
   const startPolling = () => {
-    console.log('[PostPolling] 启动轮询，间隔:', interval, 'ms');
     
     // 如果已经有定时器在运行，先停止
     if (pollingTimer.value) {
-      console.log('[PostPolling] 检测到已有定时器，先停止');
       stopPolling();
     }
     
     // 如果列表已有数据，设置基准 ID
     const currentList = getPostList();
-    console.log('[PostPolling] 当前帖子列表长度:', currentList.length);
     if (currentList.length > 0) {
       lastFirstPostId.value = currentList[0].id;
-      console.log('[PostPolling] 设置基准 ID:', lastFirstPostId.value);
     } else {
-      console.log('[PostPolling] 当前列表为空，基准 ID 将在首次轮询后设置');
     }
 
     // 立即执行一次轮询
-    console.log('[PostPolling] 立即执行首次轮询');
     pollForNewPosts();
 
     // 设置定时器，每隔指定时间轮询一次
     pollingTimer.value = setInterval(() => {
-      console.log('[PostPolling] 定时轮询执行');
       pollForNewPosts();
     }, interval);
     
-    console.log('[PostPolling] 定时器已设置，pollingTimer:', pollingTimer.value);
   };
 
   /**
    * 停止轮询
    */
   const stopPolling = () => {
-    console.log('[PostPolling] 停止轮询，pollingTimer:', pollingTimer.value);
     if (pollingTimer.value) {
       clearInterval(pollingTimer.value);
       pollingTimer.value = null;
-      console.log('[PostPolling] 定时器已清除');
     }
     isPolling.value = false;
   };

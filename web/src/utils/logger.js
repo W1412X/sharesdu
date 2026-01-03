@@ -213,12 +213,9 @@ class Logger {
                 try {
                     const stringified = safeStringify(arg);
                     if (typeof stringified === 'object') {
-                        console.log(`  Arg[${index}]:`, stringified);
                     } else {
-                        console.log(`  Arg[${index}]:`, arg);
                     }
                 } catch (e) {
-                    console.log(`  Arg[${index}]: [无法序列化]`, arg);
                 }
             });
         }
@@ -230,15 +227,10 @@ class Logger {
     getConsoleMethod(level) {
         switch (level) {
             case LogLevel.DEBUG:
-                return console.debug || console.log;
             case LogLevel.INFO:
-                return console.info || console.log;
             case LogLevel.WARN:
-                return console.warn || console.log;
             case LogLevel.ERROR:
-                return console.error || console.log;
             default:
-                return console.log;
         }
     }
 
@@ -311,7 +303,6 @@ class Logger {
         if (!this.shouldLog(LogLevel.DEBUG)) {
             return;
         }
-        console.log(`%c[${this.category}] Table:`, `color: ${LEVEL_COLORS[LogLevel.INFO]}; font-weight: bold;`);
         if (columns) {
             console.table(data, columns);
         } else {
@@ -358,7 +349,6 @@ class Logger {
         if (!this.shouldLog(LogLevel.DEBUG)) {
             return;
         }
-        console.log(`%c[${this.category}] ${message}`, `color: ${LEVEL_COLORS[LogLevel.DEBUG]}; font-weight: bold;`);
         console.trace();
     }
 }

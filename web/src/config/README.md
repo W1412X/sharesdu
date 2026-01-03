@@ -96,8 +96,6 @@ const imgDict = config.getImageDict()
 // Options API
 export default {
   mounted() {
-    console.log(this.$apiUrl)
-    console.log(this.$colleges)
   }
 }
 
@@ -107,8 +105,6 @@ import { getCurrentInstance } from 'vue'
 export default {
   setup() {
     const { proxy } = getCurrentInstance()
-    console.log(proxy.$apiUrl)
-    console.log(proxy.$colleges)
   }
 }
 ```

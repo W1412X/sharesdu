@@ -5,8 +5,6 @@ import { getCookie } from '@/utils/cookie';
 const useOptionShowSheet = (type,authorId=undefined) => {
     let ifMaster=getCookie("ifMaster");
     let ifAuthor=getCookie("userId")==authorId;
-    console.log("ifAuthor",ifAuthor);
-    console.log("ifMaster",ifMaster);
     let sheetOptions=[];
     if(type === 'course') {
         sheetOptions.push({

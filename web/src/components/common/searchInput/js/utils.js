@@ -10,7 +10,6 @@ export function addToSearchHistory(text){
                 result.push(items[i]);
             }
         }
-        console.log(result);
         selfDefineLocalStorage.setItem('searchHistory',JSON.stringify(result));
     }else{
         selfDefineLocalStorage.setItem('searchHistory',JSON.stringify([]));
@@ -37,7 +36,6 @@ export function deleteSearchHistory(text=null){
                     result.push(items[i]);
                 }
             }
-            console.log(result);
             selfDefineLocalStorage.setItem('searchHistory',JSON.stringify(result));
         }else{
             selfDefineLocalStorage.setItem('searchHistory',JSON.stringify([]));

@@ -124,7 +124,6 @@ export default {
     },
     onInput() {
       // 在这里监听当前输入的内容
-      console.log(this.inputValue);
     },
     fillSearchInput(text){
       this.inputValue=text;
