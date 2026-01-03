@@ -75,7 +75,8 @@ export {
     getNormalErrorAlert,
     getNormalSuccessAlert,
     getNormalInfoAlert,
-    getNormalWarnAlert
+    getNormalWarnAlert,
+    getNormalNotificationAlert
 } from './alert';
 
 // 加载状态

@@ -98,7 +98,7 @@ watch(() => props.selectedSectionId, (newId) => {
 
 <style scoped>
 .section-selector-container {
-  width: 100%;
+  width: 100vw;
   background-color: white;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   padding: 8px 0;
@@ -115,7 +115,6 @@ watch(() => props.selectedSectionId, (newId) => {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
-  min-width: 0; /* 允许 flex 子元素收缩 */
 }
 
 .section-scroll-wrapper::-webkit-scrollbar {

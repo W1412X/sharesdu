@@ -165,9 +165,9 @@ export const getImageDict = () => {
 // 服务卡片配置
 export const services = [
   {
-    title:'计算机资料分享',
-    link: 'https://github.com/SDUCSGuide/SDUCSGuide',
-    description: '山东大学计算机专业的一些资料，评价，讨论等，需要访问github',
+    title:'计算机专业分享',
+    link: 'https://sducsguide.github.io/SDUCSGuide/',
+    description: 'Github上山东大学计算机专业的一些资料聚合',
     category: '计算机',
     source: '山东大学',
     icon: 'mdi-laptop',
@@ -203,6 +203,30 @@ export const services = [
     category: '交通',
     source: '山东大学',
     icon: 'mdi-bus-clock',
+  },
+  {
+    title: '山大调查问卷系统',
+    link: 'https://wenjuan.sdu.edu.cn/',
+    description: '山大官方问卷系统，可进行身份认证问卷填写',
+    category: '信息服务',
+    source: '山东大学',
+    icon: 'mdi-file-question-outline',
+  },
+  {
+    title: '山大图书馆',
+    link: 'https://lib.sdu.edu.cn/',
+    description: '山东大学图书馆，提供图书借阅和查询服务',
+    category: '图书馆',
+    source: '山东大学',
+    icon: 'mdi-library-outline',
+  },
+  {
+    title: '山东大学校友网',
+    link: 'https://www.sdu.org.cn/xwkx/xyzh.htm',
+    description: '山大校友网，包含校友组织信息',
+    category: '校友',
+    source: '山东大学',
+    icon: 'mdi-account-group',
   },
   {
     title: '山大缴费平台',

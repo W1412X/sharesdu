@@ -37,12 +37,12 @@
     <!-- 板块头部主要内容 -->
     <div class="section-header-main">
       <!-- 封面图片 -->
-      <div class="section-cover-container" v-if="section.coverLink">
+      <div class="section-cover-container">
         <img-card
           :src="section.coverLink"
           :width="coverSize"
           :height="coverSize"
-          :clickable="false"
+          :clickable="true"
           cover
           aspect-ratio="1/1"
           class="section-cover"

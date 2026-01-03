@@ -9,9 +9,11 @@ export function useRouteState() {
   const page = ref('');
   const ifAvatarState = ref(true);
   
-  // 监听路由变化
-  watch(route, (newRoute) => {
-    page.value = newRoute.name;
+  // 监听路由变化 - 使用 fullPath 确保路由参数变化时也能触发
+  // fullPath 包含了路径和查询参数，任何路由变化都会触发
+  watch(() => route.fullPath, () => {
+    // 路由变化时更新页面名称
+    page.value = route.name || '';
     // 适配 debug 页面
     if (page.value && page.value.endsWith("Debug")) {
       page.value = page.value.substring(0, page.value.indexOf("Debug"));

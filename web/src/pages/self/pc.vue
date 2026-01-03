@@ -72,7 +72,7 @@
 
 <script setup>
 import { watch, onMounted } from 'vue';
-import { onBeforeRouteLeave } from 'vue-router';
+import { onBeforeRouteLeave, useRoute } from 'vue-router';
 import { getCancelLoadMsg } from '@/utils/other';
 import AuthorCard from '@/components/user/AuthorCard.vue';
 import ColorSelectorCard from '@/components/common/ColorSelectorCard.vue';
@@ -166,6 +166,16 @@ const {
   handleSetLoading
 );
 
+// 路由
+const route = useRoute();
+
+// 监听路由 query 参数，支持通过 tab 参数打开指定标签
+watch(() => route.query.tab, (newTab) => {
+  if (newTab === 'notification') {
+    choose.value = 'notification';
+  }
+}, { immediate: true });
+
 // 监听 choose 变化，自动加载数据
 watch(choose, async (newVal) => {
   switch (newVal) {
@@ -202,11 +212,19 @@ onMounted(() => {
   // 设置页面标题
   document.getElementById('web-title').innerText = '我的';
   
+  // 检查路由 query 参数
+  if (route.query.tab === 'notification') {
+    choose.value = 'notification';
+  }
+  
   // 恢复状态
   const restoredState = restoreState();
   if (restoredState) {
     restoreScrollPosition(restoredState.scrollTop);
-    choose.value = restoredState.choose || 'info';
+    // 如果路由参数指定了 tab，优先使用路由参数
+    if (!route.query.tab) {
+      choose.value = restoredState.choose || 'info';
+    }
   }
 });
 </script>

@@ -58,3 +58,19 @@ export function getNormalWarnAlert(title) {
     }
 }
 
+/**
+ * 获取消息通知提示（可点击跳转到消息页面）
+ * @param {String} title - 通知标题
+ * @returns {Object}
+ */
+export function getNormalNotificationAlert(title) {
+    return {
+        state: true,
+        color: 'notification',
+        title: title,
+        content: '',
+        clickable: true, // 标记为可点击
+        targetUrl: '#/self?tab=notification', // 跳转目标
+    }
+}
+

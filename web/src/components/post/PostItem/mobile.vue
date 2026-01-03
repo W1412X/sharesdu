@@ -4,7 +4,7 @@
         <div v-if="initData.ifTop" elevation="0" width="100%" class="text-tiny-bold" :style="{'border-radius': '0px', 'height': '2px', 'width': '100%', 'justify-content': 'center','background-color': themeColor}">
         </div>
         <div class="container">
-            <div style="padding-bottom: 8px;">
+            <div class="author-container">
                 <avatar-name :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
             </div>
             <div class="text-title-bold title-container key-text">
@@ -284,8 +284,6 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
-    margin-top: 2px;
-    margin-bottom: 2px;
 }
 
 .detail-expand.collapsed {
@@ -320,25 +318,30 @@ export default {
 
 
 .card {
-    border-bottom: #eeeeee 1px solid;
+    border-bottom: 0.5px solid #eeeeee;
     border-radius: 0px;
     width: 100vw;
     margin-top: 4px;
+    cursor: pointer;
 }
 
 .container {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding: 12px;
+    padding: 8px 12px;
+    gap: 6px;
+}
+
+.author-container {
+    padding-bottom: 4px;
 }
 
 .title-container {
     flex: 0 0 auto;
     max-width: 100%;
-    margin-bottom: 2px;
-    line-height: 1.2;
-    max-height: 2.8em;
+    line-height: 1.3;
+    max-height: 2.6em;
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -351,7 +354,7 @@ export default {
     color: #8a8a8a;
     white-space: pre-line;
     word-break: break-all;
-    line-height: 1.4;
+    line-height: 1.5;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
@@ -363,8 +366,7 @@ export default {
     flex-direction: row;
     align-items: center;
     color: #8a8a8a;
-    margin-top: auto;
-    padding-top: 4px;
+    padding-top: 2px;
     line-height: 1.2;
 }
 

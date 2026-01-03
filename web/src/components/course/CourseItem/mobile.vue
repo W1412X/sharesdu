@@ -9,13 +9,17 @@
                 </div>
                 <div class="info-row">
                     <div class="text-small info-item">
-                        类型:<span class="key-text">
+                        <v-icon icon="mdi-book-open-outline" size="14" :color="'#8a8a8a'" class="info-icon"></v-icon>
+                        <span class="info-label">类型:</span>
+                        <span class="key-text info-value">
                             <with-link-container :init-data="{'content':data.type,'keywords':this.searchQuery}" :clickable="false">
                             </with-link-container>
                         </span>
                     </div>
                     <div class="text-small info-item">
-                        学院:<span class="key-text">
+                        <v-icon icon="mdi-domain" size="14" :color="'#8a8a8a'" class="info-icon"></v-icon>
+                        <span class="info-label">学院:</span>
+                        <span class="key-text info-value">
                             <with-link-container :init-data="{'content':data.college,'keywords':this.searchQuery}" :clickable="false">
                             </with-link-container>
                         </span>
@@ -23,34 +27,42 @@
                 </div>
                 <div class="info-row">
                     <div class="text-small info-item">
-                        上课:<span class="key-text">
+                        <v-icon icon="mdi-account-group-outline" size="14" :color="'#8a8a8a'" class="info-icon"></v-icon>
+                        <span class="info-label">上课:</span>
+                        <span class="key-text info-value">
                             <with-link-container :init-data="{'content':data.attendMethod,'keywords':this.searchQuery}" :clickable="false">
                             </with-link-container>
                         </span>
                     </div>
                     <div class="text-small info-item">
-                        考核:<span class="key-text">
+                        <v-icon icon="mdi-format-list-checkbox" size="14" :color="'#8a8a8a'" class="info-icon"></v-icon>
+                        <span class="info-label">考核:</span>
+                        <span class="key-text info-value">
                             <with-link-container :init-data="{'content':data.examineMethod,'keywords':this.searchQuery}" :clickable="false">
                             </with-link-container>
                         </span>
                     </div>
                 </div>
                 <div class="text-tiny time">
+                    <v-icon icon="mdi-clock-outline" size="11" :color="'#8a8a8a'"></v-icon>
                     <span>{{ this.data.publishTime }}</span>
                 </div>
             </div>
             <div class="score-container">
-                <div class="text-title score">
+                <div class="score-wrapper">
+                <div class="text-title-bold score">
                     {{ data.score }}
                 </div>
                 <div class="text-min score-num">
                     {{ data.evaluateNum }}个评价
+                    </div>
                 </div>
             </div>
         </div>
     </v-card>
 </template>
 <script>
+import { globalProperties } from '@/main';
 import { formatRelativeTime, openPage, roundNumber } from '@/utils/other';
 import WithLinkContainer from '../../common/WithLinkContainer.vue';
 
@@ -70,7 +82,10 @@ export default {
         }
     },
     setup() {
-        return {}
+        const themeColor = globalProperties.$themeColor;
+        return {
+            themeColor,
+        }
     },
     data() {
         const data = this.initData;
@@ -95,13 +110,14 @@ export default {
     margin-top: 4px;
     border-bottom: 0.5px solid #eeeeee;
     border-radius: 0px;
+    cursor: pointer;
 }
 
 .container {
     display: flex;
     flex-direction: row;
-    padding: 4px;
-    gap: 2px;
+    padding: 8px;
+    gap: 8px;
     align-items: center;
 }
 
@@ -110,14 +126,14 @@ export default {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    gap: 4px;
 }
 
 .name {
     flex: 0 0 auto;
     max-width: 100%;
-    margin-bottom: 2px;
-    line-height: 1.4;
-    max-height: 2.8em;
+    line-height: 1.3;
+    max-height: 2.6em;
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -129,46 +145,70 @@ export default {
 .info-row {
     display: flex;
     flex-direction: row;
-    gap: 1px;
-    margin-top: 2px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .info-item {
+    display: flex;
+    align-items: center;
     color: #8a8a8a;
+    flex: 1;
+    min-width: 0;
+    gap: 2px;
+}
+
+.info-icon {
+    flex-shrink: 0;
+}
+
+.info-label {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.info-value {
+    flex: 1;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex: 1;
-    min-width: 0;
 }
 
 .time {
-    color: #8a8a8a;
-    margin-top: 6px;
     display: flex;
     align-items: center;
+    color: #8a8a8a;
+    gap: 3px;
+    margin-top: 1px;
 }
 
 .score-container {
     flex-shrink: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px;
-    min-width: 80px;
+    padding: 6px 10px;
+    border-left: 1px solid #eeeeee;
+    min-width: 65px;
+}
+
+.score-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
 }
 
 .score {
-    font-weight: bold;
     color: var(--theme-color);
     text-align: center;
+    line-height: 1.2;
 }
 
 .score-num {
     color: #8a8a8a;
     text-align: center;
-    margin-top: 4px;
 }
 </style>
 

@@ -123,8 +123,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { onBeforeRouteLeave } from 'vue-router';
+import { ref, onMounted, watch } from 'vue';
+import { onBeforeRouteLeave, useRoute } from 'vue-router';
 import { getCancelLoadMsg } from '@/utils/other';
 import AuthorCard from '@/components/user/AuthorCard.vue';
 import ColorSelectorCard from '@/components/common/ColorSelectorCard.vue';
@@ -256,6 +256,16 @@ const closeContentDialog = () => {
   }, 300);
 };
 
+// 路由
+const route = useRoute();
+
+// 监听路由 query 参数，支持通过 tab 参数打开指定标签
+watch(() => route.query.tab, (newTab) => {
+  if (newTab === 'notification') {
+    openContentDialog('notification', '通知');
+  }
+}, { immediate: true });
+
 // 路由离开前保存状态
 onBeforeRouteLeave(() => {
   saveState({
@@ -273,6 +283,11 @@ onMounted(() => {
   
   // 设置页面标题
   document.getElementById('web-title').innerText = '我的';
+  
+  // 检查路由 query 参数
+  if (route.query.tab === 'notification') {
+    openContentDialog('notification', '通知');
+  }
   
   // 恢复状态
   const restoredState = restoreState();

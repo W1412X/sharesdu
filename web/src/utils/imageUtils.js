@@ -142,7 +142,7 @@ async function fetchAndNormalizeImage(imgUrl, type) {
     return { url: resolvePlaceholder(type, 'empty'), ttl: ERROR_CACHE_TTL };
 }
 
-function handleErrorResponse(response, type) {
+async function handleErrorResponse(response, type) {
     if (response.status === 404) {
         return {
             url: resolvePlaceholder(type, 'notFound'),
@@ -150,6 +150,22 @@ function handleErrorResponse(response, type) {
         };
     }
     if (response.status === 403) {
+        // 403 状态可能是审核中（FROZEN）或审核未通过
+        // 需要检查响应体来判断
+        const contentType = response.headers.get('Content-Type') || '';
+        if (contentType.includes('application/json')) {
+            try {
+                const jsonData = await response.json();
+                return handleJsonResponse(jsonData, type);
+            } catch (error) {
+                // 如果 JSON 解析失败，默认返回审核未通过
+                return {
+                    url: resolvePlaceholder(type, 'unreviewed'),
+                    ttl: ERROR_CACHE_TTL,
+                };
+            }
+        }
+        // 如果不是 JSON 响应，默认返回审核未通过
         return {
             url: resolvePlaceholder(type, 'unreviewed'),
             ttl: ERROR_CACHE_TTL,

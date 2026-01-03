@@ -5,17 +5,19 @@
     <splash-screen :show="showSplash"></splash-screen>
     <loading-view :init-data="loadMsg" class="z-index-loading absolute-position">
     </loading-view>
-    <v-snackbar class="z-index-msg absolute-position" :timeout="3000" :color="alertMsg.color" v-model="alertMsg.state">
-      <div v-if="alertMsg.title" class="title">{{ alertMsg.title }}</div>
-      <p v-if="alertMsg.content" class="text-medium">{{ alertMsg.content }}</p>
-    </v-snackbar>
+    <global-message :alert-msg="alertMsg" @close="closeMessage"></global-message>
     <!-- 特殊页面导航栏（帖子、文章、课程） -->
     <div v-if="isSpecialPage && ifShowNav" class="nav-bar special-nav-bar" :style="{ 'background-color': navColor }">
       <!-- 返回按钮 -->
       <div v-if="!showSpecialSearchInput" class="nav-btn-container">
-        <v-btn @click="goBack" icon="mdi-arrow-left" variant="text" :color="navIconColor" size="35">
+        <v-btn @click="goBack" icon="mdi-chevron-left" variant="text" :color="navIconColor" size="35">
           <div class="icon-container">
-            <v-icon type="mdi" icon="mdi-arrow-left" :color="navIconColor" size="25"></v-icon>
+            <v-icon type="mdi" icon="mdi-chevron-left" :color="navIconColor" size="25"></v-icon>
+          </div>
+        </v-btn>
+        <v-btn @click="toHomePage" style="margin-left: 10px;" icon="mdi-home" variant="text" :color="navIconColor" size="35">
+          <div class="icon-container">
+            <v-icon type="mdi" icon="mdi-home" :color="navIconColor" size="25"></v-icon>
           </div>
         </v-btn>
       </div>
@@ -139,6 +141,7 @@
 <script>
 import LoadingView from '@/components/common/LoadingView.vue';
 import SplashScreen from '@/components/common/SplashScreen.vue';
+import GlobalMessage from '@/components/common/GlobalMessage.vue';
 import SearchInput from './components/common/searchInput/SearchInput.vue';
 import BottomActionMenu from '@/components/common/BottomActionMenu/BottomActionMenu.vue';
 import { hexToRgba, openPage } from './utils/other';
@@ -148,9 +151,11 @@ import {
   useSearch,
   useMessage,
   useMobileNav,
+  useNotificationPolling,
 } from './app/composables';
-import { inject, computed, ref, nextTick, watch, onMounted } from 'vue';
+import { inject, computed, ref, nextTick, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { getCookie } from './utils/cookie';
 
 export default {
   name: 'AppMobile',
@@ -212,7 +217,10 @@ export default {
     // 消息和加载状态
     const { alertMsg, loadMsg, loadState, alert, setLoading, setLoadState } = useMessage();
     
-
+    // 关闭消息
+    const closeMessage = () => {
+      alertMsg.value.state = false;
+    };
     
     // 从父组件注入对话框方法
     const dialog = inject('dialog', {
@@ -319,10 +327,33 @@ export default {
       }
     }, { immediate: false });
     
+    // 消息通知轮询
+    let notificationPollingController = null;
+    const initNotificationPolling = () => {
+      // 只有登录用户才启动消息轮询
+      if (getCookie('userName')) {
+        notificationPollingController = useNotificationPolling(alert, {
+          interval: 60000, // 1 分钟
+        });
+        notificationPollingController.startPolling();
+        console.log('[AppMobile] 消息轮询已启动');
+      }
+    };
+
     // 页面加载时检查是否需要显示启动画面
     onMounted(() => {
       if (route.name === 'IndexPage' && (!route.matched.length || route.matched[0].name === 'IndexPage')) {
         displaySplash();
+      }
+      // 初始化消息轮询
+      initNotificationPolling();
+    });
+
+    // 组件卸载时停止轮询
+    onBeforeUnmount(() => {
+      if (notificationPollingController) {
+        notificationPollingController.stopPolling();
+        console.log('[AppMobile] 消息轮询已停止');
       }
     });
     
@@ -349,6 +380,7 @@ export default {
       alert,
       setLoading,
       setLoadState,
+      closeMessage,
       // 导航
       themeColor,
       ifShowNav,
@@ -396,6 +428,7 @@ export default {
   components: {
     LoadingView,
     SplashScreen,
+    GlobalMessage,
     SearchInput,
     BottomActionMenu,
   },

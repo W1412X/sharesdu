@@ -72,7 +72,7 @@ export function useCourseLoad(
             document.getElementById('web-title').innerText = '课程 | ' + transformedData.name;
           }
           
-          alert(getNormalSuccessAlert('获取课程信息成功'));
+          // 获取课程信息成功不显示通知
           return true;
         }
       } else {
@@ -107,7 +107,7 @@ export function useCourseLoad(
         if (transformed) {
           setSelfComment(transformed);
           setIfRated(true);
-          alert(getNormalSuccessAlert('成功获取您的评分'));
+          // 获取评分成功不显示通知
           return true;
         }
       }

@@ -3,10 +3,7 @@
   <v-app style="display: flex;height: 100vh;flex-direction: column;">
     <loading-view :init-data="loadMsg" class="z-index-loading absolute-position">
     </loading-view>
-    <v-snackbar class="z-index-msg absolute-position" :timeout="3000" :color="alertMsg.color" v-model="alertMsg.state">
-      <div v-if="alertMsg.title" class="title">{{ alertMsg.title }}</div>
-      <p v-if="alertMsg.content" class="text-medium">{{ alertMsg.content }}</p>
-    </v-snackbar>
+    <global-message :alert-msg="alertMsg" @close="closeMessage"></global-message>
     <div v-if="this.ifShowNav" class="nav-bar" :style="{ 'background-color': navColor }">
       <avatar-name id="avatar-name" v-if="ifAvatarState && ifShowAvatar"
         :init-data="{ id: userId, name: userName }" :color="'#ffffff'"></avatar-name>
@@ -46,12 +43,25 @@
       </v-btn>
       -->
 
-      <v-btn v-if="ifShowService" @click="toServicePage" icon="mdi-home" variant="text" size="38"
-        :color="navIconColor">
-        <div class="icon-container">
-          <v-icon type="mdi" icon="mdi-web" :color="navIconColor" size="25"></v-icon>
-        </div>
-        <v-tooltip activator="parent">微服务</v-tooltip>
+      <v-btn 
+        v-if="ifShowService" 
+        @click="toServicePage" 
+        :color="navIconColor" 
+        :variant="navIconColor == '#ffffff' ? 'tonal' : 'text'"
+        :rounded="navIconColor == '#ffffff'"
+        :prepend-icon="navIconColor == '#ffffff' ? 'mdi-web' : undefined"
+        :size="navIconColor == '#ffffff' ? undefined : '38'"
+        style="margin-right: 10px;"
+      >
+        <template v-if="navIconColor == '#ffffff'">
+          微服务
+        </template>
+        <template v-else>
+          <div class="icon-container">
+            <v-icon type="mdi" icon="mdi-web" :color="navIconColor" size="25"></v-icon>
+          </div>
+          <v-tooltip activator="parent">微服务</v-tooltip>
+        </template>
       </v-btn>
       <v-menu v-if="ifShowTopEditBtns" open-on-hover>
         <template v-slot:activator="{ props }">
@@ -78,6 +88,7 @@
 </template>
 <script>
 import LoadingView from '@/components/common/LoadingView.vue';
+import GlobalMessage from '@/components/common/GlobalMessage.vue';
 import AvatarName from '@/components/common/AvatarName';
 import CreateChoiceCard from './components/common/CreateChoiceCard.vue';
 import SearchInput from './components/common/searchInput/SearchInput.vue';
@@ -89,9 +100,11 @@ import {
   useNavigation,
   useSearch,
   useMessage,
-  usePCAppIndexPage
+  usePCAppIndexPage,
+  useNotificationPolling,
 } from './app/composables';
-import { inject, provide, ref, watch } from 'vue';
+import { inject, provide, ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { getCookie } from './utils/cookie';
 
 export default {
   name: 'AppDesktop',
@@ -107,6 +120,11 @@ export default {
     
     // 消息和加载状态
     const { alertMsg, loadMsg, loadState, alert, setLoading, setLoadState } = useMessage();
+    
+    // 关闭消息
+    const closeMessage = () => {
+      alertMsg.value.state = false;
+    };
     
     // 导航栏逻辑
     const {
@@ -191,6 +209,32 @@ export default {
       openPage("url", { url: url });
     };
     
+    // 消息通知轮询
+    let notificationPollingController = null;
+    const initNotificationPolling = () => {
+      // 只有登录用户才启动消息轮询
+      if (getCookie('userName')) {
+        notificationPollingController = useNotificationPolling(alert, {
+          interval: 60000, // 1 分钟
+        });
+        notificationPollingController.startPolling();
+        console.log('[AppDesktop] 消息轮询已启动');
+      }
+    };
+
+    // 组件挂载时初始化消息轮询
+    onMounted(() => {
+      initNotificationPolling();
+    });
+
+    // 组件卸载时停止轮询
+    onBeforeUnmount(() => {
+      if (notificationPollingController) {
+        notificationPollingController.stopPolling();
+        console.log('[AppDesktop] 消息轮询已停止');
+      }
+    });
+    
     return {
       // 路由
       page,
@@ -205,6 +249,7 @@ export default {
       alert,
       setLoading,
       setLoadState,
+      closeMessage,
       // 导航
       themeColor,
       ifShowNav,
@@ -240,6 +285,7 @@ export default {
   },
   components: {
     LoadingView,
+    GlobalMessage,
     AvatarName,
     CreateChoiceCard,
     SearchInput,

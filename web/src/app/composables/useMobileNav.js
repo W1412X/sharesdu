@@ -62,7 +62,7 @@ export function useMobileNav(page, deviceType, loadState) {
     return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || 
            page.value == "SelfPage" || page.value == "ManagePage" || page.value == "EditorPage" || 
            page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || 
-           page.value == "ServicePage" || page.value == "RagChatPage";
+           page.value == "ServicePage" || page.value == "RagChatPage" || page.value == "SectionSetPage" || page.value == "SearchMobilePage";
   });
   
   // 是否显示头像

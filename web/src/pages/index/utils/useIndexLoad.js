@@ -4,7 +4,7 @@
 import { getArticleList, getPostListByArticleId } from '@/api/modules/article';
 import { getCourseList } from '@/api/modules/course';
 import { getSectionList } from '@/api/modules/manage';
-import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getNormalErrorAlert } from '@/utils/other';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
 
 export function useIndexLoad(
@@ -113,7 +113,7 @@ export function useIndexLoad(
         if (response.status === 200) {
           addArticles(articleSortMethod.value, response.article_list || []);
           articlePageNum.value[articleSortMethod.value]++;
-          alert(getNormalSuccessAlert(response.message));
+          // 列表加载成功不显示通知
           
           if (response.total_pages <= response.current_page) {
             allLoad.value.article[articleSortMethod.value] = true;
@@ -129,7 +129,7 @@ export function useIndexLoad(
         if (response.status === 200) {
           addCourses(response.course_list || []);
           coursePageNum.value++;
-          alert(getNormalSuccessAlert('加载成功'));
+          // 列表加载成功不显示通知
           
           if (response.total_pages <= response.current_page) {
             allLoad.value.course = true;
@@ -146,7 +146,7 @@ export function useIndexLoad(
         if (response.status === 200) {
           addPosts(response.post_list || []);
           postPageNum.value++;
-          alert(getNormalSuccessAlert(response.message));
+          // 列表加载成功不显示通知
           
           if (response.total_pages <= response.current_page) {
             allLoad.value.post = true;
@@ -168,7 +168,7 @@ export function useIndexLoad(
           addSections(response.section_articles || []);
           sectionPageNum.value++;
           allLoad.value.section = true; // 板块列表一次性加载完
-          alert(getNormalSuccessAlert('加载成功'));
+          // 列表加载成功不显示通知
         } else {
           alert(getNormalErrorAlert(response.message || '加载板块列表失败'));
         }

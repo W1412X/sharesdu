@@ -108,9 +108,10 @@ import CourseItem from '@/components/course/CourseItem';
 import PostItem from '@/components/post/PostItem';
 import NothingView from '@/components/common/NothingView.vue';
 import { getCookie } from '@/utils/cookie';
-import { getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, isElementAtBottom, openPage } from '@/utils/other';
+import { getNormalErrorAlert, getNormalInfoAlert, isElementAtBottom, openPage } from '@/utils/other';
 import { getArticleList, getPostListByArticleId } from '@/api/modules/article';
 import { getCourseList } from '@/api/modules/course';
+import { usePostPolling } from '@/app/composables';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { acquireLock, getLock, releaseLock } from '@/utils/lock';
@@ -175,16 +176,31 @@ export default {
                 }
                 switch (newVal) {
                     case 'article':
+                        // 停止帖子轮询
+                        if (this.postPollingController) {
+                            console.log('[IndexPage] 切换到文章列表，停止轮询');
+                            this.postPollingController.stopPolling();
+                        }
                         if (this.articleList[this.articleSortMethod].length == 0) {
                             this.loadMore('article');
                         }
                         break;
                     case 'post':
+                        // 启动帖子轮询（如果轮询控制器已创建）
+                        if (this.postPollingController) {
+                            console.log('[IndexPage] 切换到帖子列表，启动轮询');
+                            this.postPollingController.startPolling();
+                        }
                         if (this.postList.length == 0) {
                             this.loadMore('post');
                         }
                         break;
                     case 'course':
+                        // 停止帖子轮询
+                        if (this.postPollingController) {
+                            console.log('[IndexPage] 切换到课程列表，停止轮询');
+                            this.postPollingController.stopPolling();
+                        }
                         if (this.courseList.length == 0) {
                             this.loadMore('course');
                         }
@@ -209,6 +225,12 @@ export default {
     },
     beforeRouteLeave(to, from, next) {
         try {
+            // 停止帖子轮询
+            if (this.postPollingController) {
+                console.log('[IndexPage] 路由离开，停止轮询');
+                this.postPollingController.stopPolling();
+            }
+            
             //use session storage to save memory now  
             if (!getCookie("userName")) {
                 next();
@@ -269,9 +291,57 @@ export default {
             },
             lastPageNum: null,
             articleList,
+            postPollingController: null, // 帖子轮询控制器
         }
     },
     methods: {
+        /**
+         * 初始化帖子轮询
+         */
+        initPostPolling() {
+            console.log('[IndexPage] 初始化帖子轮询，当前 itemType:', this.itemType);
+            
+            // 创建获取帖子列表的函数（IndexPage 使用 article_id = 20）
+            const fetchPostList = async (pageIndex, useCache) => {
+                console.log('[IndexPage] 获取帖子列表，pageIndex:', pageIndex, 'useCache:', useCache);
+                return await getPostListByArticleId(20, pageIndex, useCache);
+            };
+            
+            // 创建获取当前帖子列表的函数
+            const getPostList = () => {
+                return this.postList;
+            };
+            
+            // 创建设置帖子列表的函数（在列表顶部插入新帖子）
+            const setPostList = (newPosts) => {
+                console.log('[IndexPage] 插入新帖子到列表顶部，数量:', newPosts.length);
+                this.postList.unshift(...newPosts);
+            };
+            
+            // 创建 alert 函数
+            const alertFn = (msg) => {
+                this.alert(msg);
+            };
+            
+            // 初始化轮询
+            this.postPollingController = usePostPolling(
+                fetchPostList,
+                getPostList,
+                setPostList,
+                alertFn,
+                { interval: 60000 } // 1 分钟
+            );
+            
+            console.log('[IndexPage] 轮询控制器已创建:', this.postPollingController);
+            
+            // 仅在当前是帖子列表时启动轮询
+            if (this.itemType === 'post') {
+                console.log('[IndexPage] 当前是帖子列表，启动轮询');
+                this.postPollingController.startPolling();
+            } else {
+                console.log('[IndexPage] 当前不是帖子列表，不启动轮询');
+            }
+        },
         editArticle() {
             openPage("url",{url:"#/editor"})
         },
@@ -302,7 +372,7 @@ export default {
                             });
                         }
                     } else {
-                        this.alert(getNormalErrorAlert(response.message));
+this.alert(getNormalErrorAlert(response.message));
                     }
                     break;
                 case 'post':
@@ -324,6 +394,10 @@ export default {
                                 ifLike: response.post_list[i].if_like,
                                 ifStar: response.post_list[i].if_star
                             });
+                        }
+                        // 重置轮询基准
+                        if (this.postPollingController) {
+                            this.postPollingController.resetBaseline();
                         }
                     } else {
                         this.alert(getNormalErrorAlert(response.message));
@@ -394,7 +468,7 @@ export default {
                         });
                     }
                     this.articlePageNum[this.articleSortMethod]++;
-                    this.alert(getNormalSuccessAlert(response.message));
+                    // 列表加载成功不显示通知
                     if (response.total_pages <= response.current_page) {
                         this.allLoad["article"][this.articleSortMethod] = true;
                     }
@@ -428,7 +502,7 @@ export default {
 
                         });
                     }
-                    this.alert(getNormalSuccessAlert("加载成功"));
+                    // 列表加载成功不显示通知
                     this.coursePageNum++;
                     if (response.total_pages <= response.current_page) {
                         this.allLoad["course"] = true;
@@ -462,7 +536,7 @@ export default {
                         });
                     }
                     this.postPageNum++;
-                    this.alert(getNormalSuccessAlert(response.message));
+                    // 列表加载成功不显示通知
                     if (response.total_pages <= response.current_page) {
                         this.allLoad["post"] = true;
                     }
@@ -534,10 +608,20 @@ export default {
         /**
          * add roll listener
          */
-        document.getElementById('router-view-container').addEventListener('scroll', this.glideLoad)
+        document.getElementById('router-view-container').addEventListener('scroll', this.glideLoad);
+        
+        /**
+         * 初始化帖子轮询（仅在帖子列表时启用）
+         */
+        console.log('[IndexPage] mounted，准备初始化轮询，itemType:', this.itemType);
+        this.initPostPolling();
     },
     unmounted() {
         document.getElementById('router-view-container').removeEventListener('scroll', this.glideLoad);
+        // 停止帖子轮询
+        if (this.postPollingController) {
+            this.postPollingController.stopPolling();
+        }
     }
 }
 </script>

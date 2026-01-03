@@ -75,10 +75,12 @@
 </template>
 
 <script setup>
-import { watch, onMounted, computed } from 'vue';
+import { watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
 import { setArticleTop } from '@/api/modules/top';
+import { usePostPolling } from '@/app/composables';
+import { getPostListByArticleId } from '@/api/modules/article';
 import {
   SectionHeader,
   SectionActions,
@@ -218,11 +220,67 @@ const handleSetPostTop = (msg) => {
   setPostTop(msg);
 };
 
+// 帖子轮询控制器
+let postPollingController = null;
+
+// 初始化帖子轮询
+const initPostPolling = () => {
+  console.log('[SectionPage] 初始化帖子轮询，sectionId:', sectionId.value);
+  
+  // 如果轮询控制器已存在，先停止
+  if (postPollingController) {
+    console.log('[SectionPage] 停止旧的轮询控制器');
+    postPollingController.stopPolling();
+  }
+  
+  // 创建获取帖子列表的函数
+  const fetchPostList = async (pageIndex, useCache) => {
+    console.log('[SectionPage] 获取帖子列表，sectionId:', sectionId.value, 'pageIndex:', pageIndex, 'useCache:', useCache);
+    return await getPostListByArticleId(sectionId.value, pageIndex, useCache);
+  };
+  
+  // 创建获取当前帖子列表的函数
+  const getPostList = () => {
+    return postItems.value;
+  };
+  
+  // 创建设置帖子列表的函数（在列表顶部插入新帖子）
+  const setPostList = (newPosts) => {
+    console.log('[SectionPage] 插入新帖子到列表顶部，数量:', newPosts.length);
+    postItems.value.unshift(...newPosts);
+  };
+  
+  // 创建 alert 函数
+  const alertFn = (msg) => {
+    handleAlert(msg);
+  };
+  
+  // 初始化轮询
+  postPollingController = usePostPolling(
+    fetchPostList,
+    getPostList,
+    setPostList,
+    alertFn,
+    { interval: 60000 } // 1 分钟
+  );
+  
+  console.log('[SectionPage] 轮询控制器已创建:', postPollingController);
+  
+  // 启动轮询
+  console.log('[SectionPage] 启动轮询');
+  postPollingController.startPolling();
+};
+
 // 监听路由变化
 watch(
   () => route.params.id,
   async (newId) => {
     if (newId) {
+      // 停止旧的轮询
+      if (postPollingController) {
+        postPollingController.stopPolling();
+      }
+      
       resetPosts();
       loadState.value = false;
       handleSetLoading(getLoadMsg('正在加载板块...'));
@@ -231,6 +289,10 @@ watch(
         loadState.value = true;
         // 初始加载帖子列表
         await loadMorePost(newId);
+        console.log('[SectionPage] 帖子列表加载完成，帖子数量:', postItems.value.length);
+        
+        // 重新初始化轮询（使用新的 sectionId）
+        initPostPolling();
       }
       handleSetLoading(getCancelLoadMsg());
     }
@@ -244,15 +306,27 @@ const initPage = async () => {
   let result=await loadSection(sectionId.value);
   if (result.success) {
     loadState.value = true;
-    // 初始加载帖子列表
-    loadMorePost(sectionId.value);
+    // 初始加载帖子列表（等待完成）
+    await loadMorePost(sectionId.value);
+    console.log('[SectionPage] initPage 完成，帖子数量:', postItems.value.length);
   }
   handleSetLoading(getCancelLoadMsg());
 };
 // 组件挂载
 onMounted(async() => {
+  console.log('[SectionPage] mounted，准备初始化');
   await initPage();
   moreOptionEventBus.emit("section",section.value);
+  // 初始化帖子轮询（在帖子列表加载完成后）
+  initPostPolling();
+});
+
+// 组件卸载前停止轮询
+onBeforeUnmount(() => {
+  console.log('[SectionPage] beforeUnmount，停止轮询');
+  if (postPollingController) {
+    postPollingController.stopPolling();
+  }
 });
 </script>
 

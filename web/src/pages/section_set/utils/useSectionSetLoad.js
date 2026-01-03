@@ -2,7 +2,7 @@
  * SectionSetPage 加载逻辑 Composable
  */
 import { getSectionList } from '@/api/modules/manage';
-import { getNormalErrorAlert, getNormalSuccessAlert } from '@/utils/other';
+import { getNormalErrorAlert } from '@/utils/other';
 
 export function useSectionSetLoad(
   sectionList,
@@ -47,7 +47,7 @@ export function useSectionSetLoad(
       if (response.status === 200 || response.status === 201) {
         addSections(response.section_articles || []);
         allLoad.value = true; // 板块列表一次性加载完
-        alert(getNormalSuccessAlert('加载成功'));
+        // 列表加载成功不显示通知
       } else {
         alert(getNormalErrorAlert(response.message || '加载板块列表失败'));
       }

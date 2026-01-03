@@ -1,6 +1,6 @@
 <!-- PC 端帖子项组件 -->
 <template>
-    <v-card class="card" @click="click()" :variant="data.ifTop?'variant':'none'" :color="data.ifTop?themeColor:'none'" elevation="0">
+    <v-card class="card" @click="click()" :variant="data.ifTop?'variant':'none'" :color="data.ifTop?themeColor:'none'" elevation="1">
         <div class="if-top-bar">
             <v-chip v-if="initData.ifTop" variant="text" class="ma-2 text-small-bold" :color="themeColor" prependIcon="mdi-format-vertical-align-top" style="max-height: 28px;" label>
                 置顶
@@ -14,19 +14,19 @@
                 <avatar-name v-if="data.authorId" :initData="{id:data.authorId,name:data.authorName}"></avatar-name>
                 <v-spacer></v-spacer>
                 <div v-if="data.likeNum!=null" class="bottom-item">
-                    <v-icon icon="mdi-heart" size="19"></v-icon>
-                    <div>{{ data.likeNum }}</div>
+                    <v-icon icon="mdi-heart" size="18" :color="'#8a8a8a'"></v-icon>
+                    <span>{{ data.likeNum }}</span>
                 </div>
                 <div v-if="data.viewNum!=null" class="bottom-item">
-                    <v-icon icon="mdi-eye" size="20"></v-icon>
-                    <div>{{ data.viewNum }}</div>
+                    <v-icon icon="mdi-eye" size="18" :color="'#8a8a8a'"></v-icon>
+                    <span>{{ data.viewNum }}</span>
                 </div>
                 <div v-if="data.replyNum!=null" class="bottom-item">
-                    <v-icon icon="mdi-comment" size="18" style="margin-top: 2px;"></v-icon>
-                    <div>{{ data.replyNum }}</div>
+                    <v-icon icon="mdi-comment-outline" size="18" :color="'#8a8a8a'"></v-icon>
+                    <span>{{ data.replyNum }}</span>
                 </div>
             </div>
-            <div class="title title-container key-text">
+            <div class="text-title-bold title title-container key-text">
                 <with-link-container :init-data="{'content':data.title,'keywords':this.searchQuery}" :clickable="false">
                 </with-link-container>
             </div>
@@ -275,8 +275,8 @@ export default {
 .avatar-name-column-center {
     display: flex;
     align-items: center;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .detail-expand-wrapper {
@@ -329,55 +329,56 @@ export default {
     margin-top: 5px;
     border-bottom: #eeeeee 1px solid;
     border-radius: 0px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
 }
 
 .card:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .container {
     display: flex;
     flex-direction: column;
-    padding-top: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-bottom: 15px;
+    padding: 12px 16px;
+    gap: 10px;
 }
 
 .title-container {
-    max-width: 700px;
-    height: 27px;
+    max-width: 100%;
+    min-height: 27px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-clamp: 1;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .detail-expand {
-    max-width: 730px;
+    max-width: 100%;
     white-space: pre-line;
     word-break: break-all;
     color: #8a8a8a;
-    line-height: 1.4;
+    line-height: 1.5;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
 }
 
 .bottom-bar {
-    width: 740px;
+    width: 100%;
     display: flex;
     flex-direction: row;
     color: #8a8a8a;
-    margin-left: 5px;
+    align-items: center;
 }
 
 .bottom-item {
     align-items: center;
     display: flex;
     flex-direction: row;
-    margin-right: 20px;
+    gap: 4px;
+    margin-right: 16px;
 }
 </style>
 

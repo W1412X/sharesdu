@@ -7,6 +7,16 @@
       <span class="section-count">
         共<span class="count-number" :style="{ color: themeColor }">{{ sectionList.length }}</span>个板块
       </span>
+      <v-btn
+        @click="handleCreateSection"
+        variant="tonal"
+        :color="themeColor"
+        prepend-icon="mdi-plus"
+        size="small"
+        class="create-btn"
+      >
+        新增板块
+      </v-btn>
     </v-card-title>
     
     <v-divider></v-divider>
@@ -57,6 +67,7 @@
 <script setup>
 import SectionItem from '@/components/section/SectionItem/index.vue';
 import NothingView from '@/components/common/NothingView.vue';
+import { openPage } from '@/utils/other';
 
 defineProps({
   sectionList: {
@@ -79,6 +90,12 @@ const emit = defineEmits([
 
 const handleRefresh = () => {
   emit('refresh');
+};
+
+const handleCreateSection = () => {
+  openPage('router', {
+    name: 'SectionEditorPage',
+  });
 };
 </script>
 
@@ -110,11 +127,16 @@ const handleRefresh = () => {
 .section-count {
   font-size: 14px;
   color: #666;
+  margin-right: 12px;
 }
 
 .count-number {
   font-weight: 600;
   margin: 0 4px;
+}
+
+.create-btn {
+  flex-shrink: 0;
 }
 
 .card-content {
