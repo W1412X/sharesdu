@@ -10,6 +10,7 @@ export function useDeveloperState() {
   const currentDoc = ref('');
   const expandedKeys = ref(new Set());
   const loadState = ref(false);
+  const mobileDrawerOpen = ref(false);
   
   return {
     ifMobile,
@@ -17,6 +18,7 @@ export function useDeveloperState() {
     currentDoc,
     expandedKeys,
     loadState,
+    mobileDrawerOpen,
   };
 }
 

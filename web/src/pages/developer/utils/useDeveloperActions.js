@@ -52,32 +52,41 @@ export function useDeveloperActions(
   
   // 加载文档
   const loadDocument = async (docKey) => {
-    if (!docKey) return;
+    if (!docKey) {
+      // 如果docKey为空，清空当前文档
+      currentDoc.value = '';
+      loadState.value = false;
+      return;
+    }
     
     // 如果切换的是同一个文档，不重新加载
     if (currentDoc.value === docKey && loadState.value) {
       return;
     }
     
-    // 标记正在加载
-    isLoading.value = true;
+    // 保存目标文档key，用于竞态检查
+    const targetDocKey = docKey;
     
-    // 先更新 currentDoc
+    // 先检查是否有旧内容（在清除之前）
     const previousDoc = currentDoc.value;
     const hadContent = loadState.value && previousDoc;
-    currentDoc.value = docKey;
     
-    const filePath = findFileByKey(categoryList.value, docKey);
+    // 标记正在加载，先清除旧内容显示
+    isLoading.value = true;
+    loadState.value = false;
+    
+    // 更新 currentDoc
+    currentDoc.value = targetDocKey;
+    
+    const filePath = findFileByKey(categoryList.value, targetDocKey);
     if (!filePath) {
-      data.value.content = `# 文档未找到\n\n文档键 \`${docKey}\` 对应的文件路径未找到。`;
-      loadState.value = true;
+      // 检查是否仍然是目标文档
+      if (currentDoc.value === targetDocKey) {
+        data.value.content = `# 文档未找到\n\n文档键 \`${targetDocKey}\` 对应的文件路径未找到。`;
+        loadState.value = true;
+      }
       isLoading.value = false;
       return;
-    }
-    
-    // 如果之前没有内容，显示加载状态
-    if (!hadContent) {
-      loadState.value = false;
     }
     
     // 加载新内容
@@ -95,14 +104,14 @@ export function useDeveloperActions(
     }
     
     // 只有在当前文档仍然是目标文档时才更新（防止快速切换时的竞态条件）
-    if (currentDoc.value === docKey) {
+    if (currentDoc.value === targetDocKey) {
       // 如果有旧内容，短暂延迟以允许过渡动画
       if (hadContent) {
         await new Promise(resolve => setTimeout(resolve, 150));
       }
       
       // 再次检查（防止快速切换）
-      if (currentDoc.value === docKey) {
+      if (currentDoc.value === targetDocKey) {
         // 更新内容
         data.value.content = newContent;
         loadState.value = true;

@@ -72,7 +72,47 @@
     
     <!-- 移动端：上下布局 -->
     <div v-else class="mobile-layout">
-      <!-- 顶部：目录选择器和返回按钮 -->
+      <!-- 移动端侧边栏 -->
+      <v-navigation-drawer
+        v-model="mobileDrawerOpen"
+        location="left"
+        temporary
+        :width="280"
+        class="mobile-drawer"
+      >
+        <div class="mobile-drawer-header">
+          <h2 class="mobile-drawer-title">开发者文档</h2>
+          <v-btn
+            icon
+            size="small"
+            variant="text"
+            @click="mobileDrawerOpen = false"
+            class="mobile-drawer-close-btn"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </div>
+        <div class="mobile-drawer-content">
+          <div v-if="categoryLoading" class="loading-sidebar">
+            <v-progress-circular indeterminate :color="themeColor" size="24"></v-progress-circular>
+            <span class="loading-text">加载目录中...</span>
+          </div>
+          <v-list density="compact" nav v-else>
+            <tree-item
+              v-for="(item, index) in categoryList"
+              :key="index"
+              :item="item"
+              :level="0"
+              :active-key="currentDoc"
+              :expanded-keys="expandedKeys"
+              @click="handleItemClick"
+              @toggle="handleToggle"
+            />
+          </v-list>
+        </div>
+      </v-navigation-drawer>
+      
+      <!-- 顶部：返回按钮和目录按钮 -->
       <div class="mobile-header">
         <div class="mobile-header-top">
           <v-btn
@@ -83,17 +123,15 @@
             size="small"
             class="mobile-back-button"
           ></v-btn>
-          <v-select
-            v-model="currentDoc"
-            :items="flattenedDocList"
-            item-title="title"
-            item-value="key"
-            label="选择文档"
-            variant="outlined"
-            density="compact"
-            @update:model-value="loadDocument"
-            class="doc-selector"
-          ></v-select>
+          <v-btn
+            @click="mobileDrawerOpen = true"
+            :color="themeColor"
+            variant="text"
+            icon="mdi-menu"
+            size="small"
+            class="mobile-menu-button"
+          ></v-btn>
+          <div class="mobile-title">开发者文档</div>
         </div>
       </div>
       
@@ -153,13 +191,13 @@ const {
   currentDoc,
   expandedKeys,
   loadState,
+  mobileDrawerOpen,
 } = useDeveloperState();
 
 const {
   categoryList,
   categoryLoading,
   data,
-  flattenedDocList,
   getAdjacentDocs,
   isLoading,
 } = useDeveloperData();
@@ -175,7 +213,7 @@ const nextDoc = computed(() => adjacentDocs.value.nextDoc);
 const {
   loadCategory,
   loadDocument,
-  handleItemClick,
+  handleItemClick: baseHandleItemClick,
   handleToggle,
 } = useDeveloperActions(
   categoryList,
@@ -186,6 +224,15 @@ const {
   data,
   isLoading
 );
+
+// 包装handleItemClick，移动端点击后关闭侧边栏
+const handleItemClick = (item) => {
+  baseHandleItemClick(item);
+  // 移动端点击后关闭侧边栏
+  if (ifMobile.value && item.file) {
+    mobileDrawerOpen.value = false;
+  }
+};
 
 // 返回 Welcome 页面
 const handleBackToWelcome = () => {
@@ -339,12 +386,18 @@ onMounted(async () => {
   gap: 12px;
 }
 
-.mobile-back-button {
+.mobile-back-button,
+.mobile-menu-button {
   flex-shrink: 0;
 }
 
-.doc-selector {
+.mobile-title {
   flex: 1;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a202c;
+  text-align: center;
+  padding: 0 12px;
 }
 
 .mobile-content {
@@ -357,6 +410,41 @@ onMounted(async () => {
 .mobile-content .content-wrapper {
   width: 100%;
   max-width: 100%;
+}
+
+/* ========== 移动端侧边栏 ========== */
+.mobile-drawer {
+  z-index: 1000;
+}
+
+.mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+.mobile-drawer-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+  background: linear-gradient(135deg, var(--theme-color, #667eea) 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mobile-drawer-close-btn {
+  flex-shrink: 0;
+}
+
+.mobile-drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
 }
 
 /* ========== 响应式调整 ========== */
