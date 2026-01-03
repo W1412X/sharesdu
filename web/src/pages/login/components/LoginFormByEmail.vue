@@ -20,7 +20,7 @@
       class="login-btn" 
       variant="flat" 
       :color="themeColor"
-      :disabled="!valEmailForLogin(loginData.email)"
+      :disabled="!validateFinalEmail(loginData.email)"
       size="large"
       rounded="lg">
       <v-icon size="20" style="margin-right:5px;margin-top:3px;" class="mr-2">mdi-email</v-icon>
@@ -73,14 +73,26 @@ const loginRules = {
   },
 };
 
+// 验证最终邮箱格式（用于按钮禁用状态）
+const validateFinalEmail = (email) => {
+  if (!email) return false;
+  return validateEmailForLogin(email);
+};
+
 // 显示在输入框中的值
 const emailInput = computed({
   get: () => {
     const email = props.loginData.email || '';
+    if (!email) return '';
+    
     const suffix = emailConfig.suffix;
     // 如果是山大邮箱，显示学号部分
     if (email.endsWith(suffix)) {
-      return email.replace(suffix, '');
+      const studentId = email.replace(suffix, '');
+      // 确保学号部分不包含@（避免显示异常）
+      if (studentId && !studentId.includes('@')) {
+        return studentId;
+      }
     }
     // 否则显示完整邮箱
     return email;
@@ -101,27 +113,34 @@ const emailHint = computed(() => {
 
 // 处理邮箱输入变化
 const handleEmailChange = (value) => {
-  if (!value) {
+  if (!value || !value.trim()) {
     emit('update:loginData', { ...props.loginData, email: '' });
     return;
   }
   
+  const trimmedValue = value.trim();
   const suffix = emailConfig.suffix;
   
-  // 如果输入包含@，认为是完整邮箱，直接使用
-  if (value.includes('@')) {
-    emit('update:loginData', { ...props.loginData, email: value.trim() });
+  // 如果输入包含@，检查是否是山大邮箱格式（学号+后缀）
+  if (trimmedValue.includes('@')) {
+    // 如果是以配置的后缀结尾，提取学号部分并重新处理
+    if (trimmedValue.endsWith(suffix)) {
+      const studentId = trimmedValue.replace(suffix, '').trim();
+      if (studentId && !studentId.includes('@')) {
+        // 是学号+后缀格式，保持原样
+        emit('update:loginData', { ...props.loginData, email: trimmedValue });
+        return;
+      }
+    }
+    // 其他完整邮箱格式，直接使用
+    emit('update:loginData', { ...props.loginData, email: trimmedValue });
     return;
   }
   
   // 如果不包含@，认为是学号，自动添加后缀
-  let cleanValue = value.replace(suffix, '').trim();
+  let cleanValue = trimmedValue.replace(suffix, '').trim();
   const fullEmail = cleanValue ? `${cleanValue}${suffix}` : '';
   emit('update:loginData', { ...props.loginData, email: fullEmail });
-};
-
-const valEmailForLogin = (email) => {
-  return validateEmailForLogin(email);
 };
 </script>
 

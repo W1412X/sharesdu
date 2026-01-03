@@ -37,7 +37,7 @@
         :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
         :type="passwdVisible ? 'text' : 'password'" 
         :density="inputType"
-        :rules="[loginRules.password]" 
+        :rules="[loginRules.password, loginRules.passwordConfirm]" 
         placeholder="确认密码" 
         prepend-inner-icon="mdi-lock-outline"
         variant="solo-filled" 
@@ -49,7 +49,7 @@
         class="login-btn" 
         variant="flat" 
         :color="themeColor"
-        :disabled="!(valUserName(registerData.userName) && valPassWord(registerData.passwd) && valPassWord(registerData.passwdConfirm))"
+        :disabled="!(valUserName(registerData.userName) && valPassWord(registerData.passwd) && valPassWord(registerData.passwdConfirm) && registerData.passwd === registerData.passwdConfirm)"
         size="large"
         rounded="lg">
         <v-icon size="20" style="margin-right:5px;margin-top:3px;" class="mr-2">mdi-arrow-right</v-icon>
@@ -196,6 +196,13 @@ const loginRules = {
     const regex = /^[A-Za-z0-9]{1,30}$/;
     if (!regex.test(value)) {
       return '学号格式不正确';
+    }
+    return true;
+  },
+  passwordConfirm: (value) => {
+    if (!value) return '请确认密码';
+    if (value !== props.registerData.passwd) {
+      return '两次输入的密码不一致';
     }
     return true;
   },

@@ -236,8 +236,11 @@ export default {
     created() {
         // 组件创建时自动发送验证码
         // 只有在邮箱有效时才发送
-        if (this.data.email) {
-            this.resend();
+        if (this.data.email && this.data.email.trim()) {
+            // 简单验证邮箱格式（包含@）
+            if (this.data.email.includes('@')) {
+                this.resend();
+            }
         }
     }
 }
