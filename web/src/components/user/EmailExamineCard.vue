@@ -163,40 +163,40 @@ export default {
             let response = null;
             this.setLoading(getLoadMsg('正在发送验证码...', -1));
             try {
-                switch (this.data.type) {
+            switch (this.data.type) {
                     case 'register': {
                         // 对于注册，inviteCode可能是可选的（邮箱注册时没有，邀请码注册时有）
                         const inviteCode = this.data.inviteCode || '';
                         response = await getRegisterEmailCode(this.data.email, inviteCode);
-                        break;
+                    break;
                     }
-                    case 'login':
-                        response = await getLoginEmailCode(this.data.email);
-                        break;
-                    case 'delete_account':
-                        response = await getDeleteAccountEmailCode(this.data.email);
-                        break;
-                    case 'reset_passwd':
-                        response = await getResetPasswordEmailCode(this.data.email);
-                        break;
-                    default:
+                case 'login':
+                    response = await getLoginEmailCode(this.data.email);
+                    break;
+                case 'delete_account':
+                    response = await getDeleteAccountEmailCode(this.data.email);
+                    break;
+                case 'reset_passwd':
+                    response = await getResetPasswordEmailCode(this.data.email);
+                    break;
+                default:
                         response = {
                             status: 400,
                             message: '未知的验证类型'
                         };
-                        break;
-                }
+                    break;
+            }
                 
                 if (response && response.status == 200) {
                     // 清空之前的验证码输入
                     this.data.emailCode = '';
-                    this.alert({
-                        state: true,
-                        color: 'success',
-                        title: '发送成功',
-                        content: '验证码已发送至您的邮箱，请及时查看'
+                this.alert({
+                    state: true,
+                    color: 'success',
+                    title: '发送成功',
+                    content: '验证码已发送至您的邮箱，请及时查看'
                     });
-                } else {
+            } else {
                     this.alert({
                         state: true,
                         color: 'error',
@@ -213,7 +213,7 @@ export default {
                     content: '网络错误，请稍后重试',
                 });
             } finally {
-                this.setLoading(getCancelLoadMsg());
+            this.setLoading(getCancelLoadMsg());
             }
         },
         cancelExamine() {
@@ -239,7 +239,7 @@ export default {
         if (this.data.email && this.data.email.trim()) {
             // 简单验证邮箱格式（包含@）
             if (this.data.email.includes('@')) {
-                this.resend();
+        this.resend();
             }
         }
     }

@@ -1,28 +1,42 @@
 <!-- PC 端头像名称组件 -->
 <template>
     <div class="avatar-name" @click="toAuthorPage">
-        <v-icon v-if="this.profileUrl == null || this.imageLoading" icon="mdi-account-circle" :size="size" color='#bbbbbb'></v-icon>
-        <v-avatar v-if="this.profileUrl != null" :size="size">
-            <v-img 
-                :src="this.profileUrl" 
-                :lazy-src="lazyImgUrl"
-                :alt="initData.name || '用户头像'"
-                cover
-                @load="onImageLoad"
-                @error="onImageError"
+        <div class="avatar-container" :style="{ width: size + 'px', height: size + 'px' }">
+            <!-- 默认图标 - 使用 v-show 避免 DOM 重建 -->
+            <v-icon 
+                v-show="showDefaultIcon" 
+                icon="mdi-account-circle" 
+                :size="size" 
+                color='#bbbbbb'
+                class="avatar-icon"
+            ></v-icon>
+            <!-- 头像图片 - 使用 v-show 避免 DOM 重建 -->
+            <v-avatar 
+                v-show="showAvatar" 
+                :size="size"
+                class="avatar-img"
             >
-                <template v-slot:placeholder>
-                    <div class="avatar-placeholder">
-                        <v-progress-circular 
-                            :size="parseInt(size) * 0.6" 
-                            :width="2"
-                            :color="'#bbbbbb'" 
-                            indeterminate
-                        ></v-progress-circular>
-                    </div>
-                </template>
-            </v-img>
-        </v-avatar>
+                <v-img 
+                    :src="this.profileUrl" 
+                    :lazy-src="lazyImgUrl"
+                    :alt="initData.name || '用户头像'"
+                    cover
+                    @load="onImageLoad"
+                    @error="onImageError"
+                >
+                    <template v-slot:placeholder>
+                        <div class="avatar-placeholder">
+                            <v-progress-circular 
+                                :size="parseInt(size) * 0.6" 
+                                :width="2"
+                                :color="'#bbbbbb'" 
+                                indeterminate
+                            ></v-progress-circular>
+                        </div>
+                    </template>
+                </v-img>
+            </v-avatar>
+        </div>
         <div v-if="ifShowName" class="name-text" :style="{ color: color, 'font-size': nameSize + 'px' }">
             {{ initData.name }}
         </div>
@@ -82,6 +96,16 @@ export default {
             imageLoading,
         }
     },
+    computed: {
+        // 是否显示默认图标
+        showDefaultIcon() {
+            return this.profileUrl == null || this.imageLoading || this.imageError;
+        },
+        // 是否显示头像
+        showAvatar() {
+            return this.profileUrl != null && !this.imageError;
+        },
+    },
     data() {
         return {
             profileUrl: null,
@@ -120,11 +144,17 @@ export default {
                     const profileUrl = await getProfileUrl(this.initData.id);
                     return profileUrl;
                 });
+                // 使用 nextTick 确保状态更新平滑
+                await this.$nextTick();
                 this.profileUrl = this.optimizeImageUrl(url);
+                // 重置错误状态
+                this.imageError = false;
             } catch (error) {
                 // eslint-disable-next-line no-console
                 console.error('AvatarName: 获取头像失败', error);
+                await this.$nextTick();
                 this.profileUrl = null;
+                this.imageError = true;
             }
         },
         /**
@@ -148,14 +178,20 @@ export default {
             return url;
         },
         onImageLoad() {
-            this.imageLoading = false;
-            this.imageError = false;
+            // 延迟更新状态，确保图片完全加载后再切换
+            this.$nextTick(() => {
+                this.imageLoading = false;
+                this.imageError = false;
+            });
         },
         onImageError() {
-            this.imageLoading = false;
-            this.imageError = true;
-            // 图片加载失败时，保持显示占位符
-            this.profileUrl = null;
+            // 延迟更新状态，避免闪烁
+            this.$nextTick(() => {
+                this.imageLoading = false;
+                this.imageError = true;
+                // 图片加载失败时，保持显示占位符
+                this.profileUrl = null;
+            });
         },
         async loadProfile() {
             const lockKey = 'profile-' + this.initData.id;
@@ -214,6 +250,27 @@ export default {
     align-items: center;
     gap: 10px;
     cursor: pointer;
+}
+
+.avatar-container {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar-icon,
+.avatar-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.avatar-icon {
+    opacity: 1;
+}
+
+.avatar-img {
+    opacity: 1;
 }
 
 .name-text {

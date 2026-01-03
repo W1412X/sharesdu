@@ -201,6 +201,10 @@ const loginRules = {
   },
   passwordConfirm: (value) => {
     if (!value) return '请确认密码';
+    // 如果密码字段为空，先不验证一致性（由密码字段的验证规则处理）
+    if (!props.registerData.passwd) {
+      return true;
+    }
     if (value !== props.registerData.passwd) {
       return '两次输入的密码不一致';
     }
@@ -212,11 +216,19 @@ const loginRules = {
 const studentId = computed({
   get: () => {
     const email = props.registerData.email || '';
+    if (!email) return '';
+    
     const suffix = emailConfig.suffix;
+    // 如果是山大邮箱，提取学号部分
     if (email.endsWith(suffix)) {
-      return email.replace(suffix, '');
+      const studentId = email.replace(suffix, '');
+      // 确保学号部分不包含@（避免显示异常）
+      if (studentId && !studentId.includes('@')) {
+        return studentId;
+      }
     }
-    return email;
+    // 如果email不是以suffix结尾，可能是异常情况，返回空字符串
+    return '';
   },
 });
 
