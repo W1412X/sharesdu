@@ -94,14 +94,19 @@
         </sensitive-text-field>
       </div>
       <sensitive-text-field 
-        :model-value="registerData.email"
-        @update:model-value="$emit('update:registerData', { ...registerData, email: $event })"
+        :model-value="studentId"
+        @update:model-value="handleStudentIdChange"
         class="input"
-        :rules="[loginRules.email]" 
+        :rules="[loginRules.studentId]" 
         :density="inputType" 
         variant="solo-filled"
         prepend-inner-icon="mdi-email" 
-        label="校园邮箱(以@mail.sdu.edu.cn结尾)">
+        label="学号"
+        :hint="emailConfig.studentIdHint"
+        placeholder="请输入学号">
+        <template v-slot:append-inner>
+          <span class="email-suffix">{{ emailConfig.suffix }}</span>
+        </template>
       </sensitive-text-field>
       <div class="text-tiny agreement-text-container" style="width: 100%;display: flex;flex-direction: row;">
         <v-spacer></v-spacer>
@@ -144,11 +149,13 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
 import { rules } from '@/utils/rules';
 import { validateEmail, validatePassWord, validateUserName } from '@/utils/rules';
+import { emailConfig } from '@/config';
 
-defineProps({
+const props = defineProps({
   registerData: {
     type: Object,
     required: true,
@@ -179,9 +186,42 @@ defineProps({
   },
 });
 
-defineEmits(['next', 'back', 'register', 'to-url', 'update:registerData', 'update:passwdVisible']);
+const emit = defineEmits(['next', 'back', 'register', 'to-url', 'update:registerData', 'update:passwdVisible']);
 
-const loginRules = rules;
+const loginRules = {
+  ...rules,
+  studentId: (value) => {
+    if (!value) return '请输入学号';
+    // 学号支持字母和数字，长度1-30
+    const regex = /^[A-Za-z0-9]{1,30}$/;
+    if (!regex.test(value)) {
+      return '学号格式不正确';
+    }
+    return true;
+  },
+};
+
+// 从完整邮箱中提取学号
+const studentId = computed({
+  get: () => {
+    const email = props.registerData.email || '';
+    const suffix = emailConfig.suffix;
+    if (email.endsWith(suffix)) {
+      return email.replace(suffix, '');
+    }
+    return email;
+  },
+});
+
+// 处理学号输入变化
+const handleStudentIdChange = (value) => {
+  const suffix = emailConfig.suffix;
+  // 移除用户可能输入的后缀
+  let cleanValue = value.replace(suffix, '').trim();
+  // 自动添加邮箱后缀
+  const fullEmail = cleanValue ? `${cleanValue}${suffix}` : '';
+  emit('update:registerData', { ...props.registerData, email: fullEmail });
+};
 
 const valEmail = (email) => {
   return validateEmail(email);
@@ -299,6 +339,14 @@ const valPassWord = (passWord) => {
 
 .last-step-btn:hover {
   transform: translateY(-2px);
+}
+
+.email-suffix {
+  color: #666;
+  font-size: 14px;
+  padding-right: 8px;
+  user-select: none;
+  pointer-events: none;
 }
 
 @media screen and (max-width: 1000px) {

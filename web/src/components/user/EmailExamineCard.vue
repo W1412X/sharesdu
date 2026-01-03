@@ -23,7 +23,7 @@
         <div class="row-reverse-div">
             <div class="bottom-bar text-small">
                 没有收到验证码?
-                <a href="#" @click.prevent="code = ''" @click="resend()" style="margin-right: 10px">重新发送</a>
+                <a href="#" @click.prevent="resend()" style="margin-right: 10px">重新发送</a>
             </div>
             <v-spacer></v-spacer>
         </div>
@@ -149,41 +149,72 @@ export default {
             this.loading.examine = false;
         },
         async resend() {//resend the code  
-            let response = null;
-            this.setLoading(getLoadMsg('正在发送验证码...', -1));
-            switch (this.data.type) {
-                case 'register':
-                    response = await getRegisterEmailCode(this.data.email, this.data.inviteCode);
-                    break;
-                case 'login':
-                    response = await getLoginEmailCode(this.data.email);
-                    break;
-                case 'delete_account':
-                    response = await getDeleteAccountEmailCode(this.data.email);
-                    break;
-                case 'reset_passwd':
-                    response = await getResetPasswordEmailCode(this.data.email);
-                    break;
-                default:
-                    response={};
-                    break;
-            }
-            if (response.status == 200) {
+            // 检查邮箱是否有效
+            if (!this.data.email) {
                 this.alert({
                     state: true,
-                    color: 'success',
-                    title: '发送成功',
-                    content: '验证码已发送至您的邮箱，请及时查看'
-                })
-            } else {
+                    color: 'error',
+                    title: '发送失败',
+                    content: '邮箱地址不能为空'
+                });
+                return;
+            }
+            
+            let response = null;
+            this.setLoading(getLoadMsg('正在发送验证码...', -1));
+            try {
+                switch (this.data.type) {
+                    case 'register': {
+                        // 对于注册，inviteCode可能是可选的（邮箱注册时没有，邀请码注册时有）
+                        const inviteCode = this.data.inviteCode || '';
+                        response = await getRegisterEmailCode(this.data.email, inviteCode);
+                        break;
+                    }
+                    case 'login':
+                        response = await getLoginEmailCode(this.data.email);
+                        break;
+                    case 'delete_account':
+                        response = await getDeleteAccountEmailCode(this.data.email);
+                        break;
+                    case 'reset_passwd':
+                        response = await getResetPasswordEmailCode(this.data.email);
+                        break;
+                    default:
+                        response = {
+                            status: 400,
+                            message: '未知的验证类型'
+                        };
+                        break;
+                }
+                
+                if (response && response.status == 200) {
+                    // 清空之前的验证码输入
+                    this.data.emailCode = '';
+                    this.alert({
+                        state: true,
+                        color: 'success',
+                        title: '发送成功',
+                        content: '验证码已发送至您的邮箱，请及时查看'
+                    });
+                } else {
+                    this.alert({
+                        state: true,
+                        color: 'error',
+                        title: "验证码发送失败",
+                        content: response?.message || '发送失败，请稍后重试',
+                    });
+                }
+            } catch (error) {
+                console.error('发送验证码错误:', error);
                 this.alert({
                     state: true,
                     color: 'error',
                     title: "验证码发送失败",
-                    content: response.message,
-                })
+                    content: '网络错误，请稍后重试',
+                });
+            } finally {
+                this.setLoading(getCancelLoadMsg());
             }
-            this.setLoading(getCancelLoadMsg());
         },
         cancelExamine() {
             //close the examine code
@@ -203,8 +234,11 @@ export default {
          */
     },
     created() {
-        //create the examine code 
-        this.resend();
+        // 组件创建时自动发送验证码
+        // 只有在邮箱有效时才发送
+        if (this.data.email) {
+            this.resend();
+        }
     }
 }
 </script>

@@ -25,7 +25,7 @@ export function validatePassWord(str) {
     }
 }
 /**
- * email rules
+ * email rules - 验证山大邮箱格式
  */
 export function validateEmail(str) {
     const regex = /^[A-Za-z0-9._%+-]+@mail.sdu\.edu\.cn$/;
@@ -35,6 +35,16 @@ export function validateEmail(str) {
     } else {
         return false;
     }
+}
+
+/**
+ * email rules - 验证通用邮箱格式（用于登录，支持非山大邮箱）
+ */
+export function validateEmailForLogin(str) {
+    if (!str) return false;
+    // 通用邮箱格式验证
+    const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$/;
+    return regex.test(str);
 }
 /**
  * url rules

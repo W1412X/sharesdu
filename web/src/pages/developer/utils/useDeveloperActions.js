@@ -83,7 +83,7 @@ export function useDeveloperActions(
       // 检查是否仍然是目标文档
       if (currentDoc.value === targetDocKey) {
         data.value.content = `# 文档未找到\n\n文档键 \`${targetDocKey}\` 对应的文件路径未找到。`;
-        loadState.value = true;
+      loadState.value = true;
       }
       isLoading.value = false;
       return;

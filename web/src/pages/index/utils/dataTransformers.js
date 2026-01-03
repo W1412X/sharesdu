@@ -28,6 +28,7 @@ export function transformArticleList(articleList) {
     type: item.article_type,
     hotScore: item.hot_score,
     ifTop: item.if_top,
+    section: item.article_section,
   }));
 }
 

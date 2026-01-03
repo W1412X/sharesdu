@@ -1,7 +1,11 @@
 <!-- a text area with sensitive words filter -->
 <template>
     <v-text-field ref="input" v-bind="textareaProps" :rules="[rules.sensitiveHint]" v-model="internalValue" @compositionend="handleCompositionEnd"
-        @compositionstart="handleCompositionStart" @input="handleInput" />
+        @compositionstart="handleCompositionStart" @input="handleInput">
+        <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
+            <slot :name="slot" v-bind="scope" />
+        </template>
+    </v-text-field>
 </template>
 
 <script>

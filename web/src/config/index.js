@@ -122,6 +122,12 @@ export const themeConfig = {
   defaultColor: getEnvVar('VUE_APP_THEME_COLOR', '#9c0c13'),
 };
 
+// 邮箱配置
+export const emailConfig = {
+  suffix: getEnvVar('VUE_APP_EMAIL_SUFFIX', '@mail.sdu.edu.cn'),
+  studentIdHint: '请输入学号，系统将自动添加邮箱后缀',
+};
+
 // 版本配置
 export const versionConfig = {
   globalVersion: getEnvVar('VUE_APP_VERSION', '-0.0.0'),
@@ -250,6 +256,7 @@ export default {
   examineMethods,
   theme: themeConfig,
   version: versionConfig,
+  email: emailConfig,
   services,
   getImageDict,
 };
