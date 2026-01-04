@@ -149,7 +149,6 @@ import {
   useRouteState,
   useUser,
   useSearch,
-  useMessage,
   useMobileNav,
   useNotificationPolling,
 } from './app/composables';
@@ -226,8 +225,14 @@ export default {
     // 用户信息
     const { userId, userName } = useUser();
     
-    // 消息和加载状态
-    const { alertMsg, loadMsg, loadState, alert, setLoading, setLoadState } = useMessage();
+    // 消息和加载状态（从父组件注入，确保全局状态一致）
+    const message = inject('message', null);
+    const alertMsg = message ? message.alertMsg : ref({ state: false, color: null, title: null, content: null });
+    const loadMsg = message ? message.loadMsg : ref({ state: false, text: '加载中...', progress: -1 });
+    const loadState = message ? message.loadState : ref(false);
+    const alert = message ? message.alert : (() => {});
+    const setLoading = message ? message.setLoading : (() => {});
+    const setLoadState = message ? message.setLoadState : (() => {});
     
     // 关闭消息
     const closeMessage = () => {

@@ -46,10 +46,14 @@ export default {
       closeDialog,
     });
     
-    // 通过 provide 共享消息方法给子组件
+    // 通过 provide 共享消息状态和方法给子组件（包括 alertMsg 和 loadMsg，确保全局状态一致）
     provide('message', {
+      alertMsg,
+      loadMsg,
+      loadState,
       alert,
       setLoading,
+      setLoadState,
     });
     
     return {
