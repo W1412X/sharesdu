@@ -30,7 +30,7 @@
         :inputStyle="{ 'font-color': navIconColor, 'border-radius': '20px', height: '35px', width: '60vw', 'padding-left': '15px' }"></search-input>
       <!-- 搜索按钮 -->
       <div class="nav-btn-container">
-        <v-btn @click="toggleSpecialSearchInput" icon="mdi-magnify" variant="text" :color="navIconColor" size="35">
+        <v-btn @click="handleSpecialSearchClick" icon="mdi-magnify" variant="text" :color="navIconColor" size="35">
           <div class="icon-container">
             <v-icon type="mdi" icon="mdi-magnify" :color="navIconColor" size="25"></v-icon>
           </div>
@@ -195,6 +195,18 @@ export default {
             }
           }
         });
+      }
+    };
+    
+    // 处理特殊页面搜索按钮点击
+    const handleSpecialSearchClick = () => {
+      if (showSpecialSearchInput.value) {
+        // 如果搜索框已显示，执行搜索并隐藏搜索框
+        search();
+        showSpecialSearchInput.value = false;
+      } else {
+        // 如果搜索框未显示，显示搜索框
+        toggleSpecialSearchInput();
       }
     };
     
@@ -363,6 +375,7 @@ export default {
       isSpecialPage,
       showSpecialSearchInput,
       toggleSpecialSearchInput,
+      handleSpecialSearchClick,
       handleSpecialSearchBlur,
       goBack,
       ifShowBottomActionMenu,
@@ -454,6 +467,15 @@ export default {
         if (specialSearchBox) {
           const input = specialSearchBox.querySelector('input');
           if (input) {
+            // 监听回车键事件
+            input.addEventListener('keydown', (event) => {
+              if (event.key === 'Enter' || event.keyCode == 13) {
+                event.preventDefault();
+                // 执行搜索并隐藏搜索框
+                this.search();
+                this.showSpecialSearchInput = false;
+              }
+            });
             // 监听失去焦点事件
             input.addEventListener('blur', () => {
               // 延迟隐藏，以便点击其他按钮时不会立即隐藏
