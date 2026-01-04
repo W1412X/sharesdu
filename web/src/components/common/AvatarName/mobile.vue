@@ -37,14 +37,13 @@
                 </v-img>
             </v-avatar>
             <!-- 身份标识徽章 -->
-            <div v-if="roleConfig" class="role-badge" :style="badgeStyle">
-                <v-icon 
-                    :icon="roleConfig.icon" 
-                    :size="badgeIconSize"
-                    :color="roleConfig.color"
-                    class="badge-icon"
-                ></v-icon>
-            </div>
+            <v-icon 
+                v-if="roleConfig"
+                :icon="roleConfig.icon" 
+                :size="badgeIconSize"
+                :color="roleConfig.color"
+                class="role-badge"
+            ></v-icon>
         </div>
         <div v-if="ifShowName" class="name-text" :style="{ color: color, 'font-size': mobileNameSize + 'px' }">
             {{ initData.name }}
@@ -136,23 +135,10 @@ export default {
         roleConfig() {
             return getHighestPriorityRole(this.initData.id);
         },
-        // 徽章样式
-        badgeStyle() {
-            if (!this.roleConfig) {
-                return {};
-            }
-            const badgeSize = Math.max(12, Math.floor(parseInt(this.mobileSize) * 0.4));
-            return {
-                width: badgeSize + 'px',
-                height: badgeSize + 'px',
-                backgroundColor: this.roleConfig.bgColor,
-                borderColor: this.roleConfig.color,
-            };
-        },
         // 徽章图标大小
         badgeIconSize() {
-            const badgeSize = Math.max(12, Math.floor(parseInt(this.mobileSize) * 0.4));
-            return Math.max(8, Math.floor(badgeSize * 0.7));
+            const badgeSize = Math.max(14, Math.floor(parseInt(this.mobileSize) * 0.5));
+            return Math.max(10, Math.floor(badgeSize * 0.85));
         },
     },
     data() {
@@ -343,17 +329,8 @@ export default {
     position: absolute;
     bottom: -1px;
     right: -1px;
-    border-radius: 50%;
-    border: 1.5px solid #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     z-index: 10;
-}
-
-.badge-icon {
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 </style>
 

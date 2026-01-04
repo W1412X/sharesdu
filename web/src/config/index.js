@@ -292,8 +292,8 @@ export const roleConfig = {
   admin: {
     priority: 100,
     label: '管理员',
-    icon: 'mdi-shield',
-    color: '#B0B0B0',
+    icon: 'mdi-shield-check',
+    color: '#c0c0c0',
     bgColor: 'rgba(176, 176, 176, 0.1)',
   },
   verified: {
