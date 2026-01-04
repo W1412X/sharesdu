@@ -623,9 +623,14 @@ export default {
                         hotScore: response.results[i].hot_score
                     })
                 }
-                this.searchPage['文章'][this.sortType]++;
-                if(response.results.length==0){
-                    this.allLoad[this.searchType][this.sortType]=true;
+                // 根据 API 返回的 page 和 count 计算总页数，判断是否已加载完成
+                const pageSize = response.page_size || 10;
+                const totalPages = Math.ceil(response.count / pageSize);
+                if (totalPages <= response.page || response.results.length === 0) {
+                    this.allLoad[this.searchType][this.sortType] = true;
+                } else {
+                    // 只有在确认还有下一页时才递增页码
+                    this.searchPage['文章'][this.sortType]++;
                 }
             } else {
                 this.alert(getNormalErrorAlert(response.message));
@@ -712,9 +717,14 @@ export default {
                         publishTime: response.results[i].publish_time,
                     })
                 }
-                this.searchPage["课程"][this.sortType]++;
-                if(response.results.length==0){
-                    this.allLoad[this.searchType][this.sortType]=true;
+                // 根据 API 返回的 page 和 count 计算总页数，判断是否已加载完成
+                const pageSize = response.page_size || 10;
+                const totalPages = Math.ceil(response.count / pageSize);
+                if (totalPages <= response.page || response.results.length === 0) {
+                    this.allLoad[this.searchType][this.sortType] = true;
+                } else {
+                    // 只有在确认还有下一页时才递增页码
+                    this.searchPage["课程"][this.sortType]++;
                 }
             } else {
                 this.alert(getNormalErrorAlert(response.message));
@@ -722,7 +732,7 @@ export default {
             releaseLock('search'+this.searchType+this.sortType+this.query);
         },
         async loadPost() {
-            acquireLock('search'+this.searchType+this.sortType+this.query);
+            await acquireLock('search'+this.searchType+this.sortType+this.query);
             this.loading.item = true;
             let response = await searchPosts(this.queryTosubmit,this.sortType,this.searchPage['帖子'][this.sortType]);
             this.loading.item = false;
@@ -744,9 +754,14 @@ export default {
                         ifStar: response.results[i].if_star
                     })
                 }
-                this.searchPage["帖子"][this.sortType]++;
-                if(response.results.length==0){
-                    this.allLoad[this.searchType][this.sortType]=true;
+                // 根据 API 返回的 page 和 count 计算总页数，判断是否已加载完成
+                const pageSize = response.page_size || 10;
+                const totalPages = Math.ceil(response.count / pageSize);
+                if (totalPages <= response.page || response.results.length === 0) {
+                    this.allLoad[this.searchType][this.sortType] = true;
+                } else {
+                    // 只有在确认还有下一页时才递增页码
+                    this.searchPage["帖子"][this.sortType]++;
                 }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
@@ -754,7 +769,7 @@ export default {
             releaseLock('search'+this.searchType+this.sortType+this.query);
         },
         async loadReply() {
-            acquireLock('search'+this.searchType+this.sortType+this.query);
+            await acquireLock('search'+this.searchType+this.sortType+this.query);
             this.loading.item = true;
             let response=await searchReplies(this.queryTosubmit,this.searchPage["回复"][this.sortType]);
             this.loading.item=false;
@@ -772,9 +787,14 @@ export default {
                         publishTime:formatRelativeTime(response.results[i].reply_time),
                     })
                 }
-                this.searchPage['回复'][this.sortType]++;
-                if(response.results.length==0){
-                    this.allLoad[this.searchType][this.sortType]=true;
+                // 根据 API 返回的 page 和 count 计算总页数，判断是否已加载完成
+                const pageSize = response.page_size || 10;
+                const totalPages = Math.ceil(response.count / pageSize);
+                if (totalPages <= response.page || response.results.length === 0) {
+                    this.allLoad[this.searchType][this.sortType] = true;
+                } else {
+                    // 只有在确认还有下一页时才递增页码
+                    this.searchPage['回复'][this.sortType]++;
                 }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
@@ -785,11 +805,11 @@ export default {
             return hexToRgba(hex,alpha);
         },
         async loadAll() {
-            acquireLock('search'+this.searchType+this.sortType+this.query);
+            await acquireLock('search'+this.searchType+this.sortType+this.query);
             this.loading.item = true;
             let response=await globalSearch(this.queryTosubmit,this.searchPage["全部"][this.sortType]);
             this.loading.item = false;
-            if(response.status==200||response.results){
+            if(response.status==200){
                 this.searchResultNum['全部'][null]=response.count;
                 for(let i=0;i<response.results.length;i++){
                     let tmp={
@@ -820,9 +840,14 @@ export default {
                     }
                     this.searchList["全部"][this.sortType].push(tmp);
                 }
-                this.searchPage["全部"][this.sortType]++;
-                if(response.results.length==0){
-                    this.allLoad[this.searchType][this.sortType]=true;
+                // 根据 API 返回的 page 和 count 计算总页数，判断是否已加载完成
+                const pageSize = response.page_size || 10;
+                const totalPages = Math.ceil(response.count / pageSize);
+                if (totalPages <= response.page || response.results.length === 0) {
+                    this.allLoad[this.searchType][this.sortType] = true;
+                } else {
+                    // 只有在确认还有下一页时才递增页码
+                    this.searchPage["全部"][this.sortType]++;
                 }
             }else{
                 this.alert(getNormalErrorAlert(response.message));
@@ -852,7 +877,13 @@ export default {
                 default:
                     this.alert(getNormalWarnAlert("未知错误"));
             }
-            if(this.lastPageNum!=null&&this.searchPage[this.searchType][this.sortType]<this.lastPageNum[this.searchType][this.sortType]){
+            // 在递归调用之前，再次检查 allLoad 状态，防止无限加载
+            // 如果已经标记为全部加载完成，或者 lastPageNum 不存在，则不再继续加载
+            if(!this.allLoad[this.searchType][this.sortType] && 
+               this.lastPageNum != null && 
+               this.lastPageNum[this.searchType] && 
+               this.lastPageNum[this.searchType][this.sortType] != null &&
+               this.searchPage[this.searchType][this.sortType] < this.lastPageNum[this.searchType][this.sortType]){
                 await this.load();
             }
         },
