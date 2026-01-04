@@ -80,7 +80,8 @@ export const colleges = [
   "微生物技术研究院",
   "环境研究院",
   "海洋研究院",
-  "数学与交叉科学研究中心"
+  "数学与交叉科学研究中心",
+  "暂无"
 ];
 
 // 校区列表
@@ -270,6 +271,61 @@ export const services = [
   }
 ];
 
+// 用户身份配置
+// 格式：{ userId: 'role' }，role 为身份类型
+// 优先级从高到低：admin > verified > developer > moderator > contributor
+export const userRoles = {
+  // 示例配置，实际使用时替换为真实用户ID
+  // 'user_id_1': 'admin',
+  // 'user_id_2': 'verified',
+  // 'user_id_3': 'developer',
+  // 'user_id_4': 'moderator',
+  // 'user_id_5': 'contributor',
+  '1':'admin',
+  '2':'admin',
+  '3':'admin',
+  '364':'verified',
+};
+
+// 身份类型定义及优先级
+export const roleConfig = {
+  admin: {
+    priority: 100,
+    label: '管理员',
+    icon: 'mdi-shield',
+    color: '#B0B0B0',
+    bgColor: 'rgba(176, 176, 176, 0.1)',
+  },
+  verified: {
+    priority: 80,
+    label: '官方认证',
+    icon: 'mdi-check-decagram',
+    color: '#64B5F6',
+    bgColor: 'rgba(100, 181, 246, 0.1)',
+  },
+  developer: {
+    priority: 60,
+    label: '开发者',
+    icon: 'mdi-code-braces',
+    color: '#81C784',
+    bgColor: 'rgba(129, 199, 132, 0.1)',
+  },
+  moderator: {
+    priority: 40,
+    label: '版主',
+    icon: 'mdi-star',
+    color: '#BA68C8',
+    bgColor: 'rgba(186, 104, 200, 0.1)',
+  },
+  contributor: {
+    priority: 20,
+    label: '贡献者',
+    icon: 'mdi-heart',
+    color: '#FFB74D',
+    bgColor: 'rgba(255, 183, 77, 0.1)',
+  },
+};
+
 // 导出所有配置
 export default {
   api: apiConfig,
@@ -283,5 +339,7 @@ export default {
   email: emailConfig,
   services,
   getImageDict,
+  userRoles,
+  roleConfig,
 };
 

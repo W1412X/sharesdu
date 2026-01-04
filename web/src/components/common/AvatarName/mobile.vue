@@ -36,6 +36,15 @@
                     </template>
                 </v-img>
             </v-avatar>
+            <!-- 身份标识徽章 -->
+            <div v-if="roleConfig" class="role-badge" :style="badgeStyle">
+                <v-icon 
+                    :icon="roleConfig.icon" 
+                    :size="badgeIconSize"
+                    :color="roleConfig.color"
+                    class="badge-icon"
+                ></v-icon>
+            </div>
         </div>
         <div v-if="ifShowName" class="name-text" :style="{ color: color, 'font-size': mobileNameSize + 'px' }">
             {{ initData.name }}
@@ -49,6 +58,7 @@ import { globalProfileCacher } from '@/utils/global_img_cache'
 import { acquireLock, releaseLock } from '@/utils/lock'
 import { openPage } from '@/utils/other'
 import { getProfileUrl } from '@/utils/profile'
+import { getHighestPriorityRole } from '@/utils/userBadge'
 import { ref } from 'vue'
 
 export default {
@@ -121,6 +131,28 @@ export default {
         // 是否显示头像
         showAvatar() {
             return this.profileUrl != null && !this.imageError;
+        },
+        // 获取用户身份配置
+        roleConfig() {
+            return getHighestPriorityRole(this.initData.id);
+        },
+        // 徽章样式
+        badgeStyle() {
+            if (!this.roleConfig) {
+                return {};
+            }
+            const badgeSize = Math.max(12, Math.floor(parseInt(this.mobileSize) * 0.4));
+            return {
+                width: badgeSize + 'px',
+                height: badgeSize + 'px',
+                backgroundColor: this.roleConfig.bgColor,
+                borderColor: this.roleConfig.color,
+            };
+        },
+        // 徽章图标大小
+        badgeIconSize() {
+            const badgeSize = Math.max(12, Math.floor(parseInt(this.mobileSize) * 0.4));
+            return Math.max(8, Math.floor(badgeSize * 0.7));
         },
     },
     data() {
@@ -305,6 +337,23 @@ export default {
     width: 100%;
     height: 100%;
     background-color: #f5f5f5;
+}
+
+.role-badge {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    border-radius: 50%;
+    border: 1.5px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+.badge-icon {
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
 }
 </style>
 
