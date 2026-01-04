@@ -66,7 +66,8 @@
 <script setup>
 import { watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
-import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, isScrollToBottom, openPage } from '@/utils/other';
+import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
+import { createOptimizedScroll } from '@/app/composables/useOptimizedScroll';
 import { setArticleTop } from '@/api/modules/top';
 // eslint-disable-next-line no-unused-vars
 import { getLock } from '@/utils/lock';
@@ -248,27 +249,32 @@ const handleSetLoading = (msg) => {
   emit('set_loading', msg);
 };
 
-// 滚动加载
-const glideLoad = () => {
-  const container = document.getElementById('post-container');
-  if (container && isScrollToBottom(container)) {
-    handleLoadMorePost();
-  }
-};
+// 滚动加载（使用优化的滚动监听）
+let postScrollInstance = null;
 
-// 监听评论状态变化
+// 监听评论状态变化，添加/移除滚动监听
 watch(ifShowComment, (newValue) => {
   if (newValue) {
     setTimeout(() => {
-      const container = document.getElementById('post-container');
-      if (container) {
-        container.addEventListener('scroll', glideLoad);
+      // 如果已经存在实例，先清理
+      if (postScrollInstance) {
+        postScrollInstance.cleanup();
       }
+      // 使用优化的滚动监听（动态创建）
+      postScrollInstance = createOptimizedScroll({
+        onReachBottom: () => {
+          handleLoadMorePost();
+        },
+        containerSelector: '#post-container',
+        threshold: 200,
+        throttleDelay: 100,
+      });
     }, 100);
   } else {
-    const container = document.getElementById('post-container');
-    if (container) {
-      container.removeEventListener('scroll', glideLoad);
+    // 清理滚动监听
+    if (postScrollInstance) {
+      postScrollInstance.cleanup();
+      postScrollInstance = null;
     }
   }
 });
@@ -394,9 +400,10 @@ onMounted(async () => {
 
 // 卸载时清理
 onUnmounted(() => {
-  const container = document.getElementById('post-container');
-  if (container) {
-    container.removeEventListener('scroll', glideLoad);
+  // 清理滚动监听
+  if (postScrollInstance) {
+    postScrollInstance.cleanup();
+    postScrollInstance = null;
   }
 });
 </script>

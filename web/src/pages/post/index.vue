@@ -67,6 +67,7 @@
 import { ref, watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
 import { openPage } from '@/utils/other';
+import { useOptimizedScroll } from '@/app/composables/useOptimizedScroll';
 import {
   PostHeader,
   ReplyList,
@@ -269,15 +270,20 @@ onBeforeRouteLeave(() => {
   savePageState();
 });
 
+// 滚动加载（使用优化的滚动监听）
+useOptimizedScroll({
+  onReachBottom: () => {
+    glideLoad(postId.value);
+  },
+  containerSelector: '#router-view-container',
+  threshold: 200,
+  throttleDelay: 100,
+});
+
 // 组件卸载时保存状态
 onUnmounted(() => {
   savePageState();
-  const routerContainer = document.getElementById('router-view-container');
-  if (routerContainer) {
-    routerContainer.removeEventListener('scroll', () => {
-      glideLoad(postId.value);
-    });
-  }
+  // 清理工作已由 useOptimizedScroll 处理
 });
 
 // 页面加载时初始化
@@ -285,13 +291,7 @@ onMounted(async () => {
   await initPage();
   //帖子加载完成后，提交帖子页面事件
   moreOptionEventBus.emit("post",post.value)
-  // 添加滚动监听
-  const routerContainer = document.getElementById('router-view-container');
-  if (routerContainer) {
-    routerContainer.addEventListener('scroll', () => {
-      glideLoad(postId.value);
-    });
-  }
+  // 滚动监听已由 useOptimizedScroll 处理，这里不再需要手动添加
 });
 </script>
 
