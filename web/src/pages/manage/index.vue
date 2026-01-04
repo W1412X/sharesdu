@@ -85,8 +85,38 @@
       @update:itemId="itemId = $event"
       @show-confirm="handleShowConfirm"
       @unfreeze="handleUnfreeze"
-      @rollback="handleRollback">
+      @rollback="handleRollback"
+      @delete="handleShowDeleteConfirm">
     </CourseManageCard>
+    
+    <!-- 删除确认对话框 -->
+    <v-dialog v-model="showDeleteDialog" max-width="400" persistent>
+      <v-card>
+        <v-card-title class="text-h6">
+          <v-icon icon="mdi-alert" color="error" class="mr-2"></v-icon>
+          确认删除课程
+        </v-card-title>
+        <v-card-text>
+          <p class="text-body-1">确定要删除课程 ID: <strong>{{ itemId }}</strong> 吗？</p>
+          <p class="text-body-2 text-error mt-2">此操作不可恢复，请谨慎操作！</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="outlined"
+            @click="showDeleteDialog = false">
+            取消
+          </v-btn>
+          <v-btn
+            color="error"
+            variant="elevated"
+            :loading="isDeleting"
+            @click="handleDeleteCourse">
+            确认删除
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     
     <!-- 邀请码管理卡片 -->
     <invite-code-manage-card
@@ -115,6 +145,7 @@ import {
   useManageData,
   useManageActions,
 } from './utils';
+import { getNormalWarnAlert } from '@/utils/other';
 
 // 定义组件名称
 defineOptions({
@@ -178,6 +209,7 @@ const {
   unfreeze,
   confirm,
   rollback,
+  deleteCourseAction,
   loadUser,
   loadBlockUser,
   loadSectionList,
@@ -234,6 +266,26 @@ const handleRollback = () => {
   rollback();
 };
 
+const handleShowDeleteConfirm = () => {
+  if (!itemId.value) {
+    handleAlert(getNormalWarnAlert('请设置课程ID'));
+    return;
+  }
+  showDeleteDialog.value = true;
+};
+
+const handleDeleteCourse = async () => {
+  isDeleting.value = true;
+  try {
+    await deleteCourseAction();
+    showDeleteDialog.value = false;
+  } catch (error) {
+    console.error('删除课程失败:', error);
+  } finally {
+    isDeleting.value = false;
+  }
+};
+
 const handleConfirm = async () => {
   await confirm();
 };
@@ -278,6 +330,10 @@ const handleSetLoading = (msg) => {
 // 使用 ref 标记是否正在加载，防止重复加载
 const isLoadingUserList = ref(false);
 const isLoadingSectionList = ref(false);
+
+// 删除确认对话框状态
+const showDeleteDialog = ref(false);
+const isDeleting = ref(false);
 
 // 监听 choose 变化
 watch(choose, (newVal, oldVal) => {

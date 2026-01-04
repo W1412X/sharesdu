@@ -329,7 +329,6 @@ export default {
             // 仅在当前是帖子列表时启动轮询
             if (this.itemType === 'post') {
                 this.postPollingController.startPolling();
-            } else {
             }
         },
         editArticle() {

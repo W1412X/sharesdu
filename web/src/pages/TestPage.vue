@@ -14,11 +14,11 @@ export default {
         let e2=new EventBus("2");
         e1.emit("1e1-event","e1");
         e1.emit("2e2-event","e2");
-        e1.on("1e1-event",(data)=>{
+        e1.on("1e1-event",()=>{
         })
-        e2.on("2e2-event",(data)=>{
+        e2.on("2e2-event",()=>{
         })
-        e1.on("2e2-event",(data)=>{
+        e1.on("2e2-event",()=>{
         })
     },
     components:{

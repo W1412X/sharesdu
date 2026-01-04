@@ -50,6 +50,15 @@
           class="action-btn">
           回滚课程
         </v-btn>
+        <v-btn
+          variant="outlined"
+          @click="handleDelete"
+          color="error"
+          size="large"
+          prepend-icon="mdi-delete"
+          class="action-btn">
+          删除课程
+        </v-btn>
       </div>
     </v-card-text>
   </v-card>
@@ -74,6 +83,7 @@ const emit = defineEmits([
   'show-confirm',
   'unfreeze',
   'rollback',
+  'delete',
 ]);
 
 const localItemId = ref(props.itemId || '');
@@ -96,6 +106,10 @@ const handleUnfreeze = () => {
 
 const handleRollback = () => {
   emit('rollback');
+};
+
+const handleDelete = () => {
+  emit('delete');
 };
 </script>
 

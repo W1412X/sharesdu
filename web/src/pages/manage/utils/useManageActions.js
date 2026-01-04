@@ -1,7 +1,7 @@
 /**
  * ManagePage 操作管理 Composable
  */
-import { freezeUnfreezeCourse } from '@/api/modules/course';
+import { freezeUnfreezeCourse, deleteCourse } from '@/api/modules/course';
 import { blockArticle, blockUser, getBlockedUserList, getUserList, unblockArticle, unblockUser, getSectionList } from '@/api/modules/manage';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalInfoAlert, getNormalSuccessAlert, getNormalWarnAlert } from '@/utils/other';
 import { formatRelativeTime } from '@/utils/format';
@@ -170,6 +170,27 @@ export function useManageActions(
   };
   
   /**
+   * 删除课程
+   */
+  const deleteCourseAction = async () => {
+    if (itemId.value) {
+      setLoading(getLoadMsg('正在删除课程...'));
+      const response = await deleteCourse(itemId.value);
+      setLoading(getCancelLoadMsg());
+      
+      if (response.status === 200) {
+        alertHandler(getNormalSuccessAlert('课程删除成功'));
+        // 清空课程ID
+        itemId.value = '';
+      } else {
+        alertHandler(getNormalErrorAlert(response.message || '删除失败'));
+      }
+    } else {
+      alertHandler(getNormalWarnAlert('请设置课程ID'));
+    }
+  };
+  
+  /**
    * 加载用户列表
    */
   const loadUser = async () => {
@@ -263,6 +284,7 @@ export function useManageActions(
     unfreeze,
     confirm,
     rollback,
+    deleteCourseAction,
     loadUser,
     loadBlockUser,
     loadSectionList,

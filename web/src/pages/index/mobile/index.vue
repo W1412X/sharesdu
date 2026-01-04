@@ -172,7 +172,6 @@ const initPostPolling = () => {
   // 仅在当前是帖子列表时启动轮询
   if (itemType.value === 'post') {
     postPollingController.startPolling();
-  } else {
   }
 };
 

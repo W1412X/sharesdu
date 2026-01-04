@@ -148,7 +148,6 @@ export function usePostPolling(fetchFn, getPostList, setPostList, alert, options
     const currentList = getPostList();
     if (currentList.length > 0) {
       lastFirstPostId.value = currentList[0].id;
-    } else {
     }
 
     // 立即执行一次轮询
