@@ -9,11 +9,7 @@
         @author-name="handleAuthorName"
       />
       <v-card v-if="authorId" class="card">
-        <part-loading-view
-          :state="!loadState"
-          :text="'正在获取创作信息...'"
-        ></part-loading-view>
-        <template v-if="loadState">
+        <loading-content-wrapper :load-state="loadState" loading-text="正在获取创作信息...">
           <ContentTabs v-model="itemType" @update:model-value="handleItemTypeChange" />
           <ContentList
             :item-type="itemType"
@@ -23,7 +19,7 @@
             :all-load="currentAllLoad"
             @load-more="handleLoadMore"
           />
-        </template>
+        </loading-content-wrapper>
       </v-card>
     </div>
   </div>
@@ -39,7 +35,7 @@ import {
   useAuthorData,
   useAuthorLoad,
 } from './utils';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 
 // 定义组件名称
 defineOptions({

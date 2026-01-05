@@ -14,8 +14,10 @@
         @load="handleRefresh" 
         style="margin-top: 10px;"
       >
+        <transition name="tab-fade" mode="out-in">
         <ArticleList
           v-if="itemType === 'article'"
+            :key="'article'"
           :article-list="articleList[articleSortMethod]"
           :sort-method="articleSortMethod"
           :theme-color="themeColor"
@@ -26,7 +28,7 @@
           @load-more="handleLoadMore('article')"
         />
         <!-- 帖子页面：两列布局，左侧帖子列表，右侧板块列表 -->
-        <div v-if="itemType === 'post'" class="post-layout-container">
+          <div v-else-if="itemType === 'post'" :key="'post'" class="post-layout-container">
           <!-- 左侧：帖子列表 -->
           <div class="post-list-column">
             <PostList
@@ -54,7 +56,8 @@
           </div>
         </div>
         <CourseList
-          v-if="itemType === 'course'"
+            v-else-if="itemType === 'course'"
+            :key="'course'"
           :course-list="courseList"
           :theme-color="themeColor"
           :all-load="allLoad.course"
@@ -62,11 +65,13 @@
           @load-more="handleLoadMore('course')"
         />
         <SectionList
-          v-if="itemType === 'section'"
+            v-else-if="itemType === 'section'"
+            :key="'section'"
           :section-list="sectionList"
           :theme-color="themeColor"
           :loading="loading.section"
         />
+        </transition>
       </v-pull-to-refresh>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
@@ -445,6 +450,31 @@ defineExpose({
   .section-list-column :deep(.section-card) {
     width: 100% !important;
   }
+}
+
+/* 选项卡切换过渡动画 */
+.tab-fade-enter-active {
+  transition: opacity 0.2s ease-in, transform 0.2s ease-in;
+}
+
+.tab-fade-leave-active {
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.tab-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.tab-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.tab-fade-enter-to,
+.tab-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /** mobile */

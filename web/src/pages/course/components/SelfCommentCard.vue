@@ -1,6 +1,6 @@
 <template>
-  <part-loading-view :state="!loadState" :text="'正在获取用户评论...'"></part-loading-view>
-  <v-card v-if="loadState" class="self-comment-container-card" elevation="0">
+  <loading-content-wrapper :load-state="loadState" loading-text="正在获取用户评论...">
+    <v-card class="self-comment-container-card" elevation="0">
     <div class="row-div">
       <v-rating
         :model-value="selfComment.score"
@@ -44,11 +44,12 @@
       <div v-if="ifRated" class="title-medium-bold">修改我的评价</div>
     </v-btn>
   </v-card>
+  </loading-content-wrapper>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
 import ImgCard from '@/components/common/ImgCard.vue';
 import ImageViewer from '@/components/common/ImageViewer.vue';

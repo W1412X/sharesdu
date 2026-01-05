@@ -1,7 +1,7 @@
 <template>
     <v-card class="card">
-        <part-loading-view :state="!loadState" :text="'正在获取创作信息...'"></part-loading-view>
-        <v-tabs v-if="loadState" v-model="itemType" fixed-tabs class="select-bar">
+        <loading-content-wrapper :load-state="loadState" loading-text="正在获取创作信息...">
+          <v-tabs v-model="itemType" fixed-tabs class="select-bar">
           <v-tab class="tab"
             :style="{ background: 'rgba(255,255,255,1)', 'color': this.itemType == 'article' ? '#000000' : '#8a8a8a' }"
             height="40px" value="article" text="文章"></v-tab>
@@ -12,7 +12,8 @@
             :style="{ background: 'rgba(255,255,255,1)', 'color': this.itemType == 'reply' ? '#000000' : '#8a8a8a' }"
             height="40px" value="reply" text="回复"></v-tab>
         </v-tabs>
-        <div v-if="loadState&&itemType == 'article'" class="column-div-scroll">
+          <transition name="tab-fade" mode="out-in">
+            <div v-if="itemType == 'article'" :key="'article'" class="column-div-scroll">
           <div class="column-div">
             <template v-if="articleList.length > 0">
                 <star-item :if-star-type="false" v-for="(item, index) in this.articleList" :key="index" :init-data="item">
@@ -27,7 +28,7 @@
                 min-height="300px"></nothing-view>
           </div>
         </div>
-        <div v-if="itemType == 'post'" class="column-div-scroll">
+          <div v-else-if="itemType == 'post'" :key="'post'" class="column-div-scroll">
             <div class="column-div">
                 <template v-if="postList.length > 0">
                     <star-item :if-star-type="false" v-for="(item, index) in this.postList" :key="index" :init-data="item">
@@ -42,7 +43,7 @@
                     min-height="300px"></nothing-view>
             </div>
         </div>
-        <div v-if="itemType == 'reply'" class="column-div-scroll">
+          <div v-else-if="itemType == 'reply'" :key="'reply'" class="column-div-scroll">
           <div class="column-div">
             <template v-if="replyList.length > 0">
                 <star-item :if-star-type="false" v-for="(item, index) in this.replyList" :key="index" :init-data="item" :postId="item.postId" :if-preview="true">
@@ -57,13 +58,15 @@
                 min-height="300px"></nothing-view>
           </div>
         </div>
+          </transition>
+        </loading-content-wrapper>
     </v-card>
 </template>
 <script>
 import { formatRelativeTime, getNormalInfoAlert } from '@/utils/other';
 import { getUserContent, getUserPreview } from '@/api/modules/account';
 import StarItem from '@/components/star/StarItem.vue';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 import NothingView from '@/components/common/NothingView.vue';
 
 export default{
@@ -79,7 +82,7 @@ export default{
     },
     components:{
         StarItem,
-        PartLoadingView,
+        LoadingContentWrapper,
         NothingView,
     },
     data() {
@@ -280,5 +283,30 @@ export default{
         height: fit-content;
         overflow: auto;
     }
+}
+
+/* 选项卡切换过渡动画 */
+.tab-fade-enter-active {
+  transition: opacity 0.2s ease-in, transform 0.2s ease-in;
+}
+
+.tab-fade-leave-active {
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.tab-fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.tab-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.tab-fade-enter-to,
+.tab-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <v-card class="course-card">
-    <part-loading-view :state="!loadState" :text="'正在加载课程...'"></part-loading-view>
-    <div v-if="loadState" class="row-div">
+    <loading-content-wrapper :load-state="loadState" loading-text="正在加载课程...">
+      <div class="row-div">
       <div class="course-name text-big-title-bold">{{ course.name }}</div>
       <v-spacer></v-spacer>
       <v-btn
@@ -34,7 +34,7 @@
         :state="course.ifStar"
       />
     </div>
-    <div v-if="loadState" class="msg-container text-medium">
+        <div class="msg-container text-medium">
       <div class="row-div">
         <div class="msg-item">课程类型:{{ course.type }}</div>
         <div class="msg-item">授课教师:{{ course.teacher }}</div>
@@ -47,13 +47,13 @@
         <div class="msg-item">考核方式:{{ course.examineMethod }}</div>
       </div>
     </div>
-    <div v-if="loadState" class="time-container">
+        <div class="time-container">
       <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="18"></v-icon>
       <div class="text-small">{{ formattedPublishTime }}</div>
       <v-spacer></v-spacer>
       <span class="history-text text-small" @click="$emit('show-history')">查看历史版本</span>
     </div>
-    <div v-if="loadState" class="visualize-score-card">
+        <div class="visualize-score-card">
       <div class="bar-left-container">
         <div class="actual-score-text">
           {{ course.avgScore }}
@@ -90,13 +90,14 @@
         </v-list-item>
       </v-list>
     </div>
+    </loading-content-wrapper>
   </v-card>
 </template>
 
 <script setup>
 import { computed } from 'vue';
 import StarButton from '@/components/star/StarButton.vue';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 import { formatRelativeTime } from '@/utils/other';
 import { getDeviceType } from '@/utils/device';
 

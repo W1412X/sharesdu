@@ -1,10 +1,6 @@
 <template>
-  <part-loading-view
-    :state="!loadState"
-    class="top-bar"
-    :text="'正在加载板块信息...'"
-  ></part-loading-view>
-  <div v-if="loadState" class="top-bar section-content">
+  <loading-content-wrapper :load-state="loadState" loading-text="正在加载板块信息..." class="top-bar">
+    <div class="section-content">
     <!--
     <v-chip
       v-if="section.ifTop && !ifMaster"
@@ -83,6 +79,7 @@
       </div>
     </div>
   </div>
+  </loading-content-wrapper>
   
   <!-- 详细介绍弹窗 - 移动端从底部弹出，PC端从右侧弹出 -->
   <!-- 移动端：底部弹出 -->
@@ -221,7 +218,7 @@ import AvatarName from '@/components/common/AvatarName';
 import { formatRelativeTime } from '@/utils/other';
 import { defineAsyncComponent } from 'vue';
 import ArticleDisplay from '@/components/article/ArticleDisplay.vue';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 import { getDeviceType } from '@/utils/device';
 
 const ImgCard = defineAsyncComponent(() => import('@/components/common/ImgCard.vue'));

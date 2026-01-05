@@ -1,10 +1,6 @@
 <template>
-  <part-loading-view
-    :state="!loadState"
-    class="top-bar"
-    :text="'正在加载帖子信息...'"
-  ></part-loading-view>
-  <div v-if="loadState" class="top-bar surface-card">
+  <loading-content-wrapper :load-state="loadState" loading-text="正在加载帖子信息..." class="top-bar">
+    <div class="surface-card">
     <div class="top-bar-msg-div">
       <div class="full-column-center text-medium name-font">
         <avatar-name
@@ -84,6 +80,7 @@
       {{ relativeText }}
     </v-btn>
   </div>
+  </loading-content-wrapper>
 </template>
 
 <script setup>
@@ -93,7 +90,7 @@ import StarButton from '@/components/star/StarButton.vue';
 import WithLinkContainer from '@/components/common/WithLinkContainer.vue';
 import GridImageGallery from '@/components/common/GridImageGallery/index.vue';
 import ImageViewer from '@/components/common/ImageViewer.vue';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 import { formatRelativeTime } from '@/utils/other';
 
 const props = defineProps({

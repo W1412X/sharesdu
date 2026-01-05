@@ -14,14 +14,13 @@
       />
       
       <!-- 文章内容 -->
-      <transition name="fade" mode="out-in">
+      <transition-wrapper :show="loadState" transition-name="fade" :key="article.id">
       <article-display
         v-if="loadState"
-          :key="article.id"
         class="margin-bottom-40px"
         :init-data="displayMsg"
       />
-      </transition>
+      </transition-wrapper>
       
       <!-- 文章操作栏 -->
       <ArticleActions
@@ -72,6 +71,7 @@ import { setArticleTop } from '@/api/modules/top';
 // eslint-disable-next-line no-unused-vars
 import { getLock } from '@/utils/lock';
 import ArticleDisplay from '@/components/article/ArticleDisplay.vue';
+import TransitionWrapper from '@/components/common/TransitionWrapper.vue';
 import {
   ArticleHeader,
   ArticleActions,

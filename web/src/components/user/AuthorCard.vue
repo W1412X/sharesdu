@@ -1,6 +1,6 @@
 <template>
-    <part-loading-view class="card" :state="!loadState" :text="'正在加载信息...'"></part-loading-view>
-    <v-card v-if="loadState" class="card" elevation="1">
+    <loading-content-wrapper :load-state="loadState" loading-text="正在加载信息...">
+      <v-card class="card" elevation="1">
         <!-- Avatar and Name Section -->
         <div class="row-no-margin">
             <avatar-name :size="40" :color="'#8a8a8a'" :init-data="{id:data.id,name:data.name}"></avatar-name>
@@ -66,6 +66,7 @@
             (仅展示作者的部分创作信息)
         </div>
     </v-card>
+    </loading-content-wrapper>
 </template>
 
 <script>
@@ -74,7 +75,7 @@ import AvatarName from '@/components/common/AvatarName';
 import { getAuthorInfo } from '@/api/modules/account';
 import { formatRelativeTime, getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert, openPage } from '@/utils/other';
 import { blockUser } from '@/api/modules/block';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 import ManageButton from '@/components/manage/ManageButton.vue';
 
 export default{
@@ -100,7 +101,7 @@ export default{
     },
     components:{
         AvatarName,
-        PartLoadingView,
+        LoadingContentWrapper,
         ManageButton,
     },
     data(){

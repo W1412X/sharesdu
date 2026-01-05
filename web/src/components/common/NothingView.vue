@@ -1,9 +1,11 @@
 <template>
-    <div class="nothing-view-container" :style="{ width: width, height: height, minHeight: minHeight }">
+    <transition name="fade" appear>
+        <div v-if="show" class="nothing-view-container" :style="{ width: width, height: height, minHeight: minHeight }">
         <v-empty-state :color="color" text-color="" :icon="icon" :icon-size="iconSize">
             <span :style="{ color: textColor || color, fontSize: textSize }">{{text}}</span>
         </v-empty-state>
     </div>
+    </transition>
 </template>
 <script>
 import { hexToRgba } from '@/utils/other';
@@ -45,6 +47,10 @@ export default{
         minHeight:{
             type:String,
             default:"200px"
+        },
+        show:{
+            type:Boolean,
+            default:true
         }
     },
 }
@@ -55,5 +61,24 @@ export default{
     flex-direction: row;
     align-items: center;
     justify-content: center;
+}
+
+/* 过渡动画 */
+.fade-enter-active {
+    transition: opacity 0.2s ease-in;
+}
+
+.fade-leave-active {
+    transition: opacity 0.15s ease-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+    opacity: 1;
 }
 </style>
