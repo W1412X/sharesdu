@@ -19,6 +19,22 @@
         </v-btn>
         <div class="hero-cta-hint">开启你的 ShareSDU 之旅</div>
       </div>
+      
+      <!-- 开源和公益性项目信息 -->
+      <div class="project-info">
+        <div class="project-badge">
+          <v-icon color="info" size="16" class="project-icon">mdi-heart</v-icon>
+          <span class="project-text">公益性项目</span>
+        </div>
+        <div class="project-badge">
+          <v-icon color="success" size="16" class="project-icon">mdi-github</v-icon>
+          <span class="project-text">全面开源</span>
+        </div>
+        <div class="project-badge">
+          <v-icon color="warning" size="16" class="project-icon">mdi-school</v-icon>
+          <span class="project-text">面向山东大学</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -172,6 +188,36 @@
   opacity: 0.8;
 }
 
+.project-info {
+  display: flex;
+  gap: 20px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.project-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.project-icon {
+  flex-shrink: 0;
+}
+
+.project-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a5568;
+}
+
 .intro-text-div {
   margin-top: 8px;
   width: fit-content;
@@ -244,6 +290,19 @@
   .hero-cta-hint {
     font-size: 1.05rem;
   }
+  
+  .project-info {
+    margin-top: 32px;
+    gap: 24px;
+  }
+  
+  .project-badge {
+    padding: 8px 16px;
+  }
+  
+  .project-text {
+    font-size: 1rem;
+  }
 }
 
 @media screen and (max-width: 1000px) {
@@ -287,6 +346,19 @@
 
   .hero-cta-hint {
     font-size: 0.9rem;
+  }
+  
+  .project-info {
+    margin-top: 20px;
+    gap: 12px;
+  }
+  
+  .project-badge {
+    padding: 5px 10px;
+  }
+  
+  .project-text {
+    font-size: 0.8rem;
   }
 }
 </style>
