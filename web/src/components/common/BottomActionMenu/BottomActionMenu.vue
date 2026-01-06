@@ -1,6 +1,7 @@
 <template>
   <v-dialog v-model="ifShowDialog" style="display: flex;flex-direction: row;align-items: center;justify-content: center;width: 100%;height: 100%;">
     <course-editor v-if="ifShowCourseEditor" :initData="{
+      id:course.id,
       name:course.name,
       teacher:course.teacher,
       type:course.type,
