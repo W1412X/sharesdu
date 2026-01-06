@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { inject } from 'vue';
 import { globalProperties } from '@/main';
 import { services } from '@/config';
 import ServiceCard from '@/components/service/ServiceCard.vue';
@@ -48,8 +49,13 @@ export default {
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
+        // 从 App.vue 注入的全局消息方法
+        const message = inject('message', null);
+        const setLoading = message ? message.setLoading : null;
+        
         return {
             themeColor,
+            setLoading,
         };
     },
     data() {
@@ -57,6 +63,29 @@ export default {
             services: services || [],
             iconSize: 32,
         };
+    },
+    async mounted() {
+        // 显示加载状态
+        if (this.setLoading) {
+            this.setLoading({
+                state: true,
+                text: '加载中...',
+                progress: -1
+            });
+        }
+        
+        // 模拟加载过程（如果 services 是异步加载的，可以在这里等待）
+        // 这里使用 setTimeout 模拟异步加载，确保加载状态可见
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // 隐藏加载状态
+        if (this.setLoading) {
+            this.setLoading({
+                state: false,
+                text: '加载中...',
+                progress: -1
+            });
+        }
     },
 };
 </script>

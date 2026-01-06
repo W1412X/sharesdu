@@ -12,9 +12,9 @@
         ></chat-item>
       </template>
       <nothing-view
-        v-else-if="chatList.length == 0 && !loadState.message"
+        v-else
         icon="mdi-chat-outline"
-        text="暂无私聊"
+        text="暂无私信"
         :icon-size="80"
         text-size="18px"
         min-height="300px"
