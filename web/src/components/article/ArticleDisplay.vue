@@ -9,8 +9,8 @@
                 :type="'preview'"
             ></html-editor>
             <div v-else-if="data.type==='md'" :key="'md'" class="md-container">
-                <MdPreview :id="mdId" :modelValue="data.content" />
-        </div>
+                <MdPreview :id="mdId" :modelValue="data.content"/>
+            </div>
         </transition>
     </div>
 </template>
@@ -99,5 +99,10 @@ export default {
 .editor-fade-enter-to,
 .editor-fade-leave-from {
   opacity: 1;
+}
+
+/* 强制设置 md-editor-code-head 的 z-index 为正常值 */
+:deep(.md-editor-code-head) {
+  z-index: auto !important;
 }
 </style>

@@ -38,8 +38,8 @@
       </div>
       <v-spacer></v-spacer>
       <div class="title-right-type">
-        <span v-if="article.type === '原创'">原创</span>
-        <span v-if="article.type === '转载'" @click="$emit('to-origin-link')">转载</span>
+        <v-chip density="compact" class="text-tiny-bold" v-if="article.type === '原创'">原创</v-chip>
+        <v-chip density="compact" class="text-tiny-bold" v-if="article.type === '转载'" @click="$emit('to-origin-link')">转载</v-chip>
       </div>
     </div>
     
