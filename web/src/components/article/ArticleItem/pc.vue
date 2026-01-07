@@ -9,7 +9,7 @@
             <img-card :width="140" :clickable="false" :height="130" class="img" :lazy-src="lazyImgUrl" :src="data.coverLink"
                 cover aspect-ratio="7/6" @click="handleImgClick"></img-card>
             <div class="row-div padding-left-5">
-                <div class="title title-container key-text">
+                <div class="text-title title-container key-text">
                     <with-link-container :init-data="{'content':data.title,'keywords':this.searchQuery}" :clickable="false">
                     </with-link-container>
                 </div>
@@ -128,10 +128,10 @@ export default {
 .title-container {
     max-width: 550px;
     height: 27px;
+    margin-bottom: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-clamp: 1;
 }
 
 .summary-container {

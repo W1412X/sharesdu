@@ -74,7 +74,7 @@ export function transformCourseList(courseList) {
     college: item.college,
     credit: item.credits,
     campus: item.campus,
-    teacher: item.teacher,
+    teacher: item.course_teacher,
     attendMethod: item.course_method,
     examineMethod: item.assessment_method,
     score: item.score,

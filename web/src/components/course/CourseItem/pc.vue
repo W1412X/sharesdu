@@ -27,19 +27,18 @@
                 </div>
                 <div class="info-group">
                     <div class="text-small info-item">
-                        <v-icon icon="mdi-account-group-outline" size="16" :color="'#8a8a8a'" class="info-icon"></v-icon>
-                        <span class="info-label">上课方式:</span>
+                        <v-icon icon="mdi-account-outline" size="16" :color="'#8a8a8a'" class="info-icon"></v-icon>
+                        <span class="info-label">授课老师:</span>
                         <span class="key-text info-value">
-                            <with-link-container :init-data="{'content':data.attendMethod,'keywords':this.searchQuery}" :clickable="false">
+                            <with-link-container :init-data="{'content':data.teacher || '未知','keywords':this.searchQuery}" :clickable="false">
                             </with-link-container>
                         </span>
                     </div>
                     <div class="text-small info-item">
-                        <v-icon icon="mdi-format-list-checkbox" size="16" :color="'#8a8a8a'" class="info-icon"></v-icon>
-                        <span class="info-label">考核方式:</span>
+                        <v-icon icon="mdi-certificate-outline" size="16" :color="'#8a8a8a'" class="info-icon"></v-icon>
+                        <span class="info-label">学分:</span>
                         <span class="key-text info-value">
-                            <with-link-container :init-data="{'content':data.examineMethod,'keywords':this.searchQuery}" :clickable="false">
-                            </with-link-container>
+                            {{ data.credit || 0 }}学分
                         </span>
                     </div>
                 </div>

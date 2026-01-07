@@ -132,15 +132,10 @@ export default {
 
 .title-container {
     flex: 0 0 auto;
-    max-width: 100%;
+    max-width: 90%;
     margin-bottom: 2px;
-    line-height: 1.1;
-    max-height: 2.8em;
+    white-space: nowrap;
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
     text-overflow: ellipsis;
 }
 

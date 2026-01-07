@@ -38,7 +38,7 @@
                         :width="80"
                         :height="80"
                         :editable="false"
-                        :clickable="false"
+                        :clickable="true"
                     ></img-card>
                 </div>
             </div>
