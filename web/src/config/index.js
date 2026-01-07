@@ -325,7 +325,7 @@ export const roleConfig = {
     bgColor: 'rgba(255, 183, 77, 0.1)',
   },
 };
-
+export const adminEmail = "admin@sharesdu.com";
 // 导出所有配置
 export default {
   api: apiConfig,
@@ -341,5 +341,5 @@ export default {
   getImageDict,
   userRoles,
   roleConfig,
+  adminEmail,
 };
-

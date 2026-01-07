@@ -24,6 +24,7 @@
 </template>
 <script>
 import { defineAsyncComponent } from 'vue'
+import { adminEmail } from '@/config'
 
 export default {
     props: {
@@ -48,6 +49,46 @@ export default {
         }
     },
     methods: {
+        /**
+         * 格式化举报内容为邮件正文
+         * @param {String} type - 举报类型
+         * @param {String} id - 举报项目ID
+         * @param {String} reason - 举报原因
+         * @returns {String} 格式化后的邮件正文
+         */
+        formatReportEmail(type, id, reason) {
+            const emailContent = `举报类型：${type || '未知'}
+举报项目ID：${id || '未知'}
+
+举报原因：
+${reason || '未填写'}
+
+---
+此举报来自 ShareSDU 平台
+举报时间：${new Date().toLocaleString('zh-CN', { 
+    year: 'numeric', 
+    month: '2-digit', 
+    day: '2-digit', 
+    hour: '2-digit', 
+    minute: '2-digit',
+    second: '2-digit'
+})}`;
+            return emailContent;
+        },
+        /**
+         * 打开邮件客户端发送举报邮件
+         * @param {String} type - 举报类型
+         * @param {String} id - 举报项目ID
+         * @param {String} reason - 举报原因
+         */
+        openEmailClient(type, id, reason) {
+            const subject = encodeURIComponent(`[ShareSDU举报] ${type} - ID: ${id}`);
+            const body = encodeURIComponent(this.formatReportEmail(type, id, reason));
+            const mailtoLink = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
+            
+            // 打开邮件客户端
+            window.location.href = mailtoLink;
+        },
         submit() {
             if (this.reason == '') {
                 //if the alert reason is empty
@@ -58,17 +99,14 @@ export default {
                     color: 'warning',
                 }
             } else {
+                // 打开邮件客户端
+                this.openEmailClient(this.type, this.id, this.reason);
+                
                 this.alertSet = {
                     state: true,
                     title: '举报提交成功',
-                    content: '请耐心等待举报结果，处理后将会发送处理结果到您的邮箱',
+                    content: '已打开邮件客户端，请确认发送邮件。处理后将会发送处理结果到您的邮箱',
                     color: 'success',
-                }
-                // eslint-disable-next-line
-                const report = {
-                    type: this.type,
-                    id: this.id,
-                    reason: this.report.reason,
                 }
             }
         },
