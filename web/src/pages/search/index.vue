@@ -71,9 +71,9 @@
 <script setup>
 import { watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
+import { isElementAtBottom } from '@/utils/other';
 import { addToSearchHistory } from '@/components/common/searchInput/js/utils';
 import { openPage } from '@/utils/other';
-import { useOptimizedScroll } from '@/app/composables/useOptimizedScroll';
 import {
   SearchTypeSelector,
   SortTypeSelector,
@@ -282,15 +282,13 @@ const handleAlert = (msg) => {
   emit('alert', msg);
 };
 
-// 滚动加载（使用优化的滚动监听）
-useOptimizedScroll({
-  onReachBottom: () => {
+// 滚动加载
+const glideLoad = () => {
+  const container = document.getElementById('search-part-container');
+  if (container && isElementAtBottom(container)) {
     handleLoadMore();
-  },
-  containerSelector: '#router-view-container',
-  threshold: 200,
-  throttleDelay: 100,
-});
+  }
+};
 
 // 监听课程筛选变化
 watch([courseCollege, courseMethod, courseType], async () => {
@@ -440,7 +438,11 @@ onMounted(async () => {
   
   ifMounted.value = true;
   
-  // 滚动监听已由 useOptimizedScroll 处理，这里不再需要手动添加
+  // 添加滚动监听
+  const routerViewContainer = document.getElementById('router-view-container');
+  if (routerViewContainer) {
+    routerViewContainer.addEventListener('scroll', glideLoad);
+  }
   
   // 添加搜索历史
   if (props.query && props.query.length > 0) {
@@ -448,9 +450,12 @@ onMounted(async () => {
   }
 });
 
-// 卸载时清理（useOptimizedScroll 会自动清理）
+// 卸载时清理
 onUnmounted(() => {
-  // 清理工作已由 useOptimizedScroll 处理
+  const routerViewContainer = document.getElementById('router-view-container');
+  if (routerViewContainer) {
+    routerViewContainer.removeEventListener('scroll', glideLoad);
+  }
 });
 </script>
 

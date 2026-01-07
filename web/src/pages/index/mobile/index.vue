@@ -70,11 +70,11 @@
 import { watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
+import { isElementAtBottom } from '@/utils/other';
 import { ItemTypeTabs, ArticleList, PostList, CourseList, SectionSelector } from './components';
 import { useIndexState, useIndexData, useIndexLoad, useIndexRestore } from '../utils';
 import { usePostPolling } from '@/app/composables';
 import { getPostListByArticleId } from '@/api/modules/article';
-import { useOptimizedScroll } from '@/app/composables/useOptimizedScroll';
 
 // 定义组件名称
 defineOptions({
@@ -294,20 +294,17 @@ watch(selectedSectionId, (newId, oldId) => {
   }
 });
 
-// 滚动加载（使用优化的滚动监听）
-// 使用优化的滚动监听替代原来的滚动事件
-useOptimizedScroll({
-  onReachBottom: () => {
-    // 防止在其他加载未完成时加载
-    if (!canLoadMore()) {
-      return;
-    }
+// 滚动加载
+const glideLoad = () => {
+  // 防止在其他加载未完成时加载
+  if (!canLoadMore()) {
+    return;
+  }
+  const container = document.getElementById('item-container');
+  if (container && isElementAtBottom(container)) {
     handleLoadMore(itemType.value);
-  },
-  containerSelector: '#router-view-container',
-  threshold: 200,
-  throttleDelay: 100,
-});
+  }
+};
 
 // 路由离开前保存状态
 onBeforeRouteLeave((to, from, next) => {
@@ -417,7 +414,11 @@ onMounted(async () => {
     initPostPolling();
   }
   
-  // 滚动监听已由 useOptimizedScroll 处理，这里不再需要手动添加
+  // 添加滚动监听
+  const routerViewContainer = document.getElementById('router-view-container');
+  if (routerViewContainer) {
+    routerViewContainer.addEventListener('scroll', glideLoad);
+  }
 });
 
 // 卸载时清理
@@ -427,7 +428,10 @@ onUnmounted(() => {
     postPollingController.stopPolling();
   }
   
-  // 清理工作已由 useOptimizedScroll 处理
+  const routerViewContainer = document.getElementById('router-view-container');
+  if (routerViewContainer) {
+    routerViewContainer.removeEventListener('scroll', glideLoad);
+  }
 });
 
 // 暴露方法供外部调用

@@ -100,7 +100,6 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
-import { useOptimizedScroll, createOptimizedScroll } from '@/app/composables/useOptimizedScroll';
 import PostEditor from '@/components/post/PostEditor.vue';
 import CourseEditor from '@/components/course/CourseEditor.vue';
 import CourseHistoryCard from '@/components/course/CourseHistoryCard.vue';
@@ -360,34 +359,26 @@ const savePageState = () => {
   });
 };
 
-// 监听帖子状态变化，添加/移除滚动监听（使用优化的滚动监听）
-let postScrollInstance = null;
-
+// 监听帖子状态变化，添加/移除滚动监听
 watch(
   ifShowPost,
   (newVal) => {
     try {
       if (newVal) {
         setTimeout(() => {
-          // 如果已经存在实例，先清理
-          if (postScrollInstance) {
-            postScrollInstance.cleanup();
-          }
-          // 使用优化的滚动监听（动态创建）
-          postScrollInstance = createOptimizedScroll({
-            onReachBottom: () => {
+          const container = document.getElementById('post-container');
+          if (container) {
+            container.addEventListener('scroll', () => {
               glideLoad(courseId.value, true);
-            },
-            containerSelector: '#post-container',
-            threshold: 200,
-            throttleDelay: 100,
-          });
+            });
+          }
         }, 100);
       } else {
-        // 清理帖子容器的滚动监听
-        if (postScrollInstance) {
-          postScrollInstance.cleanup();
-          postScrollInstance = null;
+        const container = document.getElementById('post-container');
+        if (container) {
+          container.removeEventListener('scroll', () => {
+            glideLoad(courseId.value, true);
+          });
         }
       }
     } catch (e) {
@@ -402,32 +393,28 @@ onBeforeRouteLeave(() => {
   savePageState();
 });
 
-// 滚动加载评论（使用优化的滚动监听）
-useOptimizedScroll({
-  onReachBottom: () => {
-    glideLoad(courseId.value, false);
-  },
-  containerSelector: '#router-view-container',
-  threshold: 200,
-  throttleDelay: 100,
-});
-
 // 组件卸载时保存状态
 onUnmounted(() => {
   savePageState();
-  // 清理帖子容器的滚动监听
-  if (postScrollInstance) {
-    postScrollInstance.cleanup();
-    postScrollInstance = null;
+  const routerContainer = document.getElementById('router-view-container');
+  if (routerContainer) {
+    routerContainer.removeEventListener('scroll', () => {
+      glideLoad(courseId.value, false);
+    });
   }
-  // router-view-container 的清理工作已由 useOptimizedScroll 处理
 });
 
 // 页面加载时初始化
 onMounted(async () => {
   await initPage();
   moreOptionEventBus.emit("course",course.value);
-  // 滚动监听已由 useOptimizedScroll 处理，这里不再需要手动添加
+  // 添加滚动监听
+  const routerContainer = document.getElementById('router-view-container');
+  if (routerContainer) {
+    routerContainer.addEventListener('scroll', () => {
+      glideLoad(courseId.value, false);
+    });
+  }
 });
 </script>
 
