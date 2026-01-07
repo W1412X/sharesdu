@@ -65,3 +65,23 @@ export function isClickInsideElement(event, element) {
     return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
+/**
+ * 重置路由容器的滚动位置
+ * 用于解决全局共享滚动容器导致的滚动位置残留问题
+ * 应该在页面的 onMounted 中调用，如果没有恢复状态，则重置为0
+ * @param {Boolean} shouldReset - 是否应该重置（通常是没有恢复状态时）
+ */
+export function resetRouterScrollPosition(shouldReset = true) {
+    if (!shouldReset) {
+        return;
+    }
+    
+    // 使用 nextTick 和 requestAnimationFrame 确保在 DOM 更新后执行
+    setTimeout(() => {
+        const scrollElement = document.getElementById('router-view-container');
+        if (scrollElement) {
+            scrollElement.scrollTop = 0;
+        }
+    }, 0);
+}
+

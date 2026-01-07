@@ -246,4 +246,14 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+// 路由切换后，立即重置滚动位置
+// 如果页面有保存的状态，会在 onMounted 中恢复滚动位置
+router.afterEach(() => {
+  const scrollElement = document.getElementById('router-view-container');
+  if (scrollElement) {
+    // 立即重置为0，避免显示上一个页面的滚动位置
+    scrollElement.scrollTop = 0;
+  }
+});
+
 export default router;

@@ -3,7 +3,7 @@
  * 优化后的页面状态恢复逻辑
  */
 import { ref } from 'vue';
-import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import stateStorage from '@/utils/stateStorage';
 import { getCookie } from '@/utils/cookie';
 
 // 状态过期时间（毫秒）- 30分钟
@@ -19,7 +19,7 @@ export function useIndexRestore() {
    */
   const restoreState = () => {
     try {
-      const stored = selfDefinedSessionStorage.getItem('indexScanMsg');
+      const stored = stateStorage.getItem('indexScanMsg');
       if (!stored) {
         return null;
       }
@@ -31,7 +31,7 @@ export function useIndexRestore() {
         const now = Date.now();
         if (now - lastScanMsg.timestamp > STATE_EXPIRE_TIME) {
           // 状态已过期，清除
-          selfDefinedSessionStorage.removeItem('indexScanMsg');
+          stateStorage.removeItem('indexScanMsg');
           return null;
         }
       }
@@ -53,7 +53,7 @@ export function useIndexRestore() {
       console.error('Failed to restore state:', e);
       // 清除损坏的状态
       try {
-        selfDefinedSessionStorage.removeItem('indexScanMsg');
+        stateStorage.removeItem('indexScanMsg');
       } catch (err) {
         console.error('Failed to clear corrupted state:', err);
       }
@@ -81,7 +81,7 @@ export function useIndexRestore() {
         timestamp: Date.now(), // 添加时间戳
       };
 
-      selfDefinedSessionStorage.setItem('indexScanMsg', JSON.stringify(stateToSave));
+      stateStorage.setItem('indexScanMsg', JSON.stringify(stateToSave));
     } catch (e) {
       console.error('Failed to save state:', e);
     }
@@ -92,7 +92,7 @@ export function useIndexRestore() {
    */
   const clearState = () => {
     try {
-      selfDefinedSessionStorage.removeItem('indexScanMsg');
+      stateStorage.removeItem('indexScanMsg');
     } catch (e) {
       console.error('Failed to clear state:', e);
     }

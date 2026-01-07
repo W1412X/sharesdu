@@ -2,7 +2,7 @@
  * PostPage 页面恢复机制 Composable
  */
 import { ref } from 'vue';
-import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
+import stateStorage from '@/utils/stateStorage';
 import { getCookie } from '@/utils/cookie';
 
 // 状态过期时间（毫秒）- 30分钟
@@ -26,7 +26,7 @@ export function usePostRestore(postId) {
   const restoreState = () => {
     try {
       const key = getStorageKey();
-      const stored = selfDefinedSessionStorage.getItem(key);
+      const stored = stateStorage.getItem(key);
       if (!stored) {
         return null;
       }
@@ -38,7 +38,7 @@ export function usePostRestore(postId) {
         const now = Date.now();
         if (now - scanMsg.timestamp > STATE_EXPIRE_TIME) {
           // 状态已过期，清除
-          selfDefinedSessionStorage.removeItem(key);
+          stateStorage.removeItem(key);
           return null;
         }
       }
@@ -59,7 +59,7 @@ export function usePostRestore(postId) {
       console.error('Failed to restore state:', e);
       // 清除损坏的状态
       try {
-        selfDefinedSessionStorage.removeItem(getStorageKey());
+        stateStorage.removeItem(getStorageKey());
       } catch (err) {
         console.error('Failed to clear corrupted state:', err);
       }
@@ -86,7 +86,7 @@ export function usePostRestore(postId) {
         timestamp: Date.now(), // 添加时间戳
       };
 
-      selfDefinedSessionStorage.setItem(getStorageKey(), JSON.stringify(stateToSave));
+      stateStorage.setItem(getStorageKey(), JSON.stringify(stateToSave));
     } catch (e) {
       console.error('Failed to save state:', e);
     }
@@ -97,7 +97,7 @@ export function usePostRestore(postId) {
    */
   const clearState = () => {
     try {
-      selfDefinedSessionStorage.removeItem(getStorageKey());
+      stateStorage.removeItem(getStorageKey());
     } catch (e) {
       console.error('Failed to clear state:', e);
     }

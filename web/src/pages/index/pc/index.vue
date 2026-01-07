@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { watch, onMounted, onUnmounted, nextTick, computed, inject } from 'vue';
+import { watch, onMounted, onUnmounted, nextTick, computed, inject, onBeforeMount } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
 import { isElementAtBottom, openPage } from '@/utils/other';
@@ -275,36 +275,26 @@ onBeforeRouteLeave((to, from, next) => {
   }
   next();
 });
-
-// 挂载时恢复状态（优化版）
-onMounted(async () => {
+onBeforeMount(async () => {
   const restoredState = restoreState();
-  
-  // 设置页面标题
-  const webTitle = document.getElementById('web-title');
-  if (webTitle) {
-    webTitle.innerText = 'ShareSDU | 首页';
-  }
-  
   if (shouldRestore(restoredState)) {
+    console.log('恢复状态');
     // 需要恢复状态
     isRestoring.value = true;
-    
+    console.log("restoredState",restoredState);
     // 恢复基本状态
     itemType.value = restoredState.itemType;
     articleSortMethod.value = restoredState.articleSortMethod;
+    selectedSectionId.value = restoredState.selectedSectionId || 20;
     lastPageNum.value = restoredState.pageNum;
     
-    // 先加载第一页数据（快速显示）
-    await handleLoadMore(itemType.value);
-    // 如果是帖子页面，同时加载板块数据
+    // 如果是帖子页面，先加载板块列表
     if (itemType.value === 'post' && sectionList.value.length === 0) {
       await handleLoadMore('section');
     }
     
-    // 等待 DOM 更新
-    await nextTick();
-    
+    // 先加载第一页数据（快速显示）
+    await handleLoadMore(itemType.value);
     // 恢复滚动位置并加载到目标页码
     const targetPageNum = getTargetPageNum(
       itemType.value,
@@ -316,7 +306,7 @@ onMounted(async () => {
       },
       articleSortMethod.value
     );
-    
+    console.log("targetPageNum",targetPageNum);
     // 如果目标页码大于1，需要加载更多
     if (targetPageNum > 1) {
       await restoreScrollAndLoad(
@@ -324,10 +314,29 @@ onMounted(async () => {
         restoredState.pageNum,
       );
     }
-    
-    // 等待所有数据加载完成后再恢复滚动位置
+  }
+});
+let rafId = null;
+// 优化的滚动监听
+const handleScroll = () => {
+  // 取消之前的 RAF
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+  }
+  // 在下一帧执行检测
+  rafId = requestAnimationFrame(glideLoad);
+};
+// 挂载时恢复状态（优化版）
+onMounted(async () => {
+  const restoredState = restoreState();
+  
+  // 设置页面标题
+  const webTitle = document.getElementById('web-title');
+  if (webTitle) {
+    webTitle.innerText = 'ShareSDU | 首页';
+  }
+  if(shouldRestore(restoredState)) {
     await nextTick();
-    
     // 使用 requestAnimationFrame 确保 DOM 完全渲染
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -335,26 +344,23 @@ onMounted(async () => {
         if (scrollElement) {
           scrollElement.scrollTop = restoredState.scrollPosition || 0;
         }
-        isRestoring.value = false;
-        restoreComplete.value = true;
       });
     });
-  } else {
+  }else{
     // 不需要恢复，正常加载
-    await handleLoadMore(itemType.value);
-    // 如果是帖子页面，同时加载板块数据
+    // 如果是帖子页面，先加载板块列表
     if (itemType.value === 'post' && sectionList.value.length === 0) {
       await handleLoadMore('section');
     }
+    await handleLoadMore(itemType.value);
     restoreComplete.value = true;
   }
-  
+
   ifMounted.value = true;
-  
   // 添加滚动监听
   const routerViewContainer = document.getElementById('router-view-container');
   if (routerViewContainer) {
-    routerViewContainer.addEventListener('scroll', glideLoad);
+    routerViewContainer.addEventListener('scroll', handleScroll);
   }
 });
 
@@ -362,7 +368,7 @@ onMounted(async () => {
 onUnmounted(() => {
   const routerViewContainer = document.getElementById('router-view-container');
   if (routerViewContainer) {
-    routerViewContainer.removeEventListener('scroll', glideLoad);
+    routerViewContainer.removeEventListener('scroll', handleScroll);
   }
 });
 

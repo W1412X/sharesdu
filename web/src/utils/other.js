@@ -32,7 +32,7 @@ export { arrToString, stringToArr, copy, uniqueArray } from './string';
 export { extractDomain, isExactlySameOrigin, extractLinks } from './url';
 
 // DOM操作
-export { isElementAtBottom, isScrollToBottom, debounce, isClickInsideElement } from './dom';
+export { isElementAtBottom, isScrollToBottom, debounce, isClickInsideElement, resetRouterScrollPosition } from './dom';
 
 // 编辑器相关
 export { 
