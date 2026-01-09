@@ -25,17 +25,12 @@
       <!-- 下载卡片 -->
       <v-card v-if="ifShowDownload" class="card">
         <div class="row-div">
-          <div class="title-bold">测试阶段，有问题请联系管理员</div>
+          <div class="title-bold">APP功能不稳定，仅供测试</div>
           <v-spacer></v-spacer>
           <v-btn @click="$emit('close-download')" :size="25" :icon="'mdi-close'" variant="text"></v-btn>
         </div>
         <div class="text-medium" style="margin: 5px;">
-          对于OPPO，VIVO，小米等品牌以及<span class="text-medium-bold">非纯血鸿蒙华为</span>用户直接下载Android版本并安装
-          <br />
-          对于苹果用户，下载配置文件后在<span class="text-medium-bold">设置 > 已下载描述文件</span>进行安装
-          <br />
-          对于<span class="text-medium-bold">华为鸿蒙NEXT</span>用户，下载Harmony版本安装
-          <br />
+          APP中<span class="text-medium-bold">暂时不支持下载文件</span>，如果需要下载相关资源文件，请<span class="text-medium-bold">使用浏览器访问网站下载</span><br>
           <span class="text-tiny">注：如有无法安装以及其他问题请联系开发者(<a href="https://qm.qq.com/q/Uh7X13Hp8Q">点击此处进入QQ群</a>)</span>
         </div>
         <div class="card-bottom-div">
