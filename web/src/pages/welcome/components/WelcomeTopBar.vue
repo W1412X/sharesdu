@@ -4,7 +4,7 @@
     <div class="top-btn-div">
       <button @click="handleDeveloperClick" class="custom-nav-btn">开发者文档</button>
       <button @click="$emit('show-contact')" class="custom-nav-btn">联系我们</button>
-      <button @click="$emit('download-app')" class="custom-nav-btn">APP</button>
+      <button @click="$emit('download-app')" class="custom-nav-btn">体验APP</button>
     </div>
   </div>
 </template>
