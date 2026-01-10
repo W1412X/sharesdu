@@ -51,11 +51,30 @@
                         class="before-icon"></v-icon>
                 </div>
                 <div>
-                    <v-btn @click="selectImage()" v-if="this.data.coverLink==''" :color="'grey'" variant="outlined" text="+" :width="160" :height="160"></v-btn>
-                    <div  v-else @click="selectImage()">
-                        <img-card :width="160" :clickable="false" :height="160" :src="this.data.coverLink"></img-card>
+                    <div class="cover-upload-container">
+                        <v-btn 
+                            v-if="this.data.coverLink==''" 
+                            @click="selectImage()" 
+                            color="grey" 
+                            variant="outlined" 
+                            class="cover-upload-btn">
+                            <v-icon icon="mdi-image-plus" size="24"></v-icon>
+                            <span>选择封面</span>
+                        </v-btn>
+                        <div v-else @click="selectImage()" class="cover-preview">
+                            <img-card 
+                                :width="160" 
+                                :height="160" 
+                                :src="this.data.coverLink"
+                                :clickable="false"
+                                class="cover-image">
+                            </img-card>
+                            <div class="cover-overlay">
+                                <v-icon icon="mdi-pencil" size="20" color="white"></v-icon>
+                                <span>更换封面</span>
+                            </div>
+                        </div>
                     </div>
-                    
                 </div>
             </div>
             <div class="row-div">
@@ -487,6 +506,64 @@ export default {
     .tags-container{
         width: 60vw;
         overflow:auto;
+    }
+}
+
+.cover-upload-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.cover-upload-btn {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.cover-preview {
+    position: relative;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cover-image {
+    border-radius: 8px;
+}
+
+.cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.cover-preview:hover .cover-overlay,
+.cover-preview:active .cover-overlay {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .cover-preview .cover-overlay {
+        opacity: 0.3;
+    }
+    
+    .cover-preview:active .cover-overlay {
+        opacity: 0.7;
     }
 }
 </style>

@@ -9,7 +9,7 @@
                 :type="'preview'"
             ></html-editor>
             <div v-else-if="data.type==='md'" :key="'md'" class="md-container">
-                <MdPreview :id="mdId" :modelValue="data.content" />
+                <MdPreview :id="mdId" :modelValue="data.content" style="border: none;"/>
         </div>
         </transition>
     </div>
