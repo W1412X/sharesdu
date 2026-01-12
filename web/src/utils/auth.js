@@ -106,10 +106,6 @@ export async function dealAxiosError(error) {
                                         message: "已更新access token，重新请求"
                                     };
                                 } else {
-                                    //防止已经删除了accessToken的重复通知
-                                    if(getCookie("accessToken")) {
-                                        return;
-                                    }
                                     clearTokenCookies();
                                     window.alert("自动登录失败，跳转至登陆页");
                                     setTimeout(() => {
