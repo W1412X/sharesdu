@@ -1,7 +1,7 @@
 <!-- 帖子项组件主入口 - 根据设备类型动态加载 PC 端或移动端组件 -->
 <template>
-    <post-item-pc v-if="deviceType === 'desktop'" :init-data="initData" :if-parent-author="ifParentAuthor" :search-query="searchQuery" @alert="alert" @set-post-top="setPostTop"></post-item-pc>
-    <post-item-mobile v-else :init-data="initData" :if-parent-author="ifParentAuthor" :search-query="searchQuery" @alert="alert" @set-post-top="setPostTop"></post-item-mobile>
+    <post-item-pc v-if="deviceType === 'desktop'" :clickable="clickable" :init-data="initData" :if-parent-author="ifParentAuthor" :search-query="searchQuery" @alert="alert" @set-post-top="setPostTop"></post-item-pc>
+    <post-item-mobile v-else :clickable="clickable" :init-data="initData" :if-parent-author="ifParentAuthor" :search-query="searchQuery" @alert="alert" @set-post-top="setPostTop"></post-item-mobile>
 </template>
 <script>
 import { globalProperties } from '@/main';
@@ -18,6 +18,10 @@ export default {
         ifParentAuthor: {
             type: Boolean,
             default: false,
+        },
+        clickable: {
+            type: Boolean,
+            default: true,
         },
         searchQuery: {
             type: Array,

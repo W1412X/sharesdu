@@ -3,9 +3,7 @@
     <canvas class="background" id="canvas"></canvas>
     <div style="max-height: 100vh; overflow-y: auto;">
       <!-- 顶部导航栏 -->
-      <WelcomeTopBar
-        @show-contact="handleShowContact"
-        @download-app="handleDownloadApp">
+      <WelcomeTopBar @download-app="handleDownloadApp">
       </WelcomeTopBar>
       
       <div class="logo-line"></div>
@@ -38,7 +36,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, provide } from 'vue';
 import { globalProperties } from '@/main';
 import {
   WelcomeTopBar,
@@ -82,14 +80,12 @@ const {
 // 主题颜色设置
 useWelcomeTheme(themeColor);
 
-// 事件处理
-const handleShowContact = () => {
-  setContactState(true);
-};
-
 const handleDownloadApp = () => {
   downloadApp();
 };
+
+// 提供下载函数给子组件使用
+provide('downloadApp', handleDownloadApp);
 
 const handleCloseLogin = () => {
   setLoginState(false);

@@ -101,10 +101,7 @@ export function useLoginActions(
       }
       registerByEmailStep.value++;
     } else {
-      if (registerByInviteData.value.passwd !== registerByInviteData.value.passwdConfirm) {
-        alertHandler(getNormalWarnAlert('两次密码输入不一致'));
-        return;
-      }
+      // 邀请码注册第一步只需要验证用户名和邀请码，密码在第二步
       registerByInviteStep.value++;
     }
   };

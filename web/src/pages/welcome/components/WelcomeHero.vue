@@ -17,6 +17,7 @@
           elevation="4">
           立即注册账号
         </v-btn>
+
         <div class="hero-cta-hint">开启你的 ShareSDU 之旅</div>
       </div>
       

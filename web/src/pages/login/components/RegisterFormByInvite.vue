@@ -4,6 +4,8 @@
     <template v-if="step === 0">
       <div class="text-small tip-text-container">
         <span>团体/组织/毕业生请联系管理员获取验证码</span>
+        <br/>
+        <strong>填写邀请码后仍需绑定其他邮箱</strong>
       </div>
       <sensitive-text-field 
         :model-value="registerData.userName"
@@ -17,39 +19,19 @@
         :hint="'起一个喜欢的名称(此名称将作为登陆依据之一)'">
       </sensitive-text-field>
       <sensitive-text-field 
+        :model-value="registerData.inviteCode"
+        @update:model-value="$emit('update:registerData', { ...registerData, inviteCode: $event })"
         class="input" 
-        :model-value="registerData.passwd"
-        @update:model-value="$emit('update:registerData', { ...registerData, passwd: $event })"
-        :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="passwdVisible ? 'text' : 'password'" 
         :density="inputType"
-        :rules="[loginRules.password]" 
-        placeholder="输入密码" 
-        prepend-inner-icon="mdi-lock-outline"
         variant="solo-filled" 
-        label="密码"
-        @click:append-inner="$emit('update:passwdVisible', !passwdVisible)">
-      </sensitive-text-field>
-      <sensitive-text-field 
-        class="input" 
-        :model-value="registerData.passwdConfirm"
-        @update:model-value="$emit('update:registerData', { ...registerData, passwdConfirm: $event })"
-        :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="passwdVisible ? 'text' : 'password'" 
-        :density="inputType"
-        :rules="[loginRules.password]" 
-        placeholder="确认密码" 
-        prepend-inner-icon="mdi-lock-outline"
-        variant="solo-filled" 
-        label="确认密码"
-        @click:append-inner="$emit('update:passwdVisible', !passwdVisible)">
+        label="输入邀请码">
       </sensitive-text-field>
       <v-btn 
         @click="$emit('next')" 
         class="login-btn" 
         variant="flat" 
         :color="themeColor"
-        :disabled="!(valUserName(registerData.userName) && valPassWord(registerData.passwd) && valPassWord(registerData.passwdConfirm))"
+        :disabled="!valUserName(registerData.userName) || !registerData.inviteCode"
         size="large"
         rounded="lg">
         <v-icon size="20" style="margin-right:5px;margin-top:3px;" class="mr-2">mdi-arrow-right</v-icon>
@@ -91,6 +73,34 @@
         </sensitive-text-field>
       </div>
       <sensitive-text-field 
+        class="input" 
+        :model-value="registerData.passwd"
+        @update:model-value="$emit('update:registerData', { ...registerData, passwd: $event })"
+        :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="passwdVisible ? 'text' : 'password'" 
+        :density="inputType"
+        :rules="[loginRules.password]" 
+        placeholder="输入密码" 
+        prepend-inner-icon="mdi-lock-outline"
+        variant="solo-filled" 
+        label="密码"
+        @click:append-inner="$emit('update:passwdVisible', !passwdVisible)">
+      </sensitive-text-field>
+      <sensitive-text-field 
+        class="input" 
+        :model-value="registerData.passwdConfirm"
+        @update:model-value="$emit('update:registerData', { ...registerData, passwdConfirm: $event })"
+        :append-inner-icon="passwdVisible ? 'mdi-eye-off' : 'mdi-eye'"
+        :type="passwdVisible ? 'text' : 'password'" 
+        :density="inputType"
+        :rules="[loginRules.password]" 
+        placeholder="确认密码" 
+        prepend-inner-icon="mdi-lock-outline"
+        variant="solo-filled" 
+        label="确认密码"
+        @click:append-inner="$emit('update:passwdVisible', !passwdVisible)">
+      </sensitive-text-field>
+      <sensitive-text-field 
         :model-value="registerData.email"
         @update:model-value="$emit('update:registerData', { ...registerData, email: $event })"
         prepend-inner-icon="mdi-email" 
@@ -98,14 +108,6 @@
         :density="inputType" 
         variant="solo-filled" 
         label="绑定邮箱">
-      </sensitive-text-field>
-      <sensitive-text-field 
-        :model-value="registerData.inviteCode"
-        @update:model-value="$emit('update:registerData', { ...registerData, inviteCode: $event })"
-        class="input" 
-        :density="inputType"
-        variant="solo-filled" 
-        label="输入邀请码">
       </sensitive-text-field>
       <div class="text-small agreement-text-container">
         注册即代表您已阅读并同意
@@ -131,6 +133,7 @@
           class="register-btn" 
           variant="flat"
           :color="themeColor"
+          :disabled="!(valPassWord(registerData.passwd) && valPassWord(registerData.passwdConfirm) && registerData.passwd === registerData.passwdConfirm)"
           rounded="lg">
           <v-icon size="18" class="mr-1">mdi-account-plus</v-icon>
           注册
@@ -202,7 +205,7 @@ const valPassWord = (passWord) => {
   margin-top: 12px;
   margin-bottom: 8px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   color: #666;
   padding: 0 5%;

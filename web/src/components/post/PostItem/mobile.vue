@@ -74,6 +74,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        clickable: {
+            type: Boolean,
+            default: true,
+        },
         searchQuery: {
             type: Array,
             default: () => [],
@@ -136,6 +140,9 @@ export default {
             this.$emit('alert', msg);
         },
         click() {
+            if (!this.clickable) {
+                return;
+            }
             if (this.data.id == null) {
                 openPage("router", {
                     name: 'ErrorPage',
