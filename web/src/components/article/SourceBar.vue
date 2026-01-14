@@ -3,10 +3,10 @@
       <div v-if="ifShowDialog" style="width: 100%;height:100%;justify-content: center;display: flex">
         <v-card class="dialog-card">
             <span class="title-bold">提示</span>
-            <span class="text-small">在app中下载功能暂时无法生效，可以复制链接后在浏览器中访问进行下载</span>
+            <span class="text-small">在app中下载功能如果无法生效，可以复制链接后在浏览器中访问进行下载</span>
             <div class="dialog-bottom-btn-bar">
                 <v-spacer></v-spacer>
-                <v-btn @click="download" :color="themeColor" density="compact" variant="outlined">继续下载</v-btn>
+                <v-btn @click="mobileDownload" :color="themeColor" density="compact" variant="outlined">继续下载</v-btn>
                 <v-btn @click="copyArticleLink" :color="themeColor" style="margin-left: 10px;" density="compact" variant="outlined">复制文章链接</v-btn>
             </div>
         </v-card>
@@ -67,6 +67,10 @@ export default {
             }
 
         },
+        mobileDownload(){
+            this.ifShowDialog = false;
+            this.download();
+        },
         async download() {
             this.setLoading(getLoadMsg("正在下载..."));
             let response=await downloadResource(this.articleId,this.articleTitle,this.setLoading);
@@ -87,6 +91,7 @@ export default {
         copyArticleLink() {
             navigator.clipboard.writeText("https://sharesdu.com/#/article/"+this.articleId);
             this.alert(getNormalSuccessAlert("复制成功"));
+            this.ifShowDialog = false;
         },
     },
 }
