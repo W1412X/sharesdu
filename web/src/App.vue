@@ -8,17 +8,25 @@
         @set_loading="setLoading"></course-editor>
     </div>
   </v-dialog>
+  <!-- 全局通知弹窗 -->
+  <global-notice-dialog
+    :notice="noticeToShow"
+    :show="showNoticeDialog"
+    @close="closeNoticeDialog"
+    @dont-show="markAsShown"
+  ></global-notice-dialog>
   <!-- 根据设备类型动态加载对应组件 -->
   <app-mobile v-if="ifMobile"></app-mobile>
   <app-desktop v-else></app-desktop>
 </template>
 <script>
-import { provide } from 'vue';
+import { provide, onMounted } from 'vue';
 import PostEditor from '@/components/post/PostEditor.vue';
 import CourseEditor from '@/components/course/CourseEditor.vue';
+import GlobalNoticeDialog from '@/components/common/GlobalNoticeDialog.vue';
 import AppMobile from './AppMobile.vue';
 import AppDesktop from './AppDesktop.vue';
-import { useDevice, useDialog, useMessage } from './app/composables';
+import { useDevice, useDialog, useMessage, useGlobalNotice } from './app/composables';
 
 export default {
   name: 'App',
@@ -39,6 +47,15 @@ export default {
       closeDialog,
     } = useDialog();
     
+    // 全局通知管理
+    const {
+      noticeToShow,
+      showNoticeDialog,
+      initNotices,
+      closeNoticeDialog,
+      markAsShown,
+    } = useGlobalNotice();
+    
     // 通过 provide 共享对话框状态和方法给子组件
     provide('dialog', {
       setPostEditorState,
@@ -54,6 +71,11 @@ export default {
       alert,
       setLoading,
       setLoadState,
+    });
+    
+    // 初始化通知检查
+    onMounted(() => {
+      initNotices();
     });
     
     return {
@@ -74,11 +96,17 @@ export default {
       setPostEditorState,
       setCourseEditorState,
       closeDialog,
+      // 通知
+      noticeToShow,
+      showNoticeDialog,
+      closeNoticeDialog,
+      markAsShown,
     };
   },
   components: {
     PostEditor,
     CourseEditor,
+    GlobalNoticeDialog,
     AppMobile,
     AppDesktop,
   },

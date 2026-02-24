@@ -12,3 +12,4 @@ export { useMobileNav } from './useMobileNav';
 export { usePCAppIndexPage } from './usePCAppIndexPage';
 export { usePostPolling } from './usePostPolling';
 export { useNotificationPolling } from './useNotificationPolling';
+export { useGlobalNotice } from './useGlobalNotice';
