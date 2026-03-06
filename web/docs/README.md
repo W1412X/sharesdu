@@ -45,6 +45,7 @@ docs/
 - **[加载闪烁修复](./optimization/LOADING_FLICKER_FIX.md)** - 修复页面加载时的闪烁问题
 - **[加载过渡优化](./optimization/LOADING_TRANSITION_OPTIMIZATION.md)** - 优化页面加载过渡效果
 - **[路由过渡修复](./optimization/ROUTER_TRANSITION_FIX.md)** - 修复路由切换时的过渡问题
+- **[路由优化实施](./optimization/ROUTER_OPTIMIZATION_2026.md)** - 路由系统全面优化（2026-03）
 - **[字体重构](./optimization/TYPOGRAPHY_REFACTOR.md)** - 字体系统的重构记录
 
 ### 重构记录 (refactoring/)
@@ -68,7 +69,7 @@ docs/
 
 ### 问题排查
 - **加载问题**：查看 [加载闪烁修复](./optimization/LOADING_FLICKER_FIX.md) 和 [加载过渡优化](./optimization/LOADING_TRANSITION_OPTIMIZATION.md)
-- **路由问题**：查看 [路由过渡修复](./optimization/ROUTER_TRANSITION_FIX.md)
+- **路由问题**：查看 [路由过渡修复](./optimization/ROUTER_TRANSITION_FIX.md) 和 [路由优化实施](./optimization/ROUTER_OPTIMIZATION_2026.md)
 - **缓存问题**：查看缓存相关的三个文档
 
 ## 📝 文档贡献
