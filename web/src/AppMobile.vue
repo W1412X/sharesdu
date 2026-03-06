@@ -88,8 +88,22 @@
     <div
       id="router-view-container"
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': routerMarginBottom, 'flex': 1 ,'overflow-y': 'auto', position: 'relative' }">
-      <router-view id="router-view" :key="$route.fullPath" class="router-view" @alert="alert" @set_loading="setLoading"
-        @search_type_changed="handleSearchTypeChanged" />
+      <router-view v-slot="{ Component, route: routeSlot }">
+        <transition name="page-fade" mode="out-in">
+          <component 
+            v-if="Component" 
+            :is="Component" 
+            :key="routeSlot.fullPath"
+            id="router-view"
+            class="router-view"
+            @alert="alert" 
+            @set_loading="setLoading"
+            @search_type_changed="handleSearchTypeChanged" />
+          <div v-else :key="'loading'" class="page-loading-placeholder">
+            <v-progress-circular indeterminate :color="themeColor" :size="50" />
+          </div>
+        </transition>
+      </router-view>
     </div>
     <div v-if="ifShowBottomNav" class="bottom-nav-container">
       <v-spacer />
