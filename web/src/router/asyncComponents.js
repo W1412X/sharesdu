@@ -59,7 +59,7 @@ export const load = (path) => () => import(`@/pages/${path}.vue`);
 export const loadLarge = (path, options = {}) => {
   const loader = () => import(`@/pages/${path}.vue`);
   return createAsyncComponent(loader, {
-    delay: 200,
+    delay: 0, // 立即显示加载状态，避免空白
     timeout: 10000,
     ...options,
   });
@@ -67,48 +67,48 @@ export const loadLarge = (path, options = {}) => {
 
 /**
  * 预定义的异步组件
- * 大型组件使用优化的加载方式
+ * 大型组件使用优化的加载方式，减少延迟以改善用户体验
  */
 
-// 超大型组件（>1000行）
+// 超大型组件（>1000行）- 立即显示加载状态
 export const WelcomePage = loadLarge('welcome/index', {
-  delay: 100,
+  delay: 0,
   timeout: 15000,
 });
 
 export const SearchPage = loadLarge('search/index', {
-  delay: 100,
+  delay: 0,
   timeout: 12000,
 });
 
-// 大型组件（500-1000行）
+// 大型组件（500-1000行）- 立即显示加载状态
 export const ArticlePage = loadLarge('article/index', {
-  delay: 150,
+  delay: 0,
   timeout: 10000,
 });
 
 export const PostPage = loadLarge('post/index', {
-  delay: 150,
+  delay: 0,
   timeout: 10000,
 });
 
 export const IndexPage = loadLarge('index/index', {
-  delay: 150,
+  delay: 0,
   timeout: 10000,
 });
 
 export const LoginPage = loadLarge('login/index', {
-  delay: 150,
+  delay: 0,
   timeout: 10000,
 });
 
 export const ChatPage = loadLarge('chat/index', {
-  delay: 150,
+  delay: 0,
   timeout: 10000,
 });
 
 export const CoursePage = loadLarge('course/index', {
-  delay: 150,
+  delay: 0,
   timeout: 10000,
 });
 
@@ -126,7 +126,7 @@ export const SearchMobilePage = load('search/SearchMobilePage');
 export const RagChatPage = load('RagChatPage');
 export const SectionEditorPage = load('section_editor/index');
 export const SectionPage = loadLarge('section/index', {
-  delay: 150,
+  delay: 0,
   timeout: 10000,
 });
 export const SectionSetPage = load('section_set/index');
