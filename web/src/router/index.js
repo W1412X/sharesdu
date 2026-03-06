@@ -256,4 +256,41 @@ router.afterEach(() => {
   }
 });
 
+// 路由预加载优化
+// 预加载常用页面，提升用户体验
+const preloadRoutes = () => {
+  // 预加载首页相关的常用页面
+  const commonRoutes = [
+    () => import('@/pages/index/index.vue'),
+    () => import('@/pages/search/index.vue'),
+    () => import('@/pages/self/index.vue'),
+    () => import('@/pages/ServicePage.vue'),
+  ];
+
+  // 使用 requestIdleCallback 在浏览器空闲时预加载
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      commonRoutes.forEach(route => {
+        route().catch(() => {
+          // 预加载失败不影响正常使用
+        });
+      });
+    });
+  } else {
+    // 降级方案：延迟预加载
+    setTimeout(() => {
+      commonRoutes.forEach(route => {
+        route().catch(() => {
+          // 预加载失败不影响正常使用
+        });
+      });
+    }, 2000);
+  }
+};
+
+// 在路由准备就绪后执行预加载
+router.isReady().then(() => {
+  preloadRoutes();
+});
+
 export default router;
