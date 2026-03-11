@@ -102,22 +102,8 @@
     <div
       id="router-view-container"
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': '10px', 'flex': 1 ,'overflow-y': 'auto', position: 'relative' }">
-      <router-view :key="navigationKey" v-slot="{ Component, route: routeSlot }">
-        <transition name="page-fade" mode="in-out">
-          <component 
-            v-if="Component" 
-            :is="Component" 
-            :key="routeSlot.fullPath"
-            id="router-view"
-            class="router-view"
-            @alert="alert" 
-            @set_loading="setLoading"
-            @search_type_changed="handleSearchTypeChanged" />
-          <div v-else :key="'loading'" class="page-loading-placeholder">
-            <v-progress-circular indeterminate :color="themeColor" :size="50" />
-          </div>
-        </transition>
-      </router-view>
+      <router-view id="router-view" :key="$route.fullPath" class="router-view" @alert="alert" @set_loading="setLoading"
+        @search_type_changed="handleSearchTypeChanged" />
     </div>
   </v-app>
 </template>
@@ -139,7 +125,6 @@ import {
 } from './app/composables';
 import { inject, provide, ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { getCookie } from './utils/cookie';
-import { navigationKey } from '@/router';
 
 export default {
   name: 'AppDesktop',
@@ -279,8 +264,7 @@ export default {
     });
     
     return {
-      // 路由（navigationKey 用于避免来回跳转时复用异常组件导致空白）
-      navigationKey,
+      // 路由
       page,
       ifAvatarState,
       // 用户
@@ -394,38 +378,5 @@ export default {
   width: 100vw;
   max-width: 100vw;
   background-color: white;
-}
-
-/* 页面切换过渡动画 */
-.page-fade-enter-active {
-  transition: opacity 0.2s ease-in;
-}
-
-.page-fade-leave-active {
-  transition: opacity 0.1s ease-out;
-}
-
-.page-fade-enter-from {
-  opacity: 0;
-}
-
-.page-fade-leave-to {
-  opacity: 0;
-}
-
-.page-fade-enter-to,
-.page-fade-leave-from {
-  opacity: 1;
-}
-
-/* 页面加载占位符：填满容器，避免过渡时出现空白 */
-.page-loading-placeholder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-  width: 100%;
-  flex: 1;
-  align-self: stretch;
 }
 </style>

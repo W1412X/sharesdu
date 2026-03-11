@@ -1,12 +1,8 @@
-import { ref } from 'vue';
 import { getCookie } from '@/utils/cookie';
 import { startDebug } from '@/utils/debug';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { createRouter, createWebHashHistory } from 'vue-router';
-
-/** 每次导航自增，用于 router-view 的 key，避免来回跳转时复用异常状态的组件导致空白 */
-export const navigationKey = ref(0);
 import {
   WelcomePage,
   SearchPage,
@@ -238,9 +234,6 @@ router.beforeEach((to, from, next) => {
   } catch (e) {
     console.error(e);
   }
-  // 每次导航前更新 key，避免来回跳转时组件复用导致空白（在 next 前更新，确保首次渲染就用新 key）
-  navigationKey.value += 1;
-
   if (to.matched.some(record => record.meta.requiresAuth)) {
     next();
   } else if (to.path === "/login"||to.path ==="/debug/login") {
@@ -265,45 +258,9 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
   const scrollElement = document.getElementById('router-view-container');
   if (scrollElement) {
+    // 立即重置为0，避免显示上一个页面的滚动位置
     scrollElement.scrollTop = 0;
   }
-});
-
-// 路由预加载优化
-// 预加载常用页面，提升用户体验
-const preloadRoutes = () => {
-  // 预加载首页相关的常用页面
-  const commonRoutes = [
-    () => import('@/pages/index/index.vue'),
-    () => import('@/pages/search/index.vue'),
-    () => import('@/pages/self/index.vue'),
-    () => import('@/pages/ServicePage.vue'),
-  ];
-
-  // 使用 requestIdleCallback 在浏览器空闲时预加载
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(() => {
-      commonRoutes.forEach(route => {
-        route().catch(() => {
-          // 预加载失败不影响正常使用
-        });
-      });
-    });
-  } else {
-    // 降级方案：延迟预加载
-    setTimeout(() => {
-      commonRoutes.forEach(route => {
-        route().catch(() => {
-          // 预加载失败不影响正常使用
-        });
-      });
-    }, 2000);
-  }
-};
-
-// 在路由准备就绪后执行预加载
-router.isReady().then(() => {
-  preloadRoutes();
 });
 
 export default router;
