@@ -65,7 +65,11 @@
                 <div v-if="m.process && m.process.summary" class="process-summary text-tiny">
                   {{ m.process.summary }}
                 </div>
-                <div v-if="m.process && m.process.expanded" class="process-panel">
+                <div
+                  v-if="m.process && m.process.expanded"
+                  class="process-panel"
+                  :data-process-panel="m.id"
+                >
                   <div
                     v-for="row in flattenProcess(m.process.root)"
                     :key="row.id"
@@ -182,6 +186,18 @@ const scrollToBottom = () => {
   }, 50);
 };
 
+const scrollProcessPanelToBottom = (msgId) => {
+  requestAnimationFrame(() => {
+    try {
+      const el = document.querySelector(`[data-process-panel="${msgId}"]`);
+      if (!el) return;
+      el.scrollTop = el.scrollHeight;
+    } catch {
+      // ignore
+    }
+  });
+};
+
 // 某些浏览器/构建下，深层 reactive 变更在长 async 流程中可能不够及时刷新视图；
 // 这里用 rAF 轻量触发一次列表引用更新，确保事件流在执行过程中持续可见更新。
 let rafPending = false;
@@ -285,8 +301,8 @@ const send = async () => {
       toolCallNodes: {},
     },
   });
-  messages.value.push(assistantMsg);
-  scrollToBottom();
+    messages.value.push(assistantMsg);
+    scrollToBottom();
 
   let pendingToolCalls = 0;
   const proc = assistantMsg.process;
@@ -457,8 +473,16 @@ const send = async () => {
           proc.mergeNode = mergeNode;
         } else if (e?.type === 'orchestrator_merge_end') {
           if (proc.mergeNode) proc.mergeNode.status = 'done';
+          setSummary('已完成回答');
+        } else if (e?.type === 'orchestrator_done') {
+          if (proc.root.status === 'done') {
+            setSummary('已完成回答');
+          }
         }
         scheduleRender();
+        if (assistantMsg.generating && proc.expanded) {
+          scrollProcessPanelToBottom(assistantMsg.id);
+        }
       },
     });
     const raw = result?.final?.content || '(无输出)';
@@ -475,8 +499,14 @@ const send = async () => {
     abortController = null;
     assistantMsg.generating = false;
     if (proc.root.status === 'doing') proc.root.status = 'error';
+    if (proc.root.status === 'done') {
+      proc.summary = '已完成回答';
+    } else if (proc.root.status === 'error' && !proc.summary) {
+      proc.summary = '执行失败';
+    }
     // 执行完成后默认收起过程面板（用户可点击“已完成思考”展开查看）
     proc.expanded = false;
+    scheduleRender();
     scrollToBottom();
   }
 };
@@ -607,6 +637,8 @@ onMounted(() => {
   border-left: 2px solid #eeeeee;
   margin: 0 0 12px 2px;
   padding: 6px 0;
+  max-height: 300px;
+  overflow: auto;
 }
 
 .process-summary {
