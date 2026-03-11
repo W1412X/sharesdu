@@ -1,12 +1,91 @@
 <template>
   <div class="column-list">
     <v-btn
-      @click="handleToUrl('/#/agent')"
+      @click="showAgentConfigDialog = true"
       prepend-icon="mdi-robot-outline"
       color="grey"
       variant="outlined"
       text="Agent对话"
     ></v-btn>
+    <v-dialog
+      v-model="showAgentConfigDialog"
+      max-width="500"
+      persistent
+      content-class="agent-config-dialog"
+      @after-enter="onAgentConfigDialogOpen"
+    >
+      <v-card class="pa-4">
+        <v-card-title class="d-flex align-center">
+          <v-icon icon="mdi-robot-outline" class="mr-2" />
+          Agent 模型配置（本地存储）
+          <v-spacer />
+          <v-btn icon="mdi-close" variant="text" size="small" @click="showAgentConfigDialog = false" />
+        </v-card-title>
+        <v-card-text>
+          <div class="text-small mb-3" style="color: #6b6b6b;">
+            网站不提供 Key；请自行填写。配置仅保存在浏览器本地（LocalStorage）。
+          </div>
+          <v-text-field
+            v-model="cfg.baseUrl"
+            label="Base URL（OpenAI兼容）"
+            density="compact"
+            variant="outlined"
+            placeholder="https://api.openai.com/v1"
+          />
+          <v-text-field
+            v-model="cfg.model"
+            label="Model"
+            density="compact"
+            variant="outlined"
+            placeholder="gpt-4o-mini"
+          />
+          <v-text-field
+            v-model="cfg.apiKey"
+            :type="showApiKey ? 'text' : 'password'"
+            label="API Key"
+            density="compact"
+            variant="outlined"
+            placeholder="sk-..."
+            :append-inner-icon="showApiKey ? 'mdi-eye-off' : 'mdi-eye'"
+            @click:append-inner="showApiKey = !showApiKey"
+          />
+          <div class="text-small mt-1 mb-1" style="color: #6b6b6b;">Temperature: {{ cfg.temperature }}</div>
+          <v-slider
+            v-model="cfg.temperature"
+            :min="0"
+            :max="1"
+            :step="0.05"
+            density="compact"
+            color="var(--theme-color)"
+          />
+          <v-text-field
+            v-model.number="cfg.maxTokens"
+            label="Max Tokens"
+            density="compact"
+            variant="outlined"
+            type="number"
+            :min="64"
+            :max="4096"
+          />
+          <v-text-field
+            v-model.number="cfg.maxRounds"
+            label="Max Rounds（工具调用最大轮数）"
+            density="compact"
+            variant="outlined"
+            type="number"
+            :min="1"
+            :max="32"
+            hint="单次对话中 LLM 可进行工具调用的最大轮数"
+            persistent-hint
+          />
+          <div class="row-actions mt-3">
+            <v-btn color="var(--theme-color)" variant="flat" @click="saveCfg">保存</v-btn>
+            <v-btn color="grey" variant="outlined" @click="resetCfg">重置为默认</v-btn>
+            <v-btn color="grey" variant="tonal" @click="goToAgentAndClose">前往对话</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-btn
       @click="handleToUrl('/#/document/to_know')"
       prepend-icon="mdi-bulletin-board"
@@ -68,63 +147,6 @@
 
     <v-divider class="my-4"></v-divider>
 
-    <v-card variant="outlined" class="pa-4">
-      <div class="text-title-bold mb-2">Agent 模型配置（本地存储）</div>
-      <div class="text-small mb-3" style="color: #6b6b6b;">
-        网站不提供 Key；请自行填写。配置仅保存在浏览器本地（LocalStorage）。
-      </div>
-
-      <v-text-field
-        v-model="cfg.baseUrl"
-        label="Base URL（OpenAI兼容）"
-        density="compact"
-        variant="outlined"
-        placeholder="https://api.openai.com/v1"
-      />
-      <v-text-field
-        v-model="cfg.model"
-        label="Model"
-        density="compact"
-        variant="outlined"
-        placeholder="gpt-4o-mini"
-      />
-      <v-text-field
-        v-model="cfg.apiKey"
-        :type="showApiKey ? 'text' : 'password'"
-        label="API Key"
-        density="compact"
-        variant="outlined"
-        placeholder="sk-..."
-        :append-inner-icon="showApiKey ? 'mdi-eye-off' : 'mdi-eye'"
-        @click:append-inner="showApiKey = !showApiKey"
-      />
-
-      <div class="text-small mt-1 mb-1" style="color: #6b6b6b;">Temperature: {{ cfg.temperature }}</div>
-      <v-slider
-        v-model="cfg.temperature"
-        :min="0"
-        :max="1"
-        :step="0.05"
-        density="compact"
-        color="var(--theme-color)"
-      />
-
-      <v-text-field
-        v-model.number="cfg.maxTokens"
-        label="Max Tokens"
-        density="compact"
-        variant="outlined"
-        type="number"
-        :min="64"
-        :max="4096"
-      />
-
-      <div class="row-actions">
-        <v-btn color="var(--theme-color)" variant="flat" @click="saveCfg">保存</v-btn>
-        <v-btn color="grey" variant="outlined" @click="resetCfg">重置为默认</v-btn>
-      </div>
-    </v-card>
-
     <v-snackbar v-model="snack.show" :color="snack.color" timeout="2000">
       {{ snack.text }}
     </v-snackbar>
@@ -155,6 +177,7 @@ const showApiKey = ref(false);
 
 const cfg = ref(getAgentLLMConfig());
 const snack = ref({ show: false, text: '', color: 'success' });
+const showAgentConfigDialog = ref(false);
 
 // 初始化暗色模式状态
 onMounted(() => {
@@ -187,6 +210,15 @@ const resetCfg = () => {
   clearAgentLLMConfig();
   cfg.value = getDefaultAgentLLMConfig();
   snack.value = { show: true, text: '已重置为默认配置', color: 'info' };
+};
+
+const onAgentConfigDialogOpen = () => {
+  cfg.value = getAgentLLMConfig();
+};
+
+const goToAgentAndClose = () => {
+  showAgentConfigDialog.value = false;
+  emit('to-url', '/#/agent');
 };
 </script>
 

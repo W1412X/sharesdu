@@ -9,6 +9,7 @@ export const getDefaultAgentLLMConfig = () => ({
   model: 'gpt-4o-mini',
   temperature: 0.2,
   maxTokens: 800,
+  maxRounds: 16,
 });
 
 export const getAgentLLMConfig = () => {

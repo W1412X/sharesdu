@@ -74,6 +74,7 @@ export const createDomainAgents = () => {
         model: cfg.model,
         temperature: cfg.temperature,
         max_tokens: cfg.maxTokens,
+        maxRounds: cfg.maxRounds ?? 16,
         messages,
         tools,
         handlers: SHARES_DU_TOOLSET.handlers,
