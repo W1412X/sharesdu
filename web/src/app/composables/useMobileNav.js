@@ -9,7 +9,7 @@ export function useMobileNav(page, deviceType, loadState) {
   
   // 移动端是否显示搜索输入框
   const mobileIfShowSearchInput = computed(() => {
-    if (['IndexPage', 'ServicePage', 'AgentPage', 'RagChatPage'].includes(page.value)) {
+    if (['IndexPage', 'ServicePage', 'RagChatPage'].includes(page.value)) {
       return false;
     }
     return true;
@@ -17,7 +17,7 @@ export function useMobileNav(page, deviceType, loadState) {
   
   // 是否显示底部导航
   const ifShowBottomNav = computed(() => {
-    return ['SelfPage', 'IndexPage', 'SearchPage','ServicePage'].includes(page.value) && deviceType.value == 'mobile';
+    return ['SelfPage', 'IndexPage', 'SearchPage', 'ServicePage'].includes(page.value) && deviceType.value == 'mobile';
   });
   
   // 路由下边距
@@ -62,7 +62,7 @@ export function useMobileNav(page, deviceType, loadState) {
     return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || 
            page.value == "SelfPage" || page.value == "ManagePage" || page.value == "EditorPage" || 
            page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || 
-           page.value == "ServicePage" || page.value == "AgentPage" || page.value == "RagChatPage" || page.value == "SectionSetPage" || page.value == "SearchMobilePage";
+           page.value == "ServicePage"|| page.value == "RagChatPage" || page.value == "SectionSetPage" || page.value == "SearchMobilePage";
   });
   
   // 是否显示头像

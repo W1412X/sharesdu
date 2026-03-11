@@ -175,9 +175,9 @@ export default {
     // 路由状态
     const { page, ifAvatarState } = useRouteState();
     
-    // 特殊页面状态
+    // 特殊页面状态（与帖子/文章等一致：显示 返回+首页+搜索+更多 的导航栏）
     const isSpecialPage = computed(() => {
-      return ['PostPage', 'ArticlePage', 'CoursePage', 'SectionPage'].includes(page.value);
+      return ['PostPage', 'ArticlePage', 'CoursePage', 'SectionPage', 'AgentPage'].includes(page.value);
     });
     
     // 特殊页面搜索框状态

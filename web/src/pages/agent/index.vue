@@ -1,22 +1,24 @@
 <template>
   <div class="full-center">
     <div class="agent-shell">
-      <div class="agent-top">
+      <div class="agent-top" :class="{ 'agent-top--mobile': isMobile }">
         <v-btn
+          v-if="!isMobile"
           icon="mdi-arrow-left"
           variant="text"
           :color="themeColor"
           @click="toHome"
         />
-        <div class="page-title-bold">Agent</div>
+        <div class="page-title-bold">AI问答</div>
         <v-spacer></v-spacer>
         <v-btn
           variant="outlined"
           color="grey"
-          prepend-icon="mdi-broom"
+          :prepend-icon="'mdi-broom'"
+          size="small"
           @click="clearChat"
         >
-          清空
+          {{ '清空' }}
         </v-btn>
       </div>
 
@@ -24,8 +26,7 @@
         v-if="!configOk"
         type="warning"
         variant="tonal"
-        class="mb-3"
-        style="margin-top: 50px;"
+        class="mb-3 agent-config-alert"
       >
         未配置 Agent 模型参数或 API Key。请到「Self → 设置」填写本地配置后再使用。
         <template #append>
@@ -33,7 +34,7 @@
         </template>
       </v-alert>
 
-      <div id="agent-message-container" class="message-container">
+      <div id="agent-message-container" class="message-container" :class="{ 'message-container--mobile': isMobile }">
         <div
           v-for="m in messages"
           :key="m.id"
@@ -101,7 +102,7 @@
         </div>
       </div>
 
-      <div class="editor">
+      <div class="editor" :class="{ 'editor--mobile': isMobile }">
         <div class="editor-row">
           <v-textarea
             v-model="input"
@@ -143,12 +144,16 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue';
 import { openPage } from '@/utils/other';
+import { getDeviceType } from '@/utils/device';
 import { getAgentLLMConfig, validateAgentLLMConfig } from '@/agent/config';
 import { createOrchestrator } from '@/agent/orchestrator';
 import { MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
 
 defineOptions({ name: 'AgentPage' });
+
+// 移动端与帖子/文章等一致：由 App 的 special-nav 提供返回/首页，页面内不重复展示返回按钮
+const isMobile = computed(() => getDeviceType() === 'mobile');
 
 const emit = defineEmits(['alert', 'set_loading']);
 
@@ -577,12 +582,28 @@ onMounted(() => {
   border-bottom: 1px solid #ececec;
 }
 
+/* 移动端：由 App 的 special-nav 提供返回/首页，顶部栏更紧凑 */
+.agent-top--mobile {
+  margin-bottom: 8px;
+  padding: 6px 0;
+}
+
+.agent-config-alert {
+  margin-top: 8px;
+}
+
 .message-container {
   flex: 1;
   overflow: visible;
   padding: 4px 2px;
   margin-top: 50px;
   padding-bottom: 140px;
+}
+
+/* 移动端：与底部导航、输入栏留出安全距离 */
+.message-container--mobile {
+  margin-top: 8px;
+  padding-bottom: calc(140px + env(safe-area-inset-bottom));
 }
 
 .message-row {
@@ -695,6 +716,11 @@ onMounted(() => {
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
   box-sizing: border-box;
   border-top: 1px solid #f0f0f0;
+}
+
+/* 移动端：底部安全区与紧凑间距（底部导航由 App 的 margin-bottom 已留出） */
+.editor--mobile {
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 
 .editor-row {
