@@ -63,6 +63,27 @@
           <v-tooltip activator="parent">微服务</v-tooltip>
         </template>
       </v-btn>
+
+      <v-btn 
+        v-if="ifShowService"
+        @click="toAgentPage"
+        :color="navIconColor"
+        :variant="navIconColor == '#ffffff' ? 'tonal' : 'text'"
+        :rounded="navIconColor == '#ffffff'"
+        :prepend-icon="navIconColor == '#ffffff' ? 'mdi-robot-outline' : undefined"
+        :size="navIconColor == '#ffffff' ? undefined : '38'"
+        style="margin-right: 10px;"
+      >
+        <template v-if="navIconColor == '#ffffff'">
+          AI问答
+        </template>
+        <template v-else>
+          <div class="icon-container">
+            <v-icon type="mdi" icon="mdi-robot-outline" :color="navIconColor" size="25"></v-icon>
+          </div>
+          <v-tooltip activator="parent">AI问答</v-tooltip>
+        </template>
+      </v-btn>
       <v-menu v-if="ifShowTopEditBtns" open-on-hover>
         <template v-slot:activator="{ props }">
           <v-btn v-if="navIconColor == '#ffffff'" prepend-icon="mdi-plus" :color="navIconColor" variant="tonal" rounded
@@ -81,8 +102,8 @@
     <div
       id="router-view-container"
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': '10px', 'flex': 1 ,'overflow-y': 'auto', position: 'relative' }">
-      <router-view v-slot="{ Component, route: routeSlot }">
-        <transition name="page-fade" mode="out-in">
+      <router-view :key="navigationKey" v-slot="{ Component, route: routeSlot }">
+        <transition name="page-fade" mode="in-out">
           <component 
             v-if="Component" 
             :is="Component" 
@@ -118,6 +139,7 @@ import {
 } from './app/composables';
 import { inject, provide, ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { getCookie } from './utils/cookie';
+import { navigationKey } from '@/router';
 
 export default {
   name: 'AppDesktop',
@@ -203,6 +225,10 @@ export default {
       openPage("url", { url: "#/service" });
     };
     
+    const toAgentPage = () => {
+      openPage("router", { name: 'AgentPage' });
+    };
+    
     const toRagChatPage = () => {
       openPage("url", { url: "#/rag_chat" });
     };
@@ -253,7 +279,8 @@ export default {
     });
     
     return {
-      // 路由
+      // 路由（navigationKey 用于避免来回跳转时复用异常组件导致空白）
+      navigationKey,
       page,
       ifAvatarState,
       // 用户
@@ -294,6 +321,7 @@ export default {
       // 方法
       toHomePage,
       toServicePage,
+      toAgentPage,
       toRagChatPage,
       showDialog,
       openUrl,
@@ -390,13 +418,14 @@ export default {
   opacity: 1;
 }
 
-/* 页面加载占位符 */
+/* 页面加载占位符：填满容器，避免过渡时出现空白 */
 .page-loading-placeholder {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
   width: 100%;
+  flex: 1;
+  align-self: stretch;
 }
 </style>
-

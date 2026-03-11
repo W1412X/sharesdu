@@ -44,11 +44,14 @@ function createAsyncComponent(loader, options = {}) {
 }
 
 /**
- * 基础懒加载函数（用于小型组件）
+ * 基础懒加载函数（用于小型组件）- 同样包一层 loading/error，避免加载失败时空白
  * @param {string} path - 组件路径
- * @returns {Function} 组件加载函数
+ * @returns {Component} 异步组件
  */
-export const load = (path) => () => import(`@/pages/${path}.vue`);
+export const load = (path) => createAsyncComponent(() => import(`@/pages/${path}.vue`), {
+  delay: 0,
+  timeout: 10000,
+});
 
 /**
  * 优化的懒加载函数（用于大型组件）
@@ -124,6 +127,7 @@ export const DevPage = load('DevPage');
 export const TestPage = load('TestPage');
 export const SearchMobilePage = load('search/SearchMobilePage');
 export const RagChatPage = load('RagChatPage');
+export const AgentPage = load('agent/index');
 export const SectionEditorPage = load('section_editor/index');
 export const SectionPage = loadLarge('section/index', {
   delay: 0,

@@ -88,8 +88,8 @@
     <div
       id="router-view-container"
       :style="{ 'width': '100vw', 'max-width': '100vw', 'margin-top': routerMarginTop, background: '#ffffff', 'margin-bottom': routerMarginBottom, 'flex': 1 ,'overflow-y': 'auto', position: 'relative' }">
-      <router-view v-slot="{ Component, route: routeSlot }">
-        <transition name="page-fade" mode="out-in">
+      <router-view :key="navigationKey" v-slot="{ Component, route: routeSlot }">
+        <transition name="page-fade" mode="in-out">
           <component 
             v-if="Component" 
             :is="Component" 
@@ -108,6 +108,8 @@
     <div v-if="ifShowBottomNav" class="bottom-nav-container">
       <v-spacer />
       <v-btn @click="openUrl('#/index')" variant="text" icon="mdi-home" :color="themeColor" size="40" :class="{ 'bottom-nav-btn--active': isIndexActive }" class="bottom-nav-btn" :style="isIndexActive ? { backgroundColor: activeBgColor } : {}"></v-btn>
+      <v-spacer />
+      <v-btn @click="openUrl('#/agent')" icon="mdi-robot-outline" variant="text" :color="themeColor" size="40" :class="{ 'bottom-nav-btn--active': isAgentActive }" class="bottom-nav-btn" :style="isAgentActive ? { backgroundColor: activeBgColor } : {}"></v-btn>
       <v-spacer />
       <v-btn @click="openUrl('#/service')" icon="mdi-view-grid" variant="text" :color="themeColor" size="40" :class="{ 'bottom-nav-btn--active': isServiceActive }" class="bottom-nav-btn" :style="isServiceActive ? { backgroundColor: activeBgColor } : {}"></v-btn>
       <v-spacer />
@@ -169,6 +171,7 @@ import {
 import { inject, computed, ref, nextTick, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { getCookie } from './utils/cookie';
+import { navigationKey } from '@/router';
 
 export default {
   name: 'AppMobile',
@@ -308,6 +311,7 @@ export default {
     
     // 底部导航选中状态
     const isIndexActive = computed(() => page.value === 'IndexPage');
+    const isAgentActive = computed(() => page.value === 'AgentPage');
     const isServiceActive = computed(() => page.value === 'ServicePage');
     const isSelfActive = computed(() => page.value === 'SelfPage');
     
@@ -387,7 +391,8 @@ export default {
     });
     
     return {
-      // 路由
+      // 路由（navigationKey 用于避免来回跳转时复用异常组件导致空白）
+      navigationKey,
       page,
       ifAvatarState,
       // 特殊页面
@@ -444,6 +449,7 @@ export default {
       hexToRgba,
       // 底部导航选中状态
       isIndexActive,
+      isAgentActive,
       isServiceActive,
       isSelfActive,
       activeBgColor,
@@ -683,12 +689,14 @@ export default {
 }
 
 /* 页面加载占位符 */
+/* 页面加载占位符：填满容器，避免过渡时出现空白 */
 .page-loading-placeholder {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
   width: 100%;
+  flex: 1;
+  align-self: stretch;
 }
 </style>
-

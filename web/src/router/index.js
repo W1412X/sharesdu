@@ -1,8 +1,12 @@
+import { ref } from 'vue';
 import { getCookie } from '@/utils/cookie';
 import { startDebug } from '@/utils/debug';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { createRouter, createWebHashHistory } from 'vue-router';
+
+/** 每次导航自增，用于 router-view 的 key，避免来回跳转时复用异常状态的组件导致空白 */
+export const navigationKey = ref(0);
 import {
   WelcomePage,
   SearchPage,
@@ -23,6 +27,7 @@ import {
   TestPage,
   SearchMobilePage,
   RagChatPage,
+  AgentPage,
   SectionEditorPage,
   SectionPage,
   SectionSetPage,
@@ -173,6 +178,12 @@ const originalRoutes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/agent',
+    name: 'AgentPage',
+    component: AgentPage,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/section_editor/:id?',
     name: 'SectionEditorPage',
     component: SectionEditorPage,
@@ -227,6 +238,9 @@ router.beforeEach((to, from, next) => {
   } catch (e) {
     console.error(e);
   }
+  // 每次导航前更新 key，避免来回跳转时组件复用导致空白（在 next 前更新，确保首次渲染就用新 key）
+  navigationKey.value += 1;
+
   if (to.matched.some(record => record.meta.requiresAuth)) {
     next();
   } else if (to.path === "/login"||to.path ==="/debug/login") {
@@ -251,7 +265,6 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
   const scrollElement = document.getElementById('router-view-container');
   if (scrollElement) {
-    // 立即重置为0，避免显示上一个页面的滚动位置
     scrollElement.scrollTop = 0;
   }
 });

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve:clean": "npx rimraf node_modules/.cache && vue-cli-service serve",
     "lint": "vue-cli-service lint",
     "build": "vue-cli-service build --report",
     "test:unit": "jest",

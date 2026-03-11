@@ -7,5 +7,14 @@
     "type": "info",
     "priority": 1,
     "expire_time": "2026-03-01 23:59:59"
+  },
+  {
+    "id": "notice-003",
+    "title": "AI问答功能已上线",
+    "content": "已更新 AI 问答功能，可通过首页入口进入。<br/>现在就试试：<a href=\"#/agent\">前往 AI 问答</a>",
+    "icon": "mdi-robot-outline",
+    "type": "info",
+    "priority": 2,
+    "expire_time": "2026-06-30 23:59:59"
   }
 ]

@@ -5,11 +5,11 @@ import { computed, ref } from 'vue';
 import { globalProperties } from '@/main';
 export function useMobileNav(page, deviceType, loadState) {
   const itemType = ref("index");
-  const itemTypeList = ['index', 'service'];
+  const itemTypeList = ['index', 'service', 'agent'];
   
   // 移动端是否显示搜索输入框
   const mobileIfShowSearchInput = computed(() => {
-    if (['IndexPage', 'ServicePage', 'RagChatPage'].includes(page.value)) {
+    if (['IndexPage', 'ServicePage', 'AgentPage', 'RagChatPage'].includes(page.value)) {
       return false;
     }
     return true;
@@ -62,7 +62,7 @@ export function useMobileNav(page, deviceType, loadState) {
     return page.value == "ArticlePage" || page.value == "PostPage" || page.value == "CoursePage" || 
            page.value == "SelfPage" || page.value == "ManagePage" || page.value == "EditorPage" || 
            page.value == "SearchPage" || page.value == "ErrorPage" || page.value == "AuthorPage" || 
-           page.value == "ServicePage" || page.value == "RagChatPage" || page.value == "SectionSetPage" || page.value == "SearchMobilePage";
+           page.value == "ServicePage" || page.value == "AgentPage" || page.value == "RagChatPage" || page.value == "SectionSetPage" || page.value == "SearchMobilePage";
   });
   
   // 是否显示头像
