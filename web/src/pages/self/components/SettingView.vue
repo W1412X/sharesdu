@@ -5,7 +5,7 @@
       prepend-icon="mdi-robot-outline"
       color="grey"
       variant="outlined"
-      text="Agent对话"
+      text="AI助手配置"
     ></v-btn>
     <v-dialog
       v-model="showAgentConfigDialog"
