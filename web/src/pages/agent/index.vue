@@ -297,9 +297,6 @@ const send = async () => {
       expanded: true,
       summary: '理解问题中…',
       root: newProcNode({ type: 'root', title: 'Agent 流程', status: 'doing' }),
-      planNode: null,
-      mergeNode: null,
-      currentSubtask: null,
       currentAgent: null,
       currentRound: null,
       currentLLMCall: null,
@@ -325,55 +322,13 @@ const send = async () => {
       userText: text,
       signal: abortController.signal,
       onEvent: (e) => {
-        if (e?.type === 'orchestrator_plan_start') {
-          setSummary('正在规划子任务…');
-          const planNode = newProcNode({ type: 'plan_root', title: '规划子任务', status: 'doing' });
-          proc.root.children.push(planNode);
-          proc.planNode = planNode;
-        } else if (e?.type === 'orchestrator_plan_end') {
-          if (proc.planNode) {
-            proc.planNode.status = e.ok ? 'done' : 'error';
-            proc.planNode.meta = e.ok ? '已生成' : '失败，回退单 Agent';
-          }
-          if (!e.ok) setSummary('规划失败，回退为单 Agent 执行…');
-        } else if (e?.type === 'orchestrator_plan') {
-          if (proc.planNode && e.plan?.subtasks?.length) {
-            for (const t of e.plan.subtasks) {
-              const n = newProcNode({
-                type: 'plan_item',
-                title: `子任务 ${t.id}`,
-                status: 'done',
-                meta: `domain=${t.domain} | ${String(t.goal || '').slice(0, 40)}`,
-              });
-              proc.planNode.children.push(n);
-            }
-          }
-        } else if (e?.type === 'orchestrator_route') {
-          if (e.domain === 'multi') {
-            setSummary('已规划多子任务，开始执行…');
-            proc.root.meta = 'domain=multi';
-          } else {
-            setSummary(`选择领域：${e.domain}`);
-            proc.root.meta = `domain=${e.domain}`;
-          }
-        } else if (e?.type === 'subtask_start') {
-          const subtaskNode = newProcNode({
-            type: 'subtask',
-            title: `子任务 ${e.id}`,
-            status: 'doing',
-            meta: `domain=${e.domain} | ${String(e.goal || '').slice(0, 44)}`,
-          });
-          proc.root.children.push(subtaskNode);
-          proc.currentSubtask = subtaskNode;
-          setSummary(`开始子任务：${String(e.goal || '').slice(0, 28)}…`);
-        } else if (e?.type === 'subtask_end') {
-          if (proc.currentSubtask && proc.currentSubtask.title === `子任务 ${e.id}`) {
-            proc.currentSubtask.status = e.ok ? 'done' : 'error';
-          }
+        if (e?.type === 'orchestrator_route') {
+          setSummary(`选择领域：${e.domain}`);
+          proc.root.meta = `domain=${e.domain}`;
         } else if (e?.type === 'agent_selected') {
           setSummary(`使用 ${e.domain} Agent 处理中…`);
           const agentNode = newProcNode({ type: 'agent', title: `${e.domain} Agent`, status: 'doing' });
-          (proc.currentSubtask || proc.root).children.push(agentNode);
+          proc.root.children.push(agentNode);
           proc.currentAgent = agentNode;
         } else if (e?.type === 'llm_request_start') {
           setSummary('分析问题并制定检索计划…');
@@ -392,7 +347,7 @@ const send = async () => {
             title: `决定调用工具：${pendingToolCalls} 个`,
             status: 'done',
           });
-          (proc.currentLLMCall || proc.currentRound || proc.currentAgent || proc.root).children.push(planNode);
+          (proc.currentRound || proc.currentAgent || proc.root).children.push(planNode);
         } else if (e?.type === 'llm_request_end') {
           if (proc.currentLLMCall) {
             proc.currentLLMCall.status = 'done';
@@ -471,14 +426,6 @@ const send = async () => {
           if (proc.currentRound) proc.currentRound.status = 'done';
           if (proc.currentAgent) proc.currentAgent.status = 'done';
           proc.root.status = 'done';
-        } else if (e?.type === 'orchestrator_merge_start') {
-          setSummary('正在整合多个子任务结果…');
-          const mergeNode = newProcNode({ type: 'merge', title: '整合与生成最终回答', status: 'doing' });
-          proc.root.children.push(mergeNode);
-          proc.mergeNode = mergeNode;
-        } else if (e?.type === 'orchestrator_merge_end') {
-          if (proc.mergeNode) proc.mergeNode.status = 'done';
-          setSummary('已完成回答');
         } else if (e?.type === 'orchestrator_done') {
           if (proc.root.status === 'done') {
             setSummary('已完成回答');

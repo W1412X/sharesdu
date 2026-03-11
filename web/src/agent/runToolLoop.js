@@ -6,7 +6,7 @@ export const runToolLoop = async ({
   messages,
   tools,
   handlers,
-  maxRounds = 6,
+  maxRounds = 16,
   signal,
   onToolStart,
   onToolResult,
