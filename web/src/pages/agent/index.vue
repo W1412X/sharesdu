@@ -38,8 +38,107 @@
           />
         </div>
       </div>
-      <div class="sidebar-footer-hint">聊天记录保存在本地</div>
+      <div class="sidebar-footer">
+        <span class="sidebar-footer-hint">聊天记录保存在本地</span>
+        <v-btn
+          icon="mdi-cog-outline"
+          variant="text"
+          size="small"
+          class="sidebar-footer-btn"
+          color="grey"
+          @click="showAgentConfigDialog = true"
+        />
+      </div>
     </aside>
+    <v-dialog
+      v-model="showAgentConfigDialog"
+      max-width="500"
+      persistent
+      content-class="agent-config-dialog"
+      @after-enter="onAgentConfigDialogOpen"
+    >
+      <v-card class="pa-4">
+        <v-card-title class="d-flex align-center">
+          <v-icon icon="mdi-robot-outline" class="mr-2" />
+          Agent 模型配置（本地存储）
+          <v-spacer />
+          <v-btn icon="mdi-close" variant="text" size="small" @click="showAgentConfigDialog = false" />
+        </v-card-title>
+        <v-card-text>
+          <div class="text-small mb-3" style="color: #6b6b6b;">
+            网站不提供 Key；请自行填写。配置仅保存在浏览器本地（LocalStorage）。
+          </div>
+          <v-text-field
+            v-model="agentCfg.baseUrl"
+            label="Base URL（OpenAI兼容）"
+            density="compact"
+            variant="outlined"
+            placeholder="https://api.openai.com/v1"
+          />
+          <v-text-field
+            v-model="agentCfg.model"
+            label="Model"
+            density="compact"
+            variant="outlined"
+            placeholder="gpt-4o-mini"
+          />
+          <v-text-field
+            v-model="agentCfg.apiKey"
+            :type="showApiKey ? 'text' : 'password'"
+            label="API Key"
+            density="compact"
+            variant="outlined"
+            placeholder="sk-..."
+            :append-inner-icon="showApiKey ? 'mdi-eye-off' : 'mdi-eye'"
+            @click:append-inner="showApiKey = !showApiKey"
+          />
+          <div class="text-small mt-1 mb-1" style="color: #6b6b6b;">Temperature: {{ agentCfg.temperature }}</div>
+          <v-slider
+            v-model="agentCfg.temperature"
+            :min="0"
+            :max="1"
+            :step="0.05"
+            density="compact"
+            color="var(--theme-color)"
+          />
+          <v-text-field
+            v-model.number="agentCfg.maxTokens"
+            label="Max Tokens"
+            density="compact"
+            variant="outlined"
+            type="number"
+            :min="64"
+            :max="4096"
+          />
+          <v-text-field
+            v-model.number="agentCfg.maxRounds"
+            label="Max Rounds（工具调用最大轮数）"
+            density="compact"
+            variant="outlined"
+            type="number"
+            :min="1"
+            :max="32"
+            hint="单次对话中 LLM 可进行工具调用的最大轮数"
+            persistent-hint
+          />
+          <v-text-field
+            v-model.number="agentCfg.contextRounds"
+            label="上下文记忆轮数"
+            density="compact"
+            variant="outlined"
+            type="number"
+            :min="0"
+            :max="20"
+            hint="请求时携带最近 n 轮（用户+助手）对话；0 表示不携带历史"
+            persistent-hint
+          />
+          <div class="row-actions mt-3">
+            <v-btn color="var(--theme-color)" variant="flat" @click="saveAgentCfg">保存</v-btn>
+            <v-btn color="grey" variant="outlined" @click="resetAgentCfg">重置为默认</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <div v-if="isMobile && sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false" />
     <div class="agent-main">
       <div class="agent-shell">
@@ -92,6 +191,11 @@
           class="message-row"
           :class="m.role === 'user' ? 'row-user' : 'row-assistant'"
         >
+          <div v-if="m.role === 'assistant'" class="message-avatar message-avatar--bot">
+            <v-avatar size="32" color="grey-lighten-2">
+              <v-icon icon="mdi-robot-outline" size="20" color="grey-darken-1" />
+            </v-avatar>
+          </div>
           <v-card
             class="message-bubble"
             :color="m.role === 'user' ? 'var(--theme-color)' : undefined"
@@ -112,27 +216,30 @@
                     :icon="m.process.expanded ? 'mdi-chevron-down' : 'mdi-chevron-right'"
                     size="20"
                     color="#8a8a8a"
+                    class="process-header-chevron"
                   />
                 </div>
                 <div v-if="m.process && m.process.summary" class="process-summary text-tiny">
                   {{ m.process.summary }}
                 </div>
-                <div
-                  v-if="m.process && m.process.expanded"
-                  class="process-panel"
-                  :data-process-panel="m.id"
-                >
+                <Transition name="process-panel">
                   <div
-                    v-for="row in flattenProcess(m.process.root)"
-                    :key="row.id"
-                    class="process-row"
-                    :style="{ paddingLeft: `${10 + row.depth * 14}px` }"
+                    v-if="m.process && m.process.expanded"
+                    class="process-panel"
+                    :data-process-panel="m.id"
                   >
-                    <div class="process-dot" :class="`process-dot-${row.status}`"></div>
-                    <div class="text-tiny process-text">{{ row.title }}</div>
-                    <div v-if="row.meta" class="text-tiny process-meta">{{ row.meta }}</div>
+                    <div
+                      v-for="(row, idx) in flattenProcess(m.process.root)"
+                      :key="row.id"
+                      class="process-row"
+                      :style="{ paddingLeft: `${10 + row.depth * 14}px`, animationDelay: `${idx * 0.03}s` }"
+                    >
+                      <div class="process-dot" :class="`process-dot-${row.status}`"></div>
+                      <div class="text-tiny process-text">{{ row.title }}</div>
+                      <div v-if="row.meta" class="text-tiny process-meta">{{ row.meta }}</div>
+                    </div>
                   </div>
-                </div>
+                </Transition>
                 <MdPreview
                   v-if="mdReady && m.content"
                   :id="`agent_${m.id}`"
@@ -150,6 +257,18 @@
               </div>
             </template>
           </v-card>
+          <div v-if="m.role === 'user'" class="message-avatar message-avatar--user">
+            <avatar-name
+              v-if="userAvatarData.id"
+              :init-data="userAvatarData"
+              :if-show-name="false"
+              size="32"
+              :clickable="false"
+            />
+            <v-avatar v-else size="32" color="grey-lighten-2">
+              <v-icon icon="mdi-account" size="20" color="grey-darken-1" />
+            </v-avatar>
+          </div>
         </div>
       </div>
 
@@ -197,7 +316,13 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 import { openPage } from '@/utils/other';
 import { getDeviceType } from '@/utils/device';
-import { getAgentLLMConfig, validateAgentLLMConfig } from '@/agent/config';
+import {
+  getAgentLLMConfig,
+  getDefaultAgentLLMConfig,
+  setAgentLLMConfig,
+  clearAgentLLMConfig,
+  validateAgentLLMConfig,
+} from '@/agent/config';
 import { createOrchestrator } from '@/agent/orchestrator';
 import { MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
@@ -212,6 +337,8 @@ import {
   TITLE_MAX,
 } from './agentChatDb';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
+import { getCookie } from '@/utils/cookie';
+import AvatarName from '@/components/common/AvatarName/index.vue';
 
 const LAST_SESSION_KEY = 'agent.lastSessionId';
 
@@ -226,6 +353,9 @@ const sessions = ref([]);
 const currentSessionId = ref(null);
 const sidebarOpen = ref(false);
 const loadingSessions = ref(false);
+const showAgentConfigDialog = ref(false);
+const showApiKey = ref(false);
+const agentCfg = ref({ ...getDefaultAgentLLMConfig() });
 
 const welcomeMessage = () => ({
   id: `m_${Date.now()}`,
@@ -241,6 +371,11 @@ let abortController = null;
 
 const cfg = computed(() => getAgentLLMConfig());
 const configOk = computed(() => validateAgentLLMConfig(cfg.value).ok);
+
+const userAvatarData = computed(() => ({
+  id: getCookie('userId') || '',
+  name: getCookie('userName') || '',
+}));
 
 const orchestrator = createOrchestrator();
 
@@ -310,10 +445,6 @@ const flattenProcess = (root) => {
   return rows;
 };
 
-const toHome = () => {
-  openPage('router', { name: 'IndexPage' });
-};
-
 const toSelfSetting = () => {
   openPage('router', { name: 'SelfPage' });
 };
@@ -374,6 +505,20 @@ async function deleteSession(sessionId) {
     selfDefineLocalStorage.setItem(LAST_SESSION_KEY, currentSessionId.value ? String(currentSessionId.value) : '');
   }
 }
+
+const onAgentConfigDialogOpen = () => {
+  agentCfg.value = { ...getAgentLLMConfig() };
+};
+
+const saveAgentCfg = () => {
+  setAgentLLMConfig(agentCfg.value);
+  showAgentConfigDialog.value = false;
+};
+
+const resetAgentCfg = () => {
+  clearAgentLLMConfig();
+  agentCfg.value = { ...getDefaultAgentLLMConfig() };
+};
 
 const clearChat = () => {
   messages.value = [
@@ -800,12 +945,31 @@ onMounted(async () => {
   transform: translateY(-50%);
 }
 
-.sidebar-footer-hint {
-  padding: 8px 14px;
-  font-size: 12px;
-  color: #999;
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px 8px 14px;
   border-top: 1px solid #eee;
   flex-shrink: 0;
+  gap: 4px;
+}
+
+.sidebar-footer-hint {
+  font-size: 12px;
+  color: #999;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-footer-btn {
+  flex-shrink: 0;
+}
+
+.row-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 .agent-main {
@@ -872,6 +1036,8 @@ onMounted(async () => {
 .message-row {
   width: 100%;
   display: flex;
+  align-items: flex-start;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
@@ -879,8 +1045,25 @@ onMounted(async () => {
   justify-content: flex-end;
 }
 
+.row-user .message-avatar--user {
+  order: 1;
+  flex-shrink: 0;
+}
+
+.row-user .message-bubble {
+  order: 0;
+}
+
 .row-assistant {
   justify-content: flex-start;
+}
+
+.row-assistant .message-avatar--bot {
+  flex-shrink: 0;
+}
+
+.message-avatar {
+  margin-top: 2px;
 }
 
 .message-bubble {
@@ -911,10 +1094,33 @@ onMounted(async () => {
   border-radius: 999px;
   background: #f6f6f6;
   border: 1px solid #efefef;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.process-header:hover {
+  background: #efefef;
+  border-color: #e5e5e5;
+}
+
+.process-header-chevron {
+  transition: transform 0.2s ease;
 }
 
 .process-header-text {
   color: #8a8a8a;
+}
+
+/* 流程面板展开/收起 */
+.process-panel-enter-active,
+.process-panel-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform-origin: top;
+}
+
+.process-panel-enter-from,
+.process-panel-leave-to {
+  opacity: 0;
+  transform: scaleY(0.95);
 }
 
 .process-panel {
@@ -928,6 +1134,7 @@ onMounted(async () => {
 .process-summary {
   color: #8a8a8a;
   margin: -6px 0 10px;
+  transition: opacity 0.15s ease;
 }
 
 .process-row {
@@ -936,6 +1143,18 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   padding: 2px 0;
+  animation: process-row-in 0.25s ease backwards;
+}
+
+@keyframes process-row-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .process-dot {
@@ -944,10 +1163,22 @@ onMounted(async () => {
   border-radius: 999px;
   background: #cfcfcf;
   flex: 0 0 auto;
+  transition: background 0.2s ease;
 }
 
 .process-dot-doing {
   background: var(--theme-color);
+  animation: process-dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes process-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .process-dot-done {
