@@ -322,14 +322,39 @@ const send = async () => {
       userText: text,
       signal: abortController.signal,
       onEvent: (e) => {
-        if (e?.type === 'orchestrator_route') {
-          setSummary(`选择领域：${e.domain}`);
-          proc.root.meta = `domain=${e.domain}`;
-        } else if (e?.type === 'agent_selected') {
-          setSummary(`使用 ${e.domain} Agent 处理中…`);
-          const agentNode = newProcNode({ type: 'agent', title: `${e.domain} Agent`, status: 'doing' });
+        if (e?.type === 'intent_router_start') {
+          setSummary('识别意图中…');
+        } else if (e?.type === 'intent_router_result' || e?.type === 'intent_router_end') {
+          const intents = e.intents;
+          if (intents && intents.length) {
+            proc.root.meta = `意图：${intents.join('、')}`;
+            setSummary(`意图：${intents.join('、')}`);
+          }
+        } else if (e?.type === 'intent_dispatch') {
+          const label = e.intent === 'site_query' ? '站内查询' : e.intent === 'site_docs' ? '本站说明与政策' : '无关话题';
+          setSummary(`派发：${label}`);
+          const node = newProcNode({ type: 'dispatch', title: label, status: 'doing' });
+          proc.root.children.push(node);
+        } else if (e?.type === 'agent_run_start') {
+          const title = e.agent_id === 'site_docs' ? '本站说明与政策 Agent' : `${e.domain || e.agent_id} Agent`;
+          setSummary(`运行 ${title}…`);
+          const agentNode = newProcNode({ type: 'agent', title, status: 'doing' });
           proc.root.children.push(agentNode);
           proc.currentAgent = agentNode;
+        } else if (e?.type === 'agent_run_end') {
+          if (proc.currentAgent) proc.currentAgent.status = 'done';
+        } else if (e?.type === 'agent_merge') {
+          setSummary('合并多意图回答…');
+          const parts = e.parts || [];
+          if (parts.length) {
+            const mergeNode = newProcNode({ type: 'merge', title: `合并：${parts.join('、')}`, status: 'done' });
+            proc.root.children.push(mergeNode);
+          }
+        } else if (e?.type === 'orchestrator_route') {
+          setSummary(`选择领域：${e.domain}`);
+          proc.root.meta = (proc.root.meta ? proc.root.meta + '；' : '') + `domain=${e.domain}`;
+        } else if (e?.type === 'agent_selected') {
+          setSummary(`使用 ${e.domain} Agent 处理中…`);
         } else if (e?.type === 'llm_request_start') {
           setSummary('分析问题并制定检索计划…');
           const llmNode = newProcNode({
@@ -382,12 +407,16 @@ const send = async () => {
           if (e.tool_call_id) proc.toolCallNodes[e.tool_call_id] = toolNode;
           setSummary(`正在调用工具：${name || 'unknown'}…`);
 
-          if (name === 'global_search') {
-            setSummary(`正在全站搜索：${q || '…'}`);
+          if (name === 'global_search' || name === 'multi_keyword_search') {
+            setSummary(`正在全站搜索：${q || args.keywords?.join?.(' ') || '…'}`);
           } else if (String(name || '').startsWith('search_')) {
             setSummary(`正在搜索：${q || '…'}`);
+          } else if (name === 'get_site_doc') {
+            setSummary(`正在获取本站文档：${args.doc_key || '…'}`);
           } else if (name === 'get_course_score_list') {
             setSummary('正在读取课程评价/评分…');
+          } else if (String(name || '').startsWith('batch_')) {
+            setSummary(`正在批量获取：${name}…`);
           } else if (String(name || '').includes('_detail')) {
             setSummary('正在读取详情…');
           } else if (String(name || '').includes('_list')) {
@@ -427,9 +456,7 @@ const send = async () => {
           if (proc.currentAgent) proc.currentAgent.status = 'done';
           proc.root.status = 'done';
         } else if (e?.type === 'orchestrator_done') {
-          if (proc.root.status === 'done') {
-            setSummary('已完成回答');
-          }
+          setSummary('已完成回答');
         }
         scheduleRender();
         if (assistantMsg.generating && proc.expanded) {
@@ -450,7 +477,9 @@ const send = async () => {
     loading.value = false;
     abortController = null;
     assistantMsg.generating = false;
-    if (proc.root.status === 'doing') proc.root.status = 'error';
+    if (proc.root.status === 'doing') {
+      proc.root.status = assistantMsg.content ? 'done' : 'error';
+    }
     if (proc.root.status === 'done') {
       proc.summary = '已完成回答';
     } else if (proc.root.status === 'error' && !proc.summary) {

@@ -104,8 +104,7 @@ export const searchCourses = async (query, type, college, method, sort, page = 1
 
 /**
  * 全局搜索
- * 
- * @param {String} query 搜索关键词
+ * @param {String} query 搜索关键词，支持空格分隔的多个关键词
  * @param {Number} page 页码
  * @param {Number} page_size 每页数量
  * @returns
@@ -114,7 +113,7 @@ export const globalSearch = async (query, page = 1, page_size = 10) => {
     try {
         await waitForLock('token');
         const params = { q: query, page: page, page_size: page_size };
-        const response = await axiosInstance.get('/search', { params });
+        const response = await axiosInstance.get('/search/global', { params });
         return response.data;
     } catch (error) {
         let dealResult = await dealAxiosError(error);

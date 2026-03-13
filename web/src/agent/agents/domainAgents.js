@@ -31,6 +31,7 @@ const toMessages = (history, userText, systemPrompt) => {
 export const createDomainAgents = () => {
   const searchTools = pickTools(SHARES_DU_TOOLSET, [
     'global_search',
+    'multi_keyword_search',
     'search_articles',
     'search_posts',
     'search_replies',
@@ -42,12 +43,14 @@ export const createDomainAgents = () => {
     'get_article_post_list',
     'get_article_list',
     'get_post_detail',
+    'batch_articles_info',
   ]);
   const postTools = pickTools(SHARES_DU_TOOLSET, [
     ...searchTools.map((t) => t.function.name),
     'get_post_detail',
     'get_post_reply_list',
     'get_reply_detail',
+    'batch_posts_info',
   ]);
   const courseTools = pickTools(SHARES_DU_TOOLSET, [
     ...searchTools.map((t) => t.function.name),
@@ -55,6 +58,7 @@ export const createDomainAgents = () => {
     'get_course_list',
     'get_course_post_list',
     'get_course_score_list',
+    'batch_courses_info',
   ]);
   const userTools = pickTools(SHARES_DU_TOOLSET, [
     'get_user_homepage',

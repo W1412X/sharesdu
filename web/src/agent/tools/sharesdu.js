@@ -10,11 +10,19 @@ import { getPostDetailById, getReplyListByPostId, getReplyDetailById } from '@/a
 import { getCourseDetail, getCourseList, getCoursePostList, getCourseScoreList } from '@/api/modules/course';
 import { getAuthorInfo, getUserPreview, getUserContent } from '@/api/modules/account';
 
+const BATCH_MAX = 20;
+
 const ok = (data) => ({ ok: true, data });
 const fail = (error) => ({
   ok: false,
   error: typeof error === 'string' ? error : (error?.message || 'unknown_error'),
 });
+
+const parseIdList = (v) => {
+  if (Array.isArray(v)) return v.map((x) => String(x).trim()).filter(Boolean).slice(0, BATCH_MAX);
+  if (typeof v === 'string') return v.split(/[,，\s]+/).map((s) => s.trim()).filter(Boolean).slice(0, BATCH_MAX);
+  return [];
+};
 
 const normalizeQuery = (q) =>
   String(q || '')
@@ -116,11 +124,11 @@ export const SHARES_DU_TOOLSET = {
       type: 'function',
       function: {
         name: 'global_search',
-        description: '站内全局搜索（文章/帖子/回复/课程等）',
+        description: '站内全局搜索（文章/帖子/回复/课程等）。query 可填多个关键词，用空格分隔，后端按多关键词检索。',
         parameters: {
           type: 'object',
           properties: {
-            query: { type: 'string', description: '搜索关键词' },
+            query: { type: 'string', description: '搜索关键词，多个词用空格分隔' },
             page: { type: 'integer', minimum: 1, default: 1 },
             page_size: { type: 'integer', minimum: 1, maximum: 50, default: 10 },
           },
@@ -131,8 +139,28 @@ export const SHARES_DU_TOOLSET = {
     {
       type: 'function',
       function: {
+        name: 'multi_keyword_search',
+        description: '多关键词全局搜索：传入关键词数组，内部会拼接为空格分隔的 query 调用全局搜索。适合同时用多个词检索。',
+        parameters: {
+          type: 'object',
+          properties: {
+            keywords: {
+              type: 'array',
+              items: { type: 'string' },
+              description: '关键词列表，如 ["数据结构", "期末"]',
+            },
+            page: { type: 'integer', minimum: 1, default: 1 },
+            page_size: { type: 'integer', minimum: 1, maximum: 50, default: 10 },
+          },
+          required: ['keywords'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
         name: 'search_articles',
-        description: '搜索文章',
+        description: '搜索文章。query 可填多个关键词，用空格分隔。',
         parameters: {
           type: 'object',
           properties: {
@@ -151,7 +179,7 @@ export const SHARES_DU_TOOLSET = {
       type: 'function',
       function: {
         name: 'search_posts',
-        description: '搜索帖子',
+        description: '搜索帖子。query 可填多个关键词，用空格分隔。',
         parameters: {
           type: 'object',
           properties: {
@@ -168,7 +196,7 @@ export const SHARES_DU_TOOLSET = {
       type: 'function',
       function: {
         name: 'search_replies',
-        description: '搜索回复',
+        description: '搜索回复。query 可填多个关键词，用空格分隔。',
         parameters: {
           type: 'object',
           properties: {
@@ -184,7 +212,7 @@ export const SHARES_DU_TOOLSET = {
       type: 'function',
       function: {
         name: 'search_courses',
-        description: '搜索课程',
+        description: '搜索课程。query 可填多个关键词，用空格分隔。',
         parameters: {
           type: 'object',
           properties: {
@@ -388,10 +416,85 @@ export const SHARES_DU_TOOLSET = {
         },
       },
     },
+    {
+      type: 'function',
+      function: {
+        name: 'batch_courses_info',
+        description: '批量获取课程详情及可选评价：传入课程 id 列表，一次返回多门课的详情与评价，减少多次调用。',
+        parameters: {
+          type: 'object',
+          properties: {
+            course_ids: {
+              type: 'array',
+              items: { type: 'string' },
+              description: '课程 ID 列表，最多 20 个',
+            },
+            include_reviews: { type: 'boolean', description: '是否包含课程评价列表', default: true },
+            review_page_size: { type: 'integer', minimum: 1, maximum: 50, default: 20 },
+          },
+          required: ['course_ids'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'batch_posts_info',
+        description: '批量获取帖子详情及可选回复：传入帖子 id 列表，一次返回多条帖子的详情与回复。',
+        parameters: {
+          type: 'object',
+          properties: {
+            post_ids: {
+              type: 'array',
+              items: { type: 'string' },
+              description: '帖子 ID 列表，最多 20 个',
+            },
+            include_replies: { type: 'boolean', description: '是否包含回复列表', default: true },
+            reply_page_size: { type: 'integer', minimum: 1, maximum: 50, default: 20 },
+          },
+          required: ['post_ids'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'batch_articles_info',
+        description: '批量获取文章详情及可选帖子列表：传入文章 id 列表，一次返回多篇文章的详情与文章下帖子。',
+        parameters: {
+          type: 'object',
+          properties: {
+            article_ids: {
+              type: 'array',
+              items: { type: 'string' },
+              description: '文章 ID 列表，最多 20 个',
+            },
+            include_posts: { type: 'boolean', description: '是否包含文章下帖子列表', default: true },
+            post_page_size: { type: 'integer', minimum: 1, maximum: 50, default: 20 },
+          },
+          required: ['article_ids'],
+        },
+      },
+    },
   ],
   handlers: {
     global_search: async ({ query, page = 1, page_size = 10 }) => {
       try {
+        const { response, meta } = await trySearchWithVariants({
+          query,
+          doCall: (q) => globalSearch(q, page, page_size),
+        });
+        return ok({ ...response, _agent_meta: meta });
+      } catch (e) {
+        return fail(e);
+      }
+    },
+    multi_keyword_search: async ({ keywords, page = 1, page_size = 10 }) => {
+      try {
+        const query = Array.isArray(keywords)
+          ? keywords.map((k) => String(k || '').trim()).filter(Boolean).join(' ')
+          : String(keywords || '').trim();
+        if (!query) return fail('keywords 不能为空');
         const { response, meta } = await trySearchWithVariants({
           query,
           doCall: (q) => globalSearch(q, page, page_size),
@@ -535,6 +638,96 @@ export const SHARES_DU_TOOLSET = {
       } catch (e) {
         return fail(e);
       }
+    },
+    batch_courses_info: async ({
+      course_ids,
+      include_reviews = true,
+      review_page_size = 20,
+    }) => {
+      const ids = parseIdList(course_ids);
+      if (!ids.length) return fail('course_ids 不能为空');
+      const results = await Promise.allSettled(
+        ids.map(async (course_id) => {
+          const course_detail = await getCourseDetail(course_id).catch((e) => ({ error: e?.message }));
+          let reviews = null;
+          if (include_reviews && course_detail && !course_detail.error) {
+            const rev = await getCourseScoreList(course_id, 1, review_page_size).catch(() => null);
+            if (rev && rev.results) reviews = rev.results;
+          }
+          return { course_id, course_detail, reviews };
+        })
+      );
+      const out = results.map((r) =>
+        r.status === 'fulfilled' ? r.value : { error: r.reason?.message }
+      );
+      let success_count = 0;
+      out.forEach((x) => {
+        if (x.course_detail && !x.course_detail.error) success_count += 1;
+      });
+      return ok({
+        results: out,
+        _meta: { requested_count: ids.length, success_count },
+      });
+    },
+    batch_posts_info: async ({
+      post_ids,
+      include_replies = true,
+      reply_page_size = 20,
+    }) => {
+      const ids = parseIdList(post_ids);
+      if (!ids.length) return fail('post_ids 不能为空');
+      const results = await Promise.allSettled(
+        ids.map(async (post_id) => {
+          const post_detail = await getPostDetailById(post_id).catch((e) => ({ error: e?.message }));
+          let replies = null;
+          if (include_replies && post_detail && !post_detail.error) {
+            const rep = await getReplyListByPostId(post_id, 1, reply_page_size).catch(() => null);
+            if (rep && rep.results) replies = rep.results;
+          }
+          return { post_id, post_detail, replies };
+        })
+      );
+      const out = results.map((r) =>
+        r.status === 'fulfilled' ? r.value : { error: r.reason?.message }
+      );
+      let success_count = 0;
+      out.forEach((x) => {
+        if (x.post_detail && !x.post_detail.error) success_count += 1;
+      });
+      return ok({
+        results: out,
+        _meta: { requested_count: ids.length, success_count },
+      });
+    },
+    batch_articles_info: async ({
+      article_ids,
+      include_posts = true,
+      post_page_size = 20,
+    }) => {
+      const ids = parseIdList(article_ids);
+      if (!ids.length) return fail('article_ids 不能为空');
+      const results = await Promise.allSettled(
+        ids.map(async (article_id) => {
+          const article_detail = await getArticleDetail(article_id).catch((e) => ({ error: e?.message }));
+          let posts = null;
+          if (include_posts && article_detail && !article_detail.error) {
+            const pl = await getPostListByArticleId(article_id, 1, true, post_page_size).catch(() => null);
+            if (pl && pl.results) posts = pl.results;
+          }
+          return { article_id, article_detail, posts };
+        })
+      );
+      const out = results.map((r) =>
+        r.status === 'fulfilled' ? r.value : { error: r.reason?.message }
+      );
+      let success_count = 0;
+      out.forEach((x) => {
+        if (x.article_detail && !x.article_detail.error) success_count += 1;
+      });
+      return ok({
+        results: out,
+        _meta: { requested_count: ids.length, success_count },
+      });
     },
   },
 };
