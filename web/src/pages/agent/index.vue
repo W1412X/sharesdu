@@ -38,6 +38,7 @@
           />
         </div>
       </div>
+      <div class="sidebar-footer-hint">聊天记录保存在本地</div>
     </aside>
     <div v-if="isMobile && sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false" />
     <div class="agent-main">
@@ -797,6 +798,14 @@ onMounted(async () => {
   right: 4px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.sidebar-footer-hint {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: #999;
+  border-top: 1px solid #eee;
+  flex-shrink: 0;
 }
 
 .agent-main {
