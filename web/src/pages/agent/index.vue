@@ -1,26 +1,76 @@
 <template>
-  <div class="full-center">
-    <div class="agent-shell">
-      <div class="agent-top" :class="{ 'agent-top--mobile': isMobile }">
+  <div class="agent-layout" :class="{ 'agent-layout--mobile': isMobile }">
+    <!-- 左侧：会话列表（PC 常驻，移动端可隐藏） -->
+    <aside
+      class="agent-sidebar"
+      :class="{
+        'agent-sidebar--open': isMobile ? sidebarOpen : true,
+        'agent-sidebar--mobile': isMobile,
+      }"
+    >
+      <div class="sidebar-header">
+        <span class="sidebar-title">对话</span>
         <v-btn
-          v-if="!isMobile"
-          icon="mdi-arrow-left"
+          icon="mdi-plus"
           variant="text"
-          :color="themeColor"
-          @click="toHome"
-        />
-        <div class="page-title-bold">AI问答</div>
-        <v-spacer></v-spacer>
-        <v-btn
-          variant="outlined"
-          color="grey"
-          :prepend-icon="'mdi-broom'"
           size="small"
-          @click="clearChat"
-        >
-          {{ '清空' }}
-        </v-btn>
+          :color="themeColor"
+          @click="startNewChat"
+        />
       </div>
+      <div class="sidebar-list">
+        <div
+          v-for="s in sessions"
+          :key="s.id"
+          class="sidebar-item"
+          :class="{ 'sidebar-item--active': currentSessionId === s.id }"
+          @click="selectSession(s.id)"
+        >
+          <span class="sidebar-item-title">{{ s.title || '新对话' }}</span>
+          <span class="sidebar-item-time">{{ formatSessionTime(s.updated_at) }}</span>
+          <v-btn
+            v-if="currentSessionId === s.id"
+            icon="mdi-close"
+            variant="text"
+            size="x-small"
+            class="sidebar-item-delete"
+            @click.stop="deleteSession(s.id)"
+          />
+        </div>
+      </div>
+    </aside>
+    <div v-if="isMobile && sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false" />
+    <div class="agent-main">
+      <div class="agent-shell">
+        <div class="agent-top" :class="{ 'agent-top--mobile': isMobile }">
+          <v-btn
+            v-if="isMobile"
+            icon="mdi-menu"
+            variant="text"
+            :color="themeColor"
+            @click="sidebarOpen = true"
+          />
+          <div v-if="isMobile" class="page-title-bold">AI问答</div>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="outlined"
+            color="grey"
+            :prepend-icon="'mdi-plus'"
+            size="small"
+            @click="startNewChat"
+          >
+            {{ '新对话' }}
+          </v-btn>
+          <v-btn
+            variant="outlined"
+            color="grey"
+            :prepend-icon="'mdi-broom'"
+            size="small"
+            @click="clearChat"
+          >
+            {{ '清空' }}
+          </v-btn>
+        </div>
 
       <v-alert
         v-if="!configOk"
@@ -137,6 +187,7 @@
           </v-btn>
         </div>
       </div>
+      </div>
     </div>
   </div>
 </template>
@@ -149,24 +200,39 @@ import { getAgentLLMConfig, validateAgentLLMConfig } from '@/agent/config';
 import { createOrchestrator } from '@/agent/orchestrator';
 import { MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
+import {
+  listSessions,
+  getMessages,
+  createSession,
+  addMessage,
+  updateMessageContent,
+  deleteSession as deleteSessionDb,
+  DEFAULT_TITLE,
+  TITLE_MAX,
+} from './agentChatDb';
+import { selfDefineLocalStorage } from '@/utils/localStorage';
+
+const LAST_SESSION_KEY = 'agent.lastSessionId';
 
 defineOptions({ name: 'AgentPage' });
 
-// 移动端与帖子/文章等一致：由 App 的 special-nav 提供返回/首页，页面内不重复展示返回按钮
 const isMobile = computed(() => getDeviceType() === 'mobile');
-
 const emit = defineEmits(['alert', 'set_loading']);
 
 const themeColor = ref('#9c0c13');
 const mdReady = ref(false);
+const sessions = ref([]);
+const currentSessionId = ref(null);
+const sidebarOpen = ref(false);
+const loadingSessions = ref(false);
 
-const messages = ref([
-  {
-    id: `m_${Date.now()}`,
-    role: 'assistant',
-    content: '我可以帮你在站内查文章/帖子/回复/课程，并把结果整理成要点。\n\n- 先在 **Self → 设置** 配置模型参数与 API Key\n- 然后在这里提问（仅信息获取，不做发布/修改）',
-  },
-]);
+const welcomeMessage = () => ({
+  id: `m_${Date.now()}`,
+  role: 'assistant',
+  content: '我可以帮你在站内查文章/帖子/回复/课程，并把结果整理成要点。\n\n- 先在 **Self → 设置** 配置模型参数与 API Key\n- 然后在这里提问（仅信息获取，不做发布/修改）',
+});
+
+const messages = ref([welcomeMessage()]);
 
 const input = ref('');
 const loading = ref(false);
@@ -178,7 +244,7 @@ const configOk = computed(() => validateAgentLLMConfig(cfg.value).ok);
 const orchestrator = createOrchestrator();
 
 const getScrollContainer = () => {
-  const el = document.getElementById('router-view-container');
+  const el = document.getElementById('agent-message-container');
   if (el && typeof el.scrollTo === 'function') return el;
   return document.scrollingElement || document.documentElement;
 };
@@ -251,6 +317,63 @@ const toSelfSetting = () => {
   openPage('router', { name: 'SelfPage' });
 };
 
+function formatSessionTime(ts) {
+  if (ts == null) return '';
+  const d = new Date(ts);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const t = d.getTime();
+  if (t >= today.getTime()) return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  if (t >= today.getTime() - 86400000) return '昨天';
+  if (t >= today.getTime() - 86400000 * 7) return `${Math.floor((today - t) / 86400000)}天前`;
+  return d.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' });
+}
+
+async function loadSessions() {
+  loadingSessions.value = true;
+  try {
+    sessions.value = await listSessions();
+  } finally {
+    loadingSessions.value = false;
+  }
+}
+
+async function loadSession(sessionId) {
+  const list = await getMessages(sessionId);
+  messages.value = list.length
+    ? list.map((r) => ({ id: `m_${r.id}`, role: r.role, content: r.content || '' }))
+    : [welcomeMessage()];
+  currentSessionId.value = sessionId;
+  if (isMobile.value) sidebarOpen.value = false;
+}
+
+function selectSession(sessionId) {
+  if (currentSessionId.value === sessionId) return;
+  loadSession(sessionId);
+  selfDefineLocalStorage.setItem(LAST_SESSION_KEY, String(sessionId));
+}
+
+async function startNewChat() {
+  const title = DEFAULT_TITLE;
+  const id = await createSession(title);
+  await loadSessions();
+  currentSessionId.value = id;
+  messages.value = [welcomeMessage()];
+  selfDefineLocalStorage.setItem(LAST_SESSION_KEY, String(id));
+  if (isMobile.value) sidebarOpen.value = false;
+}
+
+async function deleteSession(sessionId) {
+  await deleteSessionDb(sessionId);
+  await loadSessions();
+  if (currentSessionId.value === sessionId) {
+    currentSessionId.value = sessions.value[0]?.id ?? null;
+    if (currentSessionId.value) loadSession(currentSessionId.value);
+    else messages.value = [welcomeMessage()];
+    selfDefineLocalStorage.setItem(LAST_SESSION_KEY, currentSessionId.value ? String(currentSessionId.value) : '');
+  }
+}
+
 const clearChat = () => {
   messages.value = [
     {
@@ -279,6 +402,14 @@ const send = async () => {
   loading.value = true;
   abortController = new AbortController();
 
+  if (!currentSessionId.value) {
+    const title = String(text).slice(0, TITLE_MAX).trim() || DEFAULT_TITLE;
+    currentSessionId.value = await createSession(title);
+    await loadSessions();
+    selfDefineLocalStorage.setItem(LAST_SESSION_KEY, String(currentSessionId.value));
+  }
+  await addMessage(currentSessionId.value, 'user', text);
+
   const userMsg = { id: `u_${Date.now()}`, role: 'user', content: text };
   messages.value.push(userMsg);
 
@@ -289,8 +420,10 @@ const send = async () => {
     .slice(-historySize)
     .map((m) => ({ role: m.role, content: m.content || '' }));
 
+  const assistantDbId = await addMessage(currentSessionId.value, 'assistant', '');
   const assistantMsg = reactive({
     id: `a_${Date.now()}`,
+    _dbId: assistantDbId,
     role: 'assistant',
     content: '',
     generating: true,
@@ -487,6 +620,8 @@ const send = async () => {
     } else if (proc.root.status === 'error' && !proc.summary) {
       proc.summary = '执行失败';
     }
+    if (assistantMsg._dbId) await updateMessageContent(assistantMsg._dbId, assistantMsg.content);
+    await loadSessions();
     // 执行完成后默认收起过程面板（用户可点击“已完成思考”展开查看）
     proc.expanded = false;
     scheduleRender();
@@ -513,7 +648,7 @@ const linkifyInternalRoutes = (text) => {
   );
 };
 
-onMounted(() => {
+onMounted(async () => {
   themeColor.value =
     getComputedStyle(document.documentElement).getPropertyValue('--theme-color').trim() ||
     '#9c0c13';
@@ -522,28 +657,167 @@ onMounted(() => {
   if (titleElement) {
     titleElement.innerText = 'Agent';
   }
+  await loadSessions();
+  const last = selfDefineLocalStorage.getItem(LAST_SESSION_KEY);
+  if (last) {
+    const id = Number(last);
+    if (id && sessions.value.some((s) => s.id === id)) await loadSession(id);
+  } else if (sessions.value.length) {
+    await loadSession(sessions.value[0].id);
+  }
   scrollToBottom();
 });
 </script>
 
 <style scoped>
-.full-center {
-  width: 100vw;
+/* 固定视口高度，避免整页在 router-view-container 里滚动导致左侧栏一起动 */
+.agent-layout {
   display: flex;
-  justify-content: center;
-  align-items: stretch;
-  /* cover scroll container; avoid showing parent's white background on short content / overscroll */
-  min-height: 100vh;
-  min-height: 100dvh;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100%;
+  overflow: hidden;
+  background: #f8f8f8;
+}
+
+.agent-layout--mobile {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.agent-sidebar {
+  width: 280px;
+  min-width: 280px;
+  height: 100%;
+  background: #ffffff;
+  border-right: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.agent-sidebar--mobile {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  transform: translateX(-100%);
+  transition: transform 0.2s ease;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+}
+
+.agent-sidebar--mobile.agent-sidebar--open {
+  transform: translateX(0);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 99;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.sidebar-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.sidebar-list::-webkit-scrollbar,
+.message-container::-webkit-scrollbar {
+  width: 1px;
+  height: 1px;
+}
+
+.sidebar-list::-webkit-scrollbar-thumb,
+.message-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 1px;
+}
+
+.sidebar-list,
+.message-container {
+  scrollbar-width: thin;
+}
+
+.sidebar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px 14px;
+  cursor: pointer;
+  position: relative;
+  border-radius: 8px;
+  margin: 0 8px;
+}
+
+.sidebar-item:hover {
+  background: #f5f5f5;
+}
+
+.sidebar-item--active {
+  background: #f0f0f0;
+}
+
+.sidebar-item-title {
+  font-size: 14px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  padding-right: 24px;
+}
+
+.sidebar-item-time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.sidebar-item-delete {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.agent-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   background: #ffffff;
 }
 
 .agent-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
   padding: 14px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .agent-top {
@@ -572,9 +846,11 @@ onMounted(() => {
 
 .message-container {
   flex: 1;
-  overflow: visible;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 4px 2px;
-  margin-top: 50px;
+  margin-top: 8px;
   padding-bottom: 140px;
 }
 
@@ -757,11 +1033,7 @@ onMounted(() => {
   line-height: 1.25;
 }
 
-@media screen and (min-width: 1000px) {
-  .agent-shell {
-    width: 900px;
-  }
-}
+/* PC 端聊天区占满对话列表右侧全部空间，不限制最大宽度 */
 
 @media screen and (max-width: 1000px) {
   .agent-shell {
