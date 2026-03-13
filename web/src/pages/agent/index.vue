@@ -282,10 +282,12 @@ const send = async () => {
   const userMsg = { id: `u_${Date.now()}`, role: 'user', content: text };
   messages.value.push(userMsg);
 
+  const contextRounds = Math.max(0, Math.min(20, Number(cfg.value.contextRounds) ?? 6));
+  const historySize = contextRounds * 2;
   const history = messages.value
     .filter((m) => m.role === 'user' || m.role === 'assistant')
-    .slice(-12)
-    .map((m) => ({ role: m.role, content: m.content }));
+    .slice(-historySize)
+    .map((m) => ({ role: m.role, content: m.content || '' }));
 
   const assistantMsg = reactive({
     id: `a_${Date.now()}`,

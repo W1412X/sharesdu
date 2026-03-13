@@ -78,6 +78,17 @@
             hint="单次对话中 LLM 可进行工具调用的最大轮数"
             persistent-hint
           />
+          <v-text-field
+            v-model.number="cfg.contextRounds"
+            label="上下文记忆轮数"
+            density="compact"
+            variant="outlined"
+            type="number"
+            :min="0"
+            :max="20"
+            hint="请求时携带最近 n 轮（用户+助手）对话，便于连续对话；0 表示不携带历史"
+            persistent-hint
+          />
           <div class="row-actions mt-3">
             <v-btn color="var(--theme-color)" variant="flat" @click="saveCfg">保存</v-btn>
             <v-btn color="grey" variant="outlined" @click="resetCfg">重置为默认</v-btn>

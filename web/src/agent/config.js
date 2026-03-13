@@ -10,6 +10,8 @@ export const getDefaultAgentLLMConfig = () => ({
   temperature: 0.2,
   maxTokens: 800,
   maxRounds: 16,
+  /** 上下文记忆轮数：请求时携带最近 n 轮（每轮=1条用户+1条助手）对话，0 表示不携带历史 */
+  contextRounds: 6,
 });
 
 export const getAgentLLMConfig = () => {
