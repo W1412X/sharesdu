@@ -11,6 +11,7 @@ import IndexPageMobile from './mobile/index.vue';
 defineOptions({
   name: 'IndexPage'
 });
+defineEmits(['search_type_changed']);
 </script>
 
 <style scoped>

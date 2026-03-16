@@ -63,24 +63,22 @@ export function useSearchLoad(
         searchPage.value['文章'][sortType.value]
       );
       
-      if (response.status === 200) {
-        searchResultNum.value[searchType.value][sortType.value] = response.count;
-        
+      const results = Array.isArray(response?.results) ? response.results : [];
+      const isSuccess = response && (response.status === 200 || Array.isArray(response.results));
+      if (isSuccess) {
+        searchResultNum.value[searchType.value][sortType.value] = response.count ?? 0;
         if (isFirstPage) {
-          setArticleResults(sortType.value, response.results || []);
+          setArticleResults(sortType.value, results);
         } else {
-          addArticleResults(sortType.value, response.results || []);
+          addArticleResults(sortType.value, results);
         }
-        
         searchPage.value['文章'][sortType.value]++;
-        
-        if (response.results.length === 0) {
+        if (results.length === 0) {
           allLoad.value[searchType.value][sortType.value] = true;
         }
-        
         alert(getNormalSuccessAlert(response.message || '加载成功'));
       } else {
-        alert(getNormalErrorAlert(response.message));
+        alert(getNormalErrorAlert(response?.message));
       }
     } catch (error) {
       alert(getNormalErrorAlert(error.message || '加载失败'));

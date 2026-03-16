@@ -1,6 +1,6 @@
 <!-- PC 端文章项组件 -->
 <template>
-    <v-card class="card" :variant="data.ifTop?'variant':'none'" :color="data.ifTop?themeColor:'none'" @click="click()">
+    <v-card class="card" :variant="data.ifTop?'tonal':'plain'" :color="data.ifTop?themeColor:undefined" @click="click()">
         <v-chip v-if="data.ifTop" width="100%" variant="tonal" :color="themeColor" class="text-tiny-bold" style="border-radius: 0px;max-height: 28px;width: 100%;justify-content: center;">
             <v-icon size="20">mdi-format-vertical-align-top</v-icon>
             <span style="margin-left: 10px;" class="text-small-bold">置顶</span>

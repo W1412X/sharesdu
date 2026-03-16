@@ -21,7 +21,7 @@ export function transformArticleResults(results) {
     summary: item.article_summary,
     starNum: item.star_count,
     viewNum: item.view_count,
-    likeNum: item.likes_count,
+    likeNum: item.like_count,
     publishTime: item.publish_time,
     tags: item.article_tags,
     authorName: item.author_name,
