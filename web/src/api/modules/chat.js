@@ -82,6 +82,7 @@ export const getChatUsers = async () => {
  * @param {*} params 
  * @returns 
  */
+// eslint-disable-next-line no-unused-vars
 export const getChatHistory = async (userId, page,page_size=10) => {
     try {
         let response=null;
