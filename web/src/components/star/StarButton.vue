@@ -1,6 +1,6 @@
 <!--star button-->
 <template>
-    <v-dialog v-model="ifShowDialog" style="display: flex;flex-direction: row;align-items: center;justify-content: center;width: 100%;height: 100%;">
+    <v-dialog v-model="ifShowDialog" style="width: 100%;height:100%;justify-content: center;">
         <div v-if="ifShowStarCard" style="width: 100%;height:100%;justify-content: center;display: flex">
             <star-card @set_loading="setLoading" @close="setStarCardState(false)" @alert="alert" @star_ok="starOk" :type="'add'" :msg="{type:type,id:id}"/>
         </div>

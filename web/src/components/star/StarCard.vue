@@ -92,9 +92,6 @@
             </v-card>
         </div>
     </v-dialog>
-
-    <!-- 主界面 -->
-    <part-loading-view :state="!loadState"></part-loading-view>
     <v-card v-if="loadState" class="card" elevation="1">
         <div class="card-header">
             <div class="card-title">我的收藏夹</div>
@@ -171,7 +168,6 @@ import { createStarFolder, getStarFolders, getStarList, starContent } from '@/ap
 import { computed, ref } from 'vue';
 import SensitiveTextArea from '@/components/common/SensitiveTextArea.vue';
 import SensitiveTextField from '@/components/common/SensitiveTextField.vue';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
 export default {
     props: {
         type: {
@@ -192,7 +188,6 @@ export default {
         StarItem,
         SensitiveTextArea,
         SensitiveTextField,
-        PartLoadingView,
     },
     setup() {
         const themeColor = globalProperties.$themeColor;
