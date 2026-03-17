@@ -1,6 +1,6 @@
 <!-- 移动端文章项组件 -->
 <template>
-    <v-card class="card" :variant="data.ifTop?'tonal':'plain'" :color="data.ifTop?themeColor:undefined" @click="click()">
+    <v-card class="card" :variant="data.ifTop?'variant':'none'" :color="data.ifTop?themeColor:'none'" @click="click()">
         <div v-if="data.ifTop" elevation="0" width="100%" class="text-tiny-bold" :style="{'border-radius': '0px', 'height': '2px', 'width': '100%', 'justify-content': 'center','background-color': themeColor}">
         </div>
         <div class="container">
