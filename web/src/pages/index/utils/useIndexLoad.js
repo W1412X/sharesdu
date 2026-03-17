@@ -93,11 +93,10 @@ export function useIndexLoad(
    * @param {String} type - 内容类型
    */
   const loadMore = async (type) => {
-      // 基于用户体验，设置所有的视图加载
-      loading.value.article = true;
-      loading.value.post = true;
-      loading.value.course = true;
-      loading.value.section = true;
+      // 仅对当前加载的类型设置 loading，避免先加载 section 时把 post/course 的 loading 置为 false 导致误显示「暂无帖子/暂无课程」
+      if (loading.value[type] !== undefined) {
+        loading.value[type] = true;
+      }
       //获取锁，防止由于快速滚动导致重复加载
       await acquireLock('index-load-more');
     try {
@@ -175,11 +174,10 @@ export function useIndexLoad(
       }
     } finally {
       releaseLock('index-load-more');
-      // 基于用户体验，设置所有的视图取消加载
-      loading.value.article = false;
-      loading.value.post = false;
-      loading.value.course = false;
-      loading.value.section = false;
+      // 仅取消当前类型的 loading
+      if (loading.value[type] !== undefined) {
+        loading.value[type] = false;
+      }
     }
   };
 
