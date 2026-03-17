@@ -3,12 +3,14 @@
  * 提供带缓存的 HTTP 请求客户端
  * baseURL 从配置文件读取，支持环境变量覆盖
  * 集成缓存失效规则配置，自动失效相关缓存
+ * 响应拦截器：1000/1001 时单例刷新 token 并自动重试原请求
  */
 import { getCookie } from '@/utils/cookie';
 import { ResponseBuffer } from '@/utils/response_cacher';
 import axios from 'axios';
 import config from '@/config';
 import { getCacheInvalidationRule } from './cache-invalidation-rules';
+import { refreshAccessToken } from '@/utils/auth';
 
 const JSON_CONTENT_TYPE = 'application/json';
 const DEFAULT_CACHE_TTL = 10 * 60 * 1000; // 10 分钟
@@ -302,16 +304,40 @@ class AxiosWithCache {
 }
 
 const axiosInstance = new AxiosWithCache();
+
+/** 单例：正在进行的刷新 Promise，并发 1000/1001 时多个请求共等同一结果，只刷新一次 */
+let refreshPromise = null;
+
 axiosInstance.axiosInstance.interceptors.request.use(
     (config) => {
-        //update token
         config.headers['Authorization'] = `Bearer ${getCookie('accessToken')}`;
         return config;
     }
 );
+
 axiosInstance.axiosInstance.interceptors.response.use(
-    (response) => {
-        return response;
+    (response) => response,
+    async (error) => {
+        const status = error.response?.data?.status;
+        if (status !== 1000 && status !== 1001) {
+            return Promise.reject(error);
+        }
+        const requestUrl = (error.config?.url || '').toString();
+        if (/\/token\/refresh|\/login_passwd|\/login_email/.test(requestUrl)) {
+            return Promise.reject(error);
+        }
+        try {
+            if (!refreshPromise) {
+                refreshPromise = refreshAccessToken();
+            }
+            await refreshPromise;
+            const newConfig = { ...error.config, headers: { ...error.config.headers } };
+            return axiosInstance.axiosInstance.request(newConfig);
+        } catch (e) {
+            return Promise.reject(e);
+        } finally {
+            refreshPromise = null;
+        }
     }
 );
 

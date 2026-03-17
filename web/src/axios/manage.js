@@ -1,6 +1,5 @@
 
 import { dealAxiosError } from "@/utils/other";
-import { waitForLock } from "@/utils/lock";
 import axiosInstance from "./axios";
 
 /**
@@ -9,15 +8,10 @@ import axiosInstance from "./axios";
  */
 export const getUserList = async (page_index=1,page_size=20) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/user/list',{ params: { page_index: page_index, page_size: page_size } });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getUserList(page_index,page_size);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -30,15 +24,10 @@ export const getUserList = async (page_index=1,page_size=20) => {
  */
 export const blockUser = async (userId, days) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/admin/block/user', { user_id: userId, days: days });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await blockUser(userId, days);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -49,15 +38,10 @@ export const blockUser = async (userId, days) => {
  */
 export const unblockUser = async (userId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/admin/unblock/user', { user_id: userId });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await unblockUser(userId);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -70,15 +54,10 @@ export const unblockUser = async (userId) => {
  */
 export const blockArticle = async (articleId, reason) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/admin/block/article', { article_id: articleId, reason: reason });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await blockArticle(articleId, reason);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -90,15 +69,10 @@ export const blockArticle = async (articleId, reason) => {
  */
 export const unblockArticle = async (articleId, reason) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/admin/unblock/article', { article_id: articleId, reason: reason });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await unblockArticle(articleId, reason);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -111,14 +85,9 @@ export const unblockArticle = async (articleId, reason) => {
  */
 export const getBlockedUserList = async (pageIndex = 1, pageSize = 20) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/admin/blocked-users', { params: { page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getBlockedUserList(pageIndex, pageSize);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };

@@ -1,5 +1,4 @@
 import { dealAxiosError } from "@/utils/other";
-import { waitForLock } from "@/utils/lock";
 import axiosInstance from "./axios";
 
 /**
@@ -11,19 +10,13 @@ import axiosInstance from "./axios";
  */
 export const createPostInArticle = async (articleId, postTitle, postContent) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/post/article_post', { 
             article_id: articleId,
             post_title: postTitle,
             post_content: postContent 
         });
         return response.data;
-    } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if(dealResult.status == 1412){
-            return await createPostInArticle(articleId, postTitle, postContent);
-        }
-        return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
 };
 /**
@@ -34,19 +27,13 @@ export const createPostInArticle = async (articleId, postTitle, postContent) => 
  */
 export const createPostInCourse = async (courseId,postTitle, postContent) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/post/course_post', { 
             course_id:courseId,
             post_title: postTitle,
             post_content: postContent 
         });
         return response.data;
-    } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if(dealResult.status == 1412){
-            return await createPostInCourse(postTitle, postContent);
-        }
-        return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
 };
 /**
@@ -56,15 +43,9 @@ export const createPostInCourse = async (courseId,postTitle, postContent) => {
  */
 export const getPostDetailById = async (postId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/post/detail', { params: { post_id: postId } });
         return response.data;
-    } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if(dealResult.status == 1412){
-            return await getPostDetailById(postId);
-        }
-        return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
 };
 /**
@@ -76,15 +57,9 @@ export const getPostDetailById = async (postId) => {
  */
 export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/post/reply_list', { params: { post_id: postId, page_index: pageIndex, page_size: pageSize } });
         return response.data;
-    } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if(dealResult.status == 1412){
-            return await getReplyListByPostId(postId, pageIndex, pageSize);
-        }
-        return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
 };
 /**
@@ -94,15 +69,9 @@ export const getReplyListByPostId = async (postId, pageIndex = 1, pageSize = 20)
  */
 export const deletePostById = async (postId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/post/delete', { post_id: postId });
         return response.data;
-    } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if(dealResult.status == 1412){
-            return await deletePostById(postId);
-        }
-        return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
 };
 /**
@@ -114,7 +83,6 @@ export const deletePostById = async (postId) => {
  */
 export const createReplyUnderPost = async (postId, replyContent, parentReplyId = null) => {
     try {
-        await waitForLock('token');
         let response=null;
         if(parentReplyId){
             response = await axiosInstance.post('/reply/create', { 
@@ -129,12 +97,7 @@ export const createReplyUnderPost = async (postId, replyContent, parentReplyId =
             });
         }
         return response.data;
-    } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if(dealResult.status == 1412){
-            return await createReplyUnderPost(postId, replyContent, parentReplyId);
-        }
-        return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
 };
 /**
@@ -144,15 +107,9 @@ export const createReplyUnderPost = async (postId, replyContent, parentReplyId =
  */
 export const deleteReplyById = async (replyId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/reply/delete', { reply_id: replyId });
         return response.data;
-    } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if(dealResult.status == 1412){
-            return await deleteReplyById(replyId);
-        }
-        return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
 };
 /**
@@ -162,14 +119,8 @@ export const deleteReplyById = async (replyId) => {
  */
 export const getReplyDetailById = async (replyId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/reply/detail', { params: { reply_id: replyId } });
         return response.data;
-    } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if(dealResult.status == 1412){
-            return await getReplyDetailById(replyId);
-        }
-        return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
 };

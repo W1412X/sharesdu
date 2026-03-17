@@ -1,5 +1,4 @@
 import { dealAxiosError } from "@/utils/other";
-import { waitForLock } from "@/utils/lock";
 import axiosInstance from "../request";
 
 /**
@@ -15,16 +14,11 @@ import axiosInstance from "../request";
  */
 export const searchArticles = async (query, tag, type, sort, page = 1, page_size = 10) => {
     try {
-        await waitForLock('token');
         const params = { q: query, tag: tag, type: type, sort: sort, page: page, page_size: page_size };
         const response = await axiosInstance.get('/search/articles', { params });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await searchArticles(query, tag, type, sort, page, page_size);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -39,16 +33,11 @@ export const searchArticles = async (query, tag, type, sort, page = 1, page_size
  */
 export const searchPosts = async (query, sort, page = 1, page_size = 10) => {
     try {
-        await waitForLock('token');
         const params = { q: query, sort: sort, page: page, page_size: page_size };
         const response = await axiosInstance.get('/search/posts', { params });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await searchPosts(query, sort, page, page_size);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -62,16 +51,11 @@ export const searchPosts = async (query, sort, page = 1, page_size = 10) => {
  */
 export const searchReplies = async (query, page = 1, page_size = 10) => {
     try {
-        await waitForLock('token');
         const params = { q: query, page: page, page_size: page_size };
         const response = await axiosInstance.get('/search/replies', { params });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await searchReplies(query, page, page_size);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -89,16 +73,11 @@ export const searchReplies = async (query, page = 1, page_size = 10) => {
  */
 export const searchCourses = async (query, type, college, method, sort, page = 1, page_size = 10) => {
     try {
-        await waitForLock('token');
         const params = { q: query, type: type, college: college, method: method, sort: sort, page: page, page_size: page_size };
         const response = await axiosInstance.get('/search/courses', { params });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await searchCourses(query, type, college, method, sort, page, page_size);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -111,15 +90,10 @@ export const searchCourses = async (query, type, college, method, sort, page = 1
  */
 export const globalSearch = async (query, page = 1, page_size = 10) => {
     try {
-        await waitForLock('token');
         const params = { q: query, page: page, page_size: page_size };
         const response = await axiosInstance.get('/search/global', { params });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await globalSearch(query, page, page_size);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };

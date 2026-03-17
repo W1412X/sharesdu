@@ -1,5 +1,4 @@
 import { dealAxiosError } from "@/utils/other";
-import { waitForLock } from "@/utils/lock";
 import axiosInstance from "./axios";
 
 /**
@@ -10,15 +9,9 @@ import axiosInstance from "./axios";
  */
 export const likeContent = async (content_type, content_id) => {
     try {
-      await waitForLock('token');
       const response = await axiosInstance.post('/like', { content_type, content_id });
       return response.data;
-    } catch (error) {
-      let dealResult = await dealAxiosError(error);
-      if(dealResult.status == 1412){
-        return await likeContent(content_type, content_id);
-      }
-      return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
   };
   
@@ -30,15 +23,9 @@ export const likeContent = async (content_type, content_id) => {
    */
   export const unlikeContent = async (content_type, content_id) => {
     try {
-      await waitForLock('token');
       const response = await axiosInstance.post('/unlike', { content_type, content_id });
       return response.data;
-    } catch (error) {
-      let dealResult = await dealAxiosError(error);
-      if(dealResult.status == 1412){
-        return await unlikeContent(content_type, content_id);
-      }
-      return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
   };
   
@@ -50,17 +37,11 @@ export const likeContent = async (content_type, content_id) => {
    */
   export const getContentLikeCount = async (content_type, content_id) => {
     try {
-      await waitForLock('token');
       const response = await axiosInstance.get('/like/count', {
         params: { content_type, content_id }
       });
       return response.data;
-    } catch (error) {
-      let dealResult = await dealAxiosError(error);
-      if(dealResult.status == 1412){
-        return await getContentLikeCount(content_type, content_id);
-      }
-      return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
   };
   
@@ -73,16 +54,10 @@ export const likeContent = async (content_type, content_id) => {
    */
   export const fetchUserLikedContents = async (user_id, page_size = 20, page_index = 1) => {
     try {
-      await waitForLock('token');
       const response = await axiosInstance.get('/like/user', {
         params: { user_id, page_size, page_index }
       });
       return response.data;
-    } catch (error) {
-      let dealResult = await dealAxiosError(error);
-      if(dealResult.status == 1412){
-        return await fetchUserLikedContents(user_id, page_size, page_index);
-      }
-      return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
   };

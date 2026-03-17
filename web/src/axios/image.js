@@ -2,7 +2,6 @@
  * this document provide all the image relevent request  
  */
 import { dealAxiosError } from "@/utils/other.js";
-import { waitForLock } from "@/utils/lock.js";
 import axiosInstance from "./axios";
 /**
  * Upload user profile image
@@ -11,17 +10,12 @@ import axiosInstance from "./axios";
  */
 export const uploadProfileImage = async (image) => {
     try {
-        await waitForLock('token');
         const data = new FormData();
         data.append('image', image);
         const response = await axiosInstance.post('/image/profile', data);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await uploadProfileImage(image);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -32,18 +26,13 @@ export const uploadProfileImage = async (image) => {
 */
 export const uploadArticleImage = async (image) => {
     try {
-        await waitForLock('token');
         const formData = new FormData();
         formData.append('image', image);
         const response = await axiosInstance.post('/image/article', formData);
 
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await uploadArticleImage(image);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -55,7 +44,6 @@ export const uploadArticleImage = async (image) => {
  */
 export const getUserProfileImageUpdateInfo = async (userIds) => {
     try {
-        await waitForLock('token');
         if (!Array.isArray(userIds) || userIds.length === 0) {
             return {
                 status: -1,

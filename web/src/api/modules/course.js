@@ -5,7 +5,6 @@
  * every function return a json with status code and message
  */
 import { dealAxiosError } from "@/utils/other";
-import { waitForLock } from "@/utils/lock";
 import axiosInstance from "../request";
 
 /**
@@ -15,15 +14,10 @@ import axiosInstance from "../request";
  */
 export const createCourse = async (data) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/course/create', data);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await createCourse(data);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -34,15 +28,10 @@ export const createCourse = async (data) => {
  */
 export const editCourse = async (data) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/course/edit', data);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await editCourse(data);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -53,15 +42,10 @@ export const editCourse = async (data) => {
  */
 export const deleteCourse = async (courseId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/course/delete', { course_id: courseId });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await deleteCourse(courseId);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -72,15 +56,10 @@ export const deleteCourse = async (courseId) => {
  */
 export const rateCourse = async (data) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/course/rate', data);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await rateCourse(data);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -91,15 +70,10 @@ export const rateCourse = async (data) => {
  */
 export const editRating = async (data) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/course/edit_rating', data);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await editRating(data);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -111,15 +85,10 @@ export const editRating = async (data) => {
  */
 export const getUserCourseEvaluation = async (userId, courseId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/course/user_evaluation', { user_id: userId, course_id: courseId });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getUserCourseEvaluation(userId, courseId);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -130,15 +99,10 @@ export const getUserCourseEvaluation = async (userId, courseId) => {
  */
 export const getCourseDetail = async (courseId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/course/detail', { params: { course_id: courseId } });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getCourseDetail(courseId);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -151,15 +115,10 @@ export const getCourseDetail = async (courseId) => {
  */
 export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/course/post_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getCoursePostList(courseId, pageIndex, pageSize);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -172,15 +131,10 @@ export const getCoursePostList = async (courseId, pageIndex = 1, pageSize = 20) 
  */
 export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/course/score_list', { params: { course_id: courseId, page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getCourseScoreList(courseId, pageIndex, pageSize);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -192,15 +146,10 @@ export const getCourseScoreList = async (courseId, pageIndex = 1, pageSize = 20)
  */
 export const getCourseList = async (pageIndex = 1,useCache=true, pageSize = 20) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/course/list', { params: { page_index: pageIndex, page_size: pageSize } },useCache);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getCourseList(pageIndex, pageSize);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -212,15 +161,10 @@ export const getCourseList = async (pageIndex = 1,useCache=true, pageSize = 20) 
  */
 export const freezeUnfreezeCourse = async (courseId, action) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/admin/courses/freeze', { course_id: courseId, action: action });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await freezeUnfreezeCourse(courseId, action);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -232,15 +176,10 @@ export const freezeUnfreezeCourse = async (courseId, action) => {
  */
 export const rollbackCourse = async (courseId, targetVersion) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/admin/courses/rollback', { course_id: courseId, target_version: targetVersion });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await rollbackCourse(courseId, targetVersion);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -253,15 +192,10 @@ export const rollbackCourse = async (courseId, targetVersion) => {
  */
 export const getCourseHistory = async (courseId, pageIndex = 1, pageSize = 10) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get(`/admin/courses/${courseId}/history`, { params: { page_index: pageIndex, page_size: pageSize } });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getCourseHistory(courseId, pageIndex, pageSize);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 

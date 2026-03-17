@@ -1,5 +1,4 @@
 import { dealAxiosError } from "@/utils/other.js";
-import { waitForLock } from "@/utils/lock.js";
 import axiosInstance from "../request";
 
 /**
@@ -11,16 +10,11 @@ import axiosInstance from "../request";
  */
 export const starContent = async (content_type, content_id, folder_id=null) => {
   try {
-    await waitForLock('token');
     const data = {content_type, content_id, folder_id};
     const response = await axiosInstance.post('/star', data);
     return response.data;
   } catch (error) {
-    let dealResult=await dealAxiosError(error);
-    if(dealResult.status==1412){
-      return await starContent(content_type, content_id, folder_id);
-    }
-    return dealResult;
+    return dealAxiosError(error);
   }
 };
 
@@ -32,16 +26,11 @@ export const starContent = async (content_type, content_id, folder_id=null) => {
  */
 export const createStarFolder = async (folder_name, description=null) => {
   try {
-    await waitForLock('token');
     const data = {folder_name, description};
     const response = await axiosInstance.post('/star/create', data);
     return response.data;
   } catch (error) {
-    let dealResult=await dealAxiosError(error);
-    if(dealResult.status==1412){
-      return await createStarFolder(folder_name, description);
-    }
-    return dealResult;
+    return dealAxiosError(error);
   }
 };
 
@@ -52,17 +41,12 @@ export const createStarFolder = async (folder_name, description=null) => {
  */
 export const getStarList = async (folder_id=null) => {
   try {
-    await waitForLock('token');
     let url = '/star/list';
     if(folder_id !== null) url += `?folder_id=${folder_id}`;
     const response = await axiosInstance.get(url);
     return response.data;
   } catch (error) {
-    let dealResult=await dealAxiosError(error);
-    if(dealResult.status==1412){
-      return await getStarList(folder_id);
-    }
-    return dealResult;
+    return dealAxiosError(error);
   }
 };
 
@@ -74,16 +58,11 @@ export const getStarList = async (folder_id=null) => {
  */
 export const unstarContent = async (content_type, content_id) => {
   try {
-    await waitForLock('token');
     const data = {content_type, content_id};
     const response = await axiosInstance.post('/unstar', data);
     return response.data;
   } catch (error) {
-    let dealResult=await dealAxiosError(error);
-    if(dealResult.status==1412){
-      return await unstarContent(content_type, content_id);
-    }
-    return dealResult;
+    return dealAxiosError(error);
   }
 };
 
@@ -93,14 +72,9 @@ export const unstarContent = async (content_type, content_id) => {
  */
 export const getStarFolders = async () => {
   try {
-    await waitForLock('token');
     const response = await axiosInstance.get('/star/folder/list');
     return response.data;
   } catch (error) {
-    let dealResult=await dealAxiosError(error);
-    if(dealResult.status==1412){
-      return await getStarFolders();
-    }
-    return dealResult;
+    return dealAxiosError(error);
   }
 };

@@ -1,5 +1,4 @@
 import { dealAxiosError } from "@/utils/other.js";
-import { waitForLock } from "@/utils/lock.js";
 import axiosInstance from "../request";
 /**
  * Fetch notifications list
@@ -9,17 +8,11 @@ import axiosInstance from "../request";
  */
 export const fetchNotificationsList = async (page_index = 1,page_size = 10) => {
     try {
-      await waitForLock('token');
       const response = await axiosInstance.get('/notifications/list', {
         params: { page_size, page_index }
       });
       return response.data;
-    } catch (error) {
-      let dealResult = await dealAxiosError(error);
-      if(dealResult.status == 1412){
-        return await fetchNotificationsList(page_size, page_index);
-      }
-      return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
   };
   
@@ -30,14 +23,8 @@ export const fetchNotificationsList = async (page_index = 1,page_size = 10) => {
    */
   export const markAsReadNotification = async (notification_ids) => {
     try {
-      await waitForLock('token');
       const response = await axiosInstance.post('/notifications/read', { notification_ids:notification_ids });
       return response.data;
-    } catch (error) {
-      let dealResult = await dealAxiosError(error);
-      if(dealResult.status == 1412){
-        return await markAsReadNotification(notification_ids);
-      }
-      return dealResult;
+    } catch (error) { return dealAxiosError(error);
     }
   };

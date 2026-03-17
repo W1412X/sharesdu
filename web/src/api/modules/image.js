@@ -2,7 +2,6 @@
  * this document provide all the image relevent request  
  */
 import { dealAxiosError } from "@/utils/other.js";
-import { waitForLock } from "@/utils/lock.js";
 import axiosInstance from "../request";
 /**
  * Upload user profile image
@@ -11,7 +10,6 @@ import axiosInstance from "../request";
  */
 export const uploadProfileImage = async (image) => {
     try {
-        await waitForLock('token');
         const data = new FormData();
         // 如果是 Blob，转换为 File 对象以保留文件名和类型信息
         let fileToUpload = image;
@@ -34,11 +32,7 @@ export const uploadProfileImage = async (image) => {
         const response = await axiosInstance.post('/image/profile', data);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await uploadProfileImage(image);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -49,7 +43,6 @@ export const uploadProfileImage = async (image) => {
 */
 export const uploadArticleImage = async (image) => {
     try {
-        await waitForLock('token');
         const formData = new FormData();
         // 如果是 Blob，转换为 File 对象以保留文件名和类型信息
         let fileToUpload = image;
@@ -73,11 +66,7 @@ export const uploadArticleImage = async (image) => {
 
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await uploadArticleImage(image);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -89,7 +78,6 @@ export const uploadArticleImage = async (image) => {
  */
 export const getUserProfileImageUpdateInfo = async (userIds) => {
     try {
-        await waitForLock('token');
         if (!Array.isArray(userIds) || userIds.length === 0) {
             return {
                 status: -1,

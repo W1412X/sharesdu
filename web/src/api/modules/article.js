@@ -8,38 +8,25 @@
  * 同时在控制台输出错误信息  
  */
 import { dealAxiosError } from "@/utils/other.js";
-import { waitForLock } from "@/utils/lock.js";
 import axiosInstance from "../request";
 
 // 创建文章函数
 export const createArticle = async (data) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/article/create', data);
         return response.data;
     } catch (error) {
-        let dealResult=await dealAxiosError(error);
-        //which means the error caused by the token and have refreshed it
-        if(dealResult.status==1412){
-          return await createArticle(data);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
 // 编辑文章函数
 export const editArticle = async (data) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/article/edit', data);
         return response.data;
     } catch (error) {
-        let dealResult=await dealAxiosError(error);
-        //which means the error caused by the token and have refreshed it
-        if(dealResult.status==1412){
-          return await editArticle(data);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -47,64 +34,40 @@ export const editArticle = async (data) => {
 // 删除文章函数
 export const deleteArticle = async (articleId) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post('/article/delete', {article_id: articleId});
         return response.data;
     } catch (error) {
-        let dealResult=await dealAxiosError(error);
-        //which means the error caused by the token and have refreshed it
-        if(dealResult.status==1412){
-          return await deleteArticle(articleId);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
 // 获取文章详细信息函数
 export const getArticleDetail = async (id) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/article/detail', { params: { article_id:id } });
         return response.data;
     } catch (error) {
-        let dealResult=await dealAxiosError(error);
-        //which means the error caused by the token and have refreshed it
-        if(dealResult.status==1412){
-          return await getArticleDetail(id);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
 // 获取文章下的Post列表函数
 export const getPostListByArticleId = async (id, pageIndex = 1,useCache=true, pageSize = 20) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/article/post_list', { params: { article_id:id, page_index: pageIndex, page_size: pageSize } },useCache);
         return response.data;
     } catch (error) {
-        let dealResult=await dealAxiosError(error);
-        //which means the error caused by the token and have refreshed it
-        if(dealResult.status==1412){
-          return await getPostListByArticleId(id,pageIndex,pageSize);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
 // 获取文章列表函数
 export const getArticleList = async (sort='time',tags=null,pageIndex = 1,useCache=true, pageSize = 20) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/article/list', { params: { page_index: pageIndex, page_size: pageSize,tags:tags,sort:sort } },useCache);
         return response.data;
     } catch (error) {
-        let dealResult=await dealAxiosError(error);
-        //which means the error caused by the token and have refreshed it
-        if(dealResult.status==1412){
-          return await getArticleList(sort,null,pageIndex,pageSize);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 

@@ -1,4 +1,3 @@
-import { waitForLock } from "@/utils/lock";
 import { dealAxiosError, getLoadMsg } from "@/utils/other";
 import { getCookie } from "@/utils/cookie";
 import { globalProperties } from "@/main";
@@ -12,8 +11,6 @@ import axiosInstance from "../request";
  */
 export const uploadResource = async (file, articleId,uiFunc) => {
     try {
-        await waitForLock('token');
-
         const formData = new FormData();
         formData.append('file', file);
         formData.append('article_id', articleId);
@@ -31,11 +28,7 @@ export const uploadResource = async (file, articleId,uiFunc) => {
 
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await uploadResource(file, articleId);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 

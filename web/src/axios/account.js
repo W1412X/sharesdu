@@ -5,7 +5,6 @@
  * every function return a json with status code and message
  */
 import { dealAxiosError } from "@/utils/other.js";
-import { waitForLock } from "@/utils/lock.js";
 import axiosInstance, { axiosInstanceNoHeader } from "./axios";
 /**
  * registe by Email
@@ -14,7 +13,6 @@ import axiosInstance, { axiosInstanceNoHeader } from "./axios";
  */
 export const registerByEmail = async (data) => {
   try {
-    await waitForLock('token');
     const response = await axiosInstanceNoHeader.post('/register', data);
     return response.data;
   } catch (error) {
@@ -29,7 +27,6 @@ export const registerByEmail = async (data) => {
  */
 export const getRegisterEmailCode = async (email,inviteCode) => {
   try {
-    await waitForLock('token');
     const response = await axiosInstanceNoHeader.get(`/register?send_code=1&email=${email}&invitation_code=${inviteCode}`);
     return response.data;
   } catch (error) {
@@ -58,7 +55,6 @@ export const loginWithPassword = async (data) => {
  */
 export const getLoginEmailCode = async (email) => {
   try {
-    await waitForLock('token');
     const response = await axiosInstanceNoHeader.get(`/login_email?send_code=1&email=${email}`);
     return response.data;
   } catch (error) {
@@ -73,7 +69,6 @@ export const getLoginEmailCode = async (email) => {
  */
 export const loginWithEmail = async (data) => {
   try {
-    await waitForLock('token');
     const response = await axiosInstanceNoHeader.post('/login_email', data);
     return response.data;
   } catch (error) {
@@ -87,15 +82,9 @@ export const loginWithEmail = async (data) => {
  */
 export const logout = async () => {
   try {
-    await waitForLock('token');
     const response = await axiosInstance.post('/logout');
     return response.data;
-  } catch (error) {
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await logout();
-    }
-    return dealResult;
+  } catch (error) { return dealAxiosError(error);
   }
 };
 
@@ -106,15 +95,9 @@ export const logout = async () => {
  */
 export const deleteAccount = async (data) => {
   try {
-    await waitForLock('token');
     const response = await axiosInstance.post('/delete_account', data);
     return response.data;
-  } catch (error) {
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await deleteAccount(data);
-    }
-    return dealResult;
+  } catch (error) { return dealAxiosError(error);
   }
 };
 
@@ -125,15 +108,9 @@ export const deleteAccount = async (data) => {
  */
 export const getDeleteAccountEmailCode = async (email) => {
   try {
-    await waitForLock('token');
     const response = await axiosInstance.get(`/delete_account?send_code=1&email=${email}`);
     return response.data;
-  } catch (error) {
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await getDeleteAccountEmailCode(email);
-    }
-    return dealResult;
+  } catch (error) { return dealAxiosError(error);
   }
 };
 
@@ -144,15 +121,9 @@ export const getDeleteAccountEmailCode = async (email) => {
  */
 export const resetPassword = async (data) => {
   try {
-    await waitForLock('token');
     const response = await axiosInstance.post('/reset_password', data);
     return response.data;
-  } catch (error) {
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await resetPassword(data);
-    }
-    return dealResult;
+  } catch (error) { return dealAxiosError(error);
   }
 };
 
@@ -163,15 +134,9 @@ export const resetPassword = async (data) => {
  */
 export const getResetPasswordEmailCode = async (email) => {
   try {
-    await waitForLock('token');
     const response = await axiosInstance.get(`/reset_password?send_code=1&email=${email}`);
     return response.data;
-  } catch (error) {
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await getResetPasswordEmailCode(email);
-    }
-    return dealResult;
+  } catch (error) { return dealAxiosError(error);
   }
 };
 
@@ -182,15 +147,9 @@ export const getResetPasswordEmailCode = async (email) => {
  */
 export const getAuthorInfo=async(userId)=>{
   try{
-    await waitForLock('token');
     const response=await axiosInstance.get(`/user/homepage?user_id=${userId}`);
     return response.data;
-  }catch(error){
-    let dealResult = await dealAxiosError(error);
-    if(dealResult.code==1412){
-      return await getAuthorInfo(userId);
-    }
-    return dealResult;
+  }catch(error){ return dealAxiosError(error);
   }
 }
 
@@ -204,11 +163,7 @@ export const getUserPreview = async (userId) => {
       const response = await axiosInstance.get(`/user/preview?user_id=${userId}`);
       return response.data;
   } catch (error) {
-      let dealResult = await dealAxiosError(error);
-      if (dealResult.status == 1412) {
-          return await getUserPreview(userId);
-      }
-      return dealResult;
+      return dealAxiosError(error);
   }
 };
 
@@ -225,10 +180,6 @@ export const getUserContent = async (contentType, userId, page = 1, pageSize = 1
       const response = await axiosInstance.get(`/user/content?type=${contentType}&user_id=${userId}&page=${page}&page_size=${pageSize}`);
       return response.data;
   } catch (error) {
-      let dealResult = await dealAxiosError(error);
-      if (dealResult.status == 1412) {
-          return await getUserContent(contentType, userId, page, pageSize);
-      }
-      return dealResult;
+      return dealAxiosError(error);
   }
 };

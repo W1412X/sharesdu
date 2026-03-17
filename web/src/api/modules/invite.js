@@ -1,4 +1,3 @@
-import { waitForLock } from "@/utils/lock.js";
 import { dealAxiosError } from "@/utils/other.js";
 import axiosInstance from "../request";
 /**
@@ -9,7 +8,6 @@ import axiosInstance from "../request";
  */
 export const createInvitationCode = async (capacity, expiresDays) => {
     try {
-        await waitForLock('token');
         const requestData = {
             capacity: capacity,
             ...(expiresDays !== undefined && { expires_days: expiresDays })
@@ -17,11 +15,7 @@ export const createInvitationCode = async (capacity, expiresDays) => {
         const response = await axiosInstance.post('/admin/invitation-codes', requestData);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await createInvitationCode(capacity, expiresDays);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -31,15 +25,10 @@ export const createInvitationCode = async (capacity, expiresDays) => {
  */
 export const getInvitationCodeList = async () => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.get('/admin/invitation-codes');
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await getInvitationCodeList();
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -51,7 +40,6 @@ export const getInvitationCodeList = async () => {
  */
 export const updateInvitationCodeStatus = async (code, isActive) => {
     try {
-        await waitForLock('token');
         const requestData = {
             code: code,
             is_active: isActive
@@ -59,11 +47,7 @@ export const updateInvitationCodeStatus = async (code, isActive) => {
         const response = await axiosInstance.patch('/admin/invitation-codes', requestData);
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        if (dealResult.status == 1412) {
-            return await updateInvitationCodeStatus(code, isActive);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 

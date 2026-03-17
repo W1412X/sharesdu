@@ -1,4 +1,3 @@
-import { waitForLock } from "@/utils/lock";
 import { dealAxiosError } from "@/utils/other";
 import axiosInstance from "../request";
 
@@ -12,16 +11,10 @@ import axiosInstance from "../request";
  */
 export const setArticleTop = async (articleId, top) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post(`/articles/${articleId}/top`, { top });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        // Retry if token is refreshed.
-        if (dealResult.status == 1412) {
-            return await setArticleTop(articleId, top);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
@@ -35,16 +28,10 @@ export const setArticleTop = async (articleId, top) => {
  */
 export const setPostTopInArticle = async (postId, top) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post(`/article-posts/${postId}/top`, { top });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        // Retry if token is refreshed.
-        if (dealResult.status == 1412) {
-            return await setPostTopInArticle(postId, top);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 /**
@@ -57,16 +44,10 @@ export const setPostTopInArticle = async (postId, top) => {
  */
 export const setPostTopInCourse = async (postId, top) => {
     try {
-        await waitForLock('token');
         const response = await axiosInstance.post(`/course-posts/${postId}/top`, { top });
         return response.data;
     } catch (error) {
-        let dealResult = await dealAxiosError(error);
-        // Retry if token is refreshed.
-        if (dealResult.status == 1412) {
-            return await setPostTopInCourse(postId, top);
-        }
-        return dealResult;
+        return dealAxiosError(error);
     }
 };
 
