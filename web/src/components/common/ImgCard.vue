@@ -8,18 +8,9 @@
     @click:outside="setImgDetailState(false)">
     <div v-if="ifShowImgDetail" class="image-viewer-container" @click.stop>
       <div class="image-viewer-content">
-        <!-- 加载中视图 -->
+        <!-- 加载中：骨架微光 -->
         <div v-if="imageLoading" class="image-loading-wrapper">
-          <div class="loading-content">
-            <v-progress-circular 
-              :color="themeColor" 
-              indeterminate
-              size="64"
-              width="6"
-              class="loading-spinner">
-            </v-progress-circular>
-            <p class="loading-text">加载中...</p>
-          </div>
+          <div class="img-skeleton img-skeleton--dark"></div>
         </div>
         
         <!-- 图片显示区域 -->
@@ -32,13 +23,7 @@
               @load="onImageLoad"
               @error="onImageError">
               <template v-slot:placeholder>
-                <div class="image-placeholder">
-                  <v-progress-circular 
-                    :color="themeColor" 
-                    indeterminate
-                    size="48">
-                  </v-progress-circular>
-                </div>
+                <div class="img-skeleton img-skeleton--dark"></div>
               </template>
             </v-img>
           </div>
@@ -64,9 +49,7 @@
     <v-img @click.stop="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover
       :src="ifNeedDeal ? imgUrl : src" :max-width="width" :min-width="width">
       <template v-slot:placeholder>
-        <v-row align="center" class="fill-height ma-0" justify="center">
-          <v-progress-circular :color="themeColor" indeterminate></v-progress-circular>
-        </v-row>
+        <div class="img-skeleton"></div>
       </template>
     </v-img>
     <v-btn v-if="editable" icon @click="deleteSelf" size="20" text="✕" :color="themeColor" variant="tonal"
@@ -302,42 +285,26 @@ export default {
   position: relative;
 }
 
-/* ========== 加载中视图 ========== */
-.image-loading-wrapper {
-  position: absolute;
+/* ========== 骨架微光加载 ========== */
+.img-skeleton {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: linear-gradient(110deg, #e8e8e8 25%, #f2f2f2 37%, #e8e8e8 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.2s ease infinite;
+}
+.img-skeleton--dark {
+  background: linear-gradient(110deg, #3a3a3a 25%, #4a4a4a 37%, #3a3a3a 63%);
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.image-loading-wrapper {
+  position: absolute;
+  inset: 0;
   z-index: 10;
-}
-
-.loading-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.loading-spinner {
-  animation: spin 1s linear infinite;
-}
-
-.loading-text {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0;
-  letter-spacing: 1px;
 }
 
 /* ========== 图片显示区域 ========== */
@@ -417,26 +384,6 @@ export default {
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.9;
-  }
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* 图片淡入动画 */
 .image-fade-enter-active {
   transition: opacity 0.4s ease-out, transform 0.4s ease-out;
@@ -479,21 +426,6 @@ export default {
     border-radius: 8px;
   }
 
-  .loading-content {
-    padding: 32px 24px;
-    border-radius: 16px;
-    gap: 20px;
-  }
-
-  .loading-spinner {
-    width: 48px !important;
-    height: 48px !important;
-  }
-
-  .loading-text {
-    font-size: 14px;
-  }
-
   .image-toolbar {
     gap: 20px;
     margin-top: 16px;
@@ -523,21 +455,6 @@ export default {
     border-radius: 16px;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3),
                 0 12px 32px rgba(0, 0, 0, 0.2);
-  }
-
-  .loading-content {
-    padding: 48px 40px;
-    border-radius: 24px;
-    gap: 28px;
-  }
-
-  .loading-spinner {
-    width: 64px !important;
-    height: 64px !important;
-  }
-
-  .loading-text {
-    font-size: 18px;
   }
 
   .image-toolbar {
