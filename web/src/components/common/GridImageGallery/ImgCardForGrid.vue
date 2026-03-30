@@ -2,7 +2,11 @@
   <div class="img-card-container">
     <v-img :src="imgUrl" :lazy-src="lazyImgUrl" cover style="object-fit: cover; width: 100%; height: 100%;">
       <template v-slot:placeholder>
-        <div class="img-skeleton"></div>
+        <branded-image-placeholder
+          tone="light"
+          variant="compact"
+          :theme-color="themeColor"
+        />
       </template>
     </v-img>
   </div>
@@ -12,9 +16,13 @@
   import { globalProperties } from '@/main';
   import { globalImageCacher } from '@/utils/global_img_cache';
   import { fetchImgAndDeal } from '@/utils/imageUtils';
-  
+  import BrandedImagePlaceholder from '@/components/common/BrandedImagePlaceholder.vue';
+
   export default {
     name: 'ImgCardForGrid',
+    components: {
+      BrandedImagePlaceholder,
+    },
     props: {
       src: {
         type: String,
@@ -27,7 +35,8 @@
     },
     setup() {
       const lazyImgUrl = globalProperties.$imgLazy;
-      return { lazyImgUrl };
+      const themeColor = globalProperties.$themeColor;
+      return { lazyImgUrl, themeColor };
     },
     data() {
       return {
@@ -94,15 +103,4 @@
   object-fit: cover;
 }
 
-.img-skeleton {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(110deg, #e8e8e8 25%, #f2f2f2 37%, #e8e8e8 63%);
-  background-size: 400% 100%;
-  animation: skeleton-shimmer 1.2s ease infinite;
-}
-@keyframes skeleton-shimmer {
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
-}
 </style>

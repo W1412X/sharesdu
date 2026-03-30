@@ -10,7 +10,12 @@
       <div class="image-viewer-content">
         <!-- 加载中：骨架微光 -->
         <div v-if="imageLoading" class="image-loading-wrapper">
-          <div class="img-skeleton img-skeleton--dark"></div>
+          <branded-image-placeholder
+            tone="dark"
+            variant="fullscreen"
+            :theme-color="themeColor"
+            show-tagline
+          />
         </div>
         
         <!-- 图片显示区域 -->
@@ -23,7 +28,12 @@
               @load="onImageLoad"
               @error="onImageError">
               <template v-slot:placeholder>
-                <div class="img-skeleton img-skeleton--dark"></div>
+                <branded-image-placeholder
+                  tone="dark"
+                  variant="fullscreen"
+                  :theme-color="themeColor"
+                  show-tagline
+                />
               </template>
             </v-img>
           </div>
@@ -49,7 +59,11 @@
     <v-img @click.stop="imgClick" :lazy-src="lazyImgUrl" :min-height="height" :max-height="height" cover
       :src="ifNeedDeal ? imgUrl : src" :max-width="width" :min-width="width">
       <template v-slot:placeholder>
-        <div class="img-skeleton"></div>
+        <branded-image-placeholder
+          tone="light"
+          :variant="thumbnailPlaceholderVariant"
+          :theme-color="themeColor"
+        />
       </template>
     </v-img>
     <v-btn v-if="editable" icon @click="deleteSelf" size="20" text="✕" :color="themeColor" variant="tonal"
@@ -63,9 +77,13 @@ import { globalProperties } from '@/main';
 import { globalImageCacher } from '@/utils/global_img_cache';
 import { fetchImgAndDeal } from '@/utils/imageUtils';
 import { computed, ref, nextTick } from 'vue';
+import BrandedImagePlaceholder from './BrandedImagePlaceholder.vue';
 
 export default {
   name: 'ImgCard',
+  components: {
+    BrandedImagePlaceholder,
+  },
   props: {
     src: {
       type: String,
@@ -119,7 +137,7 @@ export default {
     const onImageError = () => {
       imageLoading.value = false;
     }
-    
+
     return {
       lazyImgUrl,
       ifShowDialog,
@@ -137,6 +155,18 @@ export default {
       imgBlob: null,
       imgUrl: this.src,
     }
+  },
+  computed: {
+    thumbnailPlaceholderVariant() {
+      const w = Number(this.width) || 120;
+      const h =
+        this.height != null && this.height !== ''
+          ? Number(this.height)
+          : w;
+      const minSide = Math.min(w, h);
+      /* 文章项封面等 90×90、小缩略图用 compact；仅按 width 判断会把 90 宽误判为 embed */
+      return minSide <= 96 ? 'compact' : 'embed';
+    },
   },
   watch: {
     ifShowImgDetail: {
@@ -283,22 +313,6 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-}
-
-/* ========== 骨架微光加载 ========== */
-.img-skeleton {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(110deg, #e8e8e8 25%, #f2f2f2 37%, #e8e8e8 63%);
-  background-size: 400% 100%;
-  animation: skeleton-shimmer 1.2s ease infinite;
-}
-.img-skeleton--dark {
-  background: linear-gradient(110deg, #3a3a3a 25%, #4a4a4a 37%, #3a3a3a 63%);
-}
-@keyframes skeleton-shimmer {
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
 }
 
 .image-loading-wrapper {

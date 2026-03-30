@@ -48,15 +48,12 @@
                                 @error="onImageError"
                             >
                                 <template v-slot:placeholder>
-                                    <div class="image-loading">
-                                        <v-progress-circular 
-                                            :color="themeColor" 
-                                            indeterminate
-                                            size="64"
-                                            width="6"
-                                        ></v-progress-circular>
-                                        <p class="loading-text">加载中...</p>
-                                    </div>
+                                    <branded-image-placeholder
+                                        tone="dark"
+                                        variant="fullscreen"
+                                        :theme-color="themeColor"
+                                        show-tagline
+                                    />
                                 </template>
                             </v-img>
                         </div>
@@ -121,9 +118,13 @@
 <script>
 import { globalProperties } from '@/main';
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import BrandedImagePlaceholder from './BrandedImagePlaceholder.vue';
 
 export default {
     name: 'ImageViewer',
+    components: {
+        BrandedImagePlaceholder,
+    },
     props: {
         modelValue: {
             type: Boolean,
@@ -347,23 +348,6 @@ export default {
     height: auto;
     object-fit: contain;
     display: block;
-}
-
-.image-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    min-height: 300px;
-    max-height: 100%;
-}
-
-.loading-text {
-    color: white;
-    margin-top: 16px;
-    font-size: 14px;
 }
 
 .nav-btn {

@@ -29,7 +29,7 @@
                             <v-progress-circular 
                                 :size="parseInt(size) * 0.6" 
                                 :width="2"
-                                :color="'#bbbbbb'" 
+                                :color="themeColor" 
                                 indeterminate
                             ></v-progress-circular>
                         </div>
@@ -99,9 +99,11 @@ export default {
     },
     setup() {
         const lazyImgUrl = globalProperties.$imgDict?.svg?.lazy || globalProperties.$imgLazy || '/resource/default_img.svg';
+        const themeColor = globalProperties.$themeColor;
         const imageLoading = ref(false);
         return {
             lazyImgUrl,
+            themeColor,
             imageLoading,
         }
     },
