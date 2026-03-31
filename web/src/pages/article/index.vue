@@ -6,6 +6,7 @@
         :article="article"
         :if-master="ifMaster"
         :loading="loading"
+        :load-state="loadState"
         :theme-color="themeColor"
         @set-article-top="handleSetArticleTop"
         @to-origin-link="handleToOriginLink"
@@ -65,7 +66,7 @@
 <script setup>
 import { watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
-import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, isScrollToBottom, openPage } from '@/utils/other';
+import { getNormalErrorAlert, getNormalSuccessAlert, isScrollToBottom, openPage } from '@/utils/other';
 import { setArticleTop } from '@/api/modules/top';
 // eslint-disable-next-line no-unused-vars
 import { getLock } from '@/utils/lock';
@@ -189,7 +190,6 @@ const handleToOriginLink = () => {
 
 // 处理编辑
 const handleEdit = () => {
-  emit('set_loading', getLoadMsg('正在加载编辑器...'));
   openPage('router', {
     name: 'EditorPage',
     params: {
@@ -301,30 +301,24 @@ onBeforeRouteLeave((to, from, next) => {
 
 // 挂载时恢复状态
 onMounted(async () => {
-
-  emit('set_loading', getLoadMsg('正在加载文章信息...'));
-  
   if (!route.params.id) {
     openPage('router', {
       name: 'ErrorPage',
       params: { reason: '缺少参数' },
     });
-    emit('set_loading', getCancelLoadMsg());
     return;
   }
   
   // 加载文章详情
   const result = await loadArticle(route.params.id);
-  if(article.value.section!='default'){
-    openPage('router', {
-      name: 'SectionPage',
-      params: { id: result.id },
-    });
-    emit('set_loading', getCancelLoadMsg());
+  if (!result.success) {
     return;
   }
-  if (!result.success) {
-    emit('set_loading', getCancelLoadMsg());
+  if (article.value.section !== 'default') {
+    openPage('router', {
+      name: 'SectionPage',
+      params: { id: article.value.id || route.params.id },
+    });
     return;
   }
   
@@ -389,7 +383,6 @@ onMounted(async () => {
     restoreComplete.value = true;
   }
   moreOptionEventBus.emit("article",article.value);
-  emit('set_loading', getCancelLoadMsg());
 });
 
 // 卸载时清理
@@ -447,4 +440,3 @@ onUnmounted(() => {
   opacity: 1;
 }
 </style>
-

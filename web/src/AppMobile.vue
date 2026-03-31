@@ -3,8 +3,7 @@
   <v-app style="display: flex;height: 100vh;flex-direction: column;">
     <!-- 启动画面 -->
     <splash-screen :show="showSplash"></splash-screen>
-    <loading-view :init-data="loadMsg" class="z-index-loading absolute-position">
-    </loading-view>
+    <submit-loading-view :init-data="loadMsg"></submit-loading-view>
     <global-message :alert-msg="alertMsg" @close="closeMessage"></global-message>
     <!-- 特殊页面导航栏（帖子、文章、课程） -->
     <div v-if="isSpecialPage && ifShowNav" class="nav-bar special-nav-bar" :style="{ 'background-color': navColor }">
@@ -141,8 +140,8 @@
   </v-app>
 </template>
 <script>
-import LoadingView from '@/components/common/LoadingView.vue';
 import SplashScreen from '@/components/common/SplashScreen.vue';
+import SubmitLoadingView from '@/components/common/SubmitLoadingView.vue';
 import GlobalMessage from '@/components/common/GlobalMessage.vue';
 import SearchInput from './components/common/searchInput/SearchInput.vue';
 import BottomActionMenu from '@/components/common/BottomActionMenu/BottomActionMenu.vue';
@@ -446,8 +445,8 @@ export default {
     };
   },
   components: {
-    LoadingView,
     SplashScreen,
+    SubmitLoadingView,
     GlobalMessage,
     SearchInput,
     BottomActionMenu,

@@ -1,6 +1,10 @@
 <!-- this page use to display all the md document -->
 <template>
     <div class="full-center">
+        <share-sdu-breath-view
+            v-if="!loadState"
+            :min-height="'520px'"
+        />
         <transition name="fade" mode="out-in">
             <article-display 
                 v-if="loadState" 
@@ -12,12 +16,12 @@
 </template>
 <script>
 import ArticleDisplay from '@/components/article/ArticleDisplay.vue'
-import { getCancelLoadMsg, getLoadMsg } from '@/utils/other';
-import { useRoute } from 'vue-router';
+import ShareSduBreathView from '@/components/common/ShareSduBreathView.vue';
 export default {
     name: 'DocumentPage',
     components: {
         ArticleDisplay,
+        ShareSduBreathView,
     },
     data() {
         let data={
@@ -34,8 +38,7 @@ export default {
     },
     
     async mounted() {
-        this.$emit("set_loading",getLoadMsg("正在加载..."));
-        const route = useRoute();
+        const route = this.$route;
         let doc='';
         if ('name' in route.params) {
             doc = route.params['name'];
@@ -53,7 +56,6 @@ export default {
             this.data.content = 'Error fetching the file.';
         }
         this.loadState=true;
-        this.$emit("set_loading",getCancelLoadMsg());
     },
 }
 </script>

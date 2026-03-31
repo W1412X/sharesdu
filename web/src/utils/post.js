@@ -8,6 +8,9 @@
  * @returns {String|null} 链接或 null
  */
 export function getLinkInPost(content) {
+    if (typeof content !== 'string' || !content) {
+        return null;
+    }
     let begin = content.split("\n")[0];
     if (begin.startsWith("#/")) {
         return begin;
@@ -34,6 +37,9 @@ export function addLinkToPost(content, type, id) {
  * @returns {String}
  */
 export function getPostWithoutLink(content) {
+    if (typeof content !== 'string' || !content) {
+        return '';
+    }
     if (content.startsWith("#/")) {
         return content.substring(content.indexOf("\n") + 1);
     } else {
@@ -58,6 +64,9 @@ export function addHeaderToReply(content, authorName, parentReplyId) {
  * @returns {String}
  */
 export function getReplyContentWithoutHeader(content) {
+    if (typeof content !== 'string' || !content) {
+        return '';
+    }
     let tmp = content.substring(content.indexOf("\n") + 1);
     tmp = tmp.substring(tmp.indexOf("\n") + 1);
     return tmp;
@@ -69,6 +78,9 @@ export function getReplyContentWithoutHeader(content) {
  * @returns {String}
  */
 export function getAuthorNameFromReply(content) {
+    if (typeof content !== 'string' || !content) {
+        return '';
+    }
     return content.substring(0, content.indexOf("\n"));
 }
 
@@ -78,7 +90,9 @@ export function getAuthorNameFromReply(content) {
  * @returns {String}
  */
 export function getParentReplyIdFromReply(content) {
+    if (typeof content !== 'string' || !content) {
+        return '';
+    }
     let tmp = content.substring(content.indexOf("\n") + 1);
     return tmp.substring(0, tmp.indexOf("\n"));
 }
-

@@ -1,7 +1,7 @@
 /**
  * ChatPage 加载逻辑 Composable
  */
-import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, formatRelativeTime } from '@/utils/other';
+import { getNormalErrorAlert, formatRelativeTime } from '@/utils/other';
 import { getChatHistory, getChatUsers, markMessageAsRead } from '@/api/modules/chat';
 
 export function useChatLoad(
@@ -22,7 +22,7 @@ export function useChatLoad(
   setReceiverId,
   setReceiverName,
   setIfMounted,
-  setLoading,
+  loading,
   scrollToBottom,
   alertHandler
 ) {
@@ -38,11 +38,9 @@ export function useChatLoad(
     
     if (history == null) {
       // 获取历史记录
-      setLoading(getLoadMsg('正在获取用户列表...'));
+      loading.value.loadHistory = true;
       try {
         const response = await getChatHistory(receiverId.value);
-        setLoading(getCancelLoadMsg());
-        
         if (response.status === 200) {
           const newMessages = [];
           const reversedResults = response.results.reverse();
@@ -59,10 +57,8 @@ export function useChatLoad(
             
             // 标记未读消息
             if (!msg.ifRead && !msg.isSelf) {
-              setLoading(getLoadMsg('正在处理信息...'));
               await markMessageAsRead(msg.id);
               msg.ifRead = true;
-              setLoading(getCancelLoadMsg());
             }
             
             // 添加用户信息
@@ -84,9 +80,10 @@ export function useChatLoad(
           alertHandler(getNormalErrorAlert(response.message));
         }
       } catch (error) {
-        setLoading(getCancelLoadMsg());
         setMessages([]);
         alertHandler(getNormalErrorAlert('加载聊天历史失败'));
+      } finally {
+        loading.value.loadHistory = false;
       }
     } else {
       // 使用缓存的历史记录
@@ -101,11 +98,9 @@ export function useChatLoad(
    * 初始化聊天用户列表
    */
   const loadChatUsers = async (routeParams) => {
-    setLoading(getLoadMsg('正在获取聊天信息...', -1));
-    
+    loading.value.loadUsers = true;
     try {
       const response = await getChatUsers();
-      setLoading(getCancelLoadMsg());
       
       let ifParamIdIn = false;
       const paramId = routeParams?.id;
@@ -160,8 +155,9 @@ export function useChatLoad(
         setReceiverName(paramName);
       }
     } catch (error) {
-      setLoading(getCancelLoadMsg());
       alertHandler(getNormalErrorAlert('加载聊天用户列表失败'));
+    } finally {
+      loading.value.loadUsers = false;
     }
   };
   
@@ -194,4 +190,3 @@ export function useChatLoad(
     initViewSize,
   };
 }
-

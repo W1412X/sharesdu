@@ -1,5 +1,5 @@
 <template>
-  <loading-content-wrapper :load-state="loadState" loading-text="正在加载帖子信息..." class="top-bar">
+  <loading-content-wrapper :load-state="loadState" loading-text="正在加载帖子信息..." variant="header" dense :delay="0" class="top-bar">
     <div class="surface-card">
     <div class="top-bar-msg-div">
       <div class="full-column-center text-medium name-font">
@@ -280,4 +280,3 @@ const handleImageClick = ({ index }) => {
   }
 }
 </style>
-

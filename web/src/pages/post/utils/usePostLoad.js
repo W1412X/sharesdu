@@ -68,6 +68,13 @@ export function usePostLoad(
           
           return true;
         }
+
+        alert(getNormalErrorAlert('帖子数据解析失败'));
+        openPage('router', {
+          name: 'ErrorPage',
+          params: { reason: '帖子数据解析失败' },
+        });
+        return false;
       } else {
         alert(getNormalErrorAlert(response.message));
         openPage('router', {
@@ -243,5 +250,4 @@ export function usePostLoad(
     glideLoad,
   };
 }
-
 

@@ -1,5 +1,5 @@
 <template>
-  <loading-content-wrapper :load-state="loadState" loading-text="正在加载板块信息..." class="top-bar">
+  <loading-content-wrapper :load-state="loadState" loading-text="正在加载板块信息..." variant="section" dense :delay="0" class="top-bar">
     <div class="section-content">
     <!--
     <v-chip

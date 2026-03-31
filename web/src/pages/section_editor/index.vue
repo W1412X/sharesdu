@@ -69,7 +69,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
-import { getLoadMsg, getCancelLoadMsg, openPage } from '@/utils/other';
+import { openPage } from '@/utils/other';
 import HtmlEditor from '@/components/article/HtmlEditor.vue';
 import MdEditor from '@/components/article/MdEditor.vue';
 import { EditFinishDialog, ConfirmLeaveDialog, SectionIntroduction, SectionInfoEditor } from './components';
@@ -250,8 +250,6 @@ onBeforeRouteLeave((to, from, next) => {
 
 // 初始化页面
 const initPage = async () => {
-  handleSetLoading(getLoadMsg('正在加载编辑器...'));
-  
   const routeId = route.params.id;
   if (routeId) {
     // 编辑模式：加载文章详情
@@ -265,8 +263,6 @@ const initPage = async () => {
       content: '已加载编辑器',
     });
   }
-  
-  handleSetLoading(getCancelLoadMsg());
 };
 
 // 页面加载时初始化

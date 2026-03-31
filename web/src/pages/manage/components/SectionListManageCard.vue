@@ -22,44 +22,45 @@
     <v-divider></v-divider>
     
     <v-card-text class="card-content">
-      <div class="section-list-container">
-        <template v-if="sectionList.length > 0">
-          <section-item 
-            v-for="(section, index) in sectionList" 
-            :key="index"
-            :init-data="section"
-          ></section-item>
-        </template>
-        <nothing-view 
-          v-else-if="!loading"
-          icon="mdi-bulletin-board-outline" 
-          text="暂无板块" 
-          :icon-size="80"
-          text-size="18px"
-          min-height="300px"
-        ></nothing-view>
-        <div v-if="loading" class="loading-container">
-          <v-progress-circular
-            indeterminate
-            :color="themeColor"
-            size="48"
-          ></v-progress-circular>
+      <loading-content-wrapper
+        :load-state="loading"
+        loading-text="正在加载板块列表..."
+        variant="list"
+        :item-count="4"
+        min-height="300px"
+      >
+        <div class="section-list-container">
+          <template v-if="sectionList.length > 0">
+            <section-item 
+              v-for="(section, index) in sectionList" 
+              :key="index"
+              :init-data="section"
+            ></section-item>
+          </template>
+          <nothing-view 
+            v-else
+            icon="mdi-bulletin-board-outline" 
+            text="暂无板块" 
+            :icon-size="80"
+            text-size="18px"
+            min-height="300px"
+          ></nothing-view>
         </div>
-      </div>
-      
-      <div class="action-section">
-        <v-btn 
-          @click="handleRefresh" 
-          variant="outlined" 
-          :color="themeColor"
-          :disabled="loading"
-          :loading="loading"
-          size="large"
-          prepend-icon="mdi-refresh"
-          class="refresh-btn">
-          刷新列表
-        </v-btn>
-      </div>
+        
+        <div class="action-section">
+          <v-btn 
+            @click="handleRefresh" 
+            variant="outlined" 
+            :color="themeColor"
+            :disabled="loading"
+            :loading="loading"
+            size="large"
+            prepend-icon="mdi-refresh"
+            class="refresh-btn">
+            刷新列表
+          </v-btn>
+        </div>
+      </loading-content-wrapper>
     </v-card-text>
   </v-card>
 </template>
@@ -67,6 +68,7 @@
 <script setup>
 import SectionItem from '@/components/section/SectionItem/index.vue';
 import NothingView from '@/components/common/NothingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 import { openPage } from '@/utils/other';
 
 defineProps({
@@ -159,13 +161,6 @@ const handleCreateSection = () => {
   }
 }
 
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 60px 20px;
-}
-
 .action-section {
   display: flex;
   justify-content: center;
@@ -207,4 +202,3 @@ const handleCreateSection = () => {
   }
 }
 </style>
-

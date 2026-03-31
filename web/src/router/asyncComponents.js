@@ -59,7 +59,7 @@ export const load = (path) => () => import(`@/pages/${path}.vue`);
 export const loadLarge = (path, options = {}) => {
   const loader = () => import(`@/pages/${path}.vue`);
   return createAsyncComponent(loader, {
-    delay: 200,
+    delay: 80,
     timeout: 10000,
     ...options,
   });
@@ -72,43 +72,43 @@ export const loadLarge = (path, options = {}) => {
 
 // 超大型组件（>1000行）
 export const WelcomePage = loadLarge('welcome/index', {
-  delay: 100,
+  delay: 80,
   timeout: 15000,
 });
 
 export const SearchPage = loadLarge('search/index', {
-  delay: 100,
+  delay: 80,
   timeout: 12000,
 });
 
 // 大型组件（500-1000行）
 export const ArticlePage = loadLarge('article/index', {
-  delay: 150,
+  delay: 80,
   timeout: 10000,
 });
 
 export const PostPage = loadLarge('post/index', {
-  delay: 150,
+  delay: 80,
   timeout: 10000,
 });
 
 export const IndexPage = loadLarge('index/index', {
-  delay: 150,
+  delay: 80,
   timeout: 10000,
 });
 
 export const LoginPage = loadLarge('login/index', {
-  delay: 150,
+  delay: 80,
   timeout: 10000,
 });
 
 export const ChatPage = loadLarge('chat/index', {
-  delay: 150,
+  delay: 80,
   timeout: 10000,
 });
 
 export const CoursePage = loadLarge('course/index', {
-  delay: 150,
+  delay: 80,
   timeout: 10000,
 });
 
@@ -127,7 +127,7 @@ export const RagChatPage = load('RagChatPage');
 export const AgentPage = load('agent/index');
 export const SectionEditorPage = load('section_editor/index');
 export const SectionPage = loadLarge('section/index', {
-  delay: 150,
+  delay: 80,
   timeout: 10000,
 });
 export const SectionSetPage = load('section_set/index');

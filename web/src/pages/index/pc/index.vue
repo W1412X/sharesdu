@@ -428,7 +428,7 @@ defineExpose({
     flex-shrink: 0;
     background-color: white;
     border-radius: 8px;
-    padding: 16px;
+    padding: 18px;
     position: sticky;
     max-height: calc(100vh - 80px);
   }
@@ -455,7 +455,12 @@ defineExpose({
     margin-bottom: 0;
   }
 
-  /* 右侧栏中的板块卡片调整为单列显示，保持原有卡片样式 */
+  /* 右侧栏中的板块卡片调整为单列显示，并拉开卡片之间的间距 */
+  .section-list-column :deep(.section-grid-container) {
+    flex-direction: column;
+    gap: 18px;
+  }
+
   .section-list-column :deep(.section-card) {
     width: 100% !important;
   }
@@ -510,4 +515,3 @@ defineExpose({
   }
 }
 </style>
-

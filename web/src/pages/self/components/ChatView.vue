@@ -1,7 +1,12 @@
 <template>
   <div>
-    <part-loading-view :state="!loadState.message" :text="'正在加载聊天列表...'"></part-loading-view>
-    <div v-if="loadState.message">
+    <loading-content-wrapper
+      :load-state="loadState.message"
+      loading-text="正在加载聊天列表..."
+      variant="list"
+      :item-count="4"
+      min-height="240px"
+    >
       <template v-if="chatList.length > 0">
         <chat-item
           v-for="(item, index) in chatList"
@@ -19,14 +24,14 @@
         text-size="18px"
         min-height="300px"
       ></nothing-view>
-    </div>
+    </loading-content-wrapper>
   </div>
 </template>
 
 <script setup>
 import ChatItem from '@/components/chat/ChatItem.vue';
-import PartLoadingView from '@/components/common/PartLoadingView.vue';
 import NothingView from '@/components/common/NothingView.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 
 // Props
 defineProps({
@@ -50,4 +55,3 @@ const handleAlert = (msg) => {
   emit('alert', msg);
 };
 </script>
-

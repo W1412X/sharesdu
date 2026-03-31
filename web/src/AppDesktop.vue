@@ -1,8 +1,7 @@
 <!-- src/AppDesktop.vue - PC 端版本 -->
 <template>
   <v-app style="display: flex;height: 100vh;flex-direction: column;">
-    <loading-view :init-data="loadMsg" class="z-index-loading absolute-position">
-    </loading-view>
+    <submit-loading-view :init-data="loadMsg"></submit-loading-view>
     <global-message :alert-msg="alertMsg" @close="closeMessage"></global-message>
     <div v-if="this.ifShowNav" class="nav-bar" :style="{ 'background-color': navColor }">
       <avatar-name id="avatar-name" v-if="ifAvatarState && ifShowAvatar"
@@ -108,7 +107,7 @@
   </v-app>
 </template>
 <script>
-import LoadingView from '@/components/common/LoadingView.vue';
+import SubmitLoadingView from '@/components/common/SubmitLoadingView.vue';
 import GlobalMessage from '@/components/common/GlobalMessage.vue';
 import AvatarName from '@/components/common/AvatarName';
 import CreateChoiceCard from './components/common/CreateChoiceCard.vue';
@@ -313,7 +312,7 @@ export default {
     };
   },
   components: {
-    LoadingView,
+    SubmitLoadingView,
     GlobalMessage,
     AvatarName,
     CreateChoiceCard,

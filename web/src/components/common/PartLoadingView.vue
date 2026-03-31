@@ -1,119 +1,75 @@
 <template>
-    <transition name="fade" mode="out-in">
-        <div v-if="state" key="loading" class="loading-wrapper">
-        <v-card class="card">
-            <div class="card-container">
-                <v-progress-circular :rotate="360" :size="40" :width="4" :color="themeColor"
-                    class="text-medium-bold" indeterminate>
-                </v-progress-circular>
-            </div>
-            <div style="
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            color: #8a8a8a;
-            font-weight: bold;
-          ">
-          <div class="card-container">
-            <v-card-text style="
-              max-width: 200px;
-              width: fit-content;
-              margin-top: 15px;
-              padding-top: 0px;
-              margin-bottom: 5px;
-              padding-bottom: 0px;
-              font-weight: 600;
-            ">
-                    {{ text }}
-                </v-card-text>
-          </div>
-            </div>
-        </v-card>
+  <transition name="part-loading-fade" appear>
+    <div v-if="state" class="part-loading-view" :class="[`part-loading-view--${variant}`]">
+      <loading-skeleton
+        :variant="variant"
+        :item-count="itemCount"
+        :meta-count="metaCount"
+        :chip-count="chipCount"
+        :dense="dense"
+      ></loading-skeleton>
     </div>
-    </transition>
+  </transition>
 </template>
+
 <script>
-import { globalProperties } from '@/main';
-import { computed } from 'vue';
+import LoadingSkeleton from './LoadingSkeleton.vue';
+
 export default {
-    name: "PartLoadingView",
-    props: {
-        state:{
-            type: Boolean,
-            default: false
-        },
-        text:{
-            type: String,
-            default: '加载中...'
-        },
+  name: 'PartLoadingView',
+  components: {
+    LoadingSkeleton,
+  },
+  props: {
+    state: {
+      type: Boolean,
+      default: false,
     },
-    setup() {
-        /**
-         * get theme color  
-         */
-        const themeColor = globalProperties.$themeColor;
-        const deviceType = globalProperties.$deviceType;
-        return {
-            themeColor,
-            deviceType
-        }
+    text: {
+      type: String,
+      default: '加载中...',
     },
-    data() {
-        const data = computed(() => {
-            return this.initData;
-        })
-        return {
-            data
-        }
+    variant: {
+      type: String,
+      default: 'card',
     },
-    methods: {}
-}
+    itemCount: {
+      type: Number,
+      default: 3,
+    },
+    metaCount: {
+      type: Number,
+      default: 3,
+    },
+    chipCount: {
+      type: Number,
+      default: 3,
+    },
+    dense: {
+      type: Boolean,
+      default: false,
+    },
+  },
+};
 </script>
+
 <style scoped>
-@media screen and (min-width: 1000px) {
-    .card-container{
-        display: grid;
-        justify-content: center;
-        align-items: center;
-    }
-    .card {
-        padding: 10px;
-        width: 100%;
-        height: fit-content;
-    }
+.part-loading-view {
+  width: 100%;
+  min-height: 200px;
 }
 
-@media screen and (max-width: 1000px) {
-    .card-container{
-        display: grid;
-        justify-content: center;
-        align-items: center;
-    }
-    .card {
-        padding: 10px;
-        width: 100%;
-        height: fit-content;
-    }
+.part-loading-view--list {
+  min-height: 240px;
 }
 
-/* 过渡动画 */
-.loading-wrapper {
-    width: 100%;
-    height: 100%;
+.part-loading-fade-enter-active,
+.part-loading-fade-leave-active {
+  transition: opacity 0.18s ease;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-
-.fade-enter-to,
-.fade-leave-from {
-    opacity: 1;
+.part-loading-fade-enter-from,
+.part-loading-fade-leave-to {
+  opacity: 0;
 }
 </style>

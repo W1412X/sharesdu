@@ -85,7 +85,7 @@
 import { watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { VPullToRefresh } from 'vuetify/lib/labs/components.mjs';
-import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
+import { getNormalErrorAlert, getNormalSuccessAlert, openPage } from '@/utils/other';
 import { setArticleTop } from '@/api/modules/top';
 import { usePostPolling } from '@/app/composables';
 import { getPostListByArticleId } from '@/api/modules/article';
@@ -299,7 +299,6 @@ watch(
       
       resetPosts();
       loadState.value = false;
-      handleSetLoading(getLoadMsg('正在加载板块...'));
       const result = await loadSection(newId);
       if (result.success) {
         loadState.value = true;
@@ -309,7 +308,6 @@ watch(
         // 重新初始化轮询（使用新的 sectionId）
         initPostPolling();
       }
-      handleSetLoading(getCancelLoadMsg());
     }
   },
   { immediate: true }
@@ -317,14 +315,12 @@ watch(
 
 // 初始化页面
 const initPage = async () => {
-  handleSetLoading(getLoadMsg('正在加载板块...'));
-  let result=await loadSection(sectionId.value);
+  const result=await loadSection(sectionId.value);
   if (result.success) {
     loadState.value = true;
     // 初始加载帖子列表（等待完成）
     await loadMorePost(sectionId.value);
   }
-  handleSetLoading(getCancelLoadMsg());
 };
 // 组件挂载
 onMounted(async() => {
@@ -418,4 +414,3 @@ onBeforeUnmount(() => {
   }
 }
 </style>
-

@@ -9,7 +9,7 @@
         @author-name="handleAuthorName"
       />
       <v-card v-if="authorId" class="card">
-        <loading-content-wrapper :load-state="loadState" loading-text="正在获取创作信息...">
+        <loading-content-wrapper :load-state="loadState" loading-text="正在获取创作信息..." variant="page" min-height="520px">
           <ContentTabs v-model="itemType" @update:model-value="handleItemTypeChange" />
           <ContentList
             :item-type="itemType"
@@ -28,7 +28,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { getCancelLoadMsg, getLoadMsg, openPage } from '@/utils/other';
+import { openPage } from '@/utils/other';
 import { AuthorCardWrapper, ContentTabs, ContentList } from './components';
 import {
   useAuthorState,
@@ -43,7 +43,7 @@ defineOptions({
 });
 
 // Emits
-const emit = defineEmits(['set_loading', 'alert']);
+const emit = defineEmits(['alert']);
 
 // 路由
 const route = useRoute();
@@ -84,11 +84,6 @@ const authorId = ref(null);
 // 处理提示
 const handleAlert = (msg) => {
   emit('alert', msg);
-};
-
-// 处理加载状态
-const handleSetLoading = (msg) => {
-  emit('set_loading', msg);
 };
 
 // 加载逻辑
@@ -165,12 +160,10 @@ const initPage = async () => {
   }
 
   authorId.value = routeId;
-  handleSetLoading(getLoadMsg('正在加载作者信息...'));
 
   // 加载作者信息
   const authorResult = await loadAuthorInfo(routeId);
   if (!authorResult.success) {
-    handleSetLoading(getCancelLoadMsg());
     return;
   }
 
@@ -181,8 +174,6 @@ const initPage = async () => {
   // 预览模式：加载预览数据
   await loadPreview(routeId);
   loadState.value = true;
-
-  handleSetLoading(getCancelLoadMsg());
 };
 
 // 页面加载时初始化
@@ -217,4 +208,3 @@ onMounted(() => {
   }
 }
 </style>
-

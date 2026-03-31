@@ -1,6 +1,6 @@
 <template>
   <v-card class="course-card">
-    <loading-content-wrapper :load-state="loadState" loading-text="正在加载课程...">
+    <loading-content-wrapper :load-state="loadState" loading-text="正在加载课程..." variant="course" min-height="360px">
       <div class="row-div">
       <div class="course-name text-big-title-bold">{{ course.name }}</div>
       <v-spacer></v-spacer>
@@ -299,4 +299,3 @@ const formattedPublishTime = computed(() => {
   }
 }
 </style>
-

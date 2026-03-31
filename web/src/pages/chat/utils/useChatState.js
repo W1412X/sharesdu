@@ -22,6 +22,8 @@ export function useChatState() {
   const loading = ref({
     send: false,
     loadFrontier: false,
+    loadUsers: false,
+    loadHistory: false,
   });
   
   const setNavVisible = (value) => {
@@ -83,4 +85,3 @@ export function useChatState() {
     setLoading,
   };
 }
-

@@ -1,49 +1,28 @@
-<!-- 异步组件加载中的占位组件 -->
 <template>
   <div class="async-loading">
-    <div class="loading-spinner">
-      <v-progress-circular
-        indeterminate
-        :color="themeColor"
-        :size="50"
-        :width="4">
-      </v-progress-circular>
-    </div>
-    <p class="loading-text">正在加载页面...</p>
+    <share-sdu-breath-view
+      compact
+    ></share-sdu-breath-view>
   </div>
 </template>
 
 <script>
-import { globalProperties } from '@/main';
+import ShareSduBreathView from '@/components/common/ShareSduBreathView.vue';
 
 export default {
   name: 'AsyncLoading',
-  computed: {
-    themeColor() {
-      return globalProperties.$themeColor || '#1976d2';
-    },
+  components: {
+    ShareSduBreathView,
   },
 };
 </script>
 
 <style scoped>
 .async-loading {
+  width: 100%;
+  min-height: 260px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 200px;
-  width: 100%;
-}
-
-.loading-spinner {
-  margin-bottom: 16px;
-}
-
-.loading-text {
-  color: #666;
-  font-size: var(--font-size-small);
-  margin: 0;
 }
 </style>
-

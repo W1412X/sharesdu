@@ -1,6 +1,6 @@
 <template>
     <v-card class="card">
-        <loading-content-wrapper :load-state="loadState" loading-text="正在获取创作信息...">
+        <loading-content-wrapper :load-state="loadState" loading-text="正在获取创作信息..." variant="page" min-height="520px">
           <v-tabs v-model="itemType" fixed-tabs class="select-bar">
           <v-tab class="tab"
             :style="{ background: 'rgba(255,255,255,1)', 'color': this.itemType == 'article' ? '#000000' : '#8a8a8a' }"

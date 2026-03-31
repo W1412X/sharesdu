@@ -51,6 +51,7 @@
       :user-list="userList"
       :total-user-num="totalUserNum"
       :page-size="userPageSize"
+      :loading="isLoadingUserList"
       :theme-color="themeColor"
       @load-user="handleLoadUser"
       @update:page-size="handlePageSizeChange">
@@ -430,4 +431,3 @@ onMounted(() => {
   }
 }
 </style>
-

@@ -125,7 +125,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { onBeforeRouteLeave, useRoute } from 'vue-router';
-import { getCancelLoadMsg } from '@/utils/other';
 import AuthorCard from '@/components/user/AuthorCard.vue';
 import ColorSelectorCard from '@/components/common/ColorSelectorCard.vue';
 import CreatePreviewAndList from '@/components/user/CreatePreviewAndList.vue';
@@ -276,8 +275,6 @@ onBeforeRouteLeave(() => {
 
 // 组件挂载时初始化
 onMounted(() => {
-  handleSetLoading(getCancelLoadMsg());
-  
   // 初始化用户信息
   user.value = initUser();
   
@@ -411,4 +408,3 @@ onMounted(() => {
   -webkit-overflow-scrolling: touch;
 }
 </style>
-

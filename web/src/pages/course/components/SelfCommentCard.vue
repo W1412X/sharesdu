@@ -1,5 +1,5 @@
 <template>
-  <loading-content-wrapper :load-state="loadState" loading-text="正在获取用户评论...">
+    <loading-content-wrapper :load-state="loadState" loading-text="正在获取用户评论..." variant="card" dense :delay="0">
     <v-card class="self-comment-container-card" elevation="0">
     <div class="row-div">
       <v-rating
@@ -179,4 +179,3 @@ const handleImageClick = (index) => {
   }
 }
 </style>
-

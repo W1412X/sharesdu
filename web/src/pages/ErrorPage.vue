@@ -11,7 +11,7 @@
 
 <script>
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg, openPage } from '@/utils/other';
+import { openPage } from '@/utils/other';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 
 export default {
@@ -40,10 +40,7 @@ export default {
             }catch(e){
                 openPage("router",{name:"IndexPage"});
             }
-        }
-    },
-    mounted() {
-        this.$emit("set_loading",getCancelLoadMsg());
+    }
     }
 }
 </script>

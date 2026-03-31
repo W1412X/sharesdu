@@ -1,103 +1,103 @@
 <template>
-  <div class="top-bar">
-    <!-- 置顶提示 -->
-    <v-chip
-      v-if="article.ifTop && !ifMaster"
-      width="100%"
-      variant="tonal"
-      :color="themeColor"
-      style="border-radius: 0px; max-height: 28px; width: 100%; justify-content: center;"
-    >
-      <v-icon size="20">mdi-format-vertical-align-top</v-icon>
-      <span style="margin-left: 10px;" class="text-small-bold">置顶文章</span>
-      <v-tooltip activator="parent">此文章为网站置顶文章</v-tooltip>
-    </v-chip>
-    
-    <!-- 管理员置顶按钮 -->
-    <v-btn
-      v-if="ifMaster"
-      @click="$emit('set-article-top')"
-      :loading="loading.top"
-      :disabled="loading.top"
-      width="100%"
-      variant="tonal"
-      :color="article.ifTop ? 'grey' : themeColor"
-      style="max-height: 28px; width: 100%; justify-content: center;"
-    >
-      <v-icon size="20">mdi-format-vertical-align-top</v-icon>
-      <span style="margin-left: 10px;" class="text-small-bold">
-        {{ article.ifTop ? '取消置顶' : '置顶此文章' }}
-      </span>
-      <v-tooltip activator="parent">作为管理员，您可以设置是否置顶此文章</v-tooltip>
-    </v-btn>
-    
-    <!-- 标题和类型 -->
-    <div class="title-container">
-      <div class="title">
-        <p class="title-big-bold">{{ article.title }}</p>
+  <loading-content-wrapper :load-state="loadState" loading-text="正在加载文章信息..." variant="header" dense :delay="0" class="top-bar">
+      <!-- 置顶提示 -->
+      <v-chip
+        v-if="article.ifTop && !ifMaster"
+        width="100%"
+        variant="tonal"
+        :color="themeColor"
+        style="border-radius: 0px; max-height: 28px; width: 100%; justify-content: center;"
+      >
+        <v-icon size="20">mdi-format-vertical-align-top</v-icon>
+        <span style="margin-left: 10px;" class="text-small-bold">置顶文章</span>
+        <v-tooltip activator="parent">此文章为网站置顶文章</v-tooltip>
+      </v-chip>
+      
+      <!-- 管理员置顶按钮 -->
+      <v-btn
+        v-if="ifMaster"
+        @click="$emit('set-article-top')"
+        :loading="loading.top"
+        :disabled="loading.top"
+        width="100%"
+        variant="tonal"
+        :color="article.ifTop ? 'grey' : themeColor"
+        style="max-height: 28px; width: 100%; justify-content: center;"
+      >
+        <v-icon size="20">mdi-format-vertical-align-top</v-icon>
+        <span style="margin-left: 10px;" class="text-small-bold">
+          {{ article.ifTop ? '取消置顶' : '置顶此文章' }}
+        </span>
+        <v-tooltip activator="parent">作为管理员，您可以设置是否置顶此文章</v-tooltip>
+      </v-btn>
+      
+      <!-- 标题和类型 -->
+      <div class="title-container">
+        <div class="title">
+          <p class="title-big-bold">{{ article.title }}</p>
+        </div>
+        <v-spacer></v-spacer>
+        <div class="title-right-type">
+          <v-chip density="compact" class="text-tiny-bold" v-if="article.type === '原创'">原创</v-chip>
+          <v-chip density="compact" class="text-tiny-bold" v-if="article.type === '转载'" @click="$emit('to-origin-link')">转载</v-chip>
+        </div>
       </div>
-      <v-spacer></v-spacer>
-      <div class="title-right-type">
-        <v-chip density="compact" class="text-tiny-bold" v-if="article.type === '原创'">原创</v-chip>
-        <v-chip density="compact" class="text-tiny-bold" v-if="article.type === '转载'" @click="$emit('to-origin-link')">转载</v-chip>
-      </div>
-    </div>
-    
-    <!-- 作者和统计信息 -->
-    <div class="top-bar-msg-div">
-      <div class="full-column-center text-medium grey-font">
-        <avatar-name
-          v-if="article.authorId"
-          :init-data="{ id: article.authorId, name: article.authorName }"
-        />
-      </div>
-      <v-spacer></v-spacer>
-      <div class="full-column-center text-small grey-font">
-        <div class="row-div-reverse">
-          <div class="row-right-20px">
-            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-star" size="18"></v-icon>
-            <div class="column-center">{{ article.starCount }}</div>
-          </div>
-          <div class="row-right-20px">
-            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment" size="16"></v-icon>
-            <div class="column-center">{{ article.replyCount }}</div>
-          </div>
-          <div class="row-right-20px">
-            <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-eye" size="17"></v-icon>
-            <div class="column-center">{{ article.viewCount }}</div>
+      
+      <!-- 作者和统计信息 -->
+      <div class="top-bar-msg-div">
+        <div class="full-column-center text-medium grey-font">
+          <avatar-name
+            v-if="article.authorId"
+            :init-data="{ id: article.authorId, name: article.authorName }"
+          />
+        </div>
+        <v-spacer></v-spacer>
+        <div class="full-column-center text-small grey-font">
+          <div class="row-div-reverse">
+            <div class="row-right-20px">
+              <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-star" size="18"></v-icon>
+              <div class="column-center">{{ article.starCount }}</div>
+            </div>
+            <div class="row-right-20px">
+              <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment" size="16"></v-icon>
+              <div class="column-center">{{ article.replyCount }}</div>
+            </div>
+            <div class="row-right-20px">
+              <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-eye" size="17"></v-icon>
+              <div class="column-center">{{ article.viewCount }}</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- 发布时间 -->
-    <div class="row-div">
-      <div class="row-right-20px" style="margin: 2px;">
-        <div class="column-center text-small grey-font">{{ formattedPublishTime }}</div>
-        <v-icon class="icon-left-5px" color="#8a8a8a" icon="mdi-clock-outline" size="17"></v-icon>
+      
+      <!-- 发布时间 -->
+      <div class="row-div">
+        <div class="row-right-20px" style="margin: 2px;">
+          <div class="column-center text-small grey-font">{{ formattedPublishTime }}</div>
+          <v-icon class="icon-left-5px" color="#8a8a8a" icon="mdi-clock-outline" size="17"></v-icon>
+        </div>
       </div>
-    </div>
-    
-    <!-- 标签 -->
-    <div class="top-bar-msg-div">
-      <div class="before-text text-small">标签：</div>
-      <tag-button
-        v-for="(tag, index) in article.tags"
-        :key="index"
-        :data="tag"
-      />
-    </div>
-    
-    <!-- 来源栏 -->
-    <div v-if="article.sourceUrl" class="source-bar-container">
-      <source-bar
-        :article-id="article.id"
-        :article-title="article.title"
-        @alert="$emit('alert', $event)"
-        @set_loading="$emit('set-loading', $event)"
-      />
-    </div>
-  </div>
+      
+      <!-- 标签 -->
+      <div class="top-bar-msg-div">
+        <div class="before-text text-small">标签：</div>
+        <tag-button
+          v-for="(tag, index) in article.tags"
+          :key="index"
+          :data="tag"
+        />
+      </div>
+      
+      <!-- 来源栏 -->
+      <div v-if="article.sourceUrl" class="source-bar-container">
+        <source-bar
+          :article-id="article.id"
+          :article-title="article.title"
+          @alert="$emit('alert', $event)"
+          @set_loading="$emit('set-loading', $event)"
+        />
+      </div>
+    </loading-content-wrapper>
 </template>
 
 <script setup>
@@ -105,6 +105,7 @@ import { computed } from 'vue';
 import TagButton from '@/components/article/TagButton.vue';
 import SourceBar from '@/components/article/SourceBar.vue';
 import AvatarName from '@/components/common/AvatarName';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 import { formatRelativeTime } from '@/utils/other';
 
 const props = defineProps({
@@ -119,6 +120,10 @@ const props = defineProps({
   loading: {
     type: Object,
     required: true,
+  },
+  loadState: {
+    type: Boolean,
+    default: false,
   },
   themeColor: {
     type: String,
@@ -266,4 +271,3 @@ const formattedPublishTime = computed(() => {
   }
 }
 </style>
-

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="ifShowDialog" class="post-dialog">
+  <v-dialog :model-value="ifShowDialog" class="post-dialog">
     <div class="dialog-card-container">
       <ReplyEditorDialog
         v-model:if-show="ifShowCommentEditor"
@@ -12,7 +12,7 @@
         v-if="ifShowParentReply"
         :if-show="ifShowParentReply"
         :parent-reply="parentReply"
-        :post-id="post.id"
+        :post-id="post.id || ''"
         :theme-color="themeColor"
         @close="handleCloseParentReply"
         @show-parent="handleShowParent"
@@ -48,7 +48,7 @@
       <!-- 回复列表 -->
       <ReplyList
         :reply-list="replyList"
-        :post-id="post.id"
+        :post-id="post.id || ''"
         :loading="loading.loadReply"
         :all-load="allLoad.reply"
         :theme-color="themeColor"
@@ -66,7 +66,7 @@
 // eslint-disable-next-line no-unused-vars
 import { ref, watch, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
-import { openPage } from '@/utils/other';
+import { getCancelLoadMsg, openPage } from '@/utils/other';
 import {
   PostHeader,
   ReplyList,
@@ -282,6 +282,7 @@ onUnmounted(() => {
 
 // 页面加载时初始化
 onMounted(async () => {
+  handleSetLoading(getCancelLoadMsg());
   await initPage();
   //帖子加载完成后，提交帖子页面事件
   moreOptionEventBus.emit("post",post.value)
@@ -335,4 +336,3 @@ onMounted(async () => {
   }
 }
 </style>
-

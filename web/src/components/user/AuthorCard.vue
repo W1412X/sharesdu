@@ -1,5 +1,5 @@
 <template>
-    <loading-content-wrapper :load-state="loadState" loading-text="正在加载信息...">
+    <loading-content-wrapper :load-state="loadState" loading-text="正在加载信息..." variant="card" dense :delay="0">
       <v-card class="card" elevation="1">
         <!-- Avatar and Name Section -->
         <div class="row-no-margin">

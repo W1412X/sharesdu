@@ -198,10 +198,7 @@ export function useManageActions(
       alertHandler(getNormalInfoAlert('无更多用户'));
       return;
     }
-    
-    setLoading(getLoadMsg('正在加载用户列表...'));
     const response = await getUserList(userPageNum.value, userPageSize.value);
-    setLoading(getCancelLoadMsg());
     
     if (response.status === 200 || response.status === 201) {
       const users = response.user_list.map((user) => ({
@@ -229,10 +226,7 @@ export function useManageActions(
       alertHandler(getNormalInfoAlert('没有更多封禁信息用户了'));
       return;
     }
-    
-    setLoading(getLoadMsg('正在加载封禁用户列表...'));
     const response = await getBlockedUserList(blockUserPageNum.value);
-    setLoading(getCancelLoadMsg());
     
     if (response.user_list && response.user_list.length > 0) {
       const users = response.user_list.map((user) => ({
@@ -255,9 +249,7 @@ export function useManageActions(
    * 加载板块列表
    */
   const loadSectionList = async () => {
-    setLoading(getLoadMsg('正在加载板块列表...'));
     const response = await getSectionList();
-    setLoading(getCancelLoadMsg());
     
     if (response.status === 200 || response.status === 201) {
       const sections = (response.section_articles || []).map((section) => ({
@@ -290,4 +282,3 @@ export function useManageActions(
     loadSectionList,
   };
 }
-

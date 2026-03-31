@@ -70,14 +70,15 @@ export default {
   },
   methods: {
     processContent() {
+      const content = typeof this.data.content === 'string' ? this.data.content : '';
       const result = [];
       let lastIndex = 0;
       const matches = [];
 
       // 提取链接并记录位置
-      const links = extractLinks(this.data.content);
+      const links = extractLinks(content);
       links.forEach(link => {
-        const index = this.data.content.indexOf(link);
+        const index = content.indexOf(link);
         if (index !== -1) {
           matches.push({
             type: 'link',
@@ -92,7 +93,7 @@ export default {
       this.data.keywords.forEach(keyword => {
         const regex = new RegExp(`${keyword}`, 'g');
         let match;
-        while ((match = regex.exec(this.data.content)) !== null) {
+        while ((match = regex.exec(content)) !== null) {
           matches.push({
             type: 'keyword',
             value: keyword,
@@ -131,9 +132,9 @@ export default {
       });
 
       // 添加剩余文本
-      if (lastIndex < this.data.content.length) {
+      if (lastIndex < content.length) {
         result.push({
-          text: this.data.content.slice(lastIndex),
+          text: content.slice(lastIndex),
           isLink: false,
           isKey: false
         });
@@ -210,6 +211,7 @@ export default {
       if (!newData.keywords) {
         newData.keywords = [];
       }
+      newData.content = typeof newData.content === 'string' ? newData.content : '';
       this.data = newData;
       
       // 重新处理内容

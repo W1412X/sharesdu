@@ -1,30 +1,38 @@
 <template>
-  <div id="message-container" class="message-container">
-    <div class="tip-text-btn">
-      <v-btn
-        v-if="receiverId"
-        variant="text"
-        style="max-height: 25px;"
-        :loading="loading.loadFrontier"
-        :disabled="loading.loadFrontier"
-        @click="$emit('load-frontier')"
-        class="text-tiny">
-        查看更早的消息
-      </v-btn>
+  <loading-content-wrapper
+    :load-state="loading.loadHistory && messages.length === 0"
+    loading-text="正在加载聊天消息..."
+    variant="page"
+    min-height="360px"
+  >
+    <div id="message-container" class="message-container">
+      <div class="tip-text-btn">
+        <v-btn
+          v-if="receiverId"
+          variant="text"
+          style="max-height: 25px;"
+          :loading="loading.loadFrontier"
+          :disabled="loading.loadFrontier"
+          @click="$emit('load-frontier')"
+          class="text-tiny">
+          查看更早的消息
+        </v-btn>
+      </div>
+      <chat-message
+        v-for="(message) in messages"
+        :key="message.id"
+        :init-data="message"
+        @recall="$emit('recall', $event)"
+        @alert="$emit('alert', $event)"
+        @set_loading="$emit('set_loading', $event)">
+      </chat-message>
     </div>
-    <chat-message
-      v-for="(message) in messages"
-      :key="message.id"
-      :init-data="message"
-      @recall="$emit('recall', $event)"
-      @alert="$emit('alert', $event)"
-      @set_loading="$emit('set_loading', $event)">
-    </chat-message>
-  </div>
+  </loading-content-wrapper>
 </template>
 
 <script setup>
 import ChatMessage from '@/components/chat/ChatMessage.vue';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 
 defineProps({
   receiverId: {
@@ -38,6 +46,10 @@ defineProps({
   loading: {
     type: Object,
     default: () => ({}),
+  },
+  ifMounted: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -78,4 +90,3 @@ defineEmits([
   }
 }
 </style>
-

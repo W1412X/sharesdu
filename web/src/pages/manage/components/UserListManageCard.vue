@@ -26,48 +26,55 @@
       <v-divider></v-divider>
       
       <v-card-text class="card-content">
-        <div class="table-container">
-          <v-data-table 
-            :items="userList" 
-            :headers="tableHeaders"
-            fixed-header 
-            hover
-            class="data-table"
-            :items-per-page="10"
-          >
-            <template v-slot:[`item.用户`]="{ item }">
-              <avatar-name :init-data="{ id: item.ID, name: item.用户 }"></avatar-name>
-            </template>
-            <template v-slot:[`item.是否为管理员`]="{ item }">
-              <v-icon
-                :icon="item.是否为管理员 ? 'mdi-check-circle' : 'mdi-close-circle'"
-                :color="item.是否为管理员 ? 'success' : 'grey'"
-                size="20">
-              </v-icon>
-            </template>
-            <template v-slot:[`item.是否为超级管理员`]="{ item }">
-              <v-icon
-                :icon="item.是否为超级管理员 ? 'mdi-check-circle' : 'mdi-close-circle'"
-                :color="item.是否为超级管理员 ? 'success' : 'grey'"
-                size="20">
-              </v-icon>
-            </template>
-          </v-data-table>
-        </div>
-        
-        <div class="action-section">
-          <v-btn 
-            @click="handleLoadMore" 
-            variant="outlined" 
-            :color="themeColor"
-            :disabled="isLoadingMore"
-            :loading="isLoadingMore"
-            size="large"
-            prepend-icon="mdi-refresh"
-            class="load-btn">
-            加载更多
-          </v-btn>
-        </div>
+        <loading-content-wrapper
+          :load-state="loading"
+          loading-text="正在加载用户列表..."
+          variant="page"
+          min-height="420px"
+        >
+          <div class="table-container">
+            <v-data-table 
+              :items="userList" 
+              :headers="tableHeaders"
+              fixed-header 
+              hover
+              class="data-table"
+              :items-per-page="10"
+            >
+              <template v-slot:[`item.用户`]="{ item }">
+                <avatar-name :init-data="{ id: item.ID, name: item.用户 }"></avatar-name>
+              </template>
+              <template v-slot:[`item.是否为管理员`]="{ item }">
+                <v-icon
+                  :icon="item.是否为管理员 ? 'mdi-check-circle' : 'mdi-close-circle'"
+                  :color="item.是否为管理员 ? 'success' : 'grey'"
+                  size="20">
+                </v-icon>
+              </template>
+              <template v-slot:[`item.是否为超级管理员`]="{ item }">
+                <v-icon
+                  :icon="item.是否为超级管理员 ? 'mdi-check-circle' : 'mdi-close-circle'"
+                  :color="item.是否为超级管理员 ? 'success' : 'grey'"
+                  size="20">
+                </v-icon>
+              </template>
+            </v-data-table>
+          </div>
+          
+          <div class="action-section">
+            <v-btn 
+              @click="handleLoadMore" 
+              variant="outlined" 
+              :color="themeColor"
+              :disabled="isLoadingMore"
+              :loading="isLoadingMore"
+              size="large"
+              prepend-icon="mdi-refresh"
+              class="load-btn">
+              加载更多
+            </v-btn>
+          </div>
+        </loading-content-wrapper>
       </v-card-text>
     </v-card>
     
@@ -77,6 +84,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import AvatarName from '@/components/common/AvatarName';
+import LoadingContentWrapper from '@/components/common/LoadingContentWrapper.vue';
 
 const props = defineProps({
   userList: {
@@ -90,6 +98,10 @@ const props = defineProps({
   pageSize: {
     type: Number,
     default: 20,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
   themeColor: {
     type: String,

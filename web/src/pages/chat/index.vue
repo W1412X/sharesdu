@@ -32,6 +32,7 @@
         :receiver-id="receiverId"
         :messages="messages"
         :loading="loading"
+        :if-mounted="ifMounted"
         @load-frontier="handleLoadFrontier"
         @recall="handleRecallMessage"
         @alert="handleAlert"
@@ -49,6 +50,7 @@
           :choose="choose"
           :chat-users="chatUsers"
           :if-mounted="ifMounted"
+          :loading="loading"
           @update:choose="setChoose"
           @select-user="handleSelectUser">
         </ChatUserList>
@@ -61,6 +63,7 @@
             :receiver-id="receiverId"
             :messages="messages"
             :loading="loading"
+            :if-mounted="ifMounted"
             @load-frontier="handleLoadFrontier"
             @recall="handleRecallMessage"
             @alert="handleAlert"
@@ -239,7 +242,7 @@ const {
   setReceiverId,
   setReceiverName,
   setIfMounted,
-  setLoading,
+  loading,
   scrollToBottom,
   (msg) => emit('alert', msg)
 );
@@ -376,4 +379,3 @@ onUnmounted(() => {
   }
 }
 </style>
-

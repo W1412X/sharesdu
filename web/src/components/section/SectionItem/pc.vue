@@ -91,7 +91,7 @@ export default {
 </script>
 <style scoped>
 .section-card {
-    width: calc((100% - 32px) / 3);
+    width: calc((100% - 48px) / 3);
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
@@ -129,10 +129,10 @@ export default {
 }
 
 .info-container {
-    padding: 12px;
+    padding: 14px 14px 15px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .section-name {

@@ -28,7 +28,6 @@
 <script>
 import PostHtmlDevCard from '@/components/dev/PostHtmlDevCard.vue';
 import { globalProperties } from '@/main';
-import { getCancelLoadMsg, getLoadMsg } from '@/utils/loading';
 import { ref } from 'vue';
 
 export default {
@@ -58,16 +57,9 @@ export default {
         return {
         }
     },
-    methods: {
-        setLoading(msg) {
-            this.$emit('set_loading', msg);
-        },
-    },
     mounted() {
-        this.setLoading(getLoadMsg("正在加载开发信息..."));
         this.itemType = this.init_type;
         this.itemId = this.init_id;
-        this.setLoading(getCancelLoadMsg());
     }
 }
 </script>

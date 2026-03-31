@@ -9,8 +9,10 @@
         </div>
         <div class="sidebar-content">
           <div v-if="categoryLoading" class="loading-sidebar">
-            <v-progress-circular indeterminate :color="themeColor" size="24"></v-progress-circular>
-            <span class="loading-text">加载目录中...</span>
+            <share-sdu-breath-view
+              :compact="true"
+              :min-height="'160px'"
+            />
           </div>
           <v-list density="compact" nav v-else>
             <tree-item
@@ -53,10 +55,11 @@
                 :key="currentDoc"
                 :initData="data" 
               />
-              <div v-else :key="`loading-${currentDoc}`" class="loading-container">
-                <v-progress-circular indeterminate :color="themeColor"></v-progress-circular>
-                <p class="loading-text">正在加载文档...</p>
-              </div>
+              <share-sdu-breath-view
+                v-else
+                :key="`loading-${currentDoc}`"
+                :min-height="'360px'"
+              />
             </transition>
             <doc-navigation
               v-if="loadState && (prevDoc || nextDoc)"
@@ -94,8 +97,10 @@
         </div>
         <div class="mobile-drawer-content">
           <div v-if="categoryLoading" class="loading-sidebar">
-            <v-progress-circular indeterminate :color="themeColor" size="24"></v-progress-circular>
-            <span class="loading-text">加载目录中...</span>
+            <share-sdu-breath-view
+              :compact="true"
+              :min-height="'160px'"
+            />
           </div>
           <v-list density="compact" nav v-else>
             <tree-item
@@ -149,10 +154,11 @@
                 :key="currentDoc"
                 :initData="data" 
               />
-              <div v-else :key="`loading-${currentDoc}`" class="loading-container">
-                <v-progress-circular indeterminate :color="themeColor"></v-progress-circular>
-                <p class="loading-text">正在加载文档...</p>
-              </div>
+              <share-sdu-breath-view
+                v-else
+                :key="`loading-${currentDoc}`"
+                :min-height="'360px'"
+              />
             </transition>
             <doc-navigation
               v-if="loadState && (prevDoc || nextDoc)"
@@ -173,6 +179,7 @@ import { onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { openPage } from '@/utils/other';
 import ArticleDisplay from '@/components/article/ArticleDisplay.vue';
+import ShareSduBreathView from '@/components/common/ShareSduBreathView.vue';
 import { TreeItem, DocNavigation, WelcomeView } from './components';
 import {
   useDeveloperState,
@@ -183,6 +190,8 @@ import {
 defineOptions({
   name: 'DeveloperPage',
 });
+
+const route = useRoute();
 
 // 使用 Composables
 const {
@@ -244,7 +253,6 @@ onMounted(async () => {
   // 加载目录配置
   await loadCategory();
   
-  const route = useRoute();
   const docParam = route.query.doc;
   
   // 如果有查询参数，加载指定文档；否则显示欢迎视图
@@ -491,4 +499,3 @@ onMounted(async () => {
   opacity: 1;
 }
 </style>
-
