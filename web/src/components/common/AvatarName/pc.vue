@@ -2,36 +2,21 @@
 <template>
     <div class="avatar-name" @click="toAuthorPage">
         <div class="avatar-container" :style="{ width: size + 'px', height: size + 'px' }">
-            <!-- 默认图标 - 使用 v-show 避免 DOM 重建 -->
-            <v-icon 
-                v-show="showDefaultIcon" 
-                icon="mdi-account-circle" 
-                :size="size" 
-                color='#bbbbbb'
-                class="avatar-icon"
-            ></v-icon>
-            <!-- 头像图片 - 使用 v-show 避免 DOM 重建 -->
             <v-avatar 
-                v-show="showAvatar" 
                 :size="size"
                 class="avatar-img"
             >
                 <v-img 
-                    :src="this.profileUrl" 
+                    :src="avatarSrc" 
                     :lazy-src="lazyImgUrl"
-                    :alt="initData.name || '用户头像'"
+                    :alt="avatarAlt"
                     cover
                     @load="onImageLoad"
                     @error="onImageError"
                 >
                     <template v-slot:placeholder>
                         <div class="avatar-placeholder">
-                            <v-progress-circular 
-                                :size="parseInt(size) * 0.6" 
-                                :width="2"
-                                :color="themeColor" 
-                                indeterminate
-                            ></v-progress-circular>
+                            <v-skeleton-loader type="avatar" class="avatar-skeleton" />
                         </div>
                     </template>
                 </v-img>
@@ -58,6 +43,7 @@ import { acquireLock, releaseLock } from '@/utils/lock'
 import { openPage } from '@/utils/other'
 import { getProfileUrl } from '@/utils/profile'
 import { getHighestPriorityRole } from '@/utils/userBadge'
+import { buildDiceBearAvatarUrl } from '@/utils/avatar'
 import { ref } from 'vue'
 
 export default {
@@ -108,13 +94,21 @@ export default {
         }
     },
     computed: {
-        // 是否显示默认图标
-        showDefaultIcon() {
-            return this.profileUrl == null || this.imageLoading || this.imageError;
+        avatarSeed() {
+            return this.initData.name || this.initData.id || 'user';
         },
-        // 是否显示头像
-        showAvatar() {
-            return this.profileUrl != null && !this.imageError;
+        avatarFallbackUrl() {
+            return buildDiceBearAvatarUrl(this.avatarSeed, {
+                size: Math.max(64, parseInt(this.size) * 2),
+                style: 'personas',
+                useBackground: true,
+            });
+        },
+        avatarSrc() {
+            return this.imageError ? this.avatarFallbackUrl : (this.profileUrl || this.avatarFallbackUrl);
+        },
+        avatarAlt() {
+            return this.initData.name || '用户头像';
         },
         // 获取用户身份配置
         roleConfig() {
@@ -155,6 +149,9 @@ export default {
             }
         },
         async getProfile() {
+            if (!this.initData.id) {
+                return;
+            }
             /**
              * check global cache first  
              */
@@ -209,7 +206,6 @@ export default {
             this.$nextTick(() => {
                 this.imageLoading = false;
                 this.imageError = true;
-                // 图片加载失败时，保持显示占位符
                 this.profileUrl = null;
             });
         },
@@ -225,10 +221,13 @@ export default {
         },
         setupLazyLoad() {
             // 使用 Intersection Observer 实现懒加载
+            if (!this.initData.id) {
+                return;
+            }
             if (typeof IntersectionObserver !== 'undefined') {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
-                        if (entry.isIntersecting && !this.profileUrl && !this.imageLoading) {
+                        if (entry.isIntersecting && !this.imageLoading && !this.profileUrl) {
                             this.loadProfile();
                             observer.disconnect();
                         }
@@ -253,6 +252,9 @@ export default {
         },
     },
     async mounted() {
+        if (!this.initData.id) {
+            return;
+        }
         if (!this.lazy) {
             // 非懒加载模式，立即加载
             await this.loadProfile();
@@ -285,10 +287,6 @@ export default {
     transition: opacity 0.2s ease-in-out;
 }
 
-.avatar-icon {
-    opacity: 1;
-}
-
 .avatar-img {
     opacity: 1;
 }
@@ -310,6 +308,11 @@ export default {
     background-color: #f5f5f5;
 }
 
+.avatar-skeleton {
+    width: 100%;
+    height: 100%;
+}
+
 .role-badge {
     position: absolute;
     bottom: -2px;
@@ -323,4 +326,3 @@ export default {
     transform: scale(1.1);
 }
 </style>
-

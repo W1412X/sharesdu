@@ -2,36 +2,21 @@
 <template>
     <div class="avatar-name" @click="toAuthorPage">
         <div class="avatar-container" :style="{ width: mobileSize + 'px', height: mobileSize + 'px' }">
-            <!-- 默认图标 - 使用 v-show 避免 DOM 重建 -->
-            <v-icon 
-                v-show="showDefaultIcon" 
-                icon="mdi-account-circle" 
-                :size="mobileSize" 
-                color='#bbbbbb'
-                class="avatar-icon"
-            ></v-icon>
-            <!-- 头像图片 - 使用 v-show 避免 DOM 重建 -->
             <v-avatar 
-                v-show="showAvatar" 
                 :size="mobileSize"
                 class="avatar-img"
             >
                 <v-img 
-                    :src="this.profileUrl" 
+                    :src="avatarSrc" 
                     :lazy-src="lazyImgUrl"
-                    :alt="initData.name || '用户头像'"
+                    :alt="avatarAlt"
                     cover
                     @load="onImageLoad"
                     @error="onImageError"
                 >
                     <template v-slot:placeholder>
                         <div class="avatar-placeholder">
-                            <v-progress-circular 
-                                :size="parseInt(mobileSize) * 0.6" 
-                                :width="2"
-                                :color="themeColor" 
-                                indeterminate
-                            ></v-progress-circular>
+                            <v-skeleton-loader type="avatar" class="avatar-skeleton" />
                         </div>
                     </template>
                 </v-img>
@@ -58,6 +43,7 @@ import { acquireLock, releaseLock } from '@/utils/lock'
 import { openPage } from '@/utils/other'
 import { getProfileUrl } from '@/utils/profile'
 import { getHighestPriorityRole } from '@/utils/userBadge'
+import { buildDiceBearAvatarUrl } from '@/utils/avatar'
 import { ref } from 'vue'
 
 export default {
@@ -125,13 +111,21 @@ export default {
             // 默认使用 text-small 的移动端大小（13px）
             return '13';
         },
-        // 是否显示默认图标
-        showDefaultIcon() {
-            return this.profileUrl == null || this.imageLoading || this.imageError;
+        avatarSeed() {
+            return this.initData.name || this.initData.id || 'user';
         },
-        // 是否显示头像
-        showAvatar() {
-            return this.profileUrl != null && !this.imageError;
+        avatarFallbackUrl() {
+            return buildDiceBearAvatarUrl(this.avatarSeed, {
+                size: Math.max(64, parseInt(this.mobileSize) * 2),
+                style: 'personas',
+                useBackground: true,
+            });
+        },
+        avatarSrc() {
+            return this.imageError ? this.avatarFallbackUrl : (this.profileUrl || this.avatarFallbackUrl);
+        },
+        avatarAlt() {
+            return this.initData.name || '用户头像';
         },
         // 获取用户身份配置
         roleConfig() {
@@ -172,6 +166,9 @@ export default {
             }
         },
         async getProfile() {
+            if (!this.initData.id) {
+                return;
+            }
             /**
              * check global cache first  
              */
@@ -226,11 +223,13 @@ export default {
             this.$nextTick(() => {
                 this.imageLoading = false;
                 this.imageError = true;
-                // 图片加载失败时，保持显示占位符
                 this.profileUrl = null;
             });
         },
         async loadProfile() {
+            if (!this.initData.id) {
+                return;
+            }
             const lockKey = 'profile-' + this.initData.id;
             await acquireLock(lockKey);
             try {
@@ -242,6 +241,9 @@ export default {
         },
         setupLazyLoad() {
             // 使用 Intersection Observer 实现懒加载
+            if (!this.initData.id) {
+                return;
+            }
             if (typeof IntersectionObserver !== 'undefined') {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
@@ -270,6 +272,9 @@ export default {
         },
     },
     async mounted() {
+        if (!this.initData.id) {
+            return;
+        }
         if (!this.lazy) {
             // 非懒加载模式，立即加载
             await this.loadProfile();
@@ -302,10 +307,6 @@ export default {
     transition: opacity 0.2s ease-in-out;
 }
 
-.avatar-icon {
-    opacity: 1;
-}
-
 .avatar-img {
     opacity: 1;
 }
@@ -327,6 +328,11 @@ export default {
     background-color: #f5f5f5;
 }
 
+.avatar-skeleton {
+    width: 100%;
+    height: 100%;
+}
+
 .role-badge {
     position: absolute;
     bottom: -1px;
@@ -335,4 +341,3 @@ export default {
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 </style>
-

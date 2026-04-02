@@ -3,6 +3,7 @@
  */
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { getCookie } from '@/utils/cookie';
+import { buildDiceBearAvatarUrl } from '@/utils/avatar';
 
 export function useSelfRestore() {
   /**
@@ -58,12 +59,18 @@ export function useSelfRestore() {
    * @returns {Object} 用户信息对象
    */
   const initUser = () => {
+    const userName = getCookie('userName');
+    const userId = getCookie('userId');
     return {
-      id: getCookie('userId'),
-      name: getCookie('userName'),
+      id: userId,
+      name: userName,
       email: getCookie('email'),
       passwd: '********',
-      profileUrl: getCookie('userProfileUrl'),
+      profileUrl: getCookie('userProfileUrl') || buildDiceBearAvatarUrl(userName || userId || 'user', {
+        size: 96,
+        style: 'personas',
+        useBackground: true,
+      }),
     };
   };
   
@@ -74,4 +81,3 @@ export function useSelfRestore() {
     initUser,
   };
 }
-

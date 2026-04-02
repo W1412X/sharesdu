@@ -23,7 +23,7 @@
     
     <v-card-text class="card-content">
       <loading-content-wrapper
-        :load-state="loading"
+        :load-state="!loading"
         loading-text="正在加载板块列表..."
         variant="list"
         :item-count="4"

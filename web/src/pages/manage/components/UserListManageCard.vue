@@ -27,7 +27,7 @@
       
       <v-card-text class="card-content">
         <loading-content-wrapper
-          :load-state="loading"
+          :load-state="!loading"
           loading-text="正在加载用户列表..."
           variant="page"
           min-height="420px"

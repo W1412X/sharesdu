@@ -19,7 +19,7 @@
             flex-direction: column;
           ">
         <div style="display: flex; flex-direction: row; margin: 10px">
-          <v-avatar :image="userInfo.profileUrl" style="margin-right: 20px"></v-avatar>
+          <v-avatar :image="avatarUrl" style="margin-right: 20px"></v-avatar>
           <v-spacer />
           <v-btn variant="outlined" color="#8a8a8a" @click="this.editProfile()">修改头像</v-btn>
         </div>
@@ -83,6 +83,7 @@ import { copy, getCancelLoadMsg, getLoadMsg, openPage } from '@/utils/other';
 import { rules, validatePassWord } from '@/utils/rules';
 import { clearTokenCookies, getCookie } from '@/utils/cookie';
 import { globalProperties } from '@/main';
+import { buildDiceBearAvatarUrl } from '@/utils/avatar';
 export default {
   props: {
   },
@@ -175,6 +176,15 @@ export default {
       validatePasswd: validatePassWord,
       editingUserInfo
     }
+  },
+  computed: {
+    avatarUrl() {
+      return this.userInfo.profileUrl || buildDiceBearAvatarUrl(this.userInfo.userName || this.userInfo.userId || 'user', {
+        size: 96,
+        style: 'personas',
+        useBackground: true,
+      });
+    },
   },
   methods: {
     editProfile() {

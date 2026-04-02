@@ -7,7 +7,7 @@
     permanent
     @click="handleRailClick"
   >
-    <v-list-item class="name" :prepend-avatar="user.profileUrl" :title="user.name" nav>
+    <v-list-item class="name" :prepend-avatar="avatarUrl" :title="user.name" nav>
     </v-list-item>
     <v-divider></v-divider>
     <v-btn
@@ -70,7 +70,7 @@
     :rail="false"
     permanent
   >
-    <v-list-item class="name" :prepend-avatar="user.profileUrl" :title="user.name" nav>
+    <v-list-item class="name" :prepend-avatar="avatarUrl" :title="user.name" nav>
     </v-list-item>
     <v-divider></v-divider>
     <v-btn
@@ -137,6 +137,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { buildDiceBearAvatarUrl } from '@/utils/avatar';
 
 // Props
 const props = defineProps({
@@ -189,6 +190,14 @@ const chooseModel = computed({
   set: (value) => emit('update:choose', value),
 });
 
+const avatarUrl = computed(() => {
+  return props.user.profileUrl || buildDiceBearAvatarUrl(props.user.name || props.user.id || 'user', {
+    size: 96,
+    style: 'personas',
+    useBackground: true,
+  });
+});
+
 // 处理方法
 const handleChoose = (value) => {
   emit('update:choose', value);
@@ -226,4 +235,3 @@ const handleToggleRail = () => {
   z-index: 100;
 }
 </style>
-
