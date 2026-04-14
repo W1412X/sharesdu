@@ -184,3 +184,60 @@
 .support-line-feed{
     white-space: pre-line;
 }
+
+/**
+ * Dark Reader 会压扁 Vuetify 默认骨架渐变；部分环境下 background-position 动画会失效。
+ * 黑夜模式：占位条略提亮 + 与 Vuetify 相同逻辑的 translateX 扫光（动效稳定），整体刻意偏弱、不抢眼。
+ * 同步修改：src/utils/darkMode.js 内 darkReaderDynamicFixes。
+ */
+html.sharesdu-dark-mode .v-skeleton-loader .v-skeleton-loader__avatar,
+html.sharesdu-dark-mode .v-skeleton-loader .v-skeleton-loader__button,
+html.sharesdu-dark-mode .v-skeleton-loader .v-skeleton-loader__chip,
+html.sharesdu-dark-mode .v-skeleton-loader .v-skeleton-loader__divider,
+html.sharesdu-dark-mode .v-skeleton-loader .v-skeleton-loader__heading,
+html.sharesdu-dark-mode .v-skeleton-loader .v-skeleton-loader__image,
+html.sharesdu-dark-mode .v-skeleton-loader .v-skeleton-loader__ossein,
+html.sharesdu-dark-mode .v-skeleton-loader .v-skeleton-loader__text {
+    background: rgba(255, 255, 255, 0.085) !important;
+}
+
+html.sharesdu-dark-mode .v-skeleton-loader__bone::after {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.02) 42%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.02) 58%,
+        rgba(255, 255, 255, 0) 100%
+    ) !important;
+    animation: sharesdu-skeleton-slide 1.75s ease-in-out infinite !important;
+}
+
+@keyframes sharesdu-skeleton-slide {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.sharesdu-dark-mode .v-skeleton-loader__bone::after {
+        animation: none !important;
+        transform: translateX(0) !important;
+        opacity: 0.9 !important;
+    }
+}
+
+html.sharesdu-dark-mode .loading-skeleton__accent {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
+}
+
+html.sharesdu-dark-mode .loading-skeleton__list-item {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+html.sharesdu-dark-mode .avatar-placeholder {
+    background-color: rgba(255, 255, 255, 0.055) !important;
+}
