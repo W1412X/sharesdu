@@ -3,7 +3,7 @@
     <!-- STEP 1: 基本信息 -->
     <template v-if="step === 0">
       <div class="text-small tip-text-container">
-        <span>团体/组织/毕业生请联系管理员获取验证码</span>
+        <span>团体/组织/毕业生请联系管理员获取验证码。在校生请使用山大校园邮箱注册，验证码将发送至山大云邮，<span class="tip-doc-link" @click="$emit('to-url', '/#/document/how_to_register')"><strong style="color: grey; text-decoration: underline;">如何使用校园邮箱？</strong></span></span>
       </div>
       <sensitive-text-field 
         :model-value="registerData.userName"
@@ -110,8 +110,8 @@
       </sensitive-text-field>
       <div class="text-tiny agreement-text-container" style="width: 100%;display: flex;flex-direction: row;">
         <v-spacer></v-spacer>
-        <span @click="$emit('to-url', 'https://info.sdu.edu.cn/info/1007/1530.htm')" style="margin-right: 20px;">
-          <strong style="color: grey; text-decoration: underline;">什么是校园邮箱？</strong>
+        <span @click="$emit('to-url', '/#/document/how_to_register')" style="margin-right: 20px;">
+          <strong style="color: grey; text-decoration: underline;">如何使用校园邮箱？</strong>
         </span>
       </div>
       <div class="text-small agreement-text-container">
@@ -274,6 +274,10 @@ const valPassWord = (passWord) => {
   padding: 0 5%;
   text-align: center;
   line-height: 1.5;
+}
+
+.tip-doc-link {
+  cursor: pointer;
 }
 
 .row-center-div {

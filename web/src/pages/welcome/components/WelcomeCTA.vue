@@ -10,7 +10,7 @@
         elevation="4">
         立即注册账号
       </v-btn>
-      <div class="cta-hint">开启你的 ShareSDU 之旅</div>
+      <div class="cta-hint">已面向全体山大人员开放注册</div>
     </div>
     <div class="cta-secondary">
       <v-btn

@@ -10,7 +10,7 @@
       <div class="feature-item">
         <v-icon color="primary" size="40">mdi-forum</v-icon>
         <div class="feature-title">帖子论坛社区</div>
-        <div class="feature-desc">校园话题讨论，互动交流平台</div>
+        <div class="feature-desc">山东大学校园话题讨论与互动</div>
       </div>
       <div class="feature-item">
         <v-icon color="primary" size="40">mdi-school</v-icon>

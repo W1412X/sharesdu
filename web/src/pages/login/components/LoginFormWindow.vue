@@ -36,6 +36,7 @@
         :campus-list="campusList"
         :college-list="collegeList"
         @next="$emit('step')"
+        @to-url="$emit('to-url', $event)"
         @update:registerData="$emit('update:registerByEmailData', $event)"
         @update:passwdVisible="$emit('update:passwdVisible', $event)"
       />

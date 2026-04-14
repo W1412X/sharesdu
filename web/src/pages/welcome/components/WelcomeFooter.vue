@@ -7,7 +7,7 @@
           <!-- 左侧：品牌标识和标语 -->
           <div class="footer-brand">
             <span class="brand-name">ShareSDU</span>
-            <span class="brand-desc">为大学生活提供分享、交流与学习的平台</span>
+            <span class="brand-desc">山东大学师生的分享、交流与学习社区</span>
           </div>
 
           <!-- 右侧：三个主要部分 -->

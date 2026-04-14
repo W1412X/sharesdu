@@ -1,8 +1,8 @@
 <template>
   <div class="notices-grid">
-    <div class="test-notice">
-      <v-icon color="warning" size="20">mdi-alert-circle</v-icon>
-      <span>当前正在测试阶段，用户信息不会保留</span>
+    <div class="register-open-notice">
+      <v-icon color="success" size="20">mdi-account-check</v-icon>
+      <span>网站已正式上线，面向全体山东大学师生与校友开放注册</span>
     </div>
     <div class="legal-notice">
       <v-icon color="error" size="18">mdi-shield-alert</v-icon>
@@ -23,22 +23,22 @@
   margin: 30px 0;
 }
 
-.test-notice {
+.register-open-notice {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   padding: 18px 24px;
   background: linear-gradient(135deg, 
-    rgba(255, 152, 0, 0.12) 0%, 
-    rgba(255, 193, 7, 0.12) 100%);
+    rgba(76, 175, 80, 0.12) 0%, 
+    rgba(56, 142, 60, 0.12) 100%);
   border-radius: 16px;
   margin: 0;
   font-size: 1rem;
-  color: #E65100;
+  color: #2e7d32;
   line-height: 1.6;
-  border: 1px solid rgba(255, 152, 0, 0.2);
-  box-shadow: 0 4px 16px rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.25);
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.1);
   backdrop-filter: blur(10px);
 }
 
@@ -71,12 +71,12 @@
     margin: 40px 0;
   }
 
-  .test-notice,
+  .register-open-notice,
   .legal-notice {
     margin: 0;
   }
 
-  .test-notice {
+  .register-open-notice {
     padding: 20px 32px;
     margin: 28px 0;
     font-size: 1.05rem;
@@ -90,7 +90,7 @@
 }
 
 @media screen and (max-width: 1000px) {
-  .test-notice {
+  .register-open-notice {
     padding: 16px 20px;
     margin: 20px 0;
     font-size: 0.9rem;
@@ -99,7 +99,7 @@
     border-radius: 14px;
   }
 
-  .test-notice .v-icon {
+  .register-open-notice .v-icon {
     font-size: 20px !important;
   }
 

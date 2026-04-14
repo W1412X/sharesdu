@@ -2,9 +2,9 @@
   <div class="hero-section">
     <div class="hero-content">
       <div class="title-big-bold intro-text-div hero-title">ShareSDU</div>
-      <div class="hero-subtitle">大学交流分享平台</div>
+      <div class="hero-subtitle">山东大学交流分享平台</div>
       <div class="title intro-text-div hero-description">
-        为大学生活提供一个分享、交流与学习的平台
+        面向山东大学师生与校友，提供分享、交流与学习的校园社区
       </div>
       <!-- 注册按钮区域 -->
       <div class="hero-cta">
@@ -18,11 +18,15 @@
           立即注册账号
         </v-btn>
 
-        <div class="hero-cta-hint">开启你的 ShareSDU 之旅</div>
+        <div class="hero-cta-hint">已面向全体山大人员开放注册，使用校园邮箱即可加入</div>
       </div>
       
       <!-- 开源和公益性项目信息 -->
       <div class="project-info">
+        <div class="project-badge">
+          <v-icon color="warning" size="16" class="project-icon">mdi-school</v-icon>
+          <span class="project-text">山东大学专属</span>
+        </div>
         <div class="project-badge">
           <v-icon color="info" size="16" class="project-icon">mdi-heart</v-icon>
           <span class="project-text">公益性项目</span>
@@ -30,10 +34,6 @@
         <div class="project-badge">
           <v-icon color="success" size="16" class="project-icon">mdi-github</v-icon>
           <span class="project-text">全面开源</span>
-        </div>
-        <div class="project-badge">
-          <v-icon color="warning" size="16" class="project-icon">mdi-school</v-icon>
-          <span class="project-text">面向山东大学</span>
         </div>
       </div>
     </div>

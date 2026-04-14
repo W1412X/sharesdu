@@ -3,8 +3,8 @@
     <div class="dialog-card-container">
       <!-- 登录提示卡片 -->
       <v-card v-if="ifShowLogin" class="card">
-        <div class="title-bold">敬请期待</div>
-        <div class="text-medium">暂未对外开放<br />(预计于25年3月份开放注册)</div>
+        <div class="title-bold">欢迎加入 ShareSDU</div>
+        <div class="text-medium">网站已面向全体山东大学师生与校友开放注册，请使用山大邮箱完成注册与登录。</div>
         <div class="card-bottom-div">
           <v-btn variant="text" @click="$emit('close-login')">好的</v-btn>
         </div>
@@ -25,7 +25,7 @@
       <!-- 下载卡片 -->
       <v-card v-if="ifShowDownload" class="card">
         <div class="row-div">
-          <div class="title-bold">APP功能不稳定，仅供测试</div>
+          <div class="title-bold">下载客户端</div>
           <v-spacer></v-spacer>
           <v-btn @click="$emit('close-download')" :size="25" :icon="'mdi-close'" variant="text"></v-btn>
         </div>

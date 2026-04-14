@@ -4,11 +4,11 @@
     <div class="advantage-list">
       <div class="advantage-item">
         <v-icon color="success">mdi-check-circle</v-icon>
-        <span><strong>精准实时</strong> - 所有内容均由本校学生创作，确保信息准确及时</span>
+        <span><strong>精准实时</strong> - 内容多由山东大学同学创作，信息更贴近校园实际</span>
       </div>
       <div class="advantage-item">
         <v-icon color="success">mdi-check-circle</v-icon>
-        <span><strong>用户纯净</strong> - 校园邮箱认证，用户均来自本校，可筛选非本校人员</span>
+        <span><strong>用户纯净</strong> - 校园邮箱认证，用户以山大师生为主，可筛选非本校人员</span>
       </div>
       <div class="advantage-item">
         <v-icon color="success">mdi-check-circle</v-icon>
