@@ -153,7 +153,8 @@ const formattedPublishTime = computed(() => {
 }
 
 .row-right-20px {
-  display: flex;
+  display: inline-flex;
+  flex-shrink: 0;
   flex-direction: row;
   margin-right: 20px;
   align-items: center;
@@ -172,6 +173,11 @@ const formattedPublishTime = computed(() => {
   max-width: 100%;
   display: flex;
   flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  align-items: center;
+  word-break: normal;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
 
 .row-div {
@@ -190,7 +196,7 @@ const formattedPublishTime = computed(() => {
 
 .grey-font {
   white-space: nowrap;
-  word-break: break-all;
+  word-break: normal;
   overflow: hidden;
   color: grey;
 }
@@ -268,6 +274,10 @@ const formattedPublishTime = computed(() => {
     font-size: 20px;
     color: var(--theme-color);
     font-weight: bold;
+  }
+
+  .row-right-20px {
+    margin-right: 14px;
   }
 }
 </style>

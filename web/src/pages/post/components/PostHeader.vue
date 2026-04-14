@@ -44,26 +44,26 @@
     <div class="full-column-center text-small grey-font">
       <div class="comment-star-display-div">
         <div class="row-right-20px-column-center">
-          <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-heart" size="18"></v-icon>
+          <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-heart" size="16"></v-icon>
           <div class="column-center">
             {{ post.likeNum }}
           </div>
         </div>
         <div class="row-right-20px-column-center">
-          <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment" size="16"></v-icon>
+          <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-comment" size="14"></v-icon>
           <div class="column-center">
             {{ post.replyNum }}
           </div>
         </div>
         <div class="row-right-20px-column-center">
-          <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-eye" size="16"></v-icon>
+          <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-eye" size="14"></v-icon>
           <div class="column-center">
             {{ post.viewNum }}
           </div>
         </div>
         <v-spacer></v-spacer>
         <div class="time-div grey-font text-small">
-          <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="17"></v-icon>
+          <v-icon class="icon-right-5px" color="#8a8a8a" icon="mdi-clock" size="15"></v-icon>
           <div class="column-center">
             {{ formattedPublishTime }}
           </div>
@@ -204,11 +204,17 @@ const handleImageClick = ({ index }) => {
   max-width: 100%;
   display: flex;
   flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  align-items: center;
   margin-top: 10px;
+  word-break: normal;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
 
 .row-right-20px-column-center {
-  display: flex;
+  display: inline-flex;
+  flex-shrink: 0;
   margin-top: 5px;
   align-items: center;
   flex-direction: row;
@@ -220,22 +226,30 @@ const handleImageClick = ({ index }) => {
 }
 
 .time-div {
-  display: flex;
+  display: inline-flex;
+  flex-shrink: 0;
   flex-direction: row;
   margin-top: 5px;
   align-items: center;
+  white-space: nowrap;
+  word-break: normal;
 }
 
 .text-small {
   font-size: 12px;
 }
 
+/* 勿对统计数字使用 break-all，窄屏下会竖排断字 */
 .grey-font {
-  min-width: 200px;
-  white-space: pre-line;
-  word-break: break-all;
-  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
   color: grey;
+}
+
+.grey-font .column-center {
+  white-space: nowrap;
+  word-break: normal;
+  overflow: visible;
 }
 
 .link-btn {
@@ -277,6 +291,10 @@ const handleImageClick = ({ index }) => {
 
   .name-font {
     width: 40vw;
+  }
+
+  .row-right-20px-column-center {
+    margin-right: 14px;
   }
 }
 </style>
