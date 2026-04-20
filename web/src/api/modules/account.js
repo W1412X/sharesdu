@@ -160,6 +160,58 @@ export const getAuthorInfo=async(userId)=>{
 }
 
 /**
+ * 修改当前用户个人资料（用户名、校区、学院、专业）
+ * @param {{ user_name?: string, campus?: string, college?: string, major?: string }} data
+ */
+export const updateUserProfile = async (data) => {
+  try {
+    const response = await axiosInstance.post('/user/profile/update', data);
+    return response.data;
+  } catch (error) {
+    return dealAxiosError(error);
+  }
+};
+
+/**
+ * 换绑邮箱：向旧邮箱发送验证码（可与密码二选一作为身份校验）
+ */
+export const sendChangeEmailCodeToOld = async () => {
+  try {
+    const response = await axiosInstance.get('/user/change_email?send_code=1&target=old');
+    return response.data;
+  } catch (error) {
+    return dealAxiosError(error);
+  }
+};
+
+/**
+ * 换绑邮箱：向新邮箱发送验证码
+ * @param {string} email 新邮箱地址
+ */
+export const sendChangeEmailCodeToNew = async (email) => {
+  try {
+    const q = encodeURIComponent(email);
+    const response = await axiosInstance.get(`/user/change_email?send_code=1&target=new&email=${q}`);
+    return response.data;
+  } catch (error) {
+    return dealAxiosError(error);
+  }
+};
+
+/**
+ * 换绑邮箱：提交新邮箱与新邮箱验证码，并用 pass_word 或 old_email_code 之一校验身份
+ * @param {{ new_email: string, new_email_code: string, pass_word?: string, old_email_code?: string }} data
+ */
+export const submitChangeEmail = async (data) => {
+  try {
+    const response = await axiosInstance.post('/user/change_email', data);
+    return response.data;
+  } catch (error) {
+    return dealAxiosError(error);
+  }
+};
+
+/**
  * 获取用户创作内容预览
  * @param {*} userId 
  * @returns 

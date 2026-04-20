@@ -19,7 +19,7 @@
 <script>
 import { computed, ref } from 'vue';
 import StarCard from '@/components/star/StarCard.vue';
-import { unstarContent } from '@/api/modules/star';
+import { unstarContent, unstarContentSmart } from '@/api/modules/star';
 import { getCancelLoadMsg, getLoadMsg, getNormalErrorAlert, getNormalWarnAlert } from '@/utils/other';
 
 export default {
@@ -35,6 +35,11 @@ export default {
         id: {
             type: String,
             default: '00000000',
+        },
+        /** 已知收藏夹 ID 时传入，只取消该夹中的记录；不传则自动解析（兼容多收藏夹） */
+        folderId: {
+            type: [String, Number],
+            default: null,
         },
         size: {
             type: String,
@@ -87,9 +92,14 @@ export default {
                         break;
                 }
                 this.setLoading(getLoadMsg("正在取消收藏..."));
-                let response=await unstarContent(type,this.id);
+                let response;
+                if (this.folderId != null && this.folderId !== '') {
+                    response = await unstarContent(type, this.id, this.folderId);
+                } else {
+                    response = await unstarContentSmart(type, this.id);
+                }
                 this.setLoading(getCancelLoadMsg());
-                if(response.status==200){
+                if(response.status==200||response.status==201){
                     this.alert(getNormalWarnAlert('取消收藏成功'));
                     this.ifClicked=false;
                 }else{

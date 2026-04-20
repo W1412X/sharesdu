@@ -83,9 +83,13 @@
                     <div v-else class="folder-items-list">
                         <star-item 
                             v-for="(item, index) in selectedFolder.items" 
-                            :key="index"
+                            :key="`${item.type}-${item.id}`"
                             :init-data="item"
+                            :folder-id="selectedFolder.id"
                             class="folder-item"
+                            @unstarred="() => removeFolderItem(index)"
+                            @alert="alert"
+                            @set_loading="setLoading"
                         ></star-item>
                     </div>
                 </div>
@@ -291,6 +295,14 @@ export default {
         closeFolderDetail() {
             this.ifShowFolderDetail = false;
             this.selectedFolderIndex = -1;
+        },
+        removeFolderItem(index) {
+            const idx = this.selectedFolderIndex;
+            if (idx < 0 || idx >= this.folders.length) return;
+            const folder = this.folders[idx];
+            if (!folder.items || index < 0 || index >= folder.items.length) return;
+            folder.items.splice(index, 1);
+            folder.starNum = folder.items.length;
         },
         async add(folderId) {
             this.loading.add[folderId]=true;
