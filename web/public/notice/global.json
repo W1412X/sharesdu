@@ -16,5 +16,14 @@
     "type": "info",
     "priority": 2,
     "expire_time": "2026-06-30 23:59:59"
+  },
+  {
+    "id": "notice-004",
+    "title": "现已支持修改个人信息",
+    "content": "网站现已支持修改名称、校区、专业等个人信息以及换绑邮箱，路径：个人中心 → 账号设置 → 修改个人信息",
+    "icon": "mdi-account-edit-outline",
+    "type": "info",
+    "priority": 2,
+    "expire_time": "2026-06-30 23:59:59"
   }
 ]
