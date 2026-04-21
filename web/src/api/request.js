@@ -344,7 +344,7 @@ axiosInstance.axiosInstance.interceptors.response.use(
 axiosInstance.axiosInstance.interceptors.response.use(
     (response) => {
         if (response?.data?.status === 1002) {
-            redirectToBannedOnce(response.data);
+            redirectToBannedOnce();
             const err = new Error('账户已被封禁');
             err.response = { data: response.data };
             return Promise.reject(err);
@@ -353,7 +353,7 @@ axiosInstance.axiosInstance.interceptors.response.use(
     },
     async (error) => {
         if (error.response?.data?.status === 1002) {
-            redirectToBannedOnce(error.response.data);
+            redirectToBannedOnce();
         }
         return Promise.reject(error);
     }

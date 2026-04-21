@@ -47,10 +47,14 @@ export function useMobileNav(page, deviceType, loadState) {
   
   // 路由上边距
   const routerMarginTop = computed(() => {
-    if (!ifShowNav.value) {
+    if(deviceType.value == 'mobile') {
+      return '45px';
+    }
+    if (ifShowNav.value) {
+      return '45px';
+    } else {
       return '0px';
     }
-    return '45px';
   });
   
   // 是否显示首页按钮
