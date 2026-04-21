@@ -28,7 +28,7 @@ export function useMobileNav(page, deviceType, loadState) {
   
   // 是否显示导航栏
   const ifShowNav = computed(() => {
-    if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage', 'DocumentPage', 'DeveloperPage', 'DevPage', undefined, null].includes(page.value)) {
+    if (loadState.value && ['WelcomePage', 'LoginPage', 'ChatPage', 'DocumentPage', 'DeveloperPage', 'DevPage', 'BannedPage', undefined, null].includes(page.value)) {
       return false;
     } else {
       return true;
@@ -47,14 +47,10 @@ export function useMobileNav(page, deviceType, loadState) {
   
   // 路由上边距
   const routerMarginTop = computed(() => {
-    if(deviceType.value == 'mobile') {
-      return '45px';
-    }
-    if (ifShowNav.value) {
-      return '45px';
-    } else {
+    if (!ifShowNav.value) {
       return '0px';
     }
+    return '45px';
   });
   
   // 是否显示首页按钮

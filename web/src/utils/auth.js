@@ -8,10 +8,58 @@ import { clearTokenCookies, getCookie, setCookie } from "./cookie";
 import { globalProperties } from "@/main";
 import { acquireLock, releaseLock } from "./lock";
 import { selfDefineLocalStorage } from "./localStorage";
-import { openPage } from "./navigation";
+import { isDebugHashPath, openPage } from "./navigation";
+import router from "@/router";
 
 /** 是否已触发登出，避免多处同时调用时重复弹窗和跳转 */
 let logoutTriggered = false;
+
+/** 是否已跳转封禁页，避免并发请求重复跳转 */
+let bannedRedirectTriggered = false;
+
+/** 封禁页读取的 sessionStorage 键（在 clear 之后写入，仅保留展示用字段） */
+export const BANNED_PAGE_INFO_KEY = "bannedPageInfo";
+
+const BAN_DETAIL_KEYS = ["message", "block_end_time", "block_reason", "block_status", "user_name", "user_id"];
+
+/**
+ * 从 1002 响应体中提取可展示字段（兼容顶层或 data 内嵌，与 API 文档中用户主页 block_* 字段一致）。
+ */
+export function extractBanPayload(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const nested = raw.data && typeof raw.data === "object" && !Array.isArray(raw.data) ? raw.data : {};
+    const out = {};
+    for (const key of BAN_DETAIL_KEYS) {
+        const v = raw[key] !== undefined && raw[key] !== null && raw[key] !== ""
+            ? raw[key]
+            : nested[key];
+        if (v !== undefined && v !== null && v !== "") {
+            out[key] = v;
+        }
+    }
+    return Object.keys(out).length ? out : null;
+}
+
+/**
+ * 账户被封禁（API status=1002）时清理登录态并进入封禁说明页，仅生效一次。
+ * @param {object|null} apiPayload 接口返回体（可选），用于展示 message / block_end_time 等
+ */
+export function redirectToBannedOnce(apiPayload = null) {
+    if (bannedRedirectTriggered) return;
+    bannedRedirectTriggered = true;
+    clearTokenCookies();
+    sessionStorage.clear();
+    const details = extractBanPayload(apiPayload);
+    if (details) {
+        try {
+            sessionStorage.setItem(BANNED_PAGE_INFO_KEY, JSON.stringify(details));
+        } catch (e) {
+            /* ignore */
+        }
+    }
+    const name = isDebugHashPath(window.location.href) ? "BannedPageDebug" : "BannedPage";
+    router.push({ name });
+}
 
 /**
  * 设置登录信息
@@ -62,6 +110,12 @@ export async function refreshAccessToken() {
         if (refreshToken) {
             try {
                 const response = await getAccessToken(refreshToken);
+                if (response.status === 1002) {
+                    redirectToBannedOnce(response);
+                    const err = new Error("账户已被封禁");
+                    err.response = { data: response };
+                    throw err;
+                }
                 if (response.status === 999) {
                     setCookie("accessToken", response.access, 5);
                     return getCookie("accessToken");

@@ -10,7 +10,7 @@ import { ResponseBuffer } from '@/utils/response_cacher';
 import axios from 'axios';
 import config from '@/config';
 import { getCacheInvalidationRule } from './cache-invalidation-rules';
-import { refreshAccessToken } from '@/utils/auth';
+import { redirectToBannedOnce, refreshAccessToken } from '@/utils/auth';
 
 const JSON_CONTENT_TYPE = 'application/json';
 const DEFAULT_CACHE_TTL = 10 * 60 * 1000; // 10 分钟
@@ -338,6 +338,24 @@ axiosInstance.axiosInstance.interceptors.response.use(
         } finally {
             refreshPromise = null;
         }
+    }
+);
+
+axiosInstance.axiosInstance.interceptors.response.use(
+    (response) => {
+        if (response?.data?.status === 1002) {
+            redirectToBannedOnce(response.data);
+            const err = new Error('账户已被封禁');
+            err.response = { data: response.data };
+            return Promise.reject(err);
+        }
+        return response;
+    },
+    async (error) => {
+        if (error.response?.data?.status === 1002) {
+            redirectToBannedOnce(error.response.data);
+        }
+        return Promise.reject(error);
     }
 );
 

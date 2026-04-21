@@ -18,6 +18,7 @@ import {
   AuthorPage,
   DocumentPage,
   ErrorPage,
+  BannedPage,
   ServicePage,
   DevPage,
   TestPage,
@@ -106,6 +107,12 @@ const originalRoutes = [
     path: '/error/:reason?',
     name: 'ErrorPage',
     component: ErrorPage,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/banned',
+    name: 'BannedPage',
+    component: BannedPage,
     meta: { requiresAuth: false },
   },
   {
@@ -218,7 +225,7 @@ router.beforeEach((to, from, next) => {
     window.alert("本页面处于调试模式");
   }
   try {
-    if (to.name !== "ErrorPage"&&to.name !="ErrorPageDebug") {
+    if (!["ErrorPage", "ErrorPageDebug", "BannedPage", "BannedPageDebug"].includes(to.name)) {
       let tmpTo = {
         name: to.name,
         params: to.params,

@@ -119,6 +119,7 @@ export const ManagePage = load('manage/index');
 export const AuthorPage = load('author/index');
 export const DocumentPage = load('DocumentPage');
 export const ErrorPage = load('ErrorPage');
+export const BannedPage = load('BannedPage');
 export const ServicePage = load('ServicePage');
 export const DevPage = load('DevPage');
 export const TestPage = load('TestPage');
