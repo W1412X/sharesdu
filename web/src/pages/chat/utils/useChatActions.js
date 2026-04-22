@@ -3,6 +3,15 @@
  */
 import { getLoadMsg, getCancelLoadMsg, getNormalErrorAlert, getNormalInfoAlert, formatRelativeTime, copy } from '@/utils/other';
 import { sendPrivateMessage } from '@/api/modules/chat';
+import { getHistoryResults, isHistoryResponseOk } from '@/utils/chatApiNormalize';
+import { normMessageId, normPeerId } from '@/utils/chatIds';
+import {
+  putMessage,
+  putMessagesForPeer,
+  putSessionRow,
+  mapHistoryPartToMessage,
+  setNextHistoryPage,
+} from '@/utils/chatLocalDb';
 
 export function useChatActions(
   receiverId,
@@ -56,6 +65,22 @@ export function useChatActions(
         };
         
         addMessage(newMessage);
+        if (selfId) {
+          try {
+            await putMessage(selfId, receiverId.value, newMessage);
+            await putSessionRow({
+              id: receiverId.value,
+              name: receiverName.value,
+              lastContent: newMessage.content,
+              lastAt: newMessage.time,
+              lastIsSelf: true,
+              unread: 0,
+              lastMsgAt: newMessage.time,
+            });
+          } catch (e) {
+            console.warn('chat persist send', e);
+          }
+        }
         
         // 更新用户列表中的最后一条消息
         updateChatUser(receiverId.value, {
@@ -87,39 +112,45 @@ export function useChatActions(
       const response = await getChatHistoryApi(receiverId.value, currentPage);
       setLoading('loadFrontier', false);
       
-      if (response.status === 200) {
+      if (isHistoryResponseOk(response)) {
+        const part = getHistoryResults(response);
+        if (part.length === 0) {
+          alertHandler(getNormalInfoAlert('无更多信息'));
+          return;
+        }
         incrementChatPage(receiverId.value);
         
-        const tmp = [];
-        const reversedResults = response.results.reverse();
-        
-        for (let i = 0; i < reversedResults.length; i++) {
-          const msg = {
-            id: reversedResults[i].message_id,
-            content: reversedResults[i].content,
-            time: reversedResults[i].sent_at,
-            isSelf: reversedResults[i].is_sender,
-            ifRead: reversedResults[i].read,
-            userName: reversedResults[i].is_sender ? selfName : receiverName.value,
-            userId: reversedResults[i].is_sender ? selfId : receiverId.value,
-          };
-          
-          // 标记未读消息
+        const ctx = {
+          selfName,
+          selfId,
+          peerName: receiverName.value,
+          peerId: receiverId.value,
+        };
+        const tmp = part
+          .slice()
+          .reverse()
+          .map((row) => mapHistoryPartToMessage(row, ctx));
+        for (const msg of tmp) {
           if (!msg.ifRead && !msg.isSelf && markMessageAsReadApi) {
             setLoading(getLoadMsg('正在处理信息...'));
             await markMessageAsReadApi(msg.id);
             msg.ifRead = true;
             setLoading(getCancelLoadMsg());
           }
-          
-          tmp.push(msg);
         }
-        
-        // 合并消息
-        const currentMessages = messages.value.map(msg => copy(msg));
-        setMessages([...tmp, ...currentMessages]);
+        const existingIds = new Set(messages.value.map((m) => normMessageId(m.id)));
+        const older = tmp.filter((m) => !existingIds.has(normMessageId(m.id)));
+        const currentMessages = messages.value.map((msg) => copy(msg));
+        setMessages([...older, ...currentMessages]);
         setChatHistory(receiverId.value, messages.value);
-        
+        if (selfId) {
+          try {
+            await putMessagesForPeer(selfId, receiverId.value, messages.value, { clearPeer: false });
+            await setNextHistoryPage(receiverId.value, getChatPage(receiverId.value) || 2);
+          } catch (e) {
+            console.warn('chat persist loadFrontier', e);
+          }
+        }
         scrollToTop();
       } else {
         alertHandler(getNormalInfoAlert('无更多信息'));
@@ -141,10 +172,13 @@ export function useChatActions(
    * 选择用户
    */
   const selectUser = (index, chatUsersList) => {
-    if (index >= 0 && index < chatUsersList.length) {
-      receiverId.value = chatUsersList[index].id;
-      receiverName.value = chatUsersList[index].name;
+    if (index < 0 || index >= chatUsersList.length) return;
+    const nextId = normPeerId(chatUsersList[index].id);
+    if (nextId && normPeerId(receiverId.value) === nextId) {
+      return;
     }
+    receiverId.value = nextId;
+    receiverName.value = chatUsersList[index].name;
   };
   
   return {

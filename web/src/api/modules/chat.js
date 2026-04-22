@@ -82,15 +82,13 @@ export const getChatUsers = async () => {
  * @param {*} params 
  * @returns 
  */
-// eslint-disable-next-line no-unused-vars
-export const getChatHistory = async (userId, page,page_size=10) => {
+export const getChatHistory = async (userId, page, pageSize = 10) => {
     try {
-        let response=null;
-        if(page==null||page==undefined||page==1){
-            response = await axiosInstance.get(`/messages/history/${userId}`);
-        }else{
-            response= await axiosInstance.get(`/messages/history/${userId}?page=${page}`);
-        }
+        const id = String(userId);
+        const p = page == null || page === undefined ? 1 : page;
+        const size = pageSize == null ? 10 : pageSize;
+        const params = { page: p, page_size: size };
+        const response = await axiosInstance.get(`/messages/history/${id}`, { params });
         return response.data;
     } catch (error) {
         return dealAxiosError(error);

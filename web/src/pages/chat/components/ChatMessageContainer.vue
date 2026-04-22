@@ -1,6 +1,7 @@
 <template>
+  <div class="chat-message-root">
   <loading-content-wrapper
-    :load-state="loading.loadHistory && messages.length === 0"
+    :load-state="!loading.loadHistory"
     loading-text="正在加载聊天消息..."
     variant="page"
     min-height="360px"
@@ -28,6 +29,7 @@
       </chat-message>
     </div>
   </loading-content-wrapper>
+  </div>
 </template>
 
 <script setup>
@@ -62,6 +64,31 @@ defineEmits([
 </script>
 
 <style scoped>
+.chat-message-root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+}
+
+.chat-message-root :deep(.loading-content-wrapper) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-message-root :deep(.loading-content-wrapper__content) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .tip-text-btn {
   width: 100%;
   justify-content: center;
@@ -73,6 +100,8 @@ defineEmits([
 
 .message-container {
   width: 100%;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;

@@ -85,23 +85,31 @@ export function useSelfActions(
    */
   const getChatList = async () => {
     loadState.value.message = false;
-    const response = await getChatUsers();
-    loadState.value.message = true;
-    
-    if (response.status === 200) {
-      chatList.value = [];
-      for (let i = 0; i < response.chat_users.length; i++) {
-        chatList.value.push({
-          id: response.chat_users[i].user_id,
-          name: response.chat_users[i].username,
-          msgNum: response.chat_users[i].unread_count,
-          lastMsg: {
-            content: response.chat_users[i].last_message.content,
-            time: formatRelativeTime(response.chat_users[i].last_message.sent_at),
-            isSelf: response.chat_users[i].last_message.is_sender,
-          },
-        });
+    try {
+      const response = await getChatUsers();
+      if (response.status === 200) {
+        const rows = response.chat_users || [];
+        chatList.value = [];
+        for (let i = 0; i < rows.length; i++) {
+          chatList.value.push({
+            id: rows[i].user_id,
+            name: rows[i].username,
+            msgNum: rows[i].unread_count,
+            lastMsg: {
+              content: rows[i].last_message.content,
+              time: formatRelativeTime(rows[i].last_message.sent_at),
+              isSelf: rows[i].last_message.is_sender,
+            },
+          });
+        }
+      } else {
+        alertHandler(getNormalErrorAlert(response.message));
       }
+    } catch (e) {
+      console.error(e);
+      alertHandler(getNormalErrorAlert('加载私信列表失败'));
+    } finally {
+      loadState.value.message = true;
     }
   };
   

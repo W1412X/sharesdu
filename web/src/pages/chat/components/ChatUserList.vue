@@ -1,7 +1,7 @@
 <template>
   <div id="user-list" class="user-list">
     <loading-content-wrapper
-      :load-state="loading.loadUsers && chatUsers.length === 0"
+      :load-state="!loading.loadUsers"
       loading-text="正在加载聊天列表..."
       variant="list"
       :item-count="5"
@@ -96,9 +96,11 @@ defineEmits([
 .user-list {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   overflow-y: auto;
   width: 350px;
+  flex-shrink: 0;
   border-right: 0.5px solid #ccc;
 }
 

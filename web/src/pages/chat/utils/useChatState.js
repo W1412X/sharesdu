@@ -4,6 +4,7 @@
 import { ref } from 'vue';
 import { getCookie } from '@/utils/cookie';
 import { globalProperties } from '@/main';
+import { normPeerId } from '@/utils/chatIds';
 
 export function useChatState() {
   const selfId = getCookie('userId');
@@ -39,7 +40,7 @@ export function useChatState() {
   };
   
   const setReceiverId = (value) => {
-    receiverId.value = value;
+    receiverId.value = normPeerId(value);
   };
   
   const setReceiverName = (value) => {

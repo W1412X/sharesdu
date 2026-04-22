@@ -3,6 +3,7 @@
  * 用于全局轮询获取新消息并通知用户
  */
 import { ref } from 'vue';
+import { createIntervalPoll } from '@/utils/polling/intervalPoll';
 import { fetchNotificationsList } from '@/api/modules/notification';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { getNormalNotificationAlert } from '@/utils/alert';
@@ -53,40 +54,34 @@ function addNotifiedIds(newIds) {
  * @param {Function} alert - 消息提示函数
  * @param {Object} options - 配置选项
  * @param {Number} options.interval - 轮询间隔（毫秒），默认 60000（1分钟）
+ * @param {() => boolean} [options.shouldRun] - 返回 true 时执行本次拉取与提示（用于路由页暂停，避免与业务页轮询叠 HTTP 或双提示）
  * @returns {Object} 返回控制函数 { startPolling, stopPolling, isPolling }
  */
 export function useNotificationPolling(alert, options = {}) {
   const {
     interval = POLLING_INTERVAL,
+    shouldRun = () => true,
   } = options;
 
-  const pollingTimer = ref(null);
   const isPolling = ref(false);
 
-  /**
-   * 执行轮询，获取新消息
-   */
   const pollForNewNotifications = async () => {
     try {
-      
-      // 获取第一页消息（只获取未读消息）
       const response = await fetchNotificationsList(1, 10);
-      
+
       if (response.status !== 200) {
         console.warn('[NotificationPolling] 获取消息列表失败:', response.message);
         return;
       }
 
       const notificationList = response.notification_list || [];
-      
+
       if (notificationList.length === 0) {
         return;
       }
 
-      // 获取已通知的消息 ID
       const notifiedIds = getNotifiedIds();
-      
-      // 筛选出未通知的新消息
+
       const newNotifications = notificationList.filter(
         (notification) => !notification.state && !notifiedIds.includes(notification.id)
       );
@@ -95,22 +90,25 @@ export function useNotificationPolling(alert, options = {}) {
         return;
       }
 
-      // 记录已通知的消息 ID
       const newNotificationIds = newNotifications.map((n) => n.id);
       addNotifiedIds(newNotificationIds);
 
-      // 显示通知
       const message = newNotifications.length === 1
-        ? `您有 1 条新消息`
+        ? '您有 1 条新消息'
         : `您有 ${newNotifications.length} 条新消息`;
-      
-      
-      // 使用消息通知类型的 alert
+
       alert(getNormalNotificationAlert(message));
     } catch (error) {
       console.error('[NotificationPolling] 轮询消息失败:', error);
     }
   };
+
+  const poller = createIntervalPoll({
+    intervalMs: interval,
+    shouldRun: () => isPolling.value && shouldRun(),
+    tick: () => pollForNewNotifications(),
+    immediate: true,
+  });
 
   /**
    * 开始轮询
@@ -119,29 +117,15 @@ export function useNotificationPolling(alert, options = {}) {
     if (isPolling.value) {
       return;
     }
-
     isPolling.value = true;
-
-    // 立即执行一次
-    pollForNewNotifications();
-
-    // 设置定时器
-    pollingTimer.value = setInterval(() => {
-      pollForNewNotifications();
-    }, interval);
+    poller.start();
   };
 
   /**
    * 停止轮询
    */
   const stopPolling = () => {
-    
-    // 先清除定时器，避免内存泄漏
-    if (pollingTimer.value) {
-      clearInterval(pollingTimer.value);
-      pollingTimer.value = null;
-    }
-    
+    poller.stop();
     isPolling.value = false;
   };
 

@@ -43,7 +43,8 @@
       <div
         v-if="deviceType === 'desktop'"
         id="chat-container"
-        style="display: flex; flex-direction: row; flex: 1;">
+        class="chat-desktop-row"
+      >
         <!-- 用户列表 -->
         <ChatUserList
           :theme-color="themeColor"
@@ -58,7 +59,8 @@
         <!-- 消息容器和编辑器 -->
         <div
           id="desktop-message-editor-container"
-          style="flex: 1; display: flex; flex-direction: column;">
+          class="chat-desktop-messages"
+        >
           <ChatMessageContainer
             :receiver-id="receiverId"
             :messages="messages"
@@ -112,6 +114,7 @@ import {
   useChatData,
   useChatActions,
   useChatLoad,
+  useChatSync,
 } from './utils';
 
 // 定义组件名称
@@ -167,7 +170,7 @@ const {
   setEditingMessage,
 } = useChatData();
 
-// 滚动函数
+// 滚动函数（需早于 useChatSync / useChatActions / useChatLoad）
 const scrollToBottom = () => {
   setTimeout(() => {
     const messageContainer = document.getElementById('message-container');
@@ -185,6 +188,7 @@ const scrollToTop = () => {
     }
   }, 100);
 };
+
 
 // 操作处理
 const {
@@ -224,6 +228,7 @@ const {
   loadChatHistory,
   loadChatUsers,
   initViewSize,
+  historyLoadInProgress,
 } = useChatLoad(
   receiverId,
   receiverName,
@@ -245,6 +250,20 @@ const {
   loading,
   scrollToBottom,
   (msg) => emit('alert', msg)
+);
+
+const { start: startChatSync, stop: stopChatSync } = useChatSync(
+  selfId,
+  selfName,
+  receiverId,
+  receiverName,
+  ifMounted,
+  messages,
+  setChatUsers,
+  setMessages,
+  setChatHistory,
+  scrollToBottom,
+  historyLoadInProgress
 );
 
 // 事件处理
@@ -278,12 +297,11 @@ const handleSetLoading = (msg) => {
   emit('set_loading', msg);
 };
 
-// 监听 receiverId 变化
-watch(receiverId, async () => {
+// 挂载后且 receiverId 就绪时再拉历史（避免 ifMounted 为 false 时永不吃到 immediate）
+watch([ifMounted, receiverId], async () => {
   if (!ifMounted.value) {
     return;
   }
-  
   if (receiverId.value) {
     await loadChatHistory();
   }
@@ -333,10 +351,12 @@ onMounted(async () => {
   }
   
   setIfMounted(true);
+  startChatSync();
 });
 
 // 卸载时清理
 onUnmounted(() => {
+  stopChatSync();
   if (keyboardHandler) {
     document.removeEventListener('keydown', keyboardHandler);
   }
@@ -345,37 +365,51 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* 填充满 #router-view-container（其 position: relative + flex:1），避免再用 100vh 叠出「整页多出一截可滚动」 */
 .full-center {
-  width: 100vw;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  height: 100vh;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .total-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
-@media screen and (min-width: 1000px) {
-  .full-center {
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
-  }
+.chat-desktop-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.chat-desktop-messages {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 @media screen and (max-width: 1000px) {
   .full-center {
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
+    /* 与桌面一致：在 router 容器内占满，不额外撑高 body */
+    position: absolute;
+    inset: 0;
   }
 }
 </style>
