@@ -47,9 +47,6 @@ export function useMobileNav(page, deviceType, loadState) {
   
   // 路由上边距
   const routerMarginTop = computed(() => {
-    if(deviceType.value == 'mobile') {
-      return '45px';
-    }
     if (ifShowNav.value) {
       return '45px';
     } else {
