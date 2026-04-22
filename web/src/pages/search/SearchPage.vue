@@ -613,7 +613,7 @@ export default {
                         summary: response.results[i].article_summary,
                         starNum: response.results[i].star_count,
                         viewNum: response.results[i].view_count,
-                        likeNum: response.results[i].likes_count,
+                        likeNum: response.results[i].like_count ?? response.results[i].likes_count,
                         publishTime: response.results[i].publish_time,
                         tags: response.results[i].article_tags,
                         authorName: response.results[i].author_name,
@@ -747,11 +747,11 @@ export default {
                         authorId: response.results[i].poster_id,
                         authorName: response.results[i].poster_name,
                         viewNum: response.results[i].view_count,
-                        likeNum: response.results[i].likes_count,
+                        likeNum: response.results[i].like_count ?? response.results[i].likes_count,
                         replyNum: response.results[i].reply_count,
                         publishTime: response.results[i].publish_time,
-                        ifLike: response.results[i].if_like,
-                        ifStar: response.results[i].if_star
+                        ifLike: !!response.results[i].if_like,
+                        ifStar: !!response.results[i].if_star
                     })
                 }
                 // 根据 API 返回的 page 和 count 计算总页数，判断是否已加载完成

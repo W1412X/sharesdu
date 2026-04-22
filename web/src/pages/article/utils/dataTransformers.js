@@ -33,8 +33,9 @@ export function transformPostList(postList) {
     likeNum: item.like_count,
     replyNum: item.reply_count,
     publishTime: item.publish_time,
-    ifLike: item.if_like,
-    ifStar: item.if_star,
+    ifLike: !!item.if_like,
+    // README：article/post_list 仅列 if_like；if_star 有则接
+    ifStar: !!item.if_star,
     ifTop: item.if_top,
   }));
 }

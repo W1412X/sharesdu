@@ -14,7 +14,11 @@ export function transformPostData(response) {
     return null;
   }
 
-  const detail = response.post_detail;
+  const raw = response.post_detail;
+  const detail = Array.isArray(raw) ? (raw[0] ?? null) : raw;
+  if (!detail || typeof detail !== 'object') {
+    return null;
+  }
   const content = detail.post_content || '';
   
   return {
@@ -27,8 +31,8 @@ export function transformPostData(response) {
     replyNum: detail.reply_count,
     viewNum: detail.view_count,
     publishTime: detail.publish_time,
-    ifLike: detail.if_like,
-    ifStar: detail.if_star,
+    ifLike: !!detail.if_like,
+    ifStar: !!detail.if_star,
     imgList: extractImageLinksInBrackets(content),
     relativeLink: getLinkInPost(content),
   };
@@ -51,7 +55,7 @@ export function transformReplyList(response) {
     authorId: item.replier_id,
     likeNum: item.like_count,
     publishTime: item.publish_time,
-    ifLike: item.if_like || false,
+    ifLike: !!item.if_like,
   }));
 }
 
@@ -73,7 +77,7 @@ export function transformReplyDetail(response) {
     authorId: detail.replier_id,
     likeNum: detail.like_count,
     publishTime: detail.reply_time,
-    ifLike: detail.if_like || false,
+    ifLike: !!detail.if_like,
   };
 }
 

@@ -58,8 +58,8 @@ export function scGetArticle(data){
     result.star=article.star_count;
     result.comment=article.reply_count;
     result.time=article.publish_time;
-    result.ifStar=article.if_like;
-    result.ifLike=article.if_star;
+    result.ifStar=!!article.if_star;
+    result.ifLike=!!article.if_like;
     return {
         status:data.status,
         message:data.message,

@@ -32,20 +32,23 @@ export default {
         },
     },
     data() {
-        const ifClicked = this.state;
-        const color = computed(() => {
-            return this.ifClicked ? '#db261f' : '#8a8a8a';
-        })
-        const heart = computed(() => {
-            return this.ifClicked ? 'mdi-heart' : 'mdi-heart-outline';
-        });
         return {
-            color,
-            ifClicked,
-            heart,
+            color: computed(() => {
+                return this.ifClicked ? '#db261f' : '#8a8a8a';
+            }),
+            heart: computed(() => {
+                return this.ifClicked ? 'mdi-heart' : 'mdi-heart-outline';
+            }),
+            ifClicked: !!this.state,
             ifClickable: true,
-            loading:false,
-        }
+            loading: false,
+        };
+    },
+    watch: {
+        /** 详情异步返回后父组件更新 :state，需同步内部展示状态 */
+        state(val) {
+            this.ifClicked = !!val;
+        },
     },
     components: {
     },

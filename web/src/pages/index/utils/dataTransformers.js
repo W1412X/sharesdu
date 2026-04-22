@@ -52,8 +52,8 @@ export function transformPostList(postList) {
     likeNum: item.like_count,
     replyNum: item.reply_count,
     publishTime: item.publish_time,
-    ifLike: item.if_like,
-    ifStar: item.if_star,
+    ifLike: !!item.if_like,
+    ifStar: !!item.if_star,
   }));
 }
 

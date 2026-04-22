@@ -35,6 +35,9 @@ export function transformCourseData(response) {
     evaluateNum: detail.all_people,
     avgScore: avgScore,
     scoreDistribution: detail.score_distribution || [],
+    /** 供 StarButton 等使用；若接口未返回则视为未收藏 */
+    ifStar: !!detail.if_star,
+    ifLike: !!detail.if_like,
   };
 }
 
@@ -81,8 +84,8 @@ export function transformPostList(postList) {
     likeNum: item.like_count,
     replyNum: item.reply_count,
     publishTime: item.publish_time,
-    ifLike: item.if_like,
-    ifStar: item.if_star,
+    ifLike: !!item.if_like,
+    ifStar: !!item.if_star,
     ifTop: item.if_top,
   }));
 }

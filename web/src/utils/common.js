@@ -55,8 +55,8 @@ export async function responseToArticle(response) {
     article.authorId = response.article_detail.author_id;
     article.sourceUrl = response.article_detail.source_url;
     article.publishTime = response.article_detail.publish_time;
-    article.ifLike = response.article_detail.if_like;
-    article.ifStar = response.article_detail.if_star;
+    article.ifLike = !!response.article_detail.if_like;
+    article.ifStar = !!response.article_detail.if_star;
     article.ifTop = response.article_detail.if_top;
     article.section=response.article_detail.article_section;
     return [

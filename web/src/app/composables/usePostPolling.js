@@ -40,8 +40,8 @@ export function usePostPolling(fetchFn, getPostList, setPostList, alert, options
       likeNum: postItem.like_count,
       replyNum: postItem.reply_count,
       publishTime: postItem.publish_time,
-      ifLike: postItem.if_like,
-      ifStar: postItem.if_star,
+      ifLike: !!postItem.if_like,
+      ifStar: !!postItem.if_star,
       ifTop: postItem.if_top,
     };
   };

@@ -19,6 +19,8 @@ export function useCourseData() {
     avgScore: 0,
     scoreDistribution: [],
     publishTime: null,
+    ifStar: false,
+    ifLike: false,
   });
   
   // 用户自己的评价

@@ -65,11 +65,17 @@ export default {
     },
     data() {
         return {
-            ifClicked: this.state,
+            ifClicked: !!this.state,
             color: computed(() => this.ifClicked ? '#ffac33' : '#8a8a8a'),
             star: computed(() => this.ifClicked ? 'mdi-star' : 'mdi-star-outline'),
             isClickable: true, //to judge  if clickable
         };
+    },
+    watch: {
+        /** 详情异步返回后父组件更新 :state，需同步内部展示状态 */
+        state(val) {
+            this.ifClicked = !!val;
+        },
     },
     methods: {
         async handleClick() {

@@ -380,8 +380,8 @@ this.alert(getNormalErrorAlert(response.message));
                                 likeNum: response.post_list[i].like_count,
                                 replyNum: response.post_list[i].reply_count,
                                 publishTime: response.post_list[i].publish_time,
-                                ifLike: response.post_list[i].if_like,
-                                ifStar: response.post_list[i].if_star
+                                ifLike: !!response.post_list[i].if_like,
+                                ifStar: !!response.post_list[i].if_star
                             });
                         }
                         // 重置轮询基准
@@ -520,8 +520,8 @@ this.alert(getNormalErrorAlert(response.message));
                             likeNum: response.post_list[i].like_count,
                             replyNum: response.post_list[i].reply_count,
                             publishTime: response.post_list[i].publish_time,
-                            ifLike: response.post_list[i].if_like,
-                            ifStar: response.post_list[i].if_star
+                            ifLike: !!response.post_list[i].if_like,
+                            ifStar: !!response.post_list[i].if_star
                         });
                     }
                     this.postPageNum++;

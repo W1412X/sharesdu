@@ -21,7 +21,7 @@ export function transformArticleResults(results) {
     summary: item.article_summary,
     starNum: item.star_count,
     viewNum: item.view_count,
-    likeNum: item.like_count,
+    likeNum: item.like_count ?? item.likes_count,
     publishTime: item.publish_time,
     tags: item.article_tags,
     authorName: item.author_name,
@@ -50,11 +50,12 @@ export function transformPostResults(results) {
     authorId: item.poster_id,
     authorName: item.poster_name,
     viewNum: item.view_count,
-    likeNum: item.likes_count,
+    likeNum: item.like_count ?? item.likes_count,
     replyNum: item.reply_count,
     publishTime: item.publish_time,
-    ifLike: item.if_like,
-    ifStar: item.if_star,
+    // README 搜索帖子结果未列用户态字段；有则使用
+    ifLike: !!item.if_like,
+    ifStar: !!item.if_star,
   }));
 }
 
