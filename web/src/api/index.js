@@ -23,7 +23,7 @@ export * from './modules/block';
 export * from './modules/invite';
 export * from './modules/top';
 export * from './modules/token';
+export * from './modules/agent';
 
 // 状态码消息
 export * from './modules/statusCodeMessages';
-

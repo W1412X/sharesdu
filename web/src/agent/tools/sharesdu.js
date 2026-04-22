@@ -5,10 +5,18 @@ import {
   searchReplies,
   searchCourses,
 } from '@/api/modules/search';
+import {
+  agentCourseSearch,
+  agentCourseContext,
+  agentContentSearch,
+  agentThreadContext,
+  agentStatsAggregate,
+} from '@/api/modules/agent';
 import { getArticleDetail, getPostListByArticleId, getArticleList } from '@/api/modules/article';
 import { getPostDetailById, getReplyListByPostId, getReplyDetailById } from '@/api/modules/post';
 import { getCourseDetail, getCourseList, getCoursePostList, getCourseScoreList } from '@/api/modules/course';
 import { getAuthorInfo, getUserPreview, getUserContent } from '@/api/modules/account';
+import { toAgentCourseSearchArgs } from '../enumNormalizer';
 
 const BATCH_MAX = 20;
 
@@ -17,6 +25,24 @@ const fail = (error) => ({
   ok: false,
   error: typeof error === 'string' ? error : (error?.message || 'unknown_error'),
 });
+
+const wrapAgentResponse = (response) => {
+  if (!response || typeof response !== 'object') return response;
+  const meta = response.meta && typeof response.meta === 'object' ? response.meta : {};
+  const data = response.data && typeof response.data === 'object' ? response.data : {};
+  const items = Array.isArray(data.items) ? data.items : [];
+  return ok({
+    ...response,
+    _agent_meta: {
+      tool: meta.tool,
+      total: meta.total,
+      returned: meta.returned,
+      truncated: meta.truncated,
+      applied_filters: meta.applied_filters,
+      items_len: items.length,
+    },
+  });
+};
 
 const parseIdList = (v) => {
   if (Array.isArray(v)) return v.map((x) => String(x).trim()).filter(Boolean).slice(0, BATCH_MAX);
@@ -120,6 +146,106 @@ const trySearchWithVariants = async ({ query, doCall }) => {
 
 export const SHARES_DU_TOOLSET = {
   tools: [
+    {
+      type: 'function',
+      function: {
+        name: 'agent_course_search',
+        description: '使用内部 Agent 课程搜索接口。优先用于课程筛选、推荐、排序与多条件检索；支持中文枚举值与英文代码。',
+        parameters: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', description: '课程关键词，可为空字符串' },
+            course_type: {
+              type: 'string',
+              description: '课程类型：compulsory/elective/restricted_elective，也可写成 必修课/选修课/限选课',
+            },
+            course_method: {
+              type: 'string',
+              description: '教学方式：online/offline/hybrid，也可写成 线上/线下/混合',
+            },
+            campus: { type: 'string', description: '校区，优先使用配置中的校区名称' },
+            college: { type: 'string', description: '学院，优先使用配置中的学院名称' },
+            teacher: { type: 'string', description: '教师名（可选）' },
+            min_score: { type: 'number', minimum: 0, maximum: 5 },
+            min_review_count: { type: 'integer', minimum: 0 },
+            sort: { type: 'string', description: 'score_desc/reviews_desc/stars_desc/recent_desc' },
+            limit: { type: 'integer', minimum: 1, maximum: 20, default: 10 },
+          },
+          required: [],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'agent_course_context',
+        description: '使用内部 Agent 课程上下文接口，获取课程基础信息、评分汇总、评论摘要、相关帖子与文章。',
+        parameters: {
+          type: 'object',
+          properties: {
+            course_id: { type: 'integer', minimum: 1 },
+            review_limit: { type: 'integer', minimum: 1, maximum: 5, default: 5 },
+            post_limit: { type: 'integer', minimum: 1, maximum: 5, default: 5 },
+            article_limit: { type: 'integer', minimum: 1, maximum: 3, default: 3 },
+          },
+          required: ['course_id'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'agent_content_search',
+        description: '使用内部 Agent 跨内容搜索接口，检索文章、帖子、回复、课程与课程评价。',
+        parameters: {
+          type: 'object',
+          properties: {
+            query: { type: 'string' },
+            types: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'article/post/reply/course/course_review',
+            },
+            sort: { type: 'string', description: 'relevance_desc/recent_desc' },
+            limit: { type: 'integer', minimum: 1, maximum: 20, default: 10 },
+          },
+          required: ['query'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'agent_thread_context',
+        description: '使用内部 Agent 讨论串上下文接口，按文章、课程或帖子锚点聚合上下文。',
+        parameters: {
+          type: 'object',
+          properties: {
+            root_type: { type: 'string', description: 'article/course/post' },
+            root_id: { type: 'integer', minimum: 1 },
+            post_limit: { type: 'integer', minimum: 1, maximum: 5, default: 5 },
+            replies_per_post: { type: 'integer', minimum: 1, maximum: 3, default: 3 },
+          },
+          required: ['root_type', 'root_id'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'agent_stats_aggregate',
+        description: '使用内部 Agent 聚合统计接口，获取课程/帖子/文章/标签的受控统计结果。',
+        parameters: {
+          type: 'object',
+          properties: {
+            report_type: { type: 'string' },
+            filters: { type: 'object' },
+            limit: { type: 'integer', minimum: 1, maximum: 20, default: 10 },
+          },
+          required: ['report_type'],
+        },
+      },
+    },
     {
       type: 'function',
       function: {
@@ -478,6 +604,42 @@ export const SHARES_DU_TOOLSET = {
     },
   ],
   handlers: {
+    agent_course_search: async (args) => {
+      try {
+        const response = await agentCourseSearch(toAgentCourseSearchArgs(args));
+        return wrapAgentResponse(response);
+      } catch (e) {
+        return fail(e);
+      }
+    },
+    agent_course_context: async (args) => {
+      try {
+        return wrapAgentResponse(await agentCourseContext(args));
+      } catch (e) {
+        return fail(e);
+      }
+    },
+    agent_content_search: async (args) => {
+      try {
+        return wrapAgentResponse(await agentContentSearch(args));
+      } catch (e) {
+        return fail(e);
+      }
+    },
+    agent_thread_context: async (args) => {
+      try {
+        return wrapAgentResponse(await agentThreadContext(args));
+      } catch (e) {
+        return fail(e);
+      }
+    },
+    agent_stats_aggregate: async (args) => {
+      try {
+        return wrapAgentResponse(await agentStatsAggregate(args));
+      } catch (e) {
+        return fail(e);
+      }
+    },
     global_search: async ({ query, page = 1, page_size = 10 }) => {
       try {
         const { response, meta } = await trySearchWithVariants({

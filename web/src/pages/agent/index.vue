@@ -50,95 +50,14 @@
         />
       </div>
     </aside>
-    <v-dialog
+    <AgentConfigDialog
       v-model="showAgentConfigDialog"
-      max-width="500"
-      persistent
-      content-class="agent-config-dialog"
-      @after-enter="onAgentConfigDialogOpen"
-    >
-      <v-card class="pa-4">
-        <v-card-title class="d-flex align-center">
-          <v-icon icon="mdi-robot-outline" class="mr-2" />
-          Agent 模型配置（本地存储）
-          <v-spacer />
-          <v-btn icon="mdi-close" variant="text" size="small" @click="showAgentConfigDialog = false" />
-        </v-card-title>
-        <v-card-text>
-          <div class="text-small mb-3" style="color: #6b6b6b;">
-            网站不提供 Key；请自行填写。配置仅保存在浏览器本地（LocalStorage）。
-          </div>
-          <v-text-field
-            v-model="agentCfg.baseUrl"
-            label="Base URL（OpenAI兼容）"
-            density="compact"
-            variant="outlined"
-            placeholder="https://api.openai.com/v1"
-          />
-          <v-text-field
-            v-model="agentCfg.model"
-            label="Model"
-            density="compact"
-            variant="outlined"
-            placeholder="gpt-4o-mini"
-          />
-          <v-text-field
-            v-model="agentCfg.apiKey"
-            :type="showApiKey ? 'text' : 'password'"
-            label="API Key"
-            density="compact"
-            variant="outlined"
-            placeholder="sk-..."
-            :append-inner-icon="showApiKey ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append-inner="showApiKey = !showApiKey"
-          />
-          <div class="text-small mt-1 mb-1" style="color: #6b6b6b;">Temperature: {{ agentCfg.temperature }}</div>
-          <v-slider
-            v-model="agentCfg.temperature"
-            :min="0"
-            :max="1"
-            :step="0.05"
-            density="compact"
-            color="var(--theme-color)"
-          />
-          <v-text-field
-            v-model.number="agentCfg.maxTokens"
-            label="Max Tokens"
-            density="compact"
-            variant="outlined"
-            type="number"
-            :min="64"
-            :max="4096"
-          />
-          <v-text-field
-            v-model.number="agentCfg.maxRounds"
-            label="Max Rounds（工具调用最大轮数）"
-            density="compact"
-            variant="outlined"
-            type="number"
-            :min="1"
-            :max="32"
-            hint="单次对话中 LLM 可进行工具调用的最大轮数"
-            persistent-hint
-          />
-          <v-text-field
-            v-model.number="agentCfg.contextRounds"
-            label="上下文记忆轮数"
-            density="compact"
-            variant="outlined"
-            type="number"
-            :min="0"
-            :max="20"
-            hint="请求时携带最近 n 轮（用户+助手）对话；0 表示不携带历史"
-            persistent-hint
-          />
-          <div class="row-actions mt-3">
-            <v-btn color="var(--theme-color)" variant="flat" @click="saveAgentCfg">保存</v-btn>
-            <v-btn color="grey" variant="outlined" @click="resetAgentCfg">重置为默认</v-btn>
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+      :config="agentCfg"
+      title="Agent 模型配置（本地存储）"
+      description="网站不提供 Key；请自行填写。配置仅保存在浏览器本地（LocalStorage）。"
+      @save="saveAgentCfg"
+      @reset="resetAgentCfg"
+    />
     <div v-if="isMobile && sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false" />
     <div class="agent-main">
       <div class="agent-shell">
@@ -178,9 +97,9 @@
         variant="tonal"
         class="mb-3 agent-config-alert"
       >
-        未配置 Agent 模型参数或 API Key。请到「Self → 设置」填写本地配置后再使用。
+        未配置 Agent 模型参数或 API Key。点击右侧按钮直接打开配置弹窗即可完成设置。
         <template #append>
-          <v-btn variant="text" :color="themeColor" @click="toSelfSetting">去设置</v-btn>
+          <v-btn variant="text" :color="themeColor" @click="showAgentConfigDialog = true">去配置</v-btn>
         </template>
       </v-alert>
 
@@ -282,7 +201,7 @@
             density="compact"
             variant="outlined"
             class="editor-input"
-            :placeholder="configOk ? '输入你的问题…' : '请先在设置中配置 API Key'"
+            :placeholder="configOk ? '输入你的问题…' : '请先点击上方「去配置」按钮'"
             :disabled="loading || !configOk"
             hide-details
           />
@@ -314,28 +233,30 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue';
-import { openPage } from '@/utils/other';
 import { getDeviceType } from '@/utils/device';
 import {
   getAgentLLMConfig,
-  getDefaultAgentLLMConfig,
   setAgentLLMConfig,
   clearAgentLLMConfig,
   validateAgentLLMConfig,
 } from '@/agent/config';
+import AgentConfigDialog from '@/components/common/AgentConfigDialog.vue';
 import { createOrchestrator } from '@/agent/orchestrator';
 import { MdPreview } from 'md-editor-v3';
 import 'md-editor-v3/lib/preview.css';
 import {
   listSessions,
+  getSession,
   getMessages,
   createSession,
   addMessage,
   updateMessageContent,
+  updateSessionState,
   deleteSession as deleteSessionDb,
   DEFAULT_TITLE,
   TITLE_MAX,
 } from './agentChatDb';
+import { AgentSessionState } from '@/agent/state/agentSessionState';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
 import { getCookie } from '@/utils/cookie';
 import AvatarName from '@/components/common/AvatarName/index.vue';
@@ -354,13 +275,13 @@ const currentSessionId = ref(null);
 const sidebarOpen = ref(false);
 const loadingSessions = ref(false);
 const showAgentConfigDialog = ref(false);
-const showApiKey = ref(false);
-const agentCfg = ref({ ...getDefaultAgentLLMConfig() });
+const agentCfg = ref({ ...getAgentLLMConfig() });
+const currentSessionState = ref(AgentSessionState.from());
 
 const welcomeMessage = () => ({
   id: `m_${Date.now()}`,
   role: 'assistant',
-  content: '我可以帮你在站内查文章/帖子/回复/课程，并把结果整理成要点。\n\n- 先在 **Self → 设置** 配置模型参数与 API Key\n- 然后在这里提问（仅信息获取，不做发布/修改）',
+  content: '我可以帮你在站内查文章/帖子/回复/课程，并把结果整理成要点。\n\n- 点击右上角「去配置」先配置模型参数与 API Key\n- 然后在这里提问（仅信息获取，不做发布/修改）',
 });
 
 const messages = ref([welcomeMessage()]);
@@ -369,7 +290,7 @@ const input = ref('');
 const loading = ref(false);
 let abortController = null;
 
-const cfg = computed(() => getAgentLLMConfig());
+const cfg = ref(getAgentLLMConfig());
 const configOk = computed(() => validateAgentLLMConfig(cfg.value).ok);
 
 const userAvatarData = computed(() => ({
@@ -445,10 +366,6 @@ const flattenProcess = (root) => {
   return rows;
 };
 
-const toSelfSetting = () => {
-  openPage('router', { name: 'SelfPage' });
-};
-
 function formatSessionTime(ts) {
   if (ts == null) return '';
   const d = new Date(ts);
@@ -471,10 +388,14 @@ async function loadSessions() {
 }
 
 async function loadSession(sessionId) {
-  const list = await getMessages(sessionId);
+  const [session, list] = await Promise.all([
+    getSession(sessionId),
+    getMessages(sessionId),
+  ]);
   messages.value = list.length
     ? list.map((r) => ({ id: `m_${r.id}`, role: r.role, content: r.content || '' }))
     : [welcomeMessage()];
+  currentSessionState.value = AgentSessionState.from(session?.agent_state || {});
   currentSessionId.value = sessionId;
   if (isMobile.value) sidebarOpen.value = false;
 }
@@ -491,6 +412,7 @@ async function startNewChat() {
   await loadSessions();
   currentSessionId.value = id;
   messages.value = [welcomeMessage()];
+  currentSessionState.value = AgentSessionState.from();
   selfDefineLocalStorage.setItem(LAST_SESSION_KEY, String(id));
   if (isMobile.value) sidebarOpen.value = false;
 }
@@ -506,18 +428,16 @@ async function deleteSession(sessionId) {
   }
 }
 
-const onAgentConfigDialogOpen = () => {
-  agentCfg.value = { ...getAgentLLMConfig() };
-};
-
-const saveAgentCfg = () => {
-  setAgentLLMConfig(agentCfg.value);
+const saveAgentCfg = (next) => {
+  agentCfg.value = setAgentLLMConfig(next);
+  cfg.value = getAgentLLMConfig();
   showAgentConfigDialog.value = false;
 };
 
 const resetAgentCfg = () => {
   clearAgentLLMConfig();
-  agentCfg.value = { ...getDefaultAgentLLMConfig() };
+  agentCfg.value = { ...getAgentLLMConfig() };
+  cfg.value = getAgentLLMConfig();
 };
 
 const clearChat = () => {
@@ -537,8 +457,9 @@ const cancel = () => {
 };
 
 const send = async () => {
+  cfg.value = getAgentLLMConfig();
   if (!configOk.value) {
-    emit('alert', { state: true, color: 'warning', title: '未配置', content: '请先在 Self → 设置中配置 API Key/模型参数' });
+    emit('alert', { state: true, color: 'warning', title: '未配置', content: '请先点击上方「去配置」按钮设置 API Key/模型参数' });
     return;
   }
   const text = input.value.trim();
@@ -555,15 +476,14 @@ const send = async () => {
     selfDefineLocalStorage.setItem(LAST_SESSION_KEY, String(currentSessionId.value));
   }
   await addMessage(currentSessionId.value, 'user', text);
+  const noteLimit = Number(cfg.value.memoryNotesLimit);
+  currentSessionState.value.bumpNotes(`user: ${text.slice(0, 80)}`, Number.isFinite(noteLimit) ? noteLimit : 10);
 
   const userMsg = { id: `u_${Date.now()}`, role: 'user', content: text };
   messages.value.push(userMsg);
 
-  const contextRounds = Math.max(0, Math.min(20, Number(cfg.value.contextRounds) ?? 6));
-  const historySize = contextRounds * 2;
   const history = messages.value
     .filter((m) => m.role === 'user' || m.role === 'assistant')
-    .slice(-historySize)
     .map((m) => ({ role: m.role, content: m.content || '' }));
 
   const assistantDbId = await addMessage(currentSessionId.value, 'assistant', '');
@@ -602,6 +522,7 @@ const send = async () => {
       history,
       userText: text,
       signal: abortController.signal,
+      sessionState: currentSessionState.value,
       onEvent: (e) => {
         if (e?.type === 'intent_router_start') {
           setSummary('识别意图中…');
@@ -610,6 +531,16 @@ const send = async () => {
           if (intents && intents.length) {
             proc.root.meta = `意图：${intents.join('、')}`;
             setSummary(`意图：${intents.join('、')}`);
+          }
+        } else if (e?.type === 'plan_ready') {
+          const plan = e.plan || {};
+          const title = plan.objective || '检索计划';
+          setSummary(`形成计划：${title}`);
+          const planNode = newProcNode({ type: 'plan', title: `计划：${title}`, status: 'done', meta: plan.domain || '' });
+          proc.root.children.push(planNode);
+          if (plan.clarification_risk === 'medium') {
+            const noteNode = newProcNode({ type: 'note', title: '风险：当前问题可能还需要更多限定条件', status: 'done' });
+            proc.root.children.push(noteNode);
           }
         } else if (e?.type === 'intent_dispatch') {
           const label = e.intent === 'site_query' ? '站内查询' : e.intent === 'site_docs' ? '本站说明与政策' : '无关话题';
@@ -634,6 +565,7 @@ const send = async () => {
         } else if (e?.type === 'orchestrator_route') {
           setSummary(`选择领域：${e.domain}`);
           proc.root.meta = (proc.root.meta ? proc.root.meta + '；' : '') + `domain=${e.domain}`;
+          currentSessionState.value.recordRoute({ domain: e.domain });
         } else if (e?.type === 'agent_selected') {
           setSummary(`使用 ${e.domain} Agent 处理中…`);
         } else if (e?.type === 'llm_request_start') {
@@ -690,10 +622,26 @@ const send = async () => {
 
           if (name === 'global_search' || name === 'multi_keyword_search') {
             setSummary(`正在全站搜索：${q || args.keywords?.join?.(' ') || '…'}`);
+          } else if (String(name || '').startsWith('agent_')) {
+            if (name === 'agent_course_search') {
+              setSummary(`正在检索课程：${q || args.college || args.teacher || '…'}`);
+            } else if (name === 'agent_course_context') {
+              setSummary('正在读取课程上下文…');
+            } else if (name === 'agent_content_search') {
+              setSummary(`正在跨内容搜索：${q || '…'}`);
+            } else if (name === 'agent_thread_context') {
+              setSummary('正在读取讨论串上下文…');
+            } else if (name === 'agent_stats_aggregate') {
+              setSummary('正在执行聚合统计…');
+            } else {
+              setSummary(`正在调用 Agent 接口：${name}…`);
+            }
           } else if (String(name || '').startsWith('search_')) {
             setSummary(`正在搜索：${q || '…'}`);
           } else if (name === 'get_site_doc') {
             setSummary(`正在获取本站文档：${args.doc_key || '…'}`);
+          } else if (name === 'get_site_doc_link') {
+            setSummary(`正在获取文档链接：${args.doc_key || '…'}`);
           } else if (name === 'get_course_score_list') {
             setSummary('正在读取课程评价/评分…');
           } else if (String(name || '').startsWith('batch_')) {
@@ -715,8 +663,14 @@ const send = async () => {
               const used = s.used_query ? `used_query=${s.used_query}` : '';
               const n = typeof s.results_len === 'number'
                 ? s.results_len
-                : (typeof s.count === 'number' ? s.count : null);
-              toolNode.meta = [toolNode.meta, n != null ? `results=${n}` : '', used].filter(Boolean).join(' | ');
+                : (typeof s.items_len === 'number'
+                  ? s.items_len
+                  : (typeof s.count === 'number'
+                    ? s.count
+                    : (typeof s.returned === 'number' ? s.returned : null)));
+              const total = typeof s.total === 'number' ? `total=${s.total}` : '';
+              const returned = typeof s.returned === 'number' ? `returned=${s.returned}` : '';
+              toolNode.meta = [toolNode.meta, n != null ? `results=${n}` : '', used, total, returned].filter(Boolean).join(' | ');
             }
             const resultNode = newProcNode({
               type: 'tool_result',
@@ -731,6 +685,15 @@ const send = async () => {
             const synthNode = newProcNode({ type: 'synth', title: '综合分析与生成回答', status: 'doing' });
             (proc.currentRound || proc.currentAgent || proc.root).children.push(synthNode);
           }
+        } else if (e?.type === 'error_routed') {
+          const title = e.kind ? `错误路由：${e.kind}` : '错误路由';
+          const node = newProcNode({ type: 'error', title, status: e.retryable ? 'doing' : 'error' });
+          proc.root.children.push(node);
+          setSummary(e.retryable ? '遇到可恢复错误，正在处理…' : '遇到错误，已结束当前分支…');
+          currentSessionState.value.recordError(e.kind || 'unknown');
+        } else if (e?.type === 'checkpoint') {
+          const node = newProcNode({ type: 'checkpoint', title: e.label || 'checkpoint', status: 'done' });
+          proc.root.children.push(node);
         } else if (e?.type === 'llm_final') {
           setSummary('已生成回答');
           if (proc.currentRound) proc.currentRound.status = 'done';
@@ -767,6 +730,9 @@ const send = async () => {
       proc.summary = '执行失败';
     }
     if (assistantMsg._dbId) await updateMessageContent(assistantMsg._dbId, assistantMsg.content);
+    if (currentSessionId.value) {
+      await updateSessionState(currentSessionId.value, currentSessionState.value.toJSON());
+    }
     await loadSessions();
     // 执行完成后默认收起过程面板（用户可点击“已完成思考”展开查看）
     proc.expanded = false;
@@ -779,13 +745,26 @@ const linkifyInternalRoutes = (text) => {
   const s = String(text || '');
   // Convert bare internal routes into markdown links.
   // 1) "#/path" -> [#/path](#/path)
-  // 2) "/course/123" -> [#/course/123](#/course/123) (same for article/post/section/author)
-  const linkedHash = s.replace(
+  // 2) "#/developer?doc=xxx" -> [#/developer?doc=xxx](#/developer?doc=xxx)
+  // 3) "/course/123" -> [#/course/123](#/course/123) (same for article/post/section/author/document)
+  const linkedDeveloper = s.replace(
+    /(^|[\s(])(#[/]developer\?doc=[a-zA-Z0-9_/-]+)(?=$|[\s),.，。!?！？])/g,
+    (m, prefix, route) => (prefix === '(' ? m : `${prefix}[${route}](${route})`)
+  );
+  const linkedHash = linkedDeveloper.replace(
     /(^|[\s(])(#\/[a-zA-Z0-9_/-]+)(?=$|[\s),.，。!?！？])/g,
     (m, prefix, route) => (prefix === '(' ? m : `${prefix}[${route}](${route})`)
   );
-  return linkedHash.replace(
-    /(^|[\s(])((?:\/)(?:article|post|course|section|author)\/[a-zA-Z0-9_/-]+)(?=$|[\s),.，。!?！？])/g,
+  const linkedDocs = linkedHash.replace(
+    /(^|[\s(])((?:\/)(?:article|post|course|section|author|document)\/[a-zA-Z0-9_/-]+)(?=$|[\s),.，。!?！？])/g,
+    (m, prefix, path) => {
+      if (prefix === '(') return m;
+      const route = `#${path}`;
+      return `${prefix}[${route}](${route})`;
+    }
+  );
+  return linkedDocs.replace(
+    /(^|[\s(])(\/developer\?doc=[a-zA-Z0-9_/-]+)(?=$|[\s),.，。!?！？])/g,
     (m, prefix, path) => {
       if (prefix === '(') return m;
       const route = `#${path}`;

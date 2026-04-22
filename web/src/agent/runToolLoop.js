@@ -36,9 +36,18 @@ export const runToolLoop = async ({
       if (typeof data.status === 'number') summary.status = data.status;
       if (typeof data.count === 'number') summary.count = data.count;
       if (Array.isArray(data.results)) summary.results_len = data.results.length;
+      if (data.data && typeof data.data === 'object') {
+        if (Array.isArray(data.data.items)) summary.items_len = data.data.items.length;
+      }
+      if (data.meta && typeof data.meta === 'object') {
+        if (typeof data.meta.total === 'number') summary.total = data.meta.total;
+        if (typeof data.meta.returned === 'number') summary.returned = data.meta.returned;
+        if (typeof data.meta.truncated === 'boolean') summary.truncated = data.meta.truncated;
+      }
       if (data._agent_meta && typeof data._agent_meta === 'object') {
         summary.used_query = data._agent_meta.used_query;
         if (Array.isArray(data._agent_meta.tried)) summary.tried = data._agent_meta.tried.length;
+        if (typeof data._agent_meta.items_len === 'number') summary.items_len = data._agent_meta.items_len;
       }
       // only expose small summary fields
       summary.name = name;

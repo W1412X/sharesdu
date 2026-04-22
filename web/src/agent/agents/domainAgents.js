@@ -1,5 +1,8 @@
 import { pickTools, SHARES_DU_TOOLSET } from '../tools/sharesdu';
 import { runToolLoop } from '../runToolLoop';
+import { getAgentEnumHints } from '../enumNormalizer';
+
+const enumHints = getAgentEnumHints();
 
 const baseSystem = (domain) => `你是 sharesdu 站内智能助手的【${domain}功能Agent】。
 你只能做“信息获取与解读”，不允许执行任何创建/编辑/删除/发布/冻结等写操作。
@@ -21,8 +24,40 @@ const baseSystem = (domain) => `你是 sharesdu 站内智能助手的【${domain
 4) 如果结果太少/太杂：放宽约束（减少过滤条件、改用更短关键词、使用 global_search 兜底），或反向用 detail 验证候选是否相关。
 5) 严禁编造数据：只基于 tools 返回的字段给结论；不确定时明确说明需要更多条件或数据不足。`;
 
-const toMessages = (history, userText, systemPrompt) => {
+const courseEnumNote = `
+
+课程相关枚举可直接使用英文代码或中文名称：
+- 课程类型：${enumHints.courseTypes.join(' / ')}
+- 教学方式：${enumHints.courseMethods.join(' / ')}
+- 校区：${enumHints.campusList.join('、')}
+- 学院：优先使用配置中的完整学院名`;
+
+const formatPlanBlock = (plan) => {
+  if (!plan) return '';
+  const lines = [
+    '',
+    '【当前检索计划】',
+    `- 目标：${plan.objective || '站内查询'}`,
+    `- 领域：${plan.domain || 'search'}`,
+    `- 优先工具：${Array.isArray(plan.tool_priority) ? plan.tool_priority.join(' -> ') : ''}`,
+  ];
+  if (Array.isArray(plan.doc_focus) && plan.doc_focus.length) {
+    lines.push(`- 文档优先：${plan.doc_focus.join(' / ')}`);
+  }
+  if (Array.isArray(plan.fallback) && plan.fallback.length) {
+    lines.push(`- 兜底路径：${plan.fallback.join(' -> ')}`);
+  }
+  if (plan.normalization && Object.keys(plan.normalization).length) {
+    lines.push('- 课程枚举：优先使用项目字典中的标准值。');
+  }
+  return lines.join('\n');
+};
+
+const toMessages = (history, userText, systemPrompt, memoryMessage) => {
   const msgs = [{ role: 'system', content: systemPrompt }];
+  if (memoryMessage && memoryMessage.content) {
+    msgs.push(memoryMessage);
+  }
   for (const m of history || []) {
     if (!m || !m.role) continue;
     if (m.role === 'tool') continue;
@@ -34,6 +69,10 @@ const toMessages = (history, userText, systemPrompt) => {
 
 export const createDomainAgents = () => {
   const searchTools = pickTools(SHARES_DU_TOOLSET, [
+    'agent_content_search',
+    'agent_course_search',
+    'agent_thread_context',
+    'agent_stats_aggregate',
     'global_search',
     'multi_keyword_search',
     'search_articles',
@@ -42,6 +81,9 @@ export const createDomainAgents = () => {
     'search_courses',
   ]);
   const articleTools = pickTools(SHARES_DU_TOOLSET, [
+    'agent_content_search',
+    'agent_thread_context',
+    'agent_stats_aggregate',
     ...searchTools.map((t) => t.function.name),
     'get_article_detail',
     'get_article_post_list',
@@ -50,6 +92,9 @@ export const createDomainAgents = () => {
     'batch_articles_info',
   ]);
   const postTools = pickTools(SHARES_DU_TOOLSET, [
+    'agent_content_search',
+    'agent_thread_context',
+    'agent_stats_aggregate',
     ...searchTools.map((t) => t.function.name),
     'get_post_detail',
     'get_post_reply_list',
@@ -57,6 +102,11 @@ export const createDomainAgents = () => {
     'batch_posts_info',
   ]);
   const courseTools = pickTools(SHARES_DU_TOOLSET, [
+    'agent_course_search',
+    'agent_course_context',
+    'agent_content_search',
+    'agent_thread_context',
+    'agent_stats_aggregate',
     ...searchTools.map((t) => t.function.name),
     'get_course_detail',
     'get_course_list',
@@ -65,6 +115,9 @@ export const createDomainAgents = () => {
     'batch_courses_info',
   ]);
   const userTools = pickTools(SHARES_DU_TOOLSET, [
+    'agent_content_search',
+    'agent_thread_context',
+    'agent_stats_aggregate',
     'get_user_homepage',
     'get_user_content_preview',
     'get_user_content_list',
@@ -75,8 +128,9 @@ export const createDomainAgents = () => {
     id,
     domain,
     tools,
-    async run({ client, cfg, history, userText, signal, onToolStart, onToolResult, onEvent }) {
-      const messages = toMessages(history, userText, baseSystem(domain));
+    async run({ client, cfg, history, context, userText, signal, plan, onToolStart, onToolResult, onEvent }) {
+      const systemPrompt = `${baseSystem(domain)}${domain === '课程' ? courseEnumNote : ''}${formatPlanBlock(plan)}`;
+      const messages = toMessages(history, userText, systemPrompt, context?.memoryMessage);
       return await runToolLoop({
         client,
         model: cfg.model,
