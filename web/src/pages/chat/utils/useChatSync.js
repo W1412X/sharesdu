@@ -8,6 +8,7 @@
  */
 import { ref } from 'vue';
 import { getChatUsers, getChatHistory, markMessageAsRead } from '@/api/modules/chat';
+import { getCookie } from '@/utils/cookie';
 import { formatRelativeTime } from '@/utils/other';
 import { normMessageId, normPeerId } from '@/utils/chatIds';
 import { createIntervalPoll } from '@/utils/polling/intervalPoll';
@@ -67,16 +68,23 @@ export function useChatSync(
   scrollToBottom,
   historyLoadInProgress
 ) {
+  /** 优先读当前 cookie，避免仅 setup 时读到空导致整段轮询永远不跑 */
+  const resolveSelfId = () => normPeerId(getCookie('userId')) || normPeerId(selfId);
+
   const fullSyncRunning = ref(false);
   const poll = createIntervalPoll({
     intervalMs: POLL_MS,
-    shouldRun: () => ifMounted.value && !!selfId,
+    shouldRun: () => ifMounted.value && !!resolveSelfId(),
     tick: () => pollOnce(),
-    immediate: false,
+    immediate: true,
   });
 
   async function fetchAllMessagesForPeer(peerId, peerName) {
-    const ctx = { selfName, selfId, peerName, peerId };
+    const uid = resolveSelfId();
+    if (!uid) {
+      return;
+    }
+    const ctx = { selfName, selfId: uid, peerName, peerId };
     const allChrono = [];
     let lastPageWithData = 0;
     for (let page = 1; page <= 500; page += 1) {
@@ -94,7 +102,7 @@ export function useChatSync(
         break;
       }
     }
-    await putMessagesForPeer(selfId, peerId, allChrono, { clearPeer: true });
+    await putMessagesForPeer(uid, peerId, allChrono, { clearPeer: true });
     if (lastPageWithData) {
       await setNextHistoryPage(peerId, lastPageWithData + 1);
     }
@@ -105,7 +113,9 @@ export function useChatSync(
    * 必须与其他逻辑解耦，否则在「全量拉消息」或「正在 load 当前会话历史」时侧栏会长期不更新。
    */
   async function refreshSessionListFromServer() {
-    if (!ifMounted.value || !selfId) return;
+    if (!ifMounted.value || !resolveSelfId()) {
+      return;
+    }
     const res = await getChatUsers();
     if (res?.status !== 200) {
       return;
@@ -118,11 +128,16 @@ export function useChatSync(
   }
 
   async function runFullSync() {
-    if (!selfId || !ifMounted.value) return;
-    if (fullSyncRunning.value) return;
+    const uid = resolveSelfId();
+    if (!uid || !ifMounted.value) {
+      return;
+    }
+    if (fullSyncRunning.value) {
+      return;
+    }
     fullSyncRunning.value = true;
     try {
-      await ensureSelfUser(selfId);
+      await ensureSelfUser(uid);
       const res = await getChatUsers();
       if (res?.status !== 200) {
         return;
@@ -162,9 +177,15 @@ export function useChatSync(
   }
 
   async function pollOnce() {
-    if (!ifMounted.value || !selfId) return;
+    if (!ifMounted.value) {
+      return;
+    }
+    const uid = resolveSelfId();
+    if (!uid) {
+      return;
+    }
     try {
-      await ensureSelfUser(selfId);
+      await ensureSelfUser(uid);
       await refreshSessionListFromServer();
       if (fullSyncRunning.value) {
         return;
@@ -182,7 +203,7 @@ export function useChatSync(
       if (part.length === 0) return;
       const ctx = {
         selfName,
-        selfId,
+        selfId: uid,
         peerName: receiverName.value,
         peerId: rid,
       };
@@ -225,7 +246,7 @@ export function useChatSync(
         );
       messages.value = next;
       setChatHistory(rid, messages.value);
-      await putMessagesForPeer(selfId, rid, messages.value, { clearPeer: false });
+      await putMessagesForPeer(uid, rid, messages.value, { clearPeer: false });
       if (hadNew) {
         scrollToBottom();
       }
@@ -236,7 +257,9 @@ export function useChatSync(
 
   function start() {
     stop();
-    if (!selfId) return;
+    if (!resolveSelfId()) {
+      return;
+    }
     void runFullSync();
     poll.start();
   }
