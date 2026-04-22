@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="visible"
-    max-width="500"
+    max-width="560"
     persistent
     content-class="agent-config-dialog"
     @after-enter="syncDraft"
@@ -17,6 +17,9 @@
         <div class="text-small mb-3" style="color: #6b6b6b;">
           {{ description }}
         </div>
+        <div class="text-small mb-3" style="color: #8a8a8a;">
+          默认值已提高，低频参数收进高级配置。
+        </div>
         <v-text-field
           v-model="draft.baseUrl"
           label="Base URL（OpenAI兼容）"
@@ -29,7 +32,7 @@
           label="Model"
           density="compact"
           variant="outlined"
-          placeholder="gpt-4o-mini"
+          placeholder="gpt-4o"
         />
         <v-text-field
           v-model="draft.apiKey"
@@ -51,22 +54,13 @@
           color="var(--theme-color)"
         />
         <v-text-field
-          v-model.number="draft.maxTokens"
-          label="Max Tokens"
-          density="compact"
-          variant="outlined"
-          type="number"
-          :min="64"
-          :max="8192"
-        />
-        <v-text-field
           v-model.number="draft.maxRounds"
           label="Max Rounds（工具调用最大轮数）"
           density="compact"
           variant="outlined"
           type="number"
           :min="1"
-          :max="32"
+          :max="AGENT_LLM_LIMITS.maxRounds"
           hint="单次对话中 LLM 可进行工具调用的最大轮数"
           persistent-hint
         />
@@ -77,39 +71,66 @@
           variant="outlined"
           type="number"
           :min="0"
-          :max="20"
+          :max="AGENT_LLM_LIMITS.contextTurns"
           hint="请求时携带最近 n 轮（用户+助手）对话；0 表示不携带历史"
           persistent-hint
         />
-        <v-switch
-          v-model="draft.structuredMemory"
-          label="启用结构化记忆"
-          density="compact"
-          inset
-          color="var(--theme-color)"
-        />
-        <v-text-field
-          v-model.number="draft.memoryNotesLimit"
-          label="记忆备注保留数"
-          density="compact"
-          variant="outlined"
-          type="number"
-          :min="0"
-          :max="50"
-          hint="会话记忆中保留多少条备注，过多会影响提示词长度"
-          persistent-hint
-        />
-        <v-text-field
-          v-model.number="draft.memoryEntityLimit"
-          label="已确认实体上限"
-          density="compact"
-          variant="outlined"
-          type="number"
-          :min="0"
-          :max="50"
-          hint="结构化记忆里保留多少个已确认实体"
-          persistent-hint
-        />
+        <v-expansion-panels
+          v-model="advancedOpen"
+          class="agent-config-advanced"
+          variant="accordion"
+        >
+          <v-expansion-panel>
+            <v-expansion-panel-title>
+              <div class="d-flex flex-column">
+                <span>高级配置</span>
+                <span class="text-caption" style="color: #8a8a8a;">低频参数、预算与记忆策略</span>
+              </div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <v-text-field
+                v-model.number="draft.maxTokens"
+                label="Max Tokens"
+                density="compact"
+                variant="outlined"
+                type="number"
+                :min="64"
+                :max="AGENT_LLM_LIMITS.maxTokens"
+                hint="默认 32k，适合更长回答或更复杂的工具调用"
+                persistent-hint
+              />
+              <v-switch
+                v-model="draft.structuredMemory"
+                label="启用结构化记忆"
+                density="compact"
+                inset
+                color="var(--theme-color)"
+              />
+              <v-text-field
+                v-model.number="draft.memoryNotesLimit"
+                label="记忆备注保留数"
+                density="compact"
+                variant="outlined"
+                type="number"
+                :min="0"
+                :max="AGENT_LLM_LIMITS.memoryNotesLimit"
+                hint="会话记忆中保留多少条备注，过多会影响提示词长度"
+                persistent-hint
+              />
+              <v-text-field
+                v-model.number="draft.memoryEntityLimit"
+                label="已确认实体上限"
+                density="compact"
+                variant="outlined"
+                type="number"
+                :min="0"
+                :max="AGENT_LLM_LIMITS.memoryEntityLimit"
+                hint="结构化记忆里保留多少个已确认实体"
+                persistent-hint
+              />
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
         <div class="row-actions mt-3">
           <v-btn color="var(--theme-color)" variant="flat" @click="handleSave">{{ saveText }}</v-btn>
           <v-btn color="grey" variant="outlined" @click="handleReset">{{ resetText }}</v-btn>
@@ -129,7 +150,7 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
-import { getDefaultAgentLLMConfig, normalizeAgentLLMConfig } from '@/agent/config';
+import { AGENT_LLM_LIMITS, getDefaultAgentLLMConfig, normalizeAgentLLMConfig } from '@/agent/config';
 
 const props = defineProps({
   modelValue: {
@@ -173,6 +194,7 @@ const visible = computed({
   set: (next) => emit('update:modelValue', !!next),
 });
 const showApiKey = ref(false);
+const advancedOpen = ref([]);
 const draft = reactive({ ...getDefaultAgentLLMConfig() });
 
 const syncDraft = () => {
@@ -183,8 +205,12 @@ const syncDraft = () => {
 watch(
   () => props.modelValue,
   (open) => {
-    if (open) syncDraft();
-    else showApiKey.value = false;
+    if (open) {
+      syncDraft();
+      advancedOpen.value = [];
+    } else {
+      showApiKey.value = false;
+    }
   },
   { immediate: true }
 );
@@ -215,3 +241,9 @@ const handleGoToAgent = () => {
   close();
 };
 </script>
+
+<style scoped>
+.agent-config-advanced {
+  margin-top: 6px;
+}
+</style>

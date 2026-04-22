@@ -1,7 +1,14 @@
 import { selfDefineLocalStorage } from '@/utils/localStorage';
 
 export const AGENT_LLM_CONFIG_STORAGE_KEY = 'agent.llm.config';
-export const AGENT_LLM_CONFIG_VERSION = 2;
+export const AGENT_LLM_CONFIG_VERSION = 4;
+export const AGENT_LLM_LIMITS = Object.freeze({
+  maxTokens: 32768,
+  maxRounds: 64,
+  contextTurns: 32,
+  memoryNotesLimit: 128,
+  memoryEntityLimit: 128,
+});
 
 const clampNumber = (value, min, max, fallback) => {
   const parsed = Number(value);
@@ -21,7 +28,7 @@ const normalizeBaseConfig = (raw = {}) => {
   const contextTurns = clampNumber(
     raw.contextTurns ?? raw.contextRounds,
     0,
-    20,
+    AGENT_LLM_LIMITS.contextTurns,
     defaults.contextTurns,
   );
 
@@ -34,13 +41,13 @@ const normalizeBaseConfig = (raw = {}) => {
     apiKey: String(raw.apiKey || ''),
     model: String(raw.model || defaults.model),
     temperature: clampFloat(raw.temperature, 0, 1, defaults.temperature),
-    maxTokens: clampNumber(raw.maxTokens, 64, 8192, defaults.maxTokens),
-    maxRounds: clampNumber(raw.maxRounds, 1, 32, defaults.maxRounds),
+    maxTokens: clampNumber(raw.maxTokens, 64, AGENT_LLM_LIMITS.maxTokens, defaults.maxTokens),
+    maxRounds: clampNumber(raw.maxRounds, 1, AGENT_LLM_LIMITS.maxRounds, defaults.maxRounds),
     contextTurns,
     contextRounds: contextTurns,
     structuredMemory: raw.structuredMemory !== false,
-    memoryNotesLimit: clampNumber(raw.memoryNotesLimit, 0, 50, defaults.memoryNotesLimit),
-    memoryEntityLimit: clampNumber(raw.memoryEntityLimit, 0, 50, defaults.memoryEntityLimit),
+    memoryNotesLimit: clampNumber(raw.memoryNotesLimit, 0, AGENT_LLM_LIMITS.memoryNotesLimit, defaults.memoryNotesLimit),
+    memoryEntityLimit: clampNumber(raw.memoryEntityLimit, 0, AGENT_LLM_LIMITS.memoryEntityLimit, defaults.memoryEntityLimit),
   };
 };
 
@@ -49,16 +56,16 @@ export const getDefaultAgentLLMConfig = () => ({
   provider: 'openai_compatible',
   baseUrl: 'https://api.openai.com/v1',
   apiKey: '',
-  model: 'gpt-4o-mini',
-  temperature: 0.2,
-  maxTokens: 800,
-  maxRounds: 16,
+  model: 'gpt-4o',
+  temperature: 0.25,
+  maxTokens: AGENT_LLM_LIMITS.maxTokens,
+  maxRounds: 20,
   /** 上下文记忆轮数：请求时携带最近 n 轮（每轮=1条用户+1条助手）对话，0 表示不携带历史 */
-  contextTurns: 6,
-  contextRounds: 6,
+  contextTurns: 8,
+  contextRounds: 8,
   structuredMemory: true,
-  memoryNotesLimit: 10,
-  memoryEntityLimit: 8,
+  memoryNotesLimit: 12,
+  memoryEntityLimit: 32,
 });
 
 export const getAgentLLMConfig = () => {

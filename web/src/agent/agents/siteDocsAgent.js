@@ -55,7 +55,7 @@ export const createSiteDocsAgent = () => ({
       model: cfg.model,
       temperature: cfg.temperature,
       max_tokens: cfg.maxTokens,
-      maxRounds: cfg.maxRounds ?? 16,
+      maxRounds: cfg.maxRounds ?? 20,
       messages,
       tools: SITE_DOCS_TOOLSET.tools,
       handlers: SITE_DOCS_TOOLSET.handlers,

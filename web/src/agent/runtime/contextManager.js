@@ -1,7 +1,9 @@
+import { AGENT_LLM_LIMITS } from '../config';
+
 const DEFAULT_CONTEXT_LIMITS = {
-  contextTurns: 6,
-  memoryNotesLimit: 10,
-  memoryEntityLimit: 8,
+  contextTurns: 8,
+  memoryNotesLimit: 12,
+  memoryEntityLimit: 32,
 };
 
 const clampInt = (value, min, max, fallback) => {
@@ -98,14 +100,14 @@ export class AgentContextManager {
     const contextTurns = clampInt(
       cfg.contextTurns ?? cfg.contextRounds,
       0,
-      20,
+      AGENT_LLM_LIMITS.contextTurns,
       this.limits.contextTurns,
     );
     return {
       contextTurns,
       structuredMemory: cfg.structuredMemory !== false,
-      memoryNotesLimit: clampInt(cfg.memoryNotesLimit, 0, 50, this.limits.memoryNotesLimit),
-      memoryEntityLimit: clampInt(cfg.memoryEntityLimit, 0, 50, this.limits.memoryEntityLimit),
+      memoryNotesLimit: clampInt(cfg.memoryNotesLimit, 0, AGENT_LLM_LIMITS.memoryNotesLimit, this.limits.memoryNotesLimit),
+      memoryEntityLimit: clampInt(cfg.memoryEntityLimit, 0, AGENT_LLM_LIMITS.memoryEntityLimit, this.limits.memoryEntityLimit),
     };
   }
 
