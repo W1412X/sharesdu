@@ -211,7 +211,7 @@ export function useChatLoad(
         }
         const users = [];
         for (let i = 0; i < rows.length; i++) {
-          if (paramId === rows[i].user_id) {
+          if (String(paramId) === String(rows[i].user_id)) {
             ifParamIdIn = true;
           }
           const lm = rows[i].last_message || {};

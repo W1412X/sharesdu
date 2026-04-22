@@ -1,5 +1,10 @@
 /**
  * 全量拉取 + 轮询：与 IndexedDB 一致后，增量对比追加消息。
+ *
+ * 边界约定：
+ * - 侧栏未读/最后一条只信 getChatUsers（refreshSessionListFromServer），与「当前选中的 thread」解耦，避免在拉当前会话或全量同步时整段 poll 不跑、B 有消息时列表不亮。
+ * - 仅当前会话拉 history + 合并/写库受 historyLoadInProgress、fullSyncRunning 门控，避免与 loadChatHistory / 全量写 peer 竞态。
+ * - 非当前会话的「消息体」在对方发消息、你停留在别会话时，由打开该会话时 loadChatHistory（IDB + 首屏网络）与全量/后续 poll 补全，列表预览仍以 chat_users 为准。
  */
 import { ref } from 'vue';
 import { getChatUsers, getChatHistory, markMessageAsRead } from '@/api/modules/chat';
@@ -95,6 +100,23 @@ export function useChatSync(
     }
   }
 
+  /**
+   * 会话列表 + 每会话 meta（未读、最后一条）：仅依赖 getChatUsers，与当前打开哪条 thread 无关。
+   * 必须与其他逻辑解耦，否则在「全量拉消息」或「正在 load 当前会话历史」时侧栏会长期不更新。
+   */
+  async function refreshSessionListFromServer() {
+    if (!ifMounted.value || !selfId) return;
+    const res = await getChatUsers();
+    if (res?.status !== 200) {
+      return;
+    }
+    const userRows = getChatUsersRows(res);
+    for (const row of userRows) {
+      await putSessionFromApiRow(row);
+    }
+    setChatUsers(mapUserRowsToList(userRows));
+  }
+
   async function runFullSync() {
     if (!selfId || !ifMounted.value) return;
     if (fullSyncRunning.value) return;
@@ -106,18 +128,22 @@ export function useChatSync(
         return;
       }
       const userRows = getChatUsersRows(res);
+      if (ifMounted.value) {
+        for (const row of userRows) {
+          await putSessionFromApiRow(row);
+        }
+        setChatUsers(mapUserRowsToList(userRows));
+      }
       for (const row of userRows) {
         if (!ifMounted.value) return;
         const peerId = row.user_id;
         const peerName = row.username;
         try {
-          await putSessionFromApiRow(row);
           await fetchAllMessagesForPeer(peerId, peerName);
         } catch (e) {
           console.warn('full sync peer', peerId, e);
         }
       }
-      setChatUsers(mapUserRowsToList(userRows));
       const cur = normPeerId(receiverId.value);
       if (cur) {
         const fresh = await getMessagesForPeerOrderByTime(cur);
@@ -137,23 +163,19 @@ export function useChatSync(
 
   async function pollOnce() {
     if (!ifMounted.value || !selfId) return;
-    if (historyLoadInProgress && historyLoadInProgress.value) {
-      return;
-    }
     try {
       await ensureSelfUser(selfId);
-      if (fullSyncRunning.value) return;
-      const res = await getChatUsers();
-      if (res?.status !== 200) {
+      await refreshSessionListFromServer();
+      if (fullSyncRunning.value) {
         return;
       }
-      const userRows = getChatUsersRows(res);
-      for (const row of userRows) {
-        await putSessionFromApiRow(row);
+      if (historyLoadInProgress && historyLoadInProgress.value) {
+        return;
       }
-      setChatUsers(mapUserRowsToList(userRows));
       const rid = normPeerId(receiverId.value);
-      if (!rid) return;
+      if (!rid) {
+        return;
+      }
       const hRes = await getChatHistory(rid, 1, POLL_PAGE_SIZE);
       if (!isHistoryResponseOk(hRes)) return;
       const part = getHistoryResults(hRes);
@@ -223,5 +245,5 @@ export function useChatSync(
     poll.stop();
   }
 
-  return { start, stop, runFullSync, pollOnce };
+  return { start, stop, runFullSync, pollOnce, refreshSessionListFromServer };
 }
