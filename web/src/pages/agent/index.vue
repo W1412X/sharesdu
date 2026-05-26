@@ -387,6 +387,26 @@ async function loadSessions() {
   }
 }
 
+/**
+ * After a reply, IndexedDB already has the latest updated_at — only the sidebar needs to reflect it.
+ * Avoid re-querying up to 50 sessions on every turn; refresh from DB only if the row is missing locally.
+ */
+async function refreshSessionOrderAfterTurn() {
+  const sid = currentSessionId.value;
+  if (sid == null) return;
+  const list = sessions.value;
+  const idx = list.findIndex((s) => s.id === sid);
+  if (idx === -1) {
+    await loadSessions();
+    return;
+  }
+  const now = Date.now();
+  const next = list.slice();
+  const [row] = next.splice(idx, 1);
+  next.unshift({ ...row, updated_at: now });
+  sessions.value = next;
+}
+
 async function loadSession(sessionId) {
   const [session, list] = await Promise.all([
     getSession(sessionId),
@@ -733,7 +753,7 @@ const send = async () => {
     if (currentSessionId.value) {
       await updateSessionState(currentSessionId.value, currentSessionState.value.toJSON());
     }
-    await loadSessions();
+    await refreshSessionOrderAfterTurn();
     // 执行完成后默认收起过程面板（用户可点击“已完成思考”展开查看）
     proc.expanded = false;
     scheduleRender();
