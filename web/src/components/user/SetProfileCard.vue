@@ -75,7 +75,6 @@ import { uploadProfileImage } from '@/api/modules/image';
 import { invalidateProfileImageCache } from '@/utils/cacheManager';
 import { getCookie } from '@/utils/cookie';
 import { globalProperties } from '@/main';
-import { getCookie } from '@/utils/cookie';
 // eslint-disable-next-line
 import { compressImage } from '@/utils/imageUtils';
 import { getNormalErrorAlert, getNormalSuccessAlert, getNormalWarnAlert } from '@/utils/other';
