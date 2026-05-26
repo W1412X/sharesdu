@@ -272,6 +272,7 @@ import {
 import { copy, getCancelLoadMsg, getLoadMsg, openPage } from '@/utils/other';
 import { rules, validateEmailForLogin, validatePassWord, validateUserName } from '@/utils/rules';
 import { clearTokenCookies, getCookie, setCookie } from '@/utils/cookie';
+import { clearAllRuntimeCaches } from '@/utils/cacheManager';
 import { globalProperties } from '@/main';
 import { buildDiceBearAvatarUrl } from '@/utils/avatar';
 
@@ -757,20 +758,22 @@ export default {
     },
     async logout() {
       this.setLoading(getLoadMsg('正在退出登录...', -1));
-      const response = await logout();
-      if (response.status === 200) {
+      try {
+        const response = await logout();
+        if (response.status !== 200) {
+          this.alert({
+            state: true,
+            color: 'error',
+            title: '登出失败，已强制登出',
+            content: response.message,
+          });
+        }
+      } finally {
+        clearAllRuntimeCaches();
         clearTokenCookies();
+        this.setLoading(getCancelLoadMsg());
         openPage('url', { url: '#/login' }, '_self');
-      } else {
-        this.alert({
-          state: true,
-          color: 'error',
-          title: '登出失败，已强制登出',
-          content: response.message,
-        });
-        clearTokenCookies();
       }
-      this.setLoading(getCancelLoadMsg());
     },
     async confirmDeleteAccount() {
       this.examineCardData = {

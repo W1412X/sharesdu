@@ -33,6 +33,7 @@ export class ResponseBuffer {
      * @param {(key: string) => boolean} predicate
      */
     invalidateBy(predicate) {
+        this.pruneExpired();
         const keysToDelete = [];
         for (const key of this.cache.keys()) {
             if (predicate(key)) {
@@ -40,6 +41,17 @@ export class ResponseBuffer {
             }
         }
         keysToDelete.forEach((key) => this.cache.delete(key));
+    }
+
+    /**
+     * 清理 TTL 已过的 GET 响应缓存。
+     * @returns {number}
+     */
+    pruneExpired() {
+        if (typeof this.cache.pruneExpired === 'function') {
+            return this.cache.pruneExpired();
+        }
+        return 0;
     }
 }
 

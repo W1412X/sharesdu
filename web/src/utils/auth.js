@@ -10,6 +10,7 @@ import { acquireLock, releaseLock } from "./lock";
 import { selfDefineLocalStorage } from "./localStorage";
 import { isDebugHashPath, openPage } from "./navigation";
 import router from "@/router";
+import { clearAllRuntimeCaches } from "@/utils/cacheManager";
 
 /** 是否已触发登出，避免多处同时调用时重复弹窗和跳转 */
 let logoutTriggered = false;
@@ -23,6 +24,7 @@ let bannedRedirectTriggered = false;
 export function redirectToBannedOnce() {
     if (bannedRedirectTriggered) return;
     bannedRedirectTriggered = true;
+    clearAllRuntimeCaches();
     clearTokenCookies();
     sessionStorage.clear();
     const name = isDebugHashPath(window.location.href) ? "BannedPageDebug" : "BannedPage";
@@ -47,6 +49,7 @@ export function setLogin(userName, user_id, email, refresh, profile, ifMaster = 
 }
 
 function handleLogout() {
+    clearAllRuntimeCaches();
     clearTokenCookies();
     sessionStorage.clear();
     window.alert("令牌已过期，请重新登录");

@@ -124,6 +124,21 @@ export class LRUCache {
     }
 
     /**
+     * 移除已过期条目，避免长期占用 Map 容量且无法被 LRU 淘汰。
+     * @returns {number} 删除条数
+     */
+    pruneExpired() {
+        let removed = 0;
+        for (const [key, entry] of this.cache.entries()) {
+            if (this._isExpired(entry)) {
+                this._removeEntry(key, entry.value);
+                removed += 1;
+            }
+        }
+        return removed;
+    }
+
+    /**
      * @param {(value: any, key: any, cache: Map<any, any>) => void} callback 
      */
     forEach(callback) {

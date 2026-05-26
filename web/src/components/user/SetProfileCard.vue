@@ -72,6 +72,8 @@
 <script>
 import VuePictureCropper,{ cropper } from 'vue-picture-cropper'
 import { uploadProfileImage } from '@/api/modules/image';
+import { invalidateProfileImageCache } from '@/utils/cacheManager';
+import { getCookie } from '@/utils/cookie';
 import { globalProperties } from '@/main';
 import { getCookie } from '@/utils/cookie';
 // eslint-disable-next-line
@@ -156,6 +158,10 @@ export default {
       const response = await uploadProfileImage(this.croppedImgBlob);
       this.loading = false;
       if (response.status == 200 || response.status == 201) {
+        const userId = getCookie('userId');
+        if (userId) {
+          invalidateProfileImageCache(userId);
+        }
         this.alert(getNormalSuccessAlert(response.message));
         //if success,tell the parent 
         this.$emit("set_profile");

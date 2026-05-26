@@ -3,6 +3,7 @@ import { startDebug } from '@/utils/debug';
 import { selfDefineLocalStorage } from '@/utils/localStorage';
 import { selfDefinedSessionStorage } from '@/utils/sessionStorage';
 import { createRouter, createWebHashHistory } from 'vue-router';
+import { schedulePruneStaleCaches } from '@/utils/cacheManager';
 import {
   WelcomePage,
   SearchPage,
@@ -268,6 +269,7 @@ router.afterEach(() => {
     // 立即重置为0，避免显示上一个页面的滚动位置
     scrollElement.scrollTop = 0;
   }
+  schedulePruneStaleCaches();
 });
 
 export default router;

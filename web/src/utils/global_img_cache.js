@@ -42,7 +42,31 @@ export class ImageCacher {
     }
 
     clear() {
+        this.inFlight.clear();
         this.cache.clear();
+    }
+
+    /**
+     * 按 key 条件失效（如用户头像 URL 变更）。
+     * @param {(key: string) => boolean} predicate
+     */
+    invalidateMatching(predicate) {
+        if (typeof predicate !== 'function') return;
+        if (typeof this.cache.pruneExpired === 'function') {
+            this.cache.pruneExpired();
+        }
+        const keysToDelete = [];
+        for (const key of this.cache.keys()) {
+            if (predicate(String(key))) {
+                keysToDelete.push(key);
+            }
+        }
+        keysToDelete.forEach((key) => this.cache.delete(key));
+        for (const key of [...this.inFlight.keys()]) {
+            if (predicate(String(key))) {
+                this.inFlight.delete(key);
+            }
+        }
     }
 
     /**

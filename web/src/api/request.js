@@ -11,6 +11,7 @@ import axios from 'axios';
 import config from '@/config';
 import { getCacheInvalidationRule } from './cache-invalidation-rules';
 import { redirectToBannedOnce, refreshAccessToken } from '@/utils/auth';
+import { invalidateProfileImageCache, registerApiCacheClient } from '@/utils/cacheManager';
 
 const JSON_CONTENT_TYPE = 'application/json';
 const DEFAULT_CACHE_TTL = 10 * 60 * 1000; // 10 分钟
@@ -192,6 +193,11 @@ class AxiosWithCache {
 
     clearCache() {
         this.cacher.clear();
+        this.inFlightRequests.clear();
+    }
+
+    pruneStaleCache() {
+        this.cacher.pruneExpired();
     }
 
     /**
@@ -242,6 +248,13 @@ class AxiosWithCache {
             // 3. 如果没有配置规则，使用默认行为：失效包含该 URL 的缓存
             if (url) {
                 this.invalidateCacheByUrl(url);
+            }
+        }
+
+        if (url && String(url).includes('/image/profile')) {
+            const userId = getCookie('userId');
+            if (userId) {
+                invalidateProfileImageCache(userId);
             }
         }
     }
@@ -304,6 +317,7 @@ class AxiosWithCache {
 }
 
 const axiosInstance = new AxiosWithCache();
+registerApiCacheClient(axiosInstance);
 
 /** 单例：正在进行的刷新 Promise，并发 1000/1001 时多个请求共等同一结果，只刷新一次 */
 let refreshPromise = null;
