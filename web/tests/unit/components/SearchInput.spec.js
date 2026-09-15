@@ -105,4 +105,66 @@ describe('SearchInput', () => {
     expect(wrapper.emitted('submit')).toBeUndefined();
     wrapper.unmount();
   });
+
+  test('keeps suggestions open while keyboard focus moves inside the panel', async () => {
+    const wrapper = mount(SearchInput, {
+      attachTo: document.body,
+      global: {
+        stubs: {
+          HistoryCard: { template: '<button type="button">History</button>' },
+        },
+      },
+    });
+    wrapper.find('input').element.focus();
+    await wrapper.vm.$nextTick();
+    const button = wrapper.find('button');
+    button.element.focus();
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('.suggestion-container').isVisible()).toBe(true);
+    expect(wrapper.emitted('blur')).toBeUndefined();
+
+    button.element.blur();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('.suggestion-container').isVisible()).toBe(false);
+    expect(wrapper.emitted('blur')).toHaveLength(1);
+    wrapper.unmount();
+  });
+
+  test('Escape returns focus to the input and hides suggestions until typing resumes', async () => {
+    const wrapper = mount(SearchInput, {
+      attachTo: document.body,
+      global: {
+        stubs: {
+          HistoryCard: { template: '<button type="button">History</button>' },
+        },
+      },
+    });
+    const input = wrapper.find('input');
+    input.element.focus();
+    await wrapper.vm.$nextTick();
+    const button = wrapper.find('button');
+    button.element.focus();
+    await button.trigger('keydown', { key: 'Escape' });
+
+    expect(document.activeElement).toBe(input.element);
+    expect(wrapper.find('.suggestion-container').isVisible()).toBe(false);
+    expect(wrapper.emitted('submit')).toBeUndefined();
+
+    await input.setValue('Another query');
+    expect(wrapper.find('.suggestion-container').isVisible()).toBe(true);
+    wrapper.unmount();
+  });
+
+  test('does not open or join the panel when suggestions are disabled', async () => {
+    const wrapper = mount(SearchInput, {
+      props: { canSuggestion: false, inputStyle: { borderRadius: '20px' } },
+    });
+    await wrapper.find('input').trigger('focusin');
+
+    expect(wrapper.find('.suggestion-container').isVisible()).toBe(false);
+    expect(wrapper.classes()).not.toContain('suggestions-open');
+    expect(wrapper.find('input').element.style.borderRadius).toBe('20px');
+    wrapper.unmount();
+  });
 });
