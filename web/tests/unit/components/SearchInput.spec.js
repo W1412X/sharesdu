@@ -45,10 +45,10 @@ describe('SearchInput', () => {
 
     expect(suggestions.isVisible()).toBe(false);
 
-    await input.trigger('focus');
+    await input.trigger('focusin');
     expect(suggestions.isVisible()).toBe(true);
 
-    await input.trigger('blur');
+    await input.trigger('focusout');
     expect(suggestions.isVisible()).toBe(false);
     wrapper.unmount();
   });

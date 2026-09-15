@@ -1,12 +1,19 @@
 <template>
-  <div id="search-input" class="input-container" :style="containerStyle">
+  <div
+    id="search-input"
+    class="input-container"
+    :class="{ 'suggestions-open': shouldShowSuggestions }"
+    :style="containerStyle"
+    @focusin="onFocus"
+    @focusout="onBlur"
+    @keydown.esc.stop.prevent="dismissSuggestions"
+  >
     <input
+      ref="input"
       v-model="inputValue"
       type="text"
       class="input-box"
       :style="inputBoxStyle"
-      @focus="onFocus"
-      @blur="onBlur"
       @input="onInput"
       @keydown.enter.prevent="submitSearch"
       :placeholder="placeholderText"
@@ -16,9 +23,8 @@
       class="suggestion-container"
       @mousedown.prevent
     >
-      <recommend-card @fill-search-input="fillSearchInput" v-show="showHot"></recommend-card>
-      <div style="height: 80%; background-color: grey; width: 10px;"></div>
       <history-card @fill-search-input="fillSearchInput" v-show="showHistory"></history-card>
+      <recommend-card @fill-search-input="fillSearchInput" v-show="showHot"></recommend-card>
     </div>
   </div>
 </template>
@@ -89,10 +95,17 @@ export default {
     },
     // 动态生成 input 框的样式
     inputBoxStyle() {
-      return Object.assign({},{
+      return Object.assign({}, {
         borderColor: this.isFocused ? this.borderColor : '#aaa',
         boxShadow: this.isFocused ? `0 0 5px ${this.boxShadowColor}` : 'none',
-      },this.inputStyle);
+      }, this.inputStyle, this.shouldShowSuggestions ? {
+        borderRadius: '12px 12px 0 0',
+        borderColor: '#e3e5e7',
+        borderBottomColor: 'transparent',
+        boxShadow: 'none',
+        backgroundColor: '#fff',
+        color: '#18191c',
+      } : {});
     },
   },
   methods: {
@@ -100,7 +113,10 @@ export default {
       this.isFocused = true;
       this.isSuggestionOpen = true;
     },
-    onBlur() {
+    onBlur(event) {
+      if (event.currentTarget.contains(event.relatedTarget)) {
+        return;
+      }
       //提交事件：搜索输入框失去焦点
       this.$emit('blur');
       this.isFocused = false;
@@ -119,6 +135,11 @@ export default {
     },
     fillSearchInput(text){
       this.inputValue=text;
+      this.$refs.input.focus();
+    },
+    dismissSuggestions() {
+      this.$refs.input.focus();
+      this.isSuggestionOpen = false;
     }
   }
 };
@@ -127,51 +148,58 @@ export default {
 .input-container {
   position: relative;
   display: inline-block;
+  min-width: 0;
+  max-width: calc(100vw - 24px);
   z-index: 1000;
 }
 
 .input-box {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
   padding: 3px;
   border: 1px solid #aaa;
   border-radius: 5px;
   font-size: 14px;
   outline: none;
-  transition: all 0.3s ease;
-}
-
-.input-box:focus {
-  /* 这里不再直接设置颜色，而是通过 :style 动态绑定 */
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .input-box::placeholder {
   color: var(--placeholder-color, #aaa); /* 通过动态 CSS 属性设置 placeholder 的颜色 */
 }
 
-@media screen and (max-width: 1000px) {
-  .suggestion-container {
-    position: absolute;
-    width: fit-content;
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 3px;
-    transition: max-height 0.3s ease;
-  }
+.suggestions-open {
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-@media screen and (min-width: 1000px) {
-  .suggestion-container {
-    position: absolute;
-    width: fit-content;
-    display: flex;
-    flex-direction: row;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 3px;
-    transition: max-height 0.3s ease;
-  }
+.suggestion-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: min(480px, 70vh);
+  max-height: min(480px, 70dvh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border: 1px solid #e3e5e7;
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.16);
+}
+
+.suggestion-container > * {
+  flex-shrink: 0;
+}
+
+.suggestion-container > :not(:first-child) {
+  border-top: 1px solid #f1f2f3;
 }
 </style>
