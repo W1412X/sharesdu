@@ -151,7 +151,7 @@
           class="message-row"
           :class="m.role === 'user' ? 'row-user' : 'row-assistant'"
         >
-          <div v-if="m.role === 'assistant'" class="message-avatar message-avatar--bot">
+          <div v-if="m.role === 'assistant' && !isMobile" class="message-avatar message-avatar--bot">
             <v-avatar size="32" color="grey-lighten-2">
               <v-icon icon="mdi-robot-outline" size="20" color="grey-darken-1" />
             </v-avatar>
@@ -217,7 +217,7 @@
               </div>
             </template>
           </v-card>
-          <div v-if="m.role === 'user'" class="message-avatar message-avatar--user">
+          <div v-if="m.role === 'user' && !isMobile" class="message-avatar message-avatar--user">
             <avatar-name
               v-if="userAvatarData.id"
               :init-data="userAvatarData"
