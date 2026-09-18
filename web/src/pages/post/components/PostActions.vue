@@ -5,19 +5,14 @@
     </div>
     <v-spacer class="spacer"></v-spacer>
     <div class="row-reverse">
-      <div v-if="userId != post.authorId" class="column-center margin-right-15px">
-        <alert-button :type="'post'" :id="post.id"></alert-button>
-      </div>
-      <div v-else class="column-center margin-right-15px">
-        <delete-button
-          v-if="!ifMobile"
-          @delete="$emit('delete-post')"
-          :id="post.id"
-          :type="'post'"
-          :size="24"
+      <!-- 更多操作菜单（PC端）：举报/删除/复制链接 收进菜单 -->
+      <div v-if="!ifMobile" class="column-center margin-right-15px">
+        <more-options-menu
+          item-type="post"
+          :data="post"
           @alert="$emit('alert', $event)"
-          @set_loading="$emit('set-loading', $event)"
-        ></delete-button>
+          @set-loading="$emit('set-loading', $event)"
+        />
       </div>
       <div class="column-center padding-right-5px">
         <like-button
@@ -41,8 +36,7 @@
 
 <script setup>
 import LikeButton from '@/components/common/LikeButton.vue';
-import AlertButton from '@/components/report/AlertButton.vue';
-import DeleteButton from '@/components/common/DeleteButton.vue';
+import MoreOptionsMenu from '@/components/common/MoreOptionsMenu/MoreOptionsMenu.vue';
 import { useDevice } from '@/app/composables/useDevice';
 
 defineProps({
@@ -60,7 +54,7 @@ defineProps({
   },
 });
 const { ifMobile } = useDevice();
-defineEmits(['delete-post', 'alert', 'set-loading', 'show-comment-editor']);
+defineEmits(['alert', 'set-loading', 'show-comment-editor']);
 </script>
 
 <style scoped>

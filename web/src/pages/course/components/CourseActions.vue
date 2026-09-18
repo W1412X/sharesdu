@@ -3,15 +3,15 @@
     <div class="column-center user-name text-medium">{{ userName }}</div>
     <v-spacer class="spacer"></v-spacer>
     <div class="row-reverse">
-      <div v-if="!ifMaster&&!ifMobile" class="column-center padding-right-5px">
-        <alert-button :id="course.id" :type="'course'"></alert-button>
+      <!-- 更多操作菜单（PC端）：举报/提交修改/复制链接/管理 收进菜单 -->
+      <div v-if="!ifMobile" class="column-center padding-right-5px">
+        <more-options-menu
+          item-type="course"
+          :data="course"
+          @alert="$emit('alert', $event)"
+          @set-loading="$emit('set-loading', $event)"
+        />
       </div>
-      <manage-button
-        v-if="ifMaster&&!ifMobile"
-        :id="course.id"
-        :type="'course'"
-        style="margin-right:10px;max-width: 25px;max-height: 25px;border-radius: 100%;"
-      ></manage-button>
       <div class="column-center padding-right-10px">
         <v-btn elevation="0" @click="$emit('show-post')" icon class="bottom-btn">
           <v-icon icon="mdi-comment-outline" size="24"></v-icon>
@@ -23,8 +23,7 @@
 </template>
 
 <script setup>
-import AlertButton from '@/components/report/AlertButton.vue';
-import ManageButton from '@/components/manage/ManageButton.vue';
+import MoreOptionsMenu from '@/components/common/MoreOptionsMenu/MoreOptionsMenu.vue';
 import { useDevice } from '@/app/composables/useDevice';
 
 defineProps({
@@ -42,7 +41,7 @@ defineProps({
   },
 });
 const { ifMobile } = useDevice();
-defineEmits(['show-post']);
+defineEmits(['show-post', 'alert', 'set-loading']);
 </script>
 
 <style scoped>

@@ -384,7 +384,8 @@ onMounted(async () => {
   } else {
     restoreComplete.value = true;
   }
-  moreOptionEventBus.emit("article",article.value);
+  // 随事件总线携带 editorType，供移动端「更多」抽屉判断是否展示 MD 复制/下载选项
+  moreOptionEventBus.emit("article", { ...article.value, editorType: editorTypeRef.value });
 });
 
 // 卸载时清理

@@ -57,7 +57,8 @@ const normalizeBaseConfig = (raw = {}) => {
     maxToolResultBytes: clampNumber(raw.maxToolResultBytes, 4096, AGENT_LLM_LIMITS.maxToolResultBytes, defaults.maxToolResultBytes),
     toolTimeoutMs: clampNumber(raw.toolTimeoutMs, 1000, AGENT_LLM_LIMITS.toolTimeoutMs, defaults.toolTimeoutMs),
     toolConcurrency: clampNumber(raw.toolConcurrency, 1, AGENT_LLM_LIMITS.toolConcurrency, defaults.toolConcurrency),
-    storageMode: raw.storageMode === 'local' ? 'local' : 'session',
+    // 默认浏览器持久保存；仅当历史配置显式选择 session 时才用会话存储
+    storageMode: raw.storageMode === 'session' ? 'session' : 'local',
     contextTurns,
     contextRounds: contextTurns,
     structuredMemory: raw.structuredMemory !== false,
@@ -81,7 +82,7 @@ export const getDefaultAgentLLMConfig = () => ({
   maxToolResultBytes: 65536,
   toolTimeoutMs: 15000,
   toolConcurrency: 3,
-  storageMode: 'session',
+  storageMode: 'local',
   /** 上下文记忆轮数：请求时携带最近 n 轮（每轮=1条用户+1条助手）对话，0 表示不携带历史 */
   contextTurns: 8,
   contextRounds: 8,

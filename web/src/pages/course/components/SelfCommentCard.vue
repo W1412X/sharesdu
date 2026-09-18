@@ -10,7 +10,7 @@
       ></v-rating>
       <v-spacer />
       <div v-if="!ifRated" class="title-bold text1">暂未评价此课程</div>
-      <div v-if="ifRated" class="title-bold text1" :color="themeColor">我的评论</div>
+      <div v-if="ifRated" class="title-bold text1">我的评论</div>
     </div>
     <div v-if="ifRated" class="text-medium self-comment-text support-line-feed">
       <with-link-container :init-data="{ content: displayContent }"></with-link-container>

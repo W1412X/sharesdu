@@ -1,14 +1,12 @@
 <template>
     <div class="container">
-        <div class="row-div">
+        <div class="comment-header">
             <avatar-name v-if="data.authorId" :initData="{
                 name:data.authorName,
                 id:data.authorId
             }"></avatar-name>
-        </div>
-        <div style="display: flex; align-items: center">
             <v-rating :model-value="data.score" size="small" density="compact"
-                class="rating-div"
+                class="header-rating"
                 :color="themeColor" :disabled="true"></v-rating>
         </div>
         <div class="text-medium comment-expand-wrapper">
@@ -195,19 +193,15 @@ export default {
 }
 </script>
 <style scoped>
-.row-div{
-    display: flex; 
-    flex-direction: row;
-}
-.name{
-    margin-left: 10px;
+.comment-header{
     display: flex;
+    flex-direction: row;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 }
-.rating-div{
-    margin-top: 0px;
-    margin-bottom: 2px;
-    margin-left: 5px;
+.header-rating{
+    margin-left: 4px;
 }
 .comment-expand-wrapper{
     width: 100%;

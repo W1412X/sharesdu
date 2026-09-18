@@ -4,24 +4,16 @@
     <div class="column-center user-name text-medium">{{ userName }}</div>
     <v-spacer class="spacer"></v-spacer>
     <div class="row-reverse">
-      <!-- 管理员按钮 -->
-      <div v-if="ifMaster && !ifMobile" class="column-center padding-right-5px">
-        <manage-button :id="section.id" :type="'article'" size="23" />
+      <!-- 更多操作菜单（PC端）：管理/举报/编辑/复制链接/删除 收进菜单 -->
+      <div v-if="!ifMobile" class="column-center padding-right-5px">
+        <more-options-menu
+          item-type="section"
+          :data="section"
+          @alert="$emit('alert', $event)"
+          @set-loading="$emit('set-loading', $event)"
+        />
       </div>
-      
-      <!-- 举报按钮 -->
-      <div v-if="userId != section.authorId && !ifMobile" class="column-center padding-right-5px">
-        <alert-button :id="section.id" :type="'article'" />
-      </div>
-      
-      <!-- 编辑按钮（只有版主可以编辑） -->
-      <div v-if="userId == section.authorId && !ifMobile" class="column-center padding-right-5px">
-        <v-btn elevation="0" @click="$emit('edit')" icon class="bottom-btn">
-          <v-icon icon="mdi-pencil-outline" size="23"></v-icon>
-          <v-tooltip activator="parent">编辑板块</v-tooltip>
-        </v-btn>
-      </div>
-      
+
       <!-- 发布帖子按钮 -->
       <div class="column-center padding-right-10px">
         <v-btn elevation="0" @click="$emit('publish-post')" icon class="bottom-btn">
@@ -122,28 +114,16 @@
         
         <v-divider class="action-divider"></v-divider>
         
-        <!-- 管理员和举报 -->
-        <div v-if="ifMaster" class="action-item">
-          <manage-button :id="section.id" :type="'article'" size="24" />
-          <span class="action-label">管理</span>
-        </div>
-        
-        <div v-if="userId != section.authorId" class="action-item">
-          <alert-button :id="section.id" :type="'article'" />
-          <span class="action-label">举报</span>
-        </div>
-        
-        <!-- 删除按钮（只有版主可以删除，放在最下面） -->
-        <div v-if="userId == section.authorId" class="action-item">
-          <delete-button
-            @delete="$emit('delete')"
-            :id="section.id"
-            :type="'article'"
-            :size="24"
+        <!-- 更多操作（管理/举报/复制链接/删除收进菜单） -->
+        <div class="action-item">
+          <more-options-menu
+            item-type="section"
+            :data="section"
+            size="24"
             @alert="$emit('alert', $event)"
-            @set_loading="$emit('set-loading', $event)"
+            @set-loading="$emit('set-loading', $event)"
           />
-          <span class="action-label">删除板块</span>
+          <span class="action-label">更多操作</span>
         </div>
       </div>
     </v-card>
@@ -151,11 +131,9 @@
 </template>
 
 <script setup>
-import ManageButton from '@/components/manage/ManageButton.vue';
-import AlertButton from '@/components/report/AlertButton.vue';
+import MoreOptionsMenu from '@/components/common/MoreOptionsMenu/MoreOptionsMenu.vue';
 import StarButton from '@/components/star/StarButton.vue';
 import LikeButton from '@/components/common/LikeButton.vue';
-import DeleteButton from '@/components/common/DeleteButton.vue';
 import { useDevice } from '@/app/composables/useDevice';
 import { globalProperties } from '@/main';
 import AvatarName from '@/components/common/AvatarName';

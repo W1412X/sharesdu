@@ -78,6 +78,7 @@
       <div v-if="!ifPreview" class="bottom-icon-btn">
         <v-btn @click="setReplyEditorState(true)" elevation="0" icon class="icon-btn">
           <v-icon :size="'23'" icon="mdi-reply-outline"></v-icon>
+          <v-tooltip activator="parent">回复该回复</v-tooltip>
         </v-btn>
       </div>
       <div v-if="userId != data.authorId" class="bottom-icon-btn">
@@ -212,10 +213,12 @@ export default {
     },
     click() {
       if (this.ifPreview) {
+        // 预览态（个人主页回复列表）下应跳转到回复所属的帖子，而非以回复 id 当帖子 id
+        const targetPostId = this.postId || this.data.postId || this.data.id;
         openPage("router", {
           name: 'PostPage',
           params: {
-            id: this.data.id,
+            id: targetPostId,
           }
         });
       }

@@ -76,7 +76,11 @@
 
                 <!-- 收藏项目列表 -->
                 <div class="folder-items-container">
-                    <div v-if="selectedFolder.items.length === 0" class="empty-state">
+                    <div v-if="loading.load[selectedFolderIndex]" class="empty-state">
+                        <v-progress-circular :color="themeColor" indeterminate size="48" width="4"></v-progress-circular>
+                        <p class="empty-text">正在加载收藏项目...</p>
+                    </div>
+                    <div v-else-if="selectedFolder.items.length === 0" class="empty-state">
                         <v-icon :color="'#8a8a8a'" icon="mdi-inbox-outline" size="48"></v-icon>
                         <p class="empty-text">暂无收藏项目</p>
                     </div>

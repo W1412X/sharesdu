@@ -80,6 +80,8 @@
         :user-name="userName"
         :if-master="ifMaster"
         @show-post="handleShowPost"
+        @alert="handleAlert"
+        @set-loading="handleSetLoading"
       />
     </div>
   </div>

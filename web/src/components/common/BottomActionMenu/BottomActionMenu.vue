@@ -1,15 +1,15 @@
 <template>
   <v-dialog v-model="ifShowDialog" style="display: flex;flex-direction: row;align-items: center;justify-content: center;width: 100%;height: 100%;">
     <course-editor v-if="ifShowCourseEditor" :initData="{
-      id:course.id,
-      name:course.name,
-      teacher:course.teacher,
-      type:course.type,
-      campus:course.campus,
-      college:course.college,
-      credit:course.credit,
-      attendMethod:course.attendMethod,
-      examineMethod:course.examineMethod,
+      id:courseData?.id,
+      name:courseData?.name,
+      teacher:courseData?.teacher,
+      type:courseData?.type,
+      campus:courseData?.campus,
+      college:courseData?.college,
+      credit:courseData?.credit,
+      attendMethod:courseData?.attendMethod,
+      examineMethod:courseData?.examineMethod,
     }" @close="closeCourseEditor">
     </course-editor>
     <report-card v-if="ifShowReportCard" :type="itemType" :id="itemId" @close="closeReportCard">
@@ -32,86 +32,87 @@
           variant="text"
         >
           <div class="menu-option-content">
-            <v-icon :icon="option.icon" :color="option.iconColor || themeColor" size="24"></v-icon>
-            <div class="menu-option-text text-medium">{{ option.text }}</div>
+            <v-icon :icon="option.icon" :color="option.danger ? '#e53935' : themeColor" size="24"></v-icon>
+            <div class="menu-option-text text-medium" :class="{ 'menu-option-danger-text': option.danger }">{{ option.text }}</div>
           </div>
         </v-card>
       </div>
     </v-sheet>
   </v-bottom-sheet>
+  <!-- 移动端 Markdown 下载确认弹窗 -->
+  <mobile-download-confirm-dialog
+    v-model="ifShowMobileDownloadDialog"
+    @confirm="confirmMobileDownload"
+    @cancel="cancelMobileDownload"
+  />
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { globalProperties } from '@/main';
 import CourseEditor from '@/components/course/CourseEditor.vue';
 import { moreOptionEventBus } from '@/utils/eventBus';
-import useOptionShowSheet from './useShowState';
+import { buildMoreOptions } from '@/components/common/MoreOptionsMenu/useMoreOptions';
+import { useMoreOptionActions } from '@/components/common/MoreOptionsMenu/useMoreOptionActions';
+import MobileDownloadConfirmDialog from '@/components/common/MoreOptionsMenu/MobileDownloadConfirmDialog.vue';
 import ReportCard from '@/components/report/ReportCard.vue';
 import DeleteConfirmCard from '../DeleteConfirmCard.vue';
-import { openPage } from '@/utils/navigation';
-import { getNormalSuccessAlert } from '@/utils/alert';
+
 const props = defineProps({
   modelValue: {
     type: Boolean,
     default: false,
   },
+  title: {
+    type: String,
+    default: '',
+  },
 });
 
-const emit = defineEmits(['update:modelValue', 'action']);
-const typeNow=ref(null);
-const postData=ref(null);
-const articleData=ref(null);
-const courseData=ref(null);
-const sectionData=ref(null);
-const ifShowReportCard = ref(false);
-const ifShowDeleteConfirmCard = ref(false);
-const ifShowCourseEditor = ref(false);
-const course = computed(() => courseData.value || {});
-const ifShowDialog = computed(()=>{
-  return ifShowReportCard.value || ifShowDeleteConfirmCard.value || ifShowCourseEditor.value;
-})
-const sheetToShow=computed(()=>{
-  switch(typeNow.value){
-    case "post":
-      return useOptionShowSheet("post",postData.value?.authorId);
-    case "article":
-      return useOptionShowSheet("article",articleData.value?.authorId);
-    case "course":
-      return useOptionShowSheet("course",courseData.value?.authorId);
-    case "section":
-      return useOptionShowSheet("section",sectionData.value?.authorId);
-    default:
-      return [];
-  }
-})
-const itemId=computed(()=>{
-  switch(typeNow.value){
-    case "post":
-      return postData.value?.id;
-    case "article":
-      return articleData.value?.id;
-    case "course":
-      return courseData.value?.id;
-    case "section":
-      return sectionData.value?.id;
+const emit = defineEmits(['update:modelValue', 'alert', 'set-loading']);
+
+const typeNow = ref(null);
+const postData = ref(null);
+const articleData = ref(null);
+const courseData = ref(null);
+const sectionData = ref(null);
+
+const {
+  ifShowReportCard,
+  ifShowDeleteConfirmCard,
+  ifShowCourseEditor,
+  ifShowDialog,
+  ifShowMobileDownloadDialog,
+  handleOption,
+  confirmMobileDownload,
+  cancelMobileDownload,
+  closeReportCard,
+  closeDeleteConfirmCard,
+  closeCourseEditor,
+} = useMoreOptionActions();
+
+const currentData = computed(() => {
+  switch (typeNow.value) {
+    case 'post':
+      return postData.value;
+    case 'article':
+      return articleData.value;
+    case 'course':
+      return courseData.value;
+    case 'section':
+      return sectionData.value;
     default:
       return null;
   }
-})
-const itemType=computed(()=>{
-  return typeNow.value;
-})
+});
+
+const sheetToShow = computed(() => buildMoreOptions(typeNow.value, currentData.value));
+
+const itemId = computed(() => currentData.value?.id);
+const itemType = computed(() => typeNow.value);
+
 const themeColor = globalProperties.$themeColor;
-const closeReportCard=(()=>{
-  ifShowReportCard.value = false;
-  })
-const closeDeleteConfirmCard=(()=>{
-  ifShowDeleteConfirmCard.value = false;
-  })
-const closeCourseEditor=(()=>{
-  ifShowCourseEditor.value = false;
-  })
+
 const ifShow = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value),
@@ -120,100 +121,45 @@ const ifShow = computed({
 const close = () => {
   emit('update:modelValue', false);
 };
+
 const handleOptionClick = (option) => {
-  switch(option.type){
-    case "post-alert":
-      ifShowReportCard.value = true;
-      break;
-    case "article-alert":
-      ifShowReportCard.value = true;
-      break;
-    case "course-alert":
-      ifShowReportCard.value = true;
-      break;
-    case "course-edit":
-      ifShowCourseEditor.value = true;
-      break;
-    case "section-edit":
-      openPage("router",{
-        name:"SectionEditorPage",
-        params:{
-          id:sectionData.value?.id,
-        }
-      });
-      break;
-    case "section-delete":
-      ifShowDeleteConfirmCard.value = true;
-      break;
-    case "section-share":
-      navigator.clipboard.writeText(window.location.href) 
-      emit('alert',getNormalSuccessAlert("复制成功"));
-      break;
-    case "article-edit":
-      openPage("router",{
-        name:"EditorPage",
-        params:{
-          id:articleData.value?.id,
-        }
-      });
-      break;
-    case "course-share":
-      navigator.clipboard.writeText(window.location.href) 
-      emit('alert',getNormalSuccessAlert("复制成功"));
-      break;
-    case "article-share":
-      navigator.clipboard.writeText(window.location.href) 
-      emit('alert',getNormalSuccessAlert("复制成功"));
-      break;
-    case "post-share":
-      navigator.clipboard.writeText(window.location.href) 
-      emit('alert',getNormalSuccessAlert("复制成功"));
-      break;
-    case "post-delete":
-      ifShowDeleteConfirmCard.value = true;
-      break;
-    case "article-delete":
-      ifShowDeleteConfirmCard.value = true;
-      break;
-    case "course-manage":
-      openPage("router",{
-        name:"ManagePage",
-        query:{
-          init_type:"course",
-          init_id:courseData.value?.id,
-        }
-      });
-      break;
-    case "article-manage":
-      openPage("router",{
-        name:"ManagePage",
-        query:{
-          init_type:"article",
-          init_id:articleData.value?.id,
-        }
-      });
-      break;
-  }
-  close();
+  handleOption(option, {
+    itemType: typeNow.value,
+    data: currentData.value,
+    emit,
+    close,
+  });
+};
+
+const onPostData = (data) => {
+  typeNow.value = 'post';
+  postData.value = data;
+};
+const onArticleData = (data) => {
+  typeNow.value = 'article';
+  articleData.value = data;
+};
+const onCourseData = (data) => {
+  typeNow.value = 'course';
+  courseData.value = data;
+};
+const onSectionData = (data) => {
+  typeNow.value = 'section';
+  sectionData.value = data;
 };
 
 onMounted(() => {
-  moreOptionEventBus.on("post",(data) => {
-  typeNow.value = 'post';
-  postData.value = data;
-  });
-  moreOptionEventBus.on("article",(data) => {
-    typeNow.value = 'article';
-    articleData.value = data;
-  });
-  moreOptionEventBus.on("course",(data) => {
-    typeNow.value = 'course';
-    courseData.value = data;
-  });
-  moreOptionEventBus.on("section",(data) => {
-    typeNow.value = 'section';
-    sectionData.value = data;
-  });
+  moreOptionEventBus.on('post', onPostData);
+  moreOptionEventBus.on('article', onArticleData);
+  moreOptionEventBus.on('course', onCourseData);
+  moreOptionEventBus.on('section', onSectionData);
+});
+
+onUnmounted(() => {
+  moreOptionEventBus.off('post', onPostData);
+  moreOptionEventBus.off('article', onArticleData);
+  moreOptionEventBus.off('course', onCourseData);
+  moreOptionEventBus.off('section', onSectionData);
 });
 </script>
 
@@ -318,5 +264,8 @@ onMounted(() => {
 .menu-option-card:hover .menu-option-text {
   color: rgba(0, 0, 0, 0.95);
 }
-</style>
 
+.menu-option-danger-text {
+  color: #e53935;
+}
+</style>
