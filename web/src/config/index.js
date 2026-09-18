@@ -174,6 +174,14 @@ export const services = [
     icon: 'mdi-laptop',
   },
   {
+    title:'物理实验室',
+    link: 'https://physics.sharesdu.com',
+    description:'适合高中物理实验制作课件，教学演示等',
+    category:'实用工具',
+    source:'佚名',
+    icon: 'mdi-motion-play-outline'
+  },
+  {
     title: '信息服务平台',
     link: 'https://service.sdu.edu.cn',
     description: '山东大学统一信息服务平台，提供各类校园信息服务',

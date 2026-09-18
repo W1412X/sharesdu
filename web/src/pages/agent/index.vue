@@ -1207,9 +1207,9 @@ onMounted(async () => {
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 4px 2px;
+  padding: 0px 0px;
   margin-top: 8px;
-  padding-bottom: 140px;
+  padding-bottom: 100px;
 }
 
 /* 移动端：与底部导航、输入栏留出安全距离 */

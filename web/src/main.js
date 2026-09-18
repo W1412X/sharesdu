@@ -8,7 +8,7 @@ import { createVuetify } from "vuetify";
 import {
   VAlert, VApp, VAppBar, VAppBarTitle, VAutocomplete, VAvatar, VBadge,
   VBottomSheet, VBtn, VBtnToggle, VCard, VCardActions, VCardText, VCardTitle,
-  VCarousel, VCarouselItem, VCheckbox, VChip, VColorPicker, VDataTable, VDialog, VDivider,
+  VCarousel, VCarouselItem, VCheckbox, VChip, VColorPicker, VCombobox, VDataTable, VDialog, VDivider,
   VEmptyState, VExpansionPanel, VExpansionPanelText, VExpansionPanelTitle,
   VExpansionPanels, VIcon, VImg, VList, VListGroup, VListItem, VListItemTitle,
   VMenu, VNavigationDrawer, VOtpInput, VOverlay, VProgressCircular,
@@ -34,7 +34,7 @@ const vuetify = createVuetify({
   components: {
     VAlert, VApp, VAppBar, VAppBarTitle, VAutocomplete, VAvatar, VBadge,
     VBottomSheet, VBtn, VBtnToggle, VCard, VCardActions, VCardText, VCardTitle,
-    VCarousel, VCarouselItem, VCheckbox, VChip, VColorPicker, VDataTable, VDialog, VDivider,
+    VCarousel, VCarouselItem, VCheckbox, VChip, VColorPicker, VCombobox, VDataTable, VDialog, VDivider,
     VEmptyState, VExpansionPanel, VExpansionPanelText, VExpansionPanelTitle,
     VExpansionPanels, VIcon, VImg, VList, VListGroup, VListItem, VListItemTitle,
     VMenu, VNavigationDrawer, VOtpInput, VOverlay, VProgressCircular,
